@@ -1,4 +1,5 @@
 software-arm-incubation
 =======================
 
-Selfbus software projects for ARM microcontroller that are in development 
+This repository contains Selfbus software projects that are
+in development, for ARM microcontrollers.
