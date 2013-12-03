@@ -60,46 +60,45 @@ static short sbSendTelegramTries;
 
 
 /**
- * Timer16B0 interrupt handler
+ * Timer16 #1 interrupt handler
  */
-void TIMER16_0_IRQHandler()
+void TIMER16_1_IRQHandler()
 {
 	static unsigned short bitMask;
 	static unsigned short tick = 0;
 	static unsigned short bitTime = 0;
 	static unsigned char parity, checksum;
-	unsigned short timer = LPC_TMR16B0->CR0;
+	unsigned short timer = LPC_TMR16B1->CR0;
 
 	// Debug output
 	GPIOSetValue(0, 6, ++tick & 1); 	// brown: interrupt tick
-	GPIOSetValue(3, 0, (LPC_TMR16B0->IR & 0x10) != 0); // red: no falling edge since last interrupt
+	GPIOSetValue(3, 0, (LPC_TMR16B1->IR & 0x10) != 0); // red: no falling edge since last interrupt
 	GPIOSetValue(3, 1, 0);				// orange: parity bit ok
 	GPIOSetValue(3, 2, 0);				// yellow: end of byte
-
 
 	switch (sbState)
 	{
 	case SB_IDLE:
 		sbNextByte = 0;
 		checksum = 0xff;
-		LPC_GPIO[2]->DIR &= ~(1 << 2); // Set bus-out pin to input
+		LPC_GPIO[1]->DIR &= ~(1 << 9); // Set bus-out pin to input
 		// no break here
 
 	case SB_RECV_START:
-		if (LPC_TMR16B0->IR & 0x01)	// Timeout while waiting for next start byte
+		if (LPC_TMR16B1->IR & 0x01)	// Timeout while waiting for next start byte
 		{
 			if (!checksum)
 				sbRecvTelegramLen = sbNextByte;
 
-			LPC_TMR16B0->MCR = 0;	// 0: Do not match
+			LPC_TMR16B1->MCR = 0;	// 0: Do not match
 			sbState = SB_IDLE;
 			break;
 		}
 
-		LPC_TMR16B0->MR0 = sbTimeRecvByte;
-		LPC_TMR16B0->TCR = 2;  // Reset the timer
-		LPC_TMR16B0->TCR = 1;  // Enable the timer
-		LPC_TMR16B0->MCR = 3;  // 3: Interrupt and reset timer on match of MR0
+		LPC_TMR16B1->MR0 = sbTimeRecvByte;
+		LPC_TMR16B1->TCR = 2;  // Reset the timer
+		LPC_TMR16B1->TCR = 1;  // Enable the timer
+		LPC_TMR16B1->MCR = 3;  // 3: Interrupt and reset timer on match of MR0
 		sbState = SB_RECV_BYTE;
 		sbCurrentByte = 0;
 		bitTime = 0;
@@ -108,7 +107,7 @@ void TIMER16_0_IRQHandler()
 		break;
 
 	case SB_RECV_BYTE: 			// DEBUG info: first expected byte is 0xbc (10111100b, parity 1)
-		if (LPC_TMR16B0->IR & 0x01)
+		if (LPC_TMR16B1->IR & 0x01)
 			timer = sbTimeRecvByte;
 
 		if (timer >= bitTime + sbTimeBitWait)
@@ -126,7 +125,7 @@ void TIMER16_0_IRQHandler()
 			bitMask <<= 1;
 		}
 
-		if (LPC_TMR16B0->IR & 0x01)  // Timer timeout: end of byte
+		if (LPC_TMR16B1->IR & 0x01)  // Timer timeout: end of byte
 		{
 			GPIOSetValue(3, 2, 1);		// yellow: end of byte
 			GPIOSetValue(3, 1, parity);	// orange: parity bit ok
@@ -138,7 +137,7 @@ void TIMER16_0_IRQHandler()
 			}
 
 			sbState = SB_RECV_START;				// wait for the next byte's start bit
-			LPC_TMR16B0->MR0 = sbTimeRecvByte << 2; // timeout for waiting
+			LPC_TMR16B1->MR0 = sbTimeRecvByte << 2; // timeout for waiting
 		}
 		break;
 
@@ -150,7 +149,7 @@ void TIMER16_0_IRQHandler()
 			sbSendTelegram[sbSendTelegramLen - 1] ^= SB_TEL_REPEAT_FLAG;
 		}
 
-		if (sbState != SB_SEND_INIT || (LPC_TMR16B0->IR & 0x10)) // do nothing if the bus is busy
+		if (sbState != SB_SEND_INIT || (LPC_TMR16B1->IR & 0x10)) // do nothing if the bus is busy
 			return;
 
 		GPIOSetValue(2, 2, 1);
@@ -165,7 +164,7 @@ void TIMER16_0_IRQHandler()
 		break;
 	}
 
-	LPC_TMR16B0->IR = 0x11;
+	LPC_TMR16B1->IR = 0x11;
 }
 
 
@@ -214,10 +213,10 @@ void sb_send_tel(unsigned short length)
 	sbSendTelegramTries = 0;
 
 	// Start sending if the bus is idle
-	if (sbState == SB_IDLE && !(LPC_TMR16B0->IR & 0x10))
+	if (sbState == SB_IDLE && !(LPC_TMR16B1->IR & 0x10))
 	{
 		sbState = SB_SEND_INIT;
-		TIMER16_0_IRQHandler();
+		TIMER16_1_IRQHandler();
 	}
 }
 
@@ -231,23 +230,39 @@ void sb_init_bus()
 	sbSendTelegramLen = 0;
 	sbState = SB_IDLE;
 
+
+	//
+	// Init GPIOs for bus access
+	//
+
+    // Bus input on P1.8
+    LPC_GPIO[1]->DIR &= ~(1 << 8);
+	LPC_IOCON->PIO1_8 = 0x21;	// 0x21: Select timer1_16 CAP0, input, no pull-up/down, hysteresis
+	                         	// 0x29: Select timer1_16 CAP0, input, pull-down, hysteresis
+								// 0x50: Select timer1_16 CAP0, input, pull-up, hysteresis
+    							// 0x0a: Select timer1_16 CAP0, input, pull-down, no hysteresis
+
+	// Bus output on P1.9
+	LPC_GPIO[1]->DIR &= ~(1 << 9);// Set bus-out pin to input
+	LPC_IOCON->PIO1_9 = 0x0;	// 0x0: Standard pin, normal output
+								// 0x400: Standard pin, open-drain output
+
 	//
 	// Init bus timer
 	//
 
-    LPC_SYSCON->SYSAHBCLKCTRL |= (1<<7);
+    LPC_SYSCON->SYSAHBCLKCTRL |= 1<<8;	// Enable the clock for the timer
 
-	// Calculate ticks per microsecond
+	// Calculate timer ticks per microsecond
 	unsigned short usecTicks = SystemCoreClock / 1000000;
 
 	// TODO Use the highest possible prescaler
-	LPC_TMR16B0->PR = 0;
+	LPC_TMR16B1->PR = 0;
 //	int i;
 //	for (i = 0; !(usecTicks & 1); ++i)
 //		usecTicks >>= 1;
-//	LPC_TMR16B0->PR = (1 << i) - 1;
+//	LPC_TMR16B1->PR = (1 << i) - 1;
 //	usecTicks >>= 1;
-//	LPC_TMR16B0->PR = 1;
 
 
 	// Calculate timer waits
@@ -256,28 +271,13 @@ void sb_init_bus()
 	sbTimeBitPulse = 35 * usecTicks;
 	sbTimeRecvByte = (10 * 104 + 50) * usecTicks;
 
-	LPC_TMR16B0->CCR = 6;		// 6: Capture CR0 on falling edge, with interrupt
-	LPC_TMR16B0->MCR = 0;		// 0: Do not match the timer, 2: Reset timer on match of MR0
-	LPC_TMR16B0->MR0 = sbTimeRecvByte;
+	LPC_TMR16B1->CCR = 6;		// 6: Capture CR0 on falling edge, with interrupt
+	LPC_TMR16B1->MCR = 3;		// 0: Do not match the timer, 2: Reset timer on match of MR0, 3: Interrupt and reset
+	LPC_TMR16B1->MR0 = sbTimeRecvByte;
 
-    NVIC_EnableIRQ(TIMER_16_0_IRQn); // Enable the timer interrupt
-    LPC_TMR16B0->TCR = 1; // Enable the timer
+    LPC_TMR16B1->TCR = 1;				// Enable the timer
+    NVIC_EnableIRQ(TIMER_16_1_IRQn); // Enable the timer interrupt
 
-	//
-	// Init GPIOs for bus access
-	//
-
-    // Bus input
-    LPC_GPIO[0]->DIR &= ~(1 << 0);
-	LPC_IOCON->PIO0_2 = 0x42;	// 0x42: Select timer0_16 CAP0, input, no pull-up/down, hysteresis
-	                         	// 0x4a: Select timer0_16 CAP0, input, pull-down, hysteresis
-								// 0x50: Select timer0_16 CAP0, input, pull-up, hysteresis
-    							// 0x0a: Select timer0_16 CAP0, input, pull-down, no hysteresis
-
-	// Bus output
-	LPC_GPIO[2]->DIR &= ~(1 << 2);// Set bus-out pin to input
-	LPC_IOCON->PIO2_2 = 0x000;	// 0x000: Standard pin, normal output
-								// 0x400: Standard pin, open-drain output
 
 	//
 	// Init GPIOs for debugging

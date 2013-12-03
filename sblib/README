@@ -7,4 +7,7 @@ Uses the following ARM components:
 Bus access uses:
 - 16bit Timer #1
 - Pin 1.8 for EIB IN
-- Pin 1.9 for EIB OUT
+- Pin 1.9 for EIB OUT  (not yet implemented)
+
+
+When a telegram is received, the LED on P0.7 flashes for 0.5sec
