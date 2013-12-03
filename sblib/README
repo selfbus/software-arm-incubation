@@ -1,0 +1,10 @@
+Selfbus EIB Library
+===================
+
+
+Uses the following ARM components:
+
+Bus access uses:
+- 16bit Timer #1
+- Pin 1.8 for EIB IN
+- Pin 1.9 for EIB OUT
