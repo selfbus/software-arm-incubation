@@ -2,4 +2,6 @@ Debug/
 Release/
 *~
 *.o
+.metadata
+CMSIS_CORE_LPC11xx
 
