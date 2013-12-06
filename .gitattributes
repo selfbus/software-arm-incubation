@@ -1,7 +1,7 @@
 * text=auto
 
 .gitattributes text
-*.c diff=cpp
-*.cpp diff=cpp
-*.h diff=cpp
+*.c   text diff=cpp
+*.cpp text diff=cpp
+*.h   text diff=cpp
 
