@@ -4,33 +4,32 @@
 #ifndef sb_bus_h
 #define sb_bus_h
 
-
 // The state of the lib's telegram sending/receiving
 enum SbState
 {
-	// The lib is idle. No receiving or sending.
-	SB_IDLE = 0,
+    // The lib is idle. No receiving or sending.
+    SB_IDLE = 0,
 
-	// The lib is receiving a byte.
-	SB_RECV_BYTE,
+    // The lib is receiving a byte.
+    SB_RECV_BYTE,
 
-	// The lib is waiting for the start bit of the next byte.
-	SB_RECV_START,
+    // The lib is waiting for the start bit of the next byte.
+    SB_RECV_START,
 
-	// Start sending the telegram in sbSendTelegram[].
-	SB_SEND_INIT,
+    // Start sending the telegram in sbSendTelegram[].
+    SB_SEND_INIT,
 
-	// Start sending the next byte of a telegram
-	SB_SEND_START,
+    // Start sending the next byte of a telegram
+    SB_SEND_START,
 
-	// Send the bits of the current byte
-	SB_SEND_BYTE,
+    // Send the bits of the current byte
+    SB_SEND_BYTE,
 
-	// Finish sending
-	SB_SEND_END,
+    // Finish sending
+    SB_SEND_END,
 
-	// Switch to idle
-	SB_ENTER_IDLE
+    // Switch to idle
+    SB_ENTER_IDLE
 };
 
 // The state of the lib's receiver/sender
@@ -71,7 +70,6 @@ extern unsigned char sbStatus;
  */
 extern unsigned short sbOwnPhysicalAddr;
 
-
 /**
  * Initialize the bus access.
  */
@@ -92,6 +90,5 @@ extern void sb_send_tel(unsigned short length);
  * @return 1 if in programming mode, 0 if not.
  */
 #define sb_prog_mode_active() (sbStatus & 0x01)
-
 
 #endif /*sb_bus_h*/
