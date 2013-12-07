@@ -17,11 +17,18 @@
 int main(void)
 {
 	int i, on = 0;
+	int sendWait = 0;
 
 	sb_init_bus();
 
 	GPIOSetDir(LED_PORT, LED_BIT, 1);
     GPIOSetValue(LED_PORT, LED_BIT, 0);
+
+    sbSendTelegram[0] = 0xbc;
+    sbSendTelegram[1] = 0x11;
+    sbSendTelegram[2] = 0x64;
+    sbSendTelegram[3] = 0x0;
+    sbSendTelegram[4] = 0x10;
 
 	while (1)
 	{
@@ -38,6 +45,15 @@ int main(void)
 		{
 			on = !on;
 			GPIOSetValue(LED_PORT, LED_BIT, 0);
+		}
+
+		if (sendWait > 0)
+			--sendWait;
+		else if (GPIOGetValue(1, 11) == 0)
+		{
+			GPIOSetValue(LED_PORT, LED_BIT, 1);
+		    sendWait = 0x2fffff;
+		    sb_send_tel(5);
 		}
 	}
 

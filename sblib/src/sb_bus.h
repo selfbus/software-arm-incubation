@@ -21,7 +21,16 @@ enum SbState
 	SB_SEND_INIT,
 
 	// Start sending the next byte of a telegram
-	SB_SEND_START
+	SB_SEND_START,
+
+	// Send the bits of the current byte
+	SB_SEND_BYTE,
+
+	// Finish sending
+	SB_SEND_END,
+
+	// Switch to idle
+	SB_ENTER_IDLE
 };
 
 // The state of the lib's receiver/sender
