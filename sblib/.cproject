@@ -33,7 +33,7 @@
 									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.597138886" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.597138886" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -Winline" valueType="string"/>
 								<option id="gnu.c.compiler.option.include.paths.503275958" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="../config"/>
@@ -180,9 +180,6 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="selfbus-iotest.com.crt.advproject.projecttype.exe.204098880" name="Executable" projectType="com.crt.advproject.projecttype.exe"/>
 	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="com.crt.config">
 		<projectStorage>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
@@ -199,26 +196,26 @@
 &lt;memoryInstance derived_from="Flash" id="MFlash32" location="0x0" size="0x8000"/&gt;
 &lt;memoryInstance derived_from="RAM" id="RamLoc8" location="0x10000000" size="0x2000"/&gt;
 &lt;prog_flash blocksz="0x1000" location="0x0" maxprgbuff="0x1000" progwithcode="TRUE" size="0x8000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_SYSCTL" determined="infoFile" id="SYSCTL" location="0x40048000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_13_PMU" determined="infoFile" id="PMU" location="0x40038000"/&gt;
-&lt;peripheralInstance derived_from="CM0_NVIC" determined="infoFile" id="NVIC" location="0xe000e000"/&gt;
-&lt;peripheralInstance derived_from="CM0_DCR" determined="infoFile" id="DCR" location="0xe000edf0"/&gt;
-&lt;peripheralInstance derived_from="LPC11_GPIO" determined="infoFile" id="GPIO0" location="0x50000000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_GPIO" determined="infoFile" id="GPIO1" location="0x50010000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_GPIO" determined="infoFile" id="GPIO2" location="0x50020000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_GPIO" determined="infoFile" id="GPIO3" location="0x50030000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_IOCON" determined="infoFile" id="IOCON" location="0x40044000"/&gt;
-&lt;peripheralInstance derived_from="LPC11U_FMC" determined="infoFile" id="FMC" location="0x4003c000"/&gt;
-&lt;peripheralInstance derived_from="LPC1xxx_UART_MODEM" determined="infoFile" id="UART0" location="0x40008000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_13_I2C" determined="infoFile" id="I2C0" location="0x40000000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_13_SSP" determined="infoFile" id="SSP0" location="0x40040000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_13_SSP" determined="infoFile" id="SSP1" location="0x40058000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_13_TIMER16" determined="infoFile" id="TMR160" location="0x4000c000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_13_TIMER16" determined="infoFile" id="TMR161" location="0x40010000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_13_TIMER32" determined="infoFile" id="TIMER0" location="0x40014000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_13_TIMER32" determined="infoFile" id="TIMER1" location="0x40018000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_13_WDT" determined="infoFile" id="WDT" location="0x40004000"/&gt;
-&lt;peripheralInstance derived_from="LPC11_13_ADC" determined="infoFile" id="ADC" location="0x4001c000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_SYSCTL" id="SYSCTL" location="0x40048000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_13_PMU" id="PMU" location="0x40038000"/&gt;
+&lt;peripheralInstance derived_from="CM0_NVIC" id="NVIC" location="0xe000e000"/&gt;
+&lt;peripheralInstance derived_from="CM0_DCR" id="DCR" location="0xe000edf0"/&gt;
+&lt;peripheralInstance derived_from="LPC11_GPIO" id="GPIO0" location="0x50000000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_GPIO" id="GPIO1" location="0x50010000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_GPIO" id="GPIO2" location="0x50020000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_GPIO" id="GPIO3" location="0x50030000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_IOCON" id="IOCON" location="0x40044000"/&gt;
+&lt;peripheralInstance derived_from="LPC11U_FMC" id="FMC" location="0x4003c000"/&gt;
+&lt;peripheralInstance derived_from="LPC1xxx_UART_MODEM" id="UART0" location="0x40008000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_13_I2C" id="I2C0" location="0x40000000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_13_SSP" id="SSP0" location="0x40040000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_13_SSP" id="SSP1" location="0x40058000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_13_TIMER16" id="TMR160" location="0x4000c000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_13_TIMER16" id="TMR161" location="0x40010000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_13_TIMER32" id="TIMER0" location="0x40014000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_13_TIMER32" id="TIMER1" location="0x40018000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_13_WDT" id="WDT" location="0x40004000"/&gt;
+&lt;peripheralInstance derived_from="LPC11_13_ADC" id="ADC" location="0x4001c000"/&gt;
 &lt;/chip&gt;
 &lt;processor&gt;&lt;name gcc_name="cortex-m0"&gt;Cortex-M0&lt;/name&gt;
 &lt;family&gt;Cortex-M&lt;/family&gt;
@@ -228,5 +225,21 @@
 &lt;/infoList&gt;
 &lt;/TargetConfig&gt;</projectStorage>
 	</storageModule>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/sblib"/>
+		</configuration>
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/sblib"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.debug.495442596;com.crt.advproject.config.exe.debug.495442596.;com.crt.advproject.gcc.exe.debug.1118403295;com.crt.advproject.compiler.input.114657004">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.crt.advproject.GCCManagedMakePerProjectProfile"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.debug.495442596;com.crt.advproject.config.exe.debug.495442596.;com.crt.advproject.gas.exe.debug.1038139357;com.crt.advproject.assembler.input.1897005605">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.crt.advproject.GCCManagedMakePerProjectProfile"/>
+		</scannerConfigBuildInfo>
+	</storageModule>
 </cproject>

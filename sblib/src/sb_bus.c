@@ -95,6 +95,17 @@ static short sbSendAck;
  */
 
 /**
+ * Switch to idle state
+ */
+static void sb_idle()
+{
+    LPC_TMR16B1 ->MCR = 0;      // Do not handle timer matches
+    LPC_TMR16B1 ->CCR = 6;      // Capture CR0 on falling edge, with interrupt
+    LPC_TMR16B1 ->MR3 = 0xffff; // Set timer match 3 to maximum value
+    sbState = SB_IDLE;
+}
+
+/**
  * Timer16 #1 interrupt handler
  */
 void TIMER16_1_IRQHandler()
@@ -122,19 +133,41 @@ void TIMER16_1_IRQHandler()
     case SB_RECV_START:
         if (LPC_TMR16B1 ->IR & 0x08)	// Timeout while waiting for next start byte
         {
-            if (!checksum && sbNextByte >= 8)
+            if (sbNextByte >= 8 && !checksum) // Received a valid telegram with correct checksum
             {
                 sbRecvTelegramLen = sbNextByte;
                 sbSendAck = SB_BUS_ACK;
             }
-            else
+            else if (sbNextByte == 1)   // Received a spike or a bus acknowledgment
+            {
+                sbSendAck = 0;
+                sbCurrentByte &= 0xff;
+
+                if (sbCurrentByte == SB_BUS_ACK || sbSendTelegramTries >= 3)
+                    sbSendTelegramLen = 0;
+            }
+            else // Received more than one byte, but too short for a telegram or wrong checksum
             {
                 sbRecvTelegramLen = 0;
                 sbSendAck = SB_BUS_NACK;
             }
 
-            sbState = SB_SEND_INIT;
-            TIMER16_1_IRQHandler();
+            if (sbSendAck)
+            {
+                LPC_TMR16B1 ->MR3 = sbTimeBit * 15; // Wait 15 bit times before sending the bus acknowledgement
+                LPC_TMR16B1 ->MCR = 0x600;  // Interrupt and reset timer on timeout (match of MR3)
+                sbState = SB_SEND_INIT;
+            }
+            else if (sbSendTelegramLen > 0)
+            {
+                LPC_TMR16B1 ->MR3 = sbTimeBit * 50; // Wait at least 50 bit times before sending
+                LPC_TMR16B1 ->MCR = 0x600;  // Interrupt and reset timer on timeout (match of MR3)
+                sbState = SB_SEND_INIT;
+            }
+            else
+            {
+                sb_idle();
+            }
             break;
         }
 
@@ -190,13 +223,14 @@ void TIMER16_1_IRQHandler()
             sbSendTelegram[0] &= ~SB_TEL_REPEAT_FLAG;
             sbSendTelegram[sbSendTelegramLen - 1] ^= SB_TEL_REPEAT_FLAG;
         }
+        ++sbSendTelegramTries;
 
         if (sbState != SB_SEND_INIT || (LPC_TMR16B1 ->IR & 0x10)) // do nothing if the bus is busy
             return;
 
+        LPC_TMR16B1 ->CCR = 2;              // Capture CR0 on falling edge, without interrupt
         LPC_TMR16B1 ->TCR = 2;				// Reset the timer
-        LPC_TMR16B1_MR_OUT = sbTimeBitPulse;				// Set bus-out pin to high after 35 usec
-        LPC_TMR16B1 ->MR3 = 0xffff;			// Timer reset and interrupt (will be corrected in SB_SEND_BYTE)
+        LPC_TMR16B1_MR_OUT = sbTimeBitPulse;// Set bus-out pin to high after 35 usec
         LPC_TMR16B1 ->TCR = 1;				// Enable the timer
         LPC_TMR16B1 ->MCR = 0x600;			// Interrupt and reset timer on timeout (match of MR3)
         sbNextByte = 0;
@@ -205,16 +239,22 @@ void TIMER16_1_IRQHandler()
     case SB_SEND_START:
         GPIOSetValue(3, 2, 1);		// yellow: start of byte
         sbState = SB_SEND_BYTE;
-        if (sbSendAck)
-            sbCurrentByte = sbSendAck;
+
+        if (sbSendAck) sbCurrentByte = sbSendAck;
         else sbCurrentByte = sbSendTelegram[sbNextByte++];
+
+        // Calculate parity bit
+        for (parity = 0, bitMask = 1; bitMask < 0x100; bitMask <<= 1)
+        {
+            if (sbCurrentByte & bitMask)
+                sbCurrentByte ^= 0x100;
+        }
         bitMask = 1;
-        parity = 0;
         // no break here
 
     case SB_SEND_BYTE:
         timer = sbTimeBit;
-        while ((sbCurrentByte & bitMask) && bitMask < 0x100)
+        while ((sbCurrentByte & bitMask) && bitMask <= 0x100)
         {
             bitMask <<= 1;
             parity = !parity;
@@ -222,29 +262,24 @@ void TIMER16_1_IRQHandler()
         }
         bitMask <<= 1;
 
-        if (bitMask == 0x100 && parity)	// handle parity==1
-        {
-            timer += sbTimeBit;
-            bitMask <<= 1;
-        }
-
         if (bitMask >= 0x200)
         {
-            if (sbNextByte < sbSendTelegramLen)
+            timer += sbTimeBit * 3; // Three stop bits
+
+            if (sbNextByte < sbSendTelegramLen && !sbSendAck)
                 sbState = SB_SEND_START;
-            else sbState = SB_SEND_END;
+            else
+            {
+                sbState = SB_SEND_END;
+            }
         }
         LPC_TMR16B1 ->MR3 = timer;	// Reset and interrupt at the next 0 bit
         break;
 
     case SB_SEND_END:
         LPC_TMR16B1_MR_OUT = 0;		// Set bus-out match to 0 to have always 1
-        // no break here
-
-    case SB_ENTER_IDLE:
-        LPC_TMR16B1 ->MCR = 0;		// Do not handle timer matches
-        LPC_TMR16B1 ->CCR = 6;		// Capture CR0 on falling edge, with interrupt
-        sbState = SB_IDLE;
+        sbSendAck = 0;
+        sb_idle();
         break;
 
     default:
@@ -340,7 +375,7 @@ void sb_init_bus()
         LPC_TMR16B1->PWMC = 1;// Enable PWM for bus-out
 #else // use P1_10 for bus-out
     LPC_TMR16B1 ->EMR = 0x82;	// Set output to 1 on match for bus-out
-    LPC_IOCON ->PIO1_10 = 0x2;	// 0x2: CT16B1_MAT1, normal output
+    LPC_IOCON ->PIO1_10 = 0x92;	// 0x2: CT16B1_MAT1, normal output
                                 // 0x402: CT16B1_MAT1, open-drain output
     LPC_GPIO[1]->DIR |= 0x400;	// Set bus-out pin to output
     LPC_TMR16B1 ->PWMC = 2;		// Enable PWM for bus-out

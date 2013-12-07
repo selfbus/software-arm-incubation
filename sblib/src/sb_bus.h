@@ -26,10 +26,7 @@ enum SbState
     SB_SEND_BYTE,
 
     // Finish sending
-    SB_SEND_END,
-
-    // Switch to idle
-    SB_ENTER_IDLE
+    SB_SEND_END
 };
 
 // The state of the lib's receiver/sender
