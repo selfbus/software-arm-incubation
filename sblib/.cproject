@@ -39,7 +39,7 @@
 									<listOptionValue builtIn="false" value="../config"/>
 									<listOptionValue builtIn="false" value="../driver"/>
 								</option>
-								<option id="com.crt.advproject.gcc.exe.debug.option.optimization.level.1949985967" name="Optimization Level" superClass="com.crt.advproject.gcc.exe.debug.option.optimization.level"/>
+								<option id="com.crt.advproject.gcc.exe.debug.option.optimization.level.1949985967" name="Optimization Level" superClass="com.crt.advproject.gcc.exe.debug.option.optimization.level" value="gnu.c.optimization.level.size" valueType="enumerated"/>
 								<inputType id="com.crt.advproject.compiler.input.114657004" superClass="com.crt.advproject.compiler.input"/>
 							</tool>
 							<tool id="com.crt.advproject.gas.exe.debug.1038139357" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug">

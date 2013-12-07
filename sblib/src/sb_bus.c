@@ -15,9 +15,13 @@
 
 #ifdef SB_BUS_OUT_P1_9
 #  define LPC_TMR16B1_MR_OUT LPC_TMR16B1->MR0
+#  define LPC_IOCON_BUS_OUT LPC_IOCON->PIO1_9
+#  define BUS_OUT_IOCON_PWM 1
 #  define BUS_OUT_PORT_PIN 1,9
 #else // use P1_10
 #  define LPC_TMR16B1_MR_OUT LPC_TMR16B1->MR1
+#  define LPC_IOCON_BUS_OUT LPC_IOCON->PIO1_10
+#  define BUS_OUT_IOCON_PWM 2
 #  define BUS_OUT_PORT_PIN 1,10
 #endif
 
@@ -78,7 +82,7 @@ static short sbNextByte;
 static short sbSendTelegramTries;
 
 // Send an acknowledge or not-acknowledge byte if != 0
-static short sbSendAck;
+static unsigned char sbSendAck;
 
 //----- Telegram bits and constants -----
 
@@ -99,10 +103,13 @@ static short sbSendAck;
  */
 static void sb_idle()
 {
-    LPC_TMR16B1 ->MCR = 0;      // Do not handle timer matches
-    LPC_TMR16B1 ->CCR = 6;      // Capture CR0 on falling edge, with interrupt
-    LPC_TMR16B1 ->MR3 = 0xffff; // Set timer match 3 to maximum value
+    LPC_TMR16B1->MCR = 0;      // Do not handle timer matches
+    LPC_TMR16B1->CCR = 6;      // Capture CR0 on falling edge, with interrupt
+    LPC_TMR16B1->MR3 = 0xffff; // Set timer match 3 to maximum value
     sbState = SB_IDLE;
+
+    GPIOSetValue(BUS_OUT_PORT_PIN, 0);       // Set bus-out pin to 0
+    LPC_IOCON_BUS_OUT &= ~BUS_OUT_IOCON_PWM; // Configure bus-out pin as normal output
 }
 
 /**
@@ -114,11 +121,12 @@ void TIMER16_1_IRQHandler()
     static unsigned short tick = 0;
     static unsigned short bitTime = 0;
     static unsigned char parity, checksum;
-    unsigned short timer = LPC_TMR16B1 ->CR0;
+    unsigned short timer = LPC_TMR16B1->CR0;
+    unsigned int val;
 
     // Debug output
     GPIOSetValue(0, 6, ++tick & 1); 	// brown: interrupt tick
-    GPIOSetValue(3, 0, (LPC_TMR16B1 ->IR & 0x10) != 0); // red: no falling edge since last interrupt
+    GPIOSetValue(3, 0, (LPC_TMR16B1->IR & 0x10) != 0); // red: no falling edge since last interrupt
     GPIOSetValue(3, 1, 0);				// orange: parity bit ok
     GPIOSetValue(3, 2, 0);				// yellow: end of byte
 
@@ -131,7 +139,7 @@ void TIMER16_1_IRQHandler()
         // no break here
 
     case SB_RECV_START:
-        if (LPC_TMR16B1 ->IR & 0x08)	// Timeout while waiting for next start byte
+        if (LPC_TMR16B1->IR & 0x08)	// Timeout while waiting for next start byte
         {
             if (sbNextByte >= 8 && !checksum) // Received a valid telegram with correct checksum
             {
@@ -143,8 +151,7 @@ void TIMER16_1_IRQHandler()
                 sbSendAck = 0;
                 sbCurrentByte &= 0xff;
 
-                if (sbCurrentByte == SB_BUS_ACK || sbSendTelegramTries >= 3)
-                    sbSendTelegramLen = 0;
+                if (sbCurrentByte == SB_BUS_ACK || sbSendTelegramTries >= 3) sbSendTelegramLen = 0;
             }
             else // Received more than one byte, but too short for a telegram or wrong checksum
             {
@@ -154,14 +161,14 @@ void TIMER16_1_IRQHandler()
 
             if (sbSendAck)
             {
-                LPC_TMR16B1 ->MR3 = sbTimeBit * 15; // Wait 15 bit times before sending the bus acknowledgement
-                LPC_TMR16B1 ->MCR = 0x600;  // Interrupt and reset timer on timeout (match of MR3)
+                LPC_TMR16B1->MR3 = sbTimeBit * 15; // Wait 15 bit times before sending the bus acknowledgement
+                LPC_TMR16B1->MCR = 0x600;  // Interrupt and reset timer on timeout (match of MR3)
                 sbState = SB_SEND_INIT;
             }
             else if (sbSendTelegramLen > 0)
             {
-                LPC_TMR16B1 ->MR3 = sbTimeBit * 50; // Wait at least 50 bit times before sending
-                LPC_TMR16B1 ->MCR = 0x600;  // Interrupt and reset timer on timeout (match of MR3)
+                LPC_TMR16B1->MR3 = sbTimeBit * 50; // Wait at least 50 bit times before sending
+                LPC_TMR16B1->MCR = 0x600;  // Interrupt and reset timer on timeout (match of MR3)
                 sbState = SB_SEND_INIT;
             }
             else
@@ -171,10 +178,10 @@ void TIMER16_1_IRQHandler()
             break;
         }
 
-        LPC_TMR16B1 ->MR3 = sbTimeByte;
-        LPC_TMR16B1 ->TCR = 2;		// Reset the timer
-        LPC_TMR16B1 ->TCR = 1;		// Enable the timer
-        LPC_TMR16B1 ->MCR = 0x600;	// Interrupt and reset timer on timeout (match of MR3)
+        LPC_TMR16B1->MR3 = sbTimeByte;
+        LPC_TMR16B1->TCR = 2;		// Reset the timer
+        LPC_TMR16B1->TCR = 1;		// Enable the timer
+        LPC_TMR16B1->MCR = 0x600;	// Interrupt and reset timer on timeout (match of MR3)
         sbState = SB_RECV_BYTE;
         sbCurrentByte = 0;
         bitTime = 0;
@@ -183,7 +190,7 @@ void TIMER16_1_IRQHandler()
         break;
 
     case SB_RECV_BYTE: 			// DEBUG info: first expected byte is 0xbc (10111100b, parity 1)
-        if (LPC_TMR16B1 ->IR & 0x08) timer = sbTimeByte;
+        if (LPC_TMR16B1->IR & 0x08) timer = sbTimeByte;
 
         if (timer >= bitTime + sbTimeBitWait)
         {
@@ -200,7 +207,7 @@ void TIMER16_1_IRQHandler()
             bitMask <<= 1;
         }
 
-        if (LPC_TMR16B1 ->IR & 0x08)  // Timer timeout: end of byte
+        if (LPC_TMR16B1->IR & 0x08)  // Timer timeout: end of byte
         {
             GPIOSetValue(3, 2, 1);		// yellow: end of byte
             GPIOSetValue(3, 1, parity);	// orange: parity bit ok
@@ -212,7 +219,7 @@ void TIMER16_1_IRQHandler()
             }
 
             sbState = SB_RECV_START;			// wait for the next byte's start bit
-            LPC_TMR16B1 ->MR3 = sbTimeByte << 2;	// timeout for waiting
+            LPC_TMR16B1->MR3 = sbTimeByte << 2;	// timeout for waiting
         }
         break;
 
@@ -225,29 +232,36 @@ void TIMER16_1_IRQHandler()
         }
         ++sbSendTelegramTries;
 
-        if (sbState != SB_SEND_INIT || (LPC_TMR16B1 ->IR & 0x10)) // do nothing if the bus is busy
+        LPC_TMR16B1_MR_OUT = sbTimeBitWait;  // Set the output to 1 after the wait time
+        LPC_TMR16B1->MR3 = sbTimeBit;   // Interrupt after bit time
+        val = LPC_IOCON_BUS_OUT | BUS_OUT_IOCON_PWM;
+
+        if (sbState != SB_SEND_INIT || (LPC_TMR16B1->IR & 0x10)) // do nothing if the bus is busy
             return;
 
-        LPC_TMR16B1 ->CCR = 2;              // Capture CR0 on falling edge, without interrupt
-        LPC_TMR16B1 ->TCR = 2;				// Reset the timer
-        LPC_TMR16B1_MR_OUT = sbTimeBitPulse;// Set bus-out pin to high after 35 usec
-        LPC_TMR16B1 ->TCR = 1;				// Enable the timer
-        LPC_TMR16B1 ->MCR = 0x600;			// Interrupt and reset timer on timeout (match of MR3)
+        LPC_TMR16B1->TC = sbTimeBitWait;// Change the timer to have a 1 almost immediately
+        LPC_IOCON_BUS_OUT = val;        // Configure bus-out pin as PWM output
+        LPC_TMR16B1->MCR = 0x600;		// Interrupt and reset timer on match of MR3
+        LPC_TMR16B1->CCR = 2;           // Capture CR0 on falling edge, without interrupt
+        sbState = SB_SEND_BIT_0;
         sbNextByte = 0;
-        // no break here
+        break;
 
     case SB_SEND_START:
-        GPIOSetValue(3, 2, 1);		// yellow: start of byte
+        // No break for now
+
+    case SB_SEND_BIT_0:
+        GPIOSetValue(3, 2, 1);      // yellow: start of byte
         sbState = SB_SEND_BYTE;
 
-        if (sbSendAck) sbCurrentByte = sbSendAck;
+        if (sbSendAck)
+            sbCurrentByte = sbSendAck;
         else sbCurrentByte = sbSendTelegram[sbNextByte++];
 
-        // Calculate parity bit
-        for (parity = 0, bitMask = 1; bitMask < 0x100; bitMask <<= 1)
+        // Calculate the parity bit
+        for (bitMask = 1; bitMask < 0x100; bitMask <<= 1)
         {
-            if (sbCurrentByte & bitMask)
-                sbCurrentByte ^= 0x100;
+            if (sbCurrentByte & bitMask) sbCurrentByte ^= 0x100;
         }
         bitMask = 1;
         // no break here
@@ -257,7 +271,6 @@ void TIMER16_1_IRQHandler()
         while ((sbCurrentByte & bitMask) && bitMask <= 0x100)
         {
             bitMask <<= 1;
-            parity = !parity;
             timer += sbTimeBit;
         }
         bitMask <<= 1;
@@ -273,7 +286,8 @@ void TIMER16_1_IRQHandler()
                 sbState = SB_SEND_END;
             }
         }
-        LPC_TMR16B1 ->MR3 = timer;	// Reset and interrupt at the next 0 bit
+        LPC_TMR16B1->MR3 = timer;	// Reset and interrupt at the next 0 bit
+        LPC_TMR16B1_MR_OUT = timer - sbTimeBitPulse;
         break;
 
     case SB_SEND_END:
@@ -286,7 +300,7 @@ void TIMER16_1_IRQHandler()
         break;
     }
 
-    LPC_TMR16B1 ->IR = 0xff;
+    LPC_TMR16B1->IR = 0xff;
 }
 
 /**
@@ -301,7 +315,7 @@ void sb_send_tel(unsigned short length)
 
     // Set the sender address
     sbSendTelegram[1] = sbOwnPhysicalAddr >> 8;
-    sbSendTelegram[2] = sbOwnPhysicalAddr & 255;
+    sbSendTelegram[2] = sbOwnPhysicalAddr;
 
     // Calculate the checksum
     for (i = 0; i < length; ++i)
@@ -311,7 +325,7 @@ void sb_send_tel(unsigned short length)
     sbSendTelegramTries = 0;
 
     // Start sending if the bus is idle
-    if (sbState == SB_IDLE && !(LPC_TMR16B1 ->IR & TIMER_CAPTURE_INTERRUPT))
+    if (sbState == SB_IDLE && !(LPC_TMR16B1->IR & TIMER_CAPTURE_INTERRUPT))
     {
         sbState = SB_SEND_INIT;
         TIMER16_1_IRQHandler();
@@ -335,13 +349,13 @@ void sb_init_bus()
     // Init bus timer
     //
 
-    LPC_SYSCON ->SYSAHBCLKCTRL |= 1 << 8;	// Enable the clock for the timer
+    LPC_SYSCON->SYSAHBCLKCTRL |= 1 << 8;	// Enable the clock for the timer
 
     // Calculate timer ticks per microsecond
     unsigned short usecTicks = SystemCoreClock / 1000000;
 
     // TODO Use the highest possible prescaler
-    LPC_TMR16B1 ->PR = 0;
+    LPC_TMR16B1->PR = 0;
 //	int i;
 //	for (i = 0; !(usecTicks & 1); ++i)
 //		usecTicks >>= 1;
@@ -360,30 +374,30 @@ void sb_init_bus()
 
     // Configure bus input
     LPC_GPIO[1]->DIR &= ~0x100;
-    LPC_IOCON ->PIO1_8 = 0x21;	// 0x21: Select timer1_16 CAP0, input, no pull-up/down, hysteresis
+    LPC_IOCON->PIO1_8 = 0x21;	// 0x21: Select timer1_16 CAP0, input, no pull-up/down, hysteresis
                                 // 0x29: Select timer1_16 CAP0, input, pull-down, hysteresis
                                 // 0x50: Select timer1_16 CAP0, input, pull-up, hysteresis
                                 // 0x0a: Select timer1_16 CAP0, input, pull-down, no hysteresis
 
     // Configure bus output
     LPC_TMR16B1_MR_OUT = 0;		// Set bus-out match to 0 to have always 1
+    LPC_TMR16B1->EMR = 0;       // Clear timer match for bus-out
 #ifdef SB_BUS_OUT_P1_9
-        LPC_TMR16B1->EMR = 0x21;	// Set output to 1 on match for bus-out
-        LPC_IOCON->PIO1_9 = 0x1;// 0x1: CT16B1_MAT0, normal output
-                                // 0x401: CT16B1_MAT0, open-drain output
-        LPC_GPIO[1]->DIR |= 0x200;// Set bus-out pin to output
-        LPC_TMR16B1->PWMC = 1;// Enable PWM for bus-out
+//    LPC_TMR16B1->EMR = 0x21;	// Set output to 1 on match for bus-out
+    LPC_IOCON_BUS_OUT = 0;      // Set pin to normal output
+    LPC_GPIO[1]->DIR |= 0x200;  // Set bus-out pin to output
+    LPC_TMR16B1->PWMC = 1;      // Enable PWM for bus-out
 #else // use P1_10 for bus-out
-    LPC_TMR16B1 ->EMR = 0x82;	// Set output to 1 on match for bus-out
-    LPC_IOCON ->PIO1_10 = 0x92;	// 0x2: CT16B1_MAT1, normal output
-                                // 0x402: CT16B1_MAT1, open-drain output
+//    LPC_TMR16B1->EMR = 0x82;	// Set output to 1 on match for bus-out
+    LPC_IOCON_BUS_OUT = 0x90;	// Set pin to normal output
     LPC_GPIO[1]->DIR |= 0x400;	// Set bus-out pin to output
-    LPC_TMR16B1 ->PWMC = 2;		// Enable PWM for bus-out
+    LPC_TMR16B1->PWMC = 2;		// Enable PWM for bus-out
 #endif
+    GPIOSetValue(BUS_OUT_PORT_PIN, 0);
 
-    LPC_TMR16B1 ->CCR = 6;		// Capture CR0 on falling edge, with interrupt
-    LPC_TMR16B1 ->MCR = 0;		// Do not handle timer matches
-    LPC_TMR16B1 ->TCR = 1;		// Enable the timer
+    LPC_TMR16B1->CCR = 6;		// Capture CR0 on falling edge, with interrupt
+    LPC_TMR16B1->MCR = 0;		// Do not handle timer matches
+    LPC_TMR16B1->TCR = 1;		// Enable the timer
     NVIC_EnableIRQ(TIMER_16_1_IRQn);		// Enable the timer interrupt
 
     //

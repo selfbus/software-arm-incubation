@@ -22,6 +22,9 @@ enum SbState
     // Start sending the next byte of a telegram
     SB_SEND_START,
 
+    // Send the first bit of the current byte
+    SB_SEND_BIT_0,
+
     // Send the bits of the current byte
     SB_SEND_BYTE,
 
