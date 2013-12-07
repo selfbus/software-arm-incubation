@@ -37,7 +37,7 @@ enum SbState
 extern enum SbState sbState;
 
 // The size of the telegram buffer in bytes
-#define SB_TELEGRAM_SIZE 23
+#define SB_TELEGRAM_SIZE 24
 
 /**
  * The telegram buffer.
@@ -48,7 +48,7 @@ extern unsigned char sbRecvTelegram[SB_TELEGRAM_SIZE];
  * The length of the received telegram in bytes, including the checksum.
  * Zero if no telegram was received.
  */
-unsigned short sbRecvTelegramLen;
+extern unsigned short sbRecvTelegramLen;
 
 /**
  * The telegram buffer for sending a telegram.
@@ -59,7 +59,17 @@ extern unsigned char sbSendTelegram[SB_TELEGRAM_SIZE];
  * The length of the telegram to be sent in bytes, including the checksum.
  * Zero if no telegram is being sent.
  */
-unsigned short sbSendTelegramLen;
+extern unsigned short sbSendTelegramLen;
+
+/**
+ * Status byte. Originally stored in the user-ram at address 0x60.
+ */
+extern unsigned char sbStatus;
+
+/**
+ * Our own physical address on the bus.
+ */
+extern unsigned short sbOwnPhysicalAddr;
 
 
 /**
@@ -68,18 +78,20 @@ unsigned short sbSendTelegramLen;
 extern void sb_init_bus();
 
 /**
- * Process the received telegram in sbTelegram[]. Call this function when sbTelegramLen > 0.
- * Afterwards, sbTelegramLen is zero again.
- */
-extern void sb_process_tel();
-
-/**
  * Send the telegram that is stored in sbSendTelegram[].
  * The function calculates the checksum and sets the sender address before sending.
  *
  * @param length - the length of the telegram in sbSendTelegram[], without the checksum
  */
 extern void sb_send_tel(unsigned short length);
+
+/**
+ * Test if we are in programming mode (the button on the controller is pressed and
+ * the red programming LED is on).
+ *
+ * @return 1 if in programming mode, 0 if not.
+ */
+#define sb_prog_mode_active() (sbStatus & 0x01)
 
 
 #endif /*sb_bus_h*/

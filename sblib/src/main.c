@@ -7,6 +7,7 @@
 #include "../driver/gpio.h"
 
 #include "sb_bus.h"
+#include "sb_proto.h"
 
 
 #define LED_PORT 0		// Port for led
@@ -16,8 +17,11 @@
 
 int main(void)
 {
-	int i, on = 0;
+	int i = 0, on = 0;
 	int sendWait = 0;
+
+	// Set our own bus address to 1.1.126
+	sbOwnPhysicalAddr = 0x117e;
 
 	sb_init_bus();
 

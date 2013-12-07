@@ -1,6 +1,7 @@
 // sb_bus.c
 
 #include "sb_bus.h"
+#include "sb_const.h"
 
 #ifdef __USE_CMSIS
 # include "LPC11xx.h"
@@ -51,6 +52,12 @@ unsigned char sbSendTelegram[SB_TELEGRAM_SIZE];
 // The size of the to be sent telegram in bytes (including the checksum).
 unsigned short sbSendTelegramLen;
 
+// Status byte (from user-ram 0x60)
+unsigned char sbStatus;
+
+// Our own physical address on the bus
+unsigned short sbOwnPhysicalAddr;
+
 
 //----- private variables -----
 
@@ -72,11 +79,11 @@ static unsigned short sbCurrentByte;
 // The number of the next byte in the telegram
 static short sbNextByte;
 
-// Our own physical address: 1.1.128
-static unsigned short sbOwnPhysicalAddr = 0x1180;
-
 // The number of repeats when sending a telegram
 static short sbSendTelegramTries;
+
+// Send an acknowledge or not-acknowledge byte if != 0
+static short sbSendAck;
 
 //----- Telegram bits and constants -----
 
@@ -115,6 +122,7 @@ void TIMER16_1_IRQHandler()
 	switch (sbState)
 	{
 	case SB_IDLE:
+	    sbSendAck = 0;
 		sbNextByte = 0;
 		checksum = 0xff;
 		// no break here
@@ -122,10 +130,18 @@ void TIMER16_1_IRQHandler()
 	case SB_RECV_START:
 		if (LPC_TMR16B1->IR & 0x08)	// Timeout while waiting for next start byte
 		{
-			if (!checksum)
+			if (!checksum && sbNextByte >= 8)
+			{
 				sbRecvTelegramLen = sbNextByte;
+				sbSendAck = SB_BUS_ACK;
+			}
+			else
+			{
+			    sbRecvTelegramLen = 0;
+			    sbSendAck = SB_BUS_NACK;
+			}
 
-			sbState = SB_ENTER_IDLE;
+			sbState = SB_SEND_INIT;
 			TIMER16_1_IRQHandler();
 			break;
 		}
@@ -198,7 +214,8 @@ void TIMER16_1_IRQHandler()
 	case SB_SEND_START:
 		GPIOSetValue(3, 2, 1);		// yellow: start of byte
 		sbState = SB_SEND_BYTE;
-		sbCurrentByte = sbSendTelegram[sbNextByte++];
+		if (sbSendAck) sbCurrentByte = sbSendAck;
+		else sbCurrentByte = sbSendTelegram[sbNextByte++];
 		bitMask = 1;
 		parity = 0;
 		// no break here
@@ -246,26 +263,6 @@ void TIMER16_1_IRQHandler()
 }
 
 /**
- * Process the received telegram in sbTelegram[].
- * Afterwards, sbTelegramLen is zero again.
- */
-void sb_process_tel(void)
-{
-    // TODO
-
-    // At end: mark the telegram buffer as empty
-    sbRecvTelegramLen = 0;
-}
-
-/**
- * Prepare sending the telegram of sbSendTelegram[].
- */
-inline static void sb_send_tel_prepare()
-{
-    ++sbSendTelegramTries;
-}
-
-/**
  * Send the telegram that is stored in sbSendTelegram[].
  *
  * @param length - the length of the telegram in sbSendTelegram[], without the checksum
@@ -297,11 +294,15 @@ void sb_send_tel(unsigned short length)
 /**
  * Initialize the bus access.
  */
-void sb_init_bus(void)
+void sb_init_bus()
 {
 	sbRecvTelegramLen = 0;
 	sbSendTelegramLen = 0;
+
 	sbState = SB_IDLE;
+	sbSendAck = 0;
+
+	sbStatus = 0x2e;
 
 	//
 	// Init bus timer
