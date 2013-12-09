@@ -10,18 +10,35 @@
 #include "sb_iap.h"
 
 #define PAGE_VALID(region, address) (address [region->size - 1]  != 0xFF)
+#define SB_EEP_RAM_VALID 0x01
 
-int sb_eep_init (SB_Epp_Region * region)
+int sb_eep_init (SB_Epp_Region * region, unsigned int clear)
 {
-                   int    i;
+    int                   i;
+    int                   s  = -1;
+    int                   res = SB_EEP_NO_VALID_PAGE_FOUND;
     const unsigned char * rom;
 
-    region->flags = 0xF0; // highest active page number
+    region->state = 0xF0; // highest active page number
     rom           = region->rom_base;
 
-    /* find the last valid `page` in the flash area */
-    i = 0;
-    while (PAGE_VALID (region, rom) && (i < region->rom_pages))
+    // if a clear has been forced we need to clear all sectors for this region
+    if (clear)
+    {
+        for (i = 0; i < region->rom_pages; i++, rom += region->size)
+        {
+            int ns = sb_iap_address2sector((unsigned int) rom);
+            if (s != ns)
+            {
+                sb_iap_erase_sector(ns);
+                s = ns;
+            }
+        }
+    }
+    // find the last valid `page` in the flash area
+    i   = 0;
+    rom = region->rom_base;
+    while (PAGE_VALID(region, rom) && (i < region->rom_pages))
     {
         rom += region->size;
         i++;
@@ -29,22 +46,34 @@ int sb_eep_init (SB_Epp_Region * region)
     i--;
     if (i >= 0)
     {
-        region->flags = SB_EEP_RAM_VALID | (i << 4);
-        /* copy the content of the FLASH into the RAM mirror */
-        unsigned int * lram = (unsigned int *)  region->ram;
-        unsigned int * lrom = (unsigned int *) (region->rom_base + i * region->size);
-        for (i = 0; i < region->size; i += 4)
+        unsigned int  * lram = (unsigned int *)  region->ram;
+        unsigned int  * lrom = (unsigned int *) (region->rom_base + i * region->size);
+        const unsigned char version = * (region->rom_base + (1 + i) * region->size - 1);
+        // set the last page (to ensure a better wear leveling */
+        region->state = SB_EEP_RAM_VALID | (i << 4);
+        // now check the layout version ID
+        if ( version != region->version)
         {
-            * lram++ = * lrom++;
+            res = SB_EEP_VERSION_MISSMATCH;
+            region->ram [region->size - 1] = region->version;
+        }
+        else
+        {
+            res           = 0;
+            /* copy the content of the FLASH into the RAM mirror */
+            for (i = 0; i < region->size; i += 4)
+            {
+                * lram++ = * lrom++;
+            }
         }
     }
-    return region->flags;
+    return res;
 }
 
 int sb_eep_update (SB_Epp_Region * region)
 {
     int res            = 0; // OK
-    int page           = (region->flags >> 4) & 0x0F;
+    int page           = (region->state >> 4) & 0x0F;
     int current_sector = sb_iap_address2sector (((int) region->rom_base) + page * region->size);
     int erase_required = 0;
     int new_sector;
@@ -65,7 +94,9 @@ int sb_eep_update (SB_Epp_Region * region)
     if (0 == res)
     {   // now, lets copy the RAM to the new flash page
         // mark the new page as valid
-        region->ram [region->size - 1] = 0x00;
+        unsigned char version = region->ram [region->size - 1];
+        (* (unsigned int *) (& region->ram [region->size - 4]))++;
+        region->ram [region->size - 1] = version;
         res = sb_iap_program
                 ( (unsigned int) (region->rom_base + page * region->size)
                 , (unsigned int)  region->ram
@@ -73,24 +104,21 @@ int sb_eep_update (SB_Epp_Region * region)
                 );
         if (0 == res)
         {   // set the new active page number
-            region->flags = (region->flags & 0x0F) | (page << 4);
+            region->state = (region->state & 0x0F) | (page << 4);
         }
     }
     return res;
 }
 
-#define TEST
 
-#ifdef TEST
+#ifdef EEP_TEST
 
-SB_DEFINE_REGION (test_1, 252,4)
-SB_DEFINE_REGION (test_2, 508,2)
+SB_DEFINE_REGION (test_1, 252, 2, 0x01)
 
 void sb_eep_test (void)
 {
     unsigned int uid, part_id;
-    sb_eep_init     (& test_1);
-    sb_eep_init     (& test_2);
+    sb_eep_init     (& test_1, 0);
     sb_iap_read_uid (& uid, & part_id);
     test_1.ram [0]     = 0x01;
     test_1.ram [1]     = 0x23;
@@ -104,4 +132,4 @@ void sb_eep_test (void)
     test_1.ram [256-5] = 0x55;
     sb_eep_update   (& test_1);
 }
-#endif
+#endif /* EEP_TEST */
