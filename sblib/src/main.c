@@ -14,6 +14,8 @@
 #define LED_PORT 0		// Port for led
 #define LED_BIT 7		// Bit on port for led
 
+extern void sb_eep_test (void);
+
 int main(void)
 {
     int i = 0, on = 0;
@@ -23,7 +25,7 @@ int main(void)
     sbOwnPhysicalAddr = 0x117e;
 
     sb_init_bus();
-
+    sb_eep_test();
     GPIOSetDir(LED_PORT, LED_BIT, 1);
     GPIOSetValue(LED_PORT, LED_BIT, 0);
 

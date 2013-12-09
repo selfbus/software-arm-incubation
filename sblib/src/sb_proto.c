@@ -22,7 +22,7 @@ static void sb_process_phys_tel()
  * Process the received group telegram in sbRecvTelegram[]. This function is called by
  * sb_process_tel() and must be implemented.
  *
- * @param groupAddr - the destination group address.
+ * @param destAddr - the destination group address.
  */
 static void sb_process_group_tel(unsigned short destAddr)
 {
