@@ -25,16 +25,6 @@
 #  define BUS_OUT_PORT_PIN 1,10
 #endif
 
-// Calculate timer ticks per microsecond
-#define SB_USEC_TICK        (SystemCoreClock / 1000000)
-// Calculate timer waits
-#define SB_TIME_BIT         (104 * SB_USEC_TICK)
-#define SB_TIME_BIT_WAIT    ( 69 * SB_USEC_TICK)
-#define SB_TIME_BIT_PULSE   ( 35 * SB_USEC_TICK)
-#define SB_TIME_RECV_BYTE   ( 10 * SB_TIME_BIT + 50 * SB_USEC_TICK)
-
-#define TIMER_MATCH_INTERRUPT    (0x08)
-#define TIMER_CAPTURE_INTERRUPT  (0x10)
 
 //----- exported variables -----
 // The state of the lib's receiver/sender
@@ -126,9 +116,10 @@ void TIMER16_1_IRQHandler()
 
     // Debug output
     GPIOSetValue(0, 6, ++tick & 1); 	// brown: interrupt tick
-    GPIOSetValue(3, 0, (LPC_TMR16B1->IR & 0x10) != 0); // red: no falling edge since last interrupt
-    GPIOSetValue(3, 1, 0);				// orange: parity bit ok
+    GPIOSetValue(3, 0, sbState==SB_SEND_BIT_0); // red
+    GPIOSetValue(3, 1, sbState==SB_SEND_BYTE);	// orange
     GPIOSetValue(3, 2, 0);				// yellow: end of byte
+    GPIOSetValue(3, 3, 0);              // purple: end of telegram
 
     switch (sbState)
     {
@@ -141,6 +132,7 @@ void TIMER16_1_IRQHandler()
     case SB_RECV_START:
         if (LPC_TMR16B1->IR & 0x08)	// Timeout while waiting for next start byte
         {
+            GPIOSetValue(3, 3, 1);              // purple: end of telegram
             if (sbNextByte >= 8 && !checksum) // Received a valid telegram with correct checksum
             {
                 sbRecvTelegramLen = sbNextByte;
@@ -224,6 +216,9 @@ void TIMER16_1_IRQHandler()
         break;
 
     case SB_SEND_INIT:
+        if (!(LPC_TMR16B1->IR & 0x08)) // Do nothing if it's not a timeout
+            break;
+
         if (sbSendTelegramTries == 1)
         {
             // If it is the first repeat, then mark the telegram as being repeated and correct the checksum
@@ -243,6 +238,7 @@ void TIMER16_1_IRQHandler()
         LPC_IOCON_BUS_OUT = val;        // Configure bus-out pin as PWM output
         LPC_TMR16B1->MCR = 0x600;		// Interrupt and reset timer on match of MR3
         LPC_TMR16B1->CCR = 2;           // Capture CR0 on falling edge, without interrupt
+        GPIOSetValue(3, 2, 1);          // yellow: start of byte
         sbState = SB_SEND_BIT_0;
         sbNextByte = 0;
         break;
@@ -251,7 +247,6 @@ void TIMER16_1_IRQHandler()
         // No break for now
 
     case SB_SEND_BIT_0:
-        GPIOSetValue(3, 2, 1);      // yellow: start of byte
         sbState = SB_SEND_BYTE;
 
         if (sbSendAck)
@@ -267,6 +262,7 @@ void TIMER16_1_IRQHandler()
         // no break here
 
     case SB_SEND_BYTE:
+        GPIOSetValue(3, 2, 1);      // yellow: send next bits
         timer = sbTimeBit;
         while ((sbCurrentByte & bitMask) && bitMask <= 0x100)
         {
@@ -275,16 +271,14 @@ void TIMER16_1_IRQHandler()
         }
         bitMask <<= 1;
 
-        if (bitMask >= 0x200)
+        if (bitMask > 0x200)
         {
             timer += sbTimeBit * 3; // Three stop bits
 
             if (sbNextByte < sbSendTelegramLen && !sbSendAck)
-                sbState = SB_SEND_START;
+                sbState = SB_SEND_BIT_0;
             else
-            {
                 sbState = SB_SEND_END;
-            }
         }
         LPC_TMR16B1->MR3 = timer;	// Reset and interrupt at the next 0 bit
         LPC_TMR16B1_MR_OUT = timer - sbTimeBitPulse;
@@ -293,10 +287,10 @@ void TIMER16_1_IRQHandler()
     case SB_SEND_END:
         LPC_TMR16B1_MR_OUT = 0;		// Set bus-out match to 0 to have always 1
         sbSendAck = 0;
-        sb_idle();
-        break;
+        // no break here
 
     default:
+        sb_idle();
         break;
     }
 
@@ -325,10 +319,11 @@ void sb_send_tel(unsigned short length)
     sbSendTelegramTries = 0;
 
     // Start sending if the bus is idle
-    if (sbState == SB_IDLE && !(LPC_TMR16B1->IR & TIMER_CAPTURE_INTERRUPT))
+    if (sbState == SB_IDLE && !(LPC_TMR16B1->IR & 0x10))
     {
         sbState = SB_SEND_INIT;
-        TIMER16_1_IRQHandler();
+        LPC_TMR16B1->MR3 = 1;
+        LPC_TMR16B1->MCR = 0x600;       // Interrupt and reset timer on match of MR3
     }
 }
 
@@ -344,29 +339,8 @@ void sb_init_bus()
     sbSendAck = 0;
 
     sbStatus = 0x2e;
+    LPC_SYSCON->SYSAHBCLKCTRL |= 1 << 8; // Enable the clock for the timer
 
-    //
-    // Init bus timer
-    //
-
-    LPC_SYSCON->SYSAHBCLKCTRL |= 1 << 8;	// Enable the clock for the timer
-
-    // Calculate timer ticks per microsecond
-    unsigned short usecTicks = SystemCoreClock / 1000000;
-
-    // TODO Use the highest possible prescaler
-    LPC_TMR16B1->PR = 0;
-//	int i;
-//	for (i = 0; !(usecTicks & 1); ++i)
-//		usecTicks >>= 1;
-//	LPC_TMR16B1->PR = (1 << i) - 1;
-//	usecTicks >>= 1;
-
-    // Calculate timer waits
-    sbTimeBit = 104 * usecTicks;
-    sbTimeBitWait = 69 * usecTicks;
-    sbTimeBitPulse = 35 * usecTicks;
-    sbTimeByte = (10 * 104 + 50) * usecTicks;
 
     //
     // Init GPIOs for bus access
@@ -398,7 +372,28 @@ void sb_init_bus()
     LPC_TMR16B1->CCR = 6;		// Capture CR0 on falling edge, with interrupt
     LPC_TMR16B1->MCR = 0;		// Do not handle timer matches
     LPC_TMR16B1->TCR = 1;		// Enable the timer
-    NVIC_EnableIRQ(TIMER_16_1_IRQn);		// Enable the timer interrupt
+    NVIC_EnableIRQ(TIMER_16_1_IRQn); // Enable the timer interrupt
+
+
+    //
+    // Calculate timer ticks
+    //
+    unsigned short usecTicks = SystemCoreClock / 1000000;
+
+    // TODO Use the highest possible prescaler
+//    LPC_TMR16B1->PR = 1;
+//    usecTicks >>= 1;
+    int i;
+    for (i = 0; !(usecTicks & 1); ++i)
+        usecTicks >>= 1;
+    LPC_TMR16B1->PR = (1 << i) - 1;
+
+    // Calculate timer waits
+    sbTimeBit = 104 * usecTicks;
+    sbTimeBitWait = 69 * usecTicks;
+    sbTimeBitPulse = 35 * usecTicks;
+    sbTimeByte = (10 * 104 + 50) * usecTicks;
+
 
     //
     // Init GPIOs for debugging
@@ -406,6 +401,7 @@ void sb_init_bus()
     GPIOSetDir(3, 0, 1);  // 0: input, 1: output
     GPIOSetDir(3, 1, 1);  // 0: input, 1: output
     GPIOSetDir(3, 2, 1);  // 0: input, 1: output
+    GPIOSetDir(3, 3, 1);  // 0: input, 1: output
     GPIOSetDir(0, 6, 1);
 
     GPIOSetValue(3, 0, 0);

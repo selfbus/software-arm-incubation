@@ -35,14 +35,13 @@ int main(void)
     GPIOSetValue(LED_PORT, LED_BIT, 0);
 
     sbSendTelegram[0] = 0xbc;
-    sbSendTelegram[1] = 0x0;  // 1+2: source address: will be set by sb_send_tel()
+    sbSendTelegram[1] = 0x0;  // 1+2: source address: will be set by sb_send_tel() to sbOwnPhysicalAddr
     sbSendTelegram[2] = 0x0;
     sbSendTelegram[3] = 0x10; // 3+4: dest address: 1/0/5
     sbSendTelegram[4] = 0x5;
     sbSendTelegram[5] = 0xe1;
     sbSendTelegram[6] = 0x0;
     sbSendTelegram[7] = 0x81;
-    sbSendTelegram[8] = 0xff;
 
     while (1)
     {
@@ -67,7 +66,7 @@ int main(void)
         {
             GPIOSetValue(LED_PORT, LED_BIT, 1);
             sendWait = 0x2fffff;
-            sb_send_tel(9);
+            sb_send_tel(8);
         }
     }
 
