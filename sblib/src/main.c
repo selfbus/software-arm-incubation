@@ -24,7 +24,7 @@ int main(void)
     int sendWait = 0;
 
     // Set our own bus address (0x117e == 1.1.126)
-    sbOwnPhysicalAddr = 0x1164;
+    sbOwnPhysicalAddr = 0x117e;
 
     sb_init_bus();
 #ifdef EEP_TEST
@@ -37,8 +37,8 @@ int main(void)
     sbSendTelegram[0] = 0xbc;
     sbSendTelegram[1] = 0x0;  // 1+2: source address: will be set by sb_send_tel() to sbOwnPhysicalAddr
     sbSendTelegram[2] = 0x0;
-    sbSendTelegram[3] = 0x10; // 3+4: dest address: 2/0/0
-    sbSendTelegram[4] = 0x0;
+    sbSendTelegram[3] = 0x11; // 3+4: dest address: 2/1/2
+    sbSendTelegram[4] = 0x2;
     sbSendTelegram[5] = 0xe1;
     sbSendTelegram[6] = 0x0;
     sbSendTelegram[7] = 0x80;

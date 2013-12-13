@@ -83,7 +83,7 @@ static unsigned char sbSendAck;
  * The timer16_1 is used as follows:
  *
  * Capture register CR0 is used for receiving
- * Match register MR0 or MR1 is used for sending, depending on which output pin is used
+ * Match register MR0 or MR1 is used as PWM for sending, depending on which output pin is used
  * Match register MR3 is used for timeouts while sending / receiving
  *
  */
@@ -99,7 +99,7 @@ static void sb_idle()
     sbState = SB_IDLE;
 
     GPIOSetValue(BUS_OUT_PORT_PIN, 0);       // Set bus-out pin to 0
-    LPC_IOCON_BUS_OUT &= ~BUS_OUT_IOCON_PWM; // Configure bus-out pin as normal output
+    LPC_IOCON_BUS_OUT &= ~(LPC_IOCON_BUS_OUT | BUS_OUT_IOCON_PWM); // Disable bus-out output
 }
 
 /**
@@ -282,8 +282,7 @@ void TIMER16_1_IRQHandler()
             else
             {
                 sbState = SB_SEND_END;
-                LPC_IOCON_BUS_OUT &= ~(LPC_IOCON_BUS_OUT | BUS_OUT_IOCON_PWM); // Disable PWM output
-                LPC_TMR16B1_MR_OUT = 0;     // Set bus-out match to 0 to have always 1
+                LPC_IOCON_BUS_OUT &= ~(LPC_IOCON_BUS_OUT | BUS_OUT_IOCON_PWM); // Disable bus-out output
             }
         }
         LPC_TMR16B1->MR3 = timer;	// Reset and interrupt at the next 0 bit

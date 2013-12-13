@@ -4,6 +4,23 @@
 #include "sb_bus.h"
 #include "sb_const.h"
 
+
+
+
+// Ring buffer for send requests.
+unsigned short sbSendRing[SB_SEND_RING_SIZE];
+
+/**
+ * Index in sbSendRing[] where the next write will occur.
+ */
+extern unsigned short sbSendRingWrite;
+
+/**
+ * Index in sbSendRing[] where the next read will occur.
+ */
+extern unsigned short sbSendRingRead;
+
+
 /**
  * Process a telegram with our physical address as destination address.
  * The telegram is stored in sbRecvTelegram[].
@@ -44,8 +61,15 @@ void sb_process_tel()
     {
         if (sb_prog_mode_active()) // A broadcast and we are in programming mode
         {
-            // TODO handle SET_PHYSADDR_REQUEST and READ_PHYSADDR_REQUEST
-            // see fb_lpc922.c line 536..537 for example implementation
+            if (tpdu == SB_BROADCAST_PDU_SET_PA_REQ && apdu == SB_SET_PHYSADDR_REQUEST)
+            {
+                sb_set_pa((sbRecvTelegram[8] << 8) | sbRecvTelegram[9]);
+            }
+
+            // TODO
+//            else if (tpdu == SB_BROADCAST_PDU_READ_PA && apdu == SB_READ_PHYSADDR_REQUEST)
+//                sb_send_obj_value(READ_PHYSADDR_RESPONSE);
+
         }
     }
     else if (!isGroupDestAddr) // A physical destination address?
@@ -62,4 +86,14 @@ void sb_process_tel()
 
     // At the end: mark the received-telegram buffer as empty
     sbRecvTelegramLen = 0;
+}
+
+/**
+ * Set our physical address
+ *
+ * @param addr - the physical address
+ */
+void sb_set_pa(unsigned short addr)
+{
+    // TODO store the address in the data-eeprom at ADDRTAB+1
 }
