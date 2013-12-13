@@ -273,19 +273,24 @@ void TIMER16_1_IRQHandler()
 
         if (bitMask > 0x200)
         {
-            timer += sbTimeBit * 3; // Three stop bits
+            timer += sbTimeBit * 3; // Stop bit + inter-byte timeout
 
             if (sbNextByte < sbSendTelegramLen && !sbSendAck)
+            {
                 sbState = SB_SEND_BIT_0;
+            }
             else
+            {
                 sbState = SB_SEND_END;
+                LPC_IOCON_BUS_OUT &= ~(LPC_IOCON_BUS_OUT | BUS_OUT_IOCON_PWM); // Disable PWM output
+                LPC_TMR16B1_MR_OUT = 0;     // Set bus-out match to 0 to have always 1
+            }
         }
         LPC_TMR16B1->MR3 = timer;	// Reset and interrupt at the next 0 bit
         LPC_TMR16B1_MR_OUT = timer - sbTimeBitPulse;
         break;
 
     case SB_SEND_END:
-        LPC_TMR16B1_MR_OUT = 0;		// Set bus-out match to 0 to have always 1
         sbSendAck = 0;
         // no break here
 
@@ -304,7 +309,7 @@ void TIMER16_1_IRQHandler()
  */
 void sb_send_tel(unsigned short length)
 {
-    unsigned char checksum = 0;
+    unsigned char checksum = 0xff;
     unsigned short i;
 
     // Set the sender address
