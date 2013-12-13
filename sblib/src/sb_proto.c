@@ -3,8 +3,10 @@
 #include "sb_proto.h"
 #include "sb_bus.h"
 #include "sb_const.h"
+#include "sb_eep_emu.h"
 
-
+/* forward reference for internal functions */
+static void sb_set_pa(unsigned short addr);
 
 
 // Ring buffer for send requests.
@@ -93,7 +95,9 @@ void sb_process_tel()
  *
  * @param addr - the physical address
  */
-void sb_set_pa(unsigned short addr)
+static void sb_set_pa(unsigned short addr)
 {
-    // TODO store the address in the data-eeprom at ADDRTAB+1
+    eep [SB_EEP_ADDRTAB + 1] = addr >> 8;
+    eep [SB_EEP_ADDRTAB + 1] = addr & 0xFF;
+    sb_eep_update();
 }

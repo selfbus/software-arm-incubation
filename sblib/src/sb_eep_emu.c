@@ -8,6 +8,11 @@
 
 #include "sb_eep_emu.h"
 #include "sb_iap.h"
+#include "sb_bus.h"
+
+#ifdef __USE_CMSIS
+# include "LPC11xx.h"
+#endif
 
 #define EEP_SIZE 256
 
@@ -31,6 +36,11 @@ int sb_eep_init (unsigned int clear)
     // if a clear has been forced we need to clear all sectors for this region
     if (clear)
     {
+        /* before we erase the FLash we need to disable the interrupts.
+         * Wait until the bus module is in the idle state
+         */
+        while (sbState != SB_IDLE);
+        __disable_irq();
         for (i = 0; i < eep_r.rom_pages; i++, rom_address += eep_r.size)
         {
             int ns = sb_iap_address2sector(rom_address);
@@ -40,6 +50,7 @@ int sb_eep_init (unsigned int clear)
                 s = ns;
             }
         }
+        __enable_irq();
     }
     // find the last valid `page` in the flash area
     i           = eep_r.rom_pages - 1;
@@ -87,12 +98,22 @@ int sb_eep_update (void)
     new_sector      = sb_iap_address2sector(SB_EEP_FLASH_SECTOR_ADDRESS + page * eep_r.size);
     erase_required |= (new_sector != current_sector);
     if (erase_required)
-    {   // the new page will be in a new sector -> we need to erase
-        // that sector
+    {   /* The new page will be in a new sector -> we need to erase
+         * that sector.
+         * Before we erase the FLash we need to disable the interrupts.
+         * Wait until the bus module is in the idle state
+         */
+        while (sbState != SB_IDLE);
+        __disable_irq();
         res = sb_iap_erase_sector (new_sector);
     }
     if (0 == res)
-    {   // now, lets copy the RAM to the new flash page
+    {   /* now, lets copy the RAM to the new flash page
+         * Before we erase the FLash we need to disable the interrupts.
+         * Wait until the bus module is in the idle state
+         */
+       while (sbState != SB_IDLE);
+       __disable_irq();
         res      = sb_iap_program
                 ( (SB_EEP_FLASH_SECTOR_ADDRESS + page * eep_r.size)
                 , (int) (eep_r.ram)
@@ -103,6 +124,7 @@ int sb_eep_update (void)
             eep_r.state = page;
         }
     }
+    __enable_irq();
     return res;
 }
 

@@ -45,5 +45,18 @@
  */
 #define SB_BUS_NACK_BUSY 0x00
 
+/**
+ * EEPROM Addresses
+ */
+#define SB_EEP_RUNSTATE        0x0D    // run-state (0x00=stop, 0xFF=run)
+#define SB_EEP_ASSOCTABPTR     0x11    // address for the pointer to the association table
+#define SB_EEP_COMMSTABPTR     0x12    // address for the pointer to the communication object table
 
+#define SB_EEP_ADDRTAB         0x16    // base address of the association table
+
+/*
+#define SB_EEP_USERRAMADDRH    0x1C
+
+#define SB_EEP_APPLICATION_RUN     (eeprom[RUNSTATE]==0xFF && !connected)&& !(status60&0x01)
+*/
 #endif /*sb_const*/
