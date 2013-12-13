@@ -10,13 +10,18 @@
 #define SB_IAP_H_
 
 #ifndef IAP_EMULATION
-#define SB_FLASH_BASE_ADDRESS         0x0000
+extern unsigned int __vectors_start__;
+extern unsigned int __top_MFlash32;
+#define SB_FLASH_BASE_ADDRESS   __vectors_start__
+#define SB_FLASH_TOP_ADDRESS    __top_MFlash32
 #else
+/* for the test we simulate a 32k FlASH */
 extern unsigned char FLASH [];
 #define SB_FLASH_BASE_ADDRESS   ((int) FLASH)
+#define SB_FLASH_TOP_ADDRESS    ((int) FLASH + 0x1000*8)
 #endif
 
-#define SB_EEP_FLASH_SECTOR_ADDRESS   (SB_FLASH_BASE_ADDRESS + 0x7000)
+#define SB_EEP_FLASH_SECTOR_ADDRESS   (SB_FLASH_TOP_ADDRESS - 0x1000)
 
 /**
  * Returns the number of the FLASH sector based on the passed address.
