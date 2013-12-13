@@ -59,7 +59,11 @@ typedef struct
 /* IAP Call */
 typedef void (*IAP_Entry) (unsigned int * cmd, unsigned int * stat);
 
+#ifndef IAP_EMULATION
 #define IAP_Call ((IAP_Entry) 0x1FFF1FF1)
+#else
+extern void IAP_Call (unsigned int * cmd, unsigned int * stat);
+#endif
 
 int sb_iap_erase_sector (int sector)
 {
@@ -134,5 +138,5 @@ int sb_iap_read_uid (unsigned int * uid, unsigned int * part_id)
 
 int sb_iap_address2sector (unsigned int address)
 {
-    return address / SECTOR_SIZE;
+    return (address - SB_FLASH_BASE_ADDRESS) / SECTOR_SIZE;
 }

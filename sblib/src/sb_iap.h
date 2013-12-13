@@ -9,6 +9,15 @@
 #ifndef SB_IAP_H_
 #define SB_IAP_H_
 
+#ifndef IAP_EMULATION
+#define SB_FLASH_BASE_ADDRESS         0x0000
+#else
+extern unsigned char FLASH [];
+#define SB_FLASH_BASE_ADDRESS   ((int) FLASH)
+#endif
+
+#define SB_EEP_FLASH_SECTOR_ADDRESS   (SB_FLASH_BASE_ADDRESS + 0x7000)
+
 /**
  * Returns the number of the FLASH sector based on the passed address.
  * @param    address     the address inside the FLASH
@@ -39,4 +48,4 @@ int sb_iap_program (unsigned int rom, unsigned int ram, unsigned int size);
  */
 int sb_iap_read_uid       (unsigned int * uid, unsigned int * part_id);
 
-#endif /* SB_IAP_H_ */
+ #endif /* SB_IAP_H_ */
