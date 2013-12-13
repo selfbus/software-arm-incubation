@@ -109,23 +109,21 @@ int sb_eep_update (void)
 
 #ifdef EEP_TEST
 
-SB_DEFINE_EEP(256, 16);
-
 void sb_eep_test (void)
 {
     unsigned int uid, part_id;
-    sb_eep_init     (& eep, 0);
+    sb_eep_init     (0);
     sb_iap_read_uid (& uid, & part_id);
-    eep.ram [0]     = 0x01;
-    eep.ram [1]     = 0x23;
-    eep.ram [2]     = 0x45;
-    eep.ram [256-5] = 0xEF;
-    sb_eep_update   (& eep);
+    eep [0]     = 0x01;
+    eep [1]     = 0x23;
+    eep [2]     = 0x45;
+    eep [256-5] = 0xEF;
+    sb_eep_update   ()  ;
 
-    eep.ram [0]     = 0xAF;
-    eep.ram [1]     = 0xFE;
-    eep.ram [2]     = 0xDE;
-    eep.ram [256-5] = 0x55;
-    sb_eep_update   (& eep);
+    eep [0]     = 0xAF;
+    eep [1]     = 0xFE;
+    eep [2]     = 0xDE;
+    eep [256-5] = 0x55;
+    sb_eep_update   ();
 }
 #endif /* EEP_TEST */
