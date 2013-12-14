@@ -5,22 +5,17 @@
 #include "sb_const.h"
 #include "sb_eep_emu.h"
 
-/* forward reference for internal functions */
-static void sb_set_pa(unsigned short addr);
-
 
 // Ring buffer for send requests.
 unsigned short sbSendRing[SB_SEND_RING_SIZE];
 
-/**
- * Index in sbSendRing[] where the next write will occur.
- */
+// Index in sbSendRing[] where the next write will occur.
 extern unsigned short sbSendRingWrite;
 
-/**
- * Index in sbSendRing[] where the next read will occur.
- */
+// Index in sbSendRing[] where the next read will occur.
 extern unsigned short sbSendRingRead;
+
+
 
 
 /**
@@ -95,9 +90,10 @@ void sb_process_tel()
  *
  * @param addr - the physical address
  */
-static void sb_set_pa(unsigned short addr)
+void sb_set_pa(unsigned short addr)
 {
-    eep [SB_EEP_ADDRTAB + 1] = addr >> 8;
-    eep [SB_EEP_ADDRTAB + 1] = addr & 0xFF;
+    eep[SB_EEP_ADDRTAB + 1] = addr >> 8;
+    eep[SB_EEP_ADDRTAB + 1] = addr & 0xFF;
+
     sb_eep_update();
 }
