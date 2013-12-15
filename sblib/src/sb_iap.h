@@ -12,8 +12,8 @@
 #ifndef IAP_EMULATION
 extern unsigned int __vectors_start__;
 extern unsigned int __top_MFlash32;
-#define SB_FLASH_BASE_ADDRESS   __vectors_start__
-#define SB_FLASH_TOP_ADDRESS    __top_MFlash32
+#define SB_FLASH_BASE_ADDRESS   ((unsigned int) (& __vectors_start__))
+#define SB_FLASH_TOP_ADDRESS    ((unsigned int) (& __top_MFlash32))
 #else
 /* for the test we simulate a 32k FlASH */
 extern unsigned char FLASH [];

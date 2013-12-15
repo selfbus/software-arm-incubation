@@ -7,6 +7,7 @@
 #define CONFIG_ENABLE_DRIVER_GPIO 1
 
 #include "../driver/gpio.h"
+#include "../driver/uart.h"
 
 #include "sb_bus.h"
 #include "sb_proto.h"
@@ -23,6 +24,8 @@ int main(void)
     int i = 0, on = 0;
     int sendWait = 0;
 
+    UART_Init(115200);
+    UART_PutString("ARM-SB-Lib Test\n", -1);
     // Set our own bus address (0x117e == 1.1.126)
     sbOwnPhysicalAddr = 0x117e;
 
