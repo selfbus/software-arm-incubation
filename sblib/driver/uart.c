@@ -31,7 +31,6 @@
 #define LSR_TEMT    0x40
 #define LSR_RXFE    0x80
 
-#define UART_RX_BUFFER
 #ifdef UART_RX_BUFFER
 
 #define BUFFER_SIZE 32
