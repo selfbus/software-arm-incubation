@@ -96,7 +96,7 @@ void UART_PutChar (unsigned char byte)
     LPC_UART->THR = byte;
 }
 
-void UART_PutString (unsigned char * string, signed short length)
+void UART_PutString (char * string, signed short length)
 {
     if (length == -1)
     {

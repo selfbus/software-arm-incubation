@@ -12,7 +12,7 @@
 
 void UART_Init (unsigned int baud_rate);
 void UART_PutChar (unsigned char byte);
-void UART_PutString (unsigned char * string, signed short length);
+void UART_PutString (char * string, signed short length);
 unsigned char UART_GetChar (void);
 
 #endif /* UART_H_ */
