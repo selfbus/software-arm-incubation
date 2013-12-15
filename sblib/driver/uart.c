@@ -89,7 +89,7 @@ void UART_Init (unsigned int baud_rate)
 #endif
 }
 
-void UART_PutChar (unsigned char byte)
+void UART_PutChar (char byte)
 {
     while (! (LPC_UART->LSR & LSR_THRE)); // wait until we can write a byte to the FIFO
     LPC_UART->THR = byte;
