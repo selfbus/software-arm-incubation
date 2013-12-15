@@ -10,31 +10,72 @@
 unsigned short sbSendRing[SB_SEND_RING_SIZE];
 
 // Index in sbSendRing[] where the next write will occur.
-extern unsigned short sbSendRingWrite;
+unsigned short sbSendRingWrite;
 
 // Index in sbSendRing[] where the next read will occur.
-extern unsigned short sbSendRingRead;
+unsigned short sbSendRingRead;
 
+// Physical address of the remote device when a direct data connection is active.
+// Zero if no connection is active.
+unsigned short sbConnectedAddr;
 
+// Sequence number for sending telegrams
+unsigned char sbConnectedSeqNo;
 
 
 /**
- * Process a telegram with our physical address as destination address.
+ * Process a unicast telegram with our physical address as destination address.
  * The telegram is stored in sbRecvTelegram[].
+ *
+ * When this function is called, the sender address is != 0 (not a broadcast).
  */
-static void sb_process_phys_tel()
+static void sb_process_direct_tel()
 {
-    unsigned char tpdu = sbRecvTelegram[6] & 0xc3;
+    unsigned char tpci = sbRecvTelegram[6] & 0xc3;
+    unsigned short senderAddr = (sbRecvTelegram[1] << 8) | sbRecvTelegram[2];
+    unsigned char senderSeqNo = sbRecvTelegram[6] & 0x3c;
 
-    switch (tpdu)
+    // See fb_lpc922.c line 547..599 for example implementation
+    switch (tpci)
     {
-        // TODO see fb_lpc922.c line 547..599 for example implementation
+    // Memory operations in connected data mode
+    case SB_DATA_PDU_MEMORY_OPERATIONS:
+        if (sbConnectedAddr == senderAddr) // ensure that the sender is correct
+        {
+
+        }
+        break;
+
+    // Misc operations
+    case SB_DATA_PDU_MISC_OPERATIONS:
+        break;
+
+    // Open a direct data connection
+    case SB_CONNECT_PDU:
+        if (sbConnectedAddr == 0)
+        {
+            sbConnectedAddr = senderAddr;
+            sbConnectedSeqNo = 0;
+        }
+        break;
+
+    // Close the direct data connection
+    case SB_DISCONNECT_PDU:
+        if (sbConnectedAddr == senderAddr) // only close connection if the sender is correct
+        {
+            sbConnectedAddr = 0;
+        }
+        break;
+
+    case SB_NACK_PDU:
+        // Send T_DISCONNECT
+        break;
     }
 }
 
 /**
- * Process the received group telegram in sbRecvTelegram[]. This function is called by
- * sb_process_tel() and must be implemented.
+ * Process a multicast group telegram.
+ * The telegram is stored in sbRecvTelegram[].
  *
  * @param destAddr - the destination group address.
  */
@@ -50,33 +91,30 @@ static void sb_process_group_tel(unsigned short destAddr)
 void sb_process_tel()
 {
     unsigned short destAddr = (sbRecvTelegram[3] << 8) | sbRecvTelegram[4];
-    unsigned short isGroupDestAddr = (sbRecvTelegram[5] & 0x80) == 0;
-    unsigned char tpdu = sbRecvTelegram[6] & 0xc3;
-    unsigned char apdu = sbRecvTelegram[7];
+    unsigned char tpci = sbRecvTelegram[6] & 0xC3; // See KNX 3/3/4 p.6 TPDU
+    unsigned char apci = sbRecvTelegram[7];
 
-    if (!destAddr) // A broadcast?
+    if (destAddr == 0) // a broadcast
     {
-        if (sb_prog_mode_active()) // A broadcast and we are in programming mode
+        if (sb_prog_mode_active()) // we are in programming mode
         {
-            if (tpdu == SB_BROADCAST_PDU_SET_PA_REQ && apdu == SB_SET_PHYSADDR_REQUEST)
+            if (tpci == SB_BROADCAST_PDU_SET_PA_REQ && apci == SB_SET_PHYSADDR_REQUEST)
             {
                 sb_set_pa((sbRecvTelegram[8] << 8) | sbRecvTelegram[9]);
             }
-
             // TODO
-//            else if (tpdu == SB_BROADCAST_PDU_READ_PA && apdu == SB_READ_PHYSADDR_REQUEST)
-//                sb_send_obj_value(READ_PHYSADDR_RESPONSE);
-
+            // else if (tpdu == SB_BROADCAST_PDU_READ_PA && apdu == SB_READ_PHYSADDR_REQUEST)
+            //     sb_send_obj_value(READ_PHYSADDR_RESPONSE);
         }
     }
-    else if (!isGroupDestAddr) // A physical destination address?
+    else if ((sbRecvTelegram[5] & 0x80) == 0) // a physical destination address
     {
-        if (destAddr == sbOwnPhysicalAddr) // is it our address?
+        if (destAddr == sbOwnPhysicalAddr) // it's our physical address
         {
-            sb_process_phys_tel();
+            sb_process_direct_tel();
         }
     }
-    else if (tpdu == SB_GROUP_PDU) // A group destination address with multicast?
+    else if (tpci == SB_GROUP_PDU) // a group destination address and multicast
     {
         sb_process_group_tel(destAddr);
     }
@@ -96,4 +134,12 @@ void sb_set_pa(unsigned short addr)
     eep[SB_EEP_ADDRTAB + 1] = addr & 0xFF;
 
     sb_eep_update();
+}
+
+/**
+ * Initialize the protocol.
+ */
+void sb_init_proto()
+{
+    sbConnectedAddr = 0;
 }

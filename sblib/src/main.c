@@ -27,6 +27,8 @@ int main(void)
     sbOwnPhysicalAddr = 0x117e;
 
     sb_init_bus();
+    sb_init_proto();
+
 #ifdef EEP_TEST
     sb_eep_test();
 #endif

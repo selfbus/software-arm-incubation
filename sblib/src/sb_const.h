@@ -4,7 +4,8 @@
 #ifndef sb_const
 #define sb_const
 
-// TPDU commands
+
+// TPCI (TPDU) commands
 #define SB_GROUP_PDU                   0x00
 #define SB_BROADCAST_PDU_SET_PA_REQ    0x00
 #define SB_BROADCAST_PDU_READ_PA       0x01
@@ -23,6 +24,7 @@
 #define SB_READ_MASK_VERSION_REQUEST   0x00
 #define SB_WRITE_GROUP                 0x80
 #define SB_READ_GROUP_REQUEST          0x00
+
 
 /**
  * Bus short acknowledgment frame: acknowledged

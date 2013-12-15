@@ -117,7 +117,7 @@ void TIMER16_1_IRQHandler()
     // Debug output
     GPIOSetValue(0, 6, ++tick & 1); 	// brown: interrupt tick
     GPIOSetValue(3, 0, sbState==SB_SEND_BIT_0); // red
-    GPIOSetValue(3, 1, sbState==SB_SEND_BYTE);	// orange
+    GPIOSetValue(3, 1, 0);          	// orange
     GPIOSetValue(3, 2, 0);				// yellow: end of byte
     GPIOSetValue(3, 3, 0);              // purple: end of telegram
 
@@ -130,6 +130,7 @@ void TIMER16_1_IRQHandler()
         // no break here
 
     case SB_RECV_START:
+        GPIOSetValue(3, 1, 1);  // orange
         if (LPC_TMR16B1->IR & 0x08)	// Timeout while waiting for next start byte
         {
             GPIOSetValue(3, 3, 1);              // purple: end of telegram
@@ -202,7 +203,7 @@ void TIMER16_1_IRQHandler()
         if (LPC_TMR16B1->IR & 0x08)  // Timer timeout: end of byte
         {
             GPIOSetValue(3, 2, 1);		// yellow: end of byte
-            GPIOSetValue(3, 1, parity);	// orange: parity bit ok
+//            GPIOSetValue(3, 1, parity);	// orange: parity bit ok
 
             if (sbNextByte < SB_TELEGRAM_SIZE)
             {
@@ -211,7 +212,7 @@ void TIMER16_1_IRQHandler()
             }
 
             sbState = SB_RECV_START;			// wait for the next byte's start bit
-            LPC_TMR16B1->MR3 = sbTimeByte << 2;	// timeout for waiting
+            LPC_TMR16B1->MR3 = sbTimeBit << 2;	// timeout for waiting
         }
         break;
 
@@ -231,7 +232,7 @@ void TIMER16_1_IRQHandler()
         LPC_TMR16B1->MR3 = sbTimeBit;   // Interrupt after bit time
         val = LPC_IOCON_BUS_OUT | BUS_OUT_IOCON_PWM;
 
-        if (sbState != SB_SEND_INIT || (LPC_TMR16B1->IR & 0x10)) // do nothing if the bus is busy
+        if (sbState != SB_SEND_INIT) // do nothing if the bus is busy
             return;
 
         LPC_TMR16B1->TC = sbTimeBitWait;// Change the timer to have a 1 almost immediately
