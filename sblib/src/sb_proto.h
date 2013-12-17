@@ -80,12 +80,6 @@ extern unsigned short sbSendRingWrite;
  */
 extern unsigned short sbSendRingRead;
 
-/**
- * @return The number of send requests in the sending ring buffer sbSendRing.
- */
-#define sb_send_ring_count() ((sbSendRingWrite - sbSendRingRead) & 7)
-
-
 void sb_write_value_req(unsigned short objno);
 void sb_read_value_req(unsigned short objno);
 

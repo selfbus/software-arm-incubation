@@ -151,7 +151,9 @@ static void sb_process_group_tel(unsigned short destAddr, unsigned char apci)
                     // check if
                     // - communication is enabled (bit 2)
                     // - write is enabled         (bit 4)
-                    if ((objflags & 0x14) == 0x14)
+                    if (   (objflags & (SB_COMOBJ_CONF_WRITE | SB_COMOBJ_CONF_COMM))
+                        == (SB_COMOBJ_CONF_WRITE | SB_COMOBJ_CONF_COMM)
+                        )
                         sb_write_value_req(objno);
                 }
                 if (apci == SB_READ_GROUP_REQUEST)
@@ -159,7 +161,9 @@ static void sb_process_group_tel(unsigned short destAddr, unsigned char apci)
                     // check if
                     // - communication is enabled (bit 2)
                     // - read  is enabled         (bit 3)
-                    if ((objflags & 0x0C) == 0x0C)
+                    if (   (objflags & (SB_COMOBJ_CONF_WRITE | SB_COMOBJ_CONF_READ))
+                        == (SB_COMOBJ_CONF_READ | SB_COMOBJ_CONF_COMM)
+                        )
                         sb_read_value_req(objno);  // read object value and send read_value_response 00000000 00000000
                     break;
                 }
