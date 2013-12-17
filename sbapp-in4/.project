@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>sblib-tests</name>
+	<name>sbapp-in4</name>
 	<comment></comment>
 	<projects>
-		<project>CUnit</project>
+		<project>CMSIS_CORE_LPC11xx</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -24,22 +24,4 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>lib-config</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PARENT_LOC/sblib/config</locationURI>
-		</link>
-		<link>
-			<name>lib-src</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/sblib/src</locationURI>
-		</link>
-	</linkedResources>
-	<variableList>
-		<variable>
-			<name>copy_PARENT</name>
-			<value>$%7BPARENT-1-PROJECT_LOC%7D</value>
-		</variable>
-	</variableList>
 </projectDescription>

@@ -6,7 +6,7 @@
 #ifdef __USE_CMSIS
 # include "LPC11xx.h"
 #endif
-#include "../driver/gpio.h"
+#include "gpio.h"
 
 /**
  * Define to use pin 1.9, comment out to use pin 1.10 for bus output

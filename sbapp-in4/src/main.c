@@ -6,8 +6,8 @@
 
 #define CONFIG_ENABLE_DRIVER_GPIO 1
 
-#include "../driver/gpio.h"
-#include "../driver/uart.h"
+#include "gpio.h"
+#include "uart.h"
 
 #include "sb_bus.h"
 #include "sb_proto.h"
