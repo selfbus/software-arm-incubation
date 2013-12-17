@@ -5,6 +5,10 @@
 #include "sb_const.h"
 #include "sb_eep_emu.h"
 
+#ifdef __USE_CMSIS
+# include "LPC11xx.h"
+#endif
+
 
 // Ring buffer for send requests.
 unsigned short sbSendRing[SB_SEND_RING_SIZE];
@@ -78,7 +82,7 @@ static void sb_process_direct_tel(unsigned char tpci, unsigned char apci)
     case SB_DATA_PDU_MISC_OPERATIONS:
         if (apci == SB_RESTART_REQUEST)                   // 01pppp11 10000000
         {
-            // Software Reset
+            NVIC_SystemReset(); // Software Reset
         }
         if (apci == SB_READ_MASK_VERSION_REQUEST)        // 01pppp11 00000000
         {
