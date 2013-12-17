@@ -28,6 +28,42 @@
 // pseudo-objects for unicast sending
 #define SB_OBJ_NCD_ACK                 129
 
+
+/*
+ * Com object configuration flags
+ */
+
+// Com object configuration flag: transmit enabled
+#define SB_COMOBJ_CONF_TRANS 0x40
+
+// Com object configuration flag: value memory type: 0=ram, 1=eeprom
+#define SB_COMOBJ_CONF_VALUE_TYPE 0x20
+
+// Com object configuration flag: write enabled
+#define SB_COMOBJ_CONF_WRITE 0x10
+
+// Com object configuration flag: read enabled
+#define SB_COMOBJ_CONF_READ 0x08
+
+// Com object configuration flag: communication enabled
+#define SB_COMOBJ_CONF_COMM 0x04
+
+// Com object configuration flag: transmission priority mask
+#define SB_COMOBJ_CONF_PRIO_MASK 0x03
+
+// Com object configuration flag: low transmission priority
+#define SB_COMOBJ_CONF_PRIO_LOW 0x03
+
+// Com object configuration flag: high transmission priority
+#define SB_COMOBJ_CONF_PRIO_HIGH 0x02
+
+// Com object configuration flag: alarm transmission priority
+#define SB_COMOBJ_CONF_PRIO_ALARM 0x01
+
+// Com object configuration flag: system transmission priority
+#define SB_COMOBJ_CONF_PRIO_SYSTEM 0x00
+
+
 /**
  * Bus short acknowledgment frame: acknowledged
  */

@@ -23,6 +23,21 @@ extern void sb_set_pa(unsigned short addr);
 extern void sb_init_proto();
 
 /**
+ * Add a com object to the ring-buffer for sending.
+ *
+ * @param objno - the number of the com object to send.
+ */
+extern void sb_send_obj_value (unsigned short objno);
+
+/**
+ * Read the object flags.
+ *
+ * @param objno - the number of the com object
+ * @return The object flags of the com object.
+ */
+extern unsigned char sb_read_objflags(unsigned short objno);
+
+/**
  * Test if there is a direct data connection active.
  *
  * @return 1 if a direct data connection is active, 0 if not.
@@ -41,11 +56,12 @@ extern unsigned short sbConnectedAddr;
 /**
  * @return The number of send requests in the sending ring buffer sbSendRing.
  */
-#define sb_send_ring_count() ((sbSendRingWrite - sbSendRingRead) & 7)
+#define sb_send_ring_count() ((sbSendRingWrite - sbSendRingRead) & (SB_SEND_RING_SIZE - 1))
 
 
 /**
  * The size of the ring buffer for send requests.
+ * Must be power of 2.
  */
 #define SB_SEND_RING_SIZE 8
 

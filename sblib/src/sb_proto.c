@@ -28,7 +28,9 @@ unsigned char sbMemReadNoBytes;
 // for memory reads, holds the start address of the request
 unsigned char sbMemReadAddress;
 
-static void sb_send_obj_value (unsigned char objno);
+// Com object configuration flag: transmit + communication enabled
+#define SB_COMOBJ_CONF_TRANS_COMM (SB_COMOBJ_CONF_COMM | SB_COMOBJ_CONF_TRANS)
+
 static void sb_update_memory(signed char count, unsigned short address, unsigned char * data);
 
 /**
@@ -172,10 +174,40 @@ void sb_init_proto()
     sbConnectedAddr = 0;
 }
 
-static void sb_send_obj_value (unsigned char objno)
+/**
+ * Add a com object to the ring-buffer for sending.
+ *
+ * @param objno - the number of the com object to send.
+ */
+void sb_send_obj_value(unsigned short objno)
+{
+    if (objno <= 0xff && (sb_read_objflags(objno) & SB_COMOBJ_CONF_TRANS_COMM) != SB_COMOBJ_CONF_TRANS_COMM)
+    {
+        // Do nothing if it is a (standard) com object but transmit or communication is disabled
+    }
+    else if (sbSendRingRead != ((sbSendRingWrite + 1) & (SB_SEND_RING_SIZE - 1)))
+    {
+        sbSendRing[sbSendRingWrite] = objno;
+        ++sbSendRingWrite;
+        sbSendRingWrite &= (SB_SEND_RING_SIZE - 1);
+    }
+
+    // TODO   TR1=1;  // statemachine starten falls vorher in state 0 gestoppt
+}
+
+/**
+ * Read the object flags.
+ *
+ * @param objno - the number of the com object
+ * @return The object flags of the com object.
+ */
+unsigned char sb_read_objflags(unsigned short objno)
 {
     // TODO
+//    return(eeprom[eeprom[COMMSTABPTR] + objno + objno + objno + 3]);
+    return 0xff;
 }
+
 
 static void sb_update_memory(signed char count, unsigned short address, unsigned char * data)
 {
