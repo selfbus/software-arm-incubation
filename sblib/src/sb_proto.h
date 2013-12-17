@@ -8,26 +8,26 @@
  * Process the received telegram in sbRecvTelegram[]. Call this function when sbRecvTelegramLen > 0.
  * After this function, sbRecvTelegramLen shall/will be zero.
  */
-extern void sb_process_tel();
+void sb_process_tel();
 
 /**
  * Set our physical address.
  *
  * @param addr - the physical address
  */
-extern void sb_set_pa(unsigned short addr);
+void sb_set_pa(unsigned short addr);
 
 /**
  * Initialize the protocol.
  */
-extern void sb_init_proto();
+void sb_init_proto();
 
 /**
  * Add a com object to the ring-buffer for sending.
  *
  * @param objno - the number of the com object to send.
  */
-extern void sb_send_obj_value (unsigned short objno);
+void sb_send_obj_value (unsigned short objno);
 
 /**
  * Read the object flags.
@@ -35,7 +35,7 @@ extern void sb_send_obj_value (unsigned short objno);
  * @param objno - the number of the com object
  * @return The object flags of the com object.
  */
-extern unsigned char sb_read_objflags(unsigned short objno);
+unsigned char sb_read_objflags(unsigned short objno);
 
 /**
  * Test if there is a direct data connection active.
