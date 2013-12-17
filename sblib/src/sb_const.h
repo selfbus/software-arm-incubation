@@ -25,6 +25,8 @@
 #define SB_WRITE_GROUP                 0x80
 #define SB_READ_GROUP_REQUEST          0x00
 
+// pseudo-objects for unicast sending
+#define SB_OBJ_NCD_ACK                 129
 
 /**
  * Bus short acknowledgment frame: acknowledged

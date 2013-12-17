@@ -22,6 +22,14 @@ unsigned short sbConnectedAddr;
 // Sequence number for sending telegrams
 unsigned char sbConnectedSeqNo;
 
+// for memory reads, holds the number of requested bytes
+unsigned char sbMemReadNoBytes;
+
+// for memory reads, holds the start address of the request
+unsigned char sbMemReadAddress;
+
+static void sb_send_obj_value (unsigned char objno);
+static void sb_update_memory(signed char count, unsigned short address, unsigned char * data);
 
 /**
  * Process a unicast telegram with our physical address as destination address.
@@ -32,6 +40,8 @@ unsigned char sbConnectedSeqNo;
 static void sb_process_direct_tel()
 {
     unsigned char tpci = sbRecvTelegram[6] & 0xc3;
+    unsigned char apci = sbRecvTelegram[7];
+
     unsigned short senderAddr = (sbRecvTelegram[1] << 8) | sbRecvTelegram[2];
     unsigned char senderSeqNo = sbRecvTelegram[6] & 0x3c;
 
@@ -42,7 +52,26 @@ static void sb_process_direct_tel()
     case SB_DATA_PDU_MEMORY_OPERATIONS:
         if (sbConnectedAddr == senderAddr) // ensure that the sender is correct
         {
+            apci &= 0xF0;                               // on memory operations only the high nibble is used
+            if (apci == SB_WRITE_MEMORY_REQUEST)        // 01pppp10 1000xxxx
+            {
+                signed char count;
+                unsigned short address;
+                count = sbRecvTelegram[7] & 0x0F;       // number of data byes
+                address = sbRecvTelegram[8] << 8
+                        | sbRecvTelegram[9];            // start address of the data block
 
+                sb_send_obj_value(SB_OBJ_NCD_ACK);      // send an acknowledgment
+                sb_update_memory(count, address, sbRecvTelegram + 10);
+            }
+            if (apci == SB_READ_MEMORY_REQUEST)         // 01pppp10 0000xxxx
+            {
+                sbMemReadNoBytes = sbRecvTelegram[7];   // number of requested bytes
+                                                        // store the start address
+                sbMemReadAddress = sbRecvTelegram[8] << 8 | sbRecvTelegram[9];
+                sb_send_obj_value(SB_OBJ_NCD_ACK);        // send an acknowledgment
+                sb_send_obj_value(SB_READ_MEMORY_REQUEST);// send the requested memory content
+            }
         }
         break;
 
@@ -102,9 +131,8 @@ void sb_process_tel()
             {
                 sb_set_pa((sbRecvTelegram[8] << 8) | sbRecvTelegram[9]);
             }
-            // TODO
-            // else if (tpdu == SB_BROADCAST_PDU_READ_PA && apdu == SB_READ_PHYSADDR_REQUEST)
-            //     sb_send_obj_value(READ_PHYSADDR_RESPONSE);
+            else if (tpci == SB_BROADCAST_PDU_READ_PA && apci == SB_READ_PHYSADDR_REQUEST)
+                sb_send_obj_value(SB_READ_PHYSADDR_REQUEST);
         }
     }
     else if ((sbRecvTelegram[5] & 0x80) == 0) // a physical destination address
@@ -142,4 +170,21 @@ void sb_set_pa(unsigned short addr)
 void sb_init_proto()
 {
     sbConnectedAddr = 0;
+}
+
+static void sb_send_obj_value (unsigned char objno)
+{
+    // TODO
+}
+
+static void sb_update_memory(signed char count, unsigned short address, unsigned char * data)
+{
+    while (count--)
+    {
+        // count the data for address 0x60 to the status variable as well
+        if (address == 0x60)
+            sbStatus = * data;
+        eep [address++] = * data++;
+    }
+    //sb_eep_update();
 }
