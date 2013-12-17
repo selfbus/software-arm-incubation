@@ -86,4 +86,7 @@ extern unsigned short sbSendRingRead;
 #define sb_send_ring_count() ((sbSendRingWrite - sbSendRingRead) & 7)
 
 
+void sb_write_value_req(unsigned short objno);
+void sb_read_value_req(unsigned short objno);
+
 #endif /*sb_proto_h*/

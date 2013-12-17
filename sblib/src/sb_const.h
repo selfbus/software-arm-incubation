@@ -22,12 +22,8 @@
 #define SB_READ_MEMORY_REQUEST         0x00
 #define SB_RESTART_REQUEST             0x80
 #define SB_READ_MASK_VERSION_REQUEST   0x00
-#define SB_WRITE_GROUP                 0x80
+#define SB_WRITE_GROUP_REQUEST         0x80
 #define SB_READ_GROUP_REQUEST          0x00
-
-// pseudo-objects for unicast sending
-#define SB_OBJ_NCD_ACK                 129
-
 
 /*
  * Com object configuration flags
@@ -64,6 +60,14 @@
 #define SB_COMOBJ_CONF_PRIO_SYSTEM 0x00
 
 
+// pseudo-objects for unicast sending
+#define SB_OBJ_NCD_ACK                 0x0100
+#define SB_READ_MASK_VERSION_RESPONSE  0x0200
+#define SB_READ_PHYSADDR_RESPONSE      0x0300
+#define SB_READ_MEMORY_RESPONSE        0x0400
+#define SB_T_DISCONNECT                0x0500
+#define SB_READ_ADC_RESPONSE           0x0600
+
 /**
  * Bus short acknowledgment frame: acknowledged
  */
@@ -93,6 +97,9 @@
 #define SB_EEP_COMMSTABPTR     0x12    // address for the pointer to the communication object table
 
 #define SB_EEP_ADDRTAB         0x16    // base address of the association table
+
+#define SB_INVALID_GRP_ADDRESS_IDX 0xFFFF
+#define SB_ASSOC_ENTRY_SIZE        2
 
 /*
 #define SB_EEP_USERRAMADDRH    0x1C
