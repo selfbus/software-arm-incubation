@@ -26,6 +26,9 @@ unsigned short sbConnectedAddr;
 // Sequence number for sending telegrams
 unsigned char sbConnectedSeqNo;
 
+// Sequence number of the lately received telegram
+unsigned char sbConnectedSenderSeqNo;
+
 // for memory reads, holds the number of requested bytes
 unsigned char sbMemReadNoBytes;
 
@@ -47,7 +50,7 @@ static unsigned short sb_grp_address2index(unsigned short address);
 static void sb_process_direct_tel(unsigned char tpci, unsigned char apci)
 {
     unsigned short senderAddr = (sbRecvTelegram[1] << 8) | sbRecvTelegram[2];
-    unsigned char senderSeqNo = sbRecvTelegram[6] & 0x3c;
+    sbConnectedSenderSeqNo = sbRecvTelegram[6] & 0x3c;
 
     // See fb_lpc922.c line 547..599 for example implementation
     switch (tpci)
@@ -97,6 +100,7 @@ static void sb_process_direct_tel(unsigned char tpci, unsigned char apci)
         {
             sbConnectedAddr = senderAddr;
             sbConnectedSeqNo = 0;
+            sbConnectedSenderSeqNo = 0;
         }
         break;
 
@@ -239,8 +243,10 @@ void sb_init_proto()
  * Add a com object to the ring-buffer for sending.
  *
  * @param objno - the number of the com object to send.
+ * @return 1 if the com object was stored in the ring-buffer, 0 if
+ *         the ring buffer is currently full.
  */
-void sb_send_obj_value(unsigned short objno)
+short sb_send_obj_value(unsigned short objno)
 {
     if (objno <= 0xff && (sb_read_objflags(objno) & SB_COMOBJ_CONF_TRANS_COMM) != SB_COMOBJ_CONF_TRANS_COMM)
     {
@@ -252,8 +258,84 @@ void sb_send_obj_value(unsigned short objno)
         ++sbSendRingWrite;
         sbSendRingWrite &= (SB_SEND_RING_SIZE - 1);
     }
+    else
+    {
+        // The ring-buffer is full
+        return 0;
+    }
 
-    // TODO   TR1=1;  // statemachine starten falls vorher in state 0 gestoppt
+    return 1;
+}
+
+/**
+ * Send the next telegram of the sending ring buffer.
+ */
+void sb_send_next_tel()
+{
+    if (sb_send_ring_empty())
+        return;
+
+    short length;
+    unsigned short destAddr, objType;
+    unsigned long objValue = 1;  // FIXME dummy value for group telegram
+
+    unsigned short objno = sbSendRing[sbSendRingRead];
+    ++sbSendRingRead;
+    sbSendRingRead &= (SB_SEND_RING_SIZE - 1);
+
+    if (objno <= SB_OBJ_MASK)  // send a com-object with a group telegram
+    {
+        destAddr = 0x1102;  // dummy dest address: 2/1/2
+
+        sbSendTelegram[0] = 0xbc; // Control byte
+        // 1+2 contain the sender address, which is set by sb_send_tel()
+        sbSendTelegram[3] = destAddr >> 8;
+        sbSendTelegram[4] = destAddr;
+        sbSendTelegram[6] = 0;
+
+        if (objno & SB_OBJ_REPLY) sbSendTelegram[7] = 0x40; // ReadValue.response telegram
+        else sbSendTelegram[7] = 0x80; // WriteValue.request telegram
+
+        objType = 1; // FIXME dummy object type
+
+        if (objType > 6) length = objType - 5;
+        else length = 1;
+        sbSendTelegram[5] = 0xe0 | length;
+
+        if (length <= 1)
+        {
+            sbSendTelegram[7] |= objValue & 0x3f;
+        }
+        else
+        {
+            for (; length >= 0; --length)
+            {
+                sbSendTelegram[6 + length] = objValue;
+                objValue >>= 8;
+            }
+        }
+    }
+    else  // handle a pseudo-object for unicast sending
+    {
+        sbSendTelegram[0] = 0xb0; // Control byte
+        // 1+2 contain the sender address, which is set by sb_send_tel()
+        sbSendTelegram[3] = sbConnectedAddr >> 8;
+        sbSendTelegram[4] = sbConnectedAddr;
+
+        switch (objno)
+        {
+        case SB_OBJ_NCD_ACK:
+            sbSendTelegram[5] = 0x60;  // DRL
+            sbSendTelegram[6] = 0xc2 | sbConnectedSenderSeqNo;
+            break;
+
+        default:
+            // ignore unknown pseudo-object
+            return;
+        }
+    }
+
+    sb_send_tel(sbSendTelegram[5] & 0x0f);
 }
 
 static void sb_update_memory(signed char count, unsigned short address, unsigned char * data)

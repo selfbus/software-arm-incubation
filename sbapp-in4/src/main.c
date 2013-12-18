@@ -11,6 +11,7 @@
 
 #include "sb_bus.h"
 #include "sb_proto.h"
+#include "sb_main.h"
 
 #define LED_PORT 0		// Port for led
 #define LED_BIT 7		// Bit on port for led
@@ -29,8 +30,7 @@ int main(void)
     // Set our own bus address (0x117e == 1.1.126)
     sbOwnPhysicalAddr = 0x117e;
 
-    sb_init_bus();
-    sb_init_proto();
+    sb_init();
 
 #ifdef EEP_TEST
     sb_eep_test();
@@ -50,12 +50,7 @@ int main(void)
 
     while (1)
     {
-        if (sbRecvTelegramLen)
-        {
-            sb_process_tel();
-            GPIOSetValue(LED_PORT, LED_BIT, 1);
-            i = 0;
-        }
+        sb_main_loop();
 
         i = (i + 1) & 0x1fffff;
 
@@ -71,6 +66,8 @@ int main(void)
         {
             GPIOSetValue(LED_PORT, LED_BIT, 1);
             sendWait = 0x2fffff;
+
+            sbSendTelegram[7] ^= 1;
             sb_send_tel(8);
         }
     }

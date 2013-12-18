@@ -59,14 +59,20 @@
 // Com object configuration flag: system transmission priority
 #define SB_COMOBJ_CONF_PRIO_SYSTEM 0x00
 
+// Mask for marking a com-object as being a reply
+#define SB_OBJ_REPLY 0x100
 
-// pseudo-objects for unicast sending
-#define SB_OBJ_NCD_ACK                 0x0100
-#define SB_READ_MASK_VERSION_RESPONSE  0x0200
-#define SB_READ_PHYSADDR_RESPONSE      0x0300
-#define SB_READ_MEMORY_RESPONSE        0x0400
-#define SB_T_DISCONNECT                0x0500
-#define SB_READ_ADC_RESPONSE           0x0600
+// If the com-object value in the sending ring-buffer is larger than
+// this value, then it is a pseudo object (see below)
+#define SB_OBJ_MASK 0x1ff
+
+// Pseudo objects for unicast sending
+#define SB_OBJ_NCD_ACK                 0x1001
+#define SB_READ_MASK_VERSION_RESPONSE  0x1002
+#define SB_READ_PHYSADDR_RESPONSE      0x1003
+#define SB_READ_MEMORY_RESPONSE        0x1004
+#define SB_T_DISCONNECT                0x1005
+#define SB_READ_ADC_RESPONSE           0x1006
 
 /**
  * Bus short acknowledgment frame: acknowledged

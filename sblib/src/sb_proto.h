@@ -11,6 +11,11 @@
 void sb_process_tel();
 
 /**
+ * Send the next telegram of the sending ring buffer.
+ */
+void sb_send_next_tel();
+
+/**
  * Set our physical address.
  *
  * @param addr - the physical address
@@ -23,11 +28,15 @@ void sb_set_pa(unsigned short addr);
 void sb_init_proto();
 
 /**
- * Add a com object to the ring-buffer for sending.
+ * Add a com object to the sending ring buffer.
  *
- * @param objno - the number of the com object to send.
+ * @param objno - the number of the com object to send. See sb_const.h for constants
+ *                for the com object. E.g. SB_OBJ_REPLY to mark the object as being
+ *                a reply.
+ * @return 1 if the com object was stored in the ring-buffer, 0 if
+ *         the ring buffer is currently full.
  */
-void sb_send_obj_value (unsigned short objno);
+short sb_send_obj_value (unsigned short objno);
 
 /**
  * Read the object flags.
@@ -57,6 +66,13 @@ extern unsigned short sbConnectedAddr;
  * @return The number of send requests in the sending ring buffer sbSendRing.
  */
 #define sb_send_ring_count() ((sbSendRingWrite - sbSendRingRead) & (SB_SEND_RING_SIZE - 1))
+
+/**
+ * Test if the sending ring buffer is empty.
+ *
+ * @return 1 if empty, 0 if not.
+ */
+#define sb_send_ring_empty() (sbSendRingWrite == sbSendRingRead)
 
 
 /**
