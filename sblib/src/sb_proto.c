@@ -38,6 +38,12 @@ unsigned char sbMemReadAddress;
 // Com object configuration flag: transmit + communication enabled
 #define SB_COMOBJ_CONF_TRANS_COMM (SB_COMOBJ_CONF_COMM | SB_COMOBJ_CONF_TRANS)
 
+// Com object configuration flag: read + communication enabled
+#define SB_COMOBJ_CONF_READ_COMM (SB_COMOBJ_CONF_COMM | SB_COMOBJ_CONF_READ)
+
+// Com object configuration flag: write + communication enabled
+#define SB_COMOBJ_CONF_WRITE_COMM (SB_COMOBJ_CONF_COMM | SB_COMOBJ_CONF_WRITE)
+
 static void sb_update_memory(signed char count, unsigned short address, unsigned char * data);
 static unsigned short sb_grp_address2index(unsigned short address);
 
@@ -159,9 +165,7 @@ static void sb_process_group_tel(unsigned short destAddr, unsigned char apci)
                     // check if
                     // - communication is enabled (bit 2)
                     // - write is enabled         (bit 4)
-                    if (   (objflags & (SB_COMOBJ_CONF_WRITE | SB_COMOBJ_CONF_COMM))
-                        == (SB_COMOBJ_CONF_WRITE | SB_COMOBJ_CONF_COMM)
-                        )
+                    if ((objflags & SB_COMOBJ_CONF_READ_COMM) == SB_COMOBJ_CONF_READ_COMM)
                         sb_write_value_req(objno);
                 }
                 if (apci == SB_READ_GROUP_REQUEST)
@@ -169,9 +173,7 @@ static void sb_process_group_tel(unsigned short destAddr, unsigned char apci)
                     // check if
                     // - communication is enabled (bit 2)
                     // - read  is enabled         (bit 3)
-                    if (   (objflags & (SB_COMOBJ_CONF_WRITE | SB_COMOBJ_CONF_READ))
-                        == (SB_COMOBJ_CONF_READ | SB_COMOBJ_CONF_COMM)
-                        )
+                    if ((objflags & SB_COMOBJ_CONF_WRITE_COMM) == SB_COMOBJ_CONF_WRITE_COMM)
                         sb_read_value_req(objno);  // read object value and send read_value_response 00000000 00000000
                     break;
                 }
