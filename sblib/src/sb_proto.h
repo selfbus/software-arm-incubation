@@ -97,5 +97,6 @@ extern unsigned short sbSendRingRead;
 
 void sb_write_value_req(unsigned short objno);
 void sb_read_value_req(unsigned short objno);
+unsigned long sb_read_obj_value(unsigned short objno);
 
 #endif /*sb_proto_h*/

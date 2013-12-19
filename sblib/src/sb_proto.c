@@ -201,7 +201,7 @@ void sb_process_tel()
                 sb_set_pa((sbRecvTelegram[8] << 8) | sbRecvTelegram[9]);
             }
             else if (tpci == SB_BROADCAST_PDU_READ_PA && apci == SB_READ_PHYSADDR_REQUEST)
-                sb_send_obj_value(SB_READ_PHYSADDR_REQUEST);
+                sb_send_obj_value(SB_READ_PHYSADDR_RESPONSE);
         }
     }
     else if ((sbRecvTelegram[5] & 0x80) == 0) // a physical destination address
