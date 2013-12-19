@@ -26,9 +26,6 @@ unsigned short sbConnectedAddr;
 // Sequence number for sending telegrams
 unsigned char sbConnectedSeqNo;
 
-// Sequence number of the lately received telegram
-unsigned char sbConnectedSenderSeqNo;
-
 // for memory reads, holds the number of requested bytes
 unsigned char sbMemReadNoBytes;
 
@@ -56,7 +53,7 @@ static unsigned short sb_grp_address2index(unsigned short address);
 static void sb_process_direct_tel(unsigned char tpci, unsigned char apci)
 {
     unsigned short senderAddr = (sbRecvTelegram[1] << 8) | sbRecvTelegram[2];
-    sbConnectedSenderSeqNo = sbRecvTelegram[6] & 0x3c;
+    unsigned short senderSeqNo = sbRecvTelegram[6] & 0x3c;
 
     // See fb_lpc922.c line 547..599 for example implementation
     switch (tpci)
@@ -65,24 +62,19 @@ static void sb_process_direct_tel(unsigned char tpci, unsigned char apci)
     case SB_DATA_PDU_MEMORY_OPERATIONS:
         if (sbConnectedAddr == senderAddr) // ensure that the sender is correct
         {
+            signed char count = sbRecvTelegram[7] & 0x0F; // number of data byes
+            unsigned short address = (sbRecvTelegram[8] << 8) | sbRecvTelegram[9]; // address of the data block
+
             apci &= 0xF0;                               // on memory operations only the high nibble is used
             if (apci == SB_WRITE_MEMORY_REQUEST)        // 01pppp10 1000xxxx
             {
-                signed char count;
-                unsigned short address;
-                count = sbRecvTelegram[7] & 0x0F;       // number of data byes
-                address = sbRecvTelegram[8] << 8
-                        | sbRecvTelegram[9];            // start address of the data block
-                sb_send_obj_value(SB_OBJ_NCD_ACK);
+                sb_send_obj_value(SB_OBJ_NCD_ACK | senderSeqNo);
                 sb_update_memory(count, address, sbRecvTelegram + 10);
             }
             if (apci == SB_READ_MEMORY_REQUEST)         // 01pppp10 0000xxxx
             {
-                sbMemReadNoBytes = sbRecvTelegram[7];   // number of requested bytes
-                                                        // store the start address
-                sbMemReadAddress = sbRecvTelegram[8] << 8 | sbRecvTelegram[9];
-                sb_send_obj_value(SB_OBJ_NCD_ACK);
-                sb_send_obj_value(SB_READ_MEMORY_REQUEST);
+                sb_send_obj_value(SB_OBJ_NCD_ACK | senderSeqNo);
+                sb_send_obj_value(SB_READ_MEMORY_REQUEST | (count << 16) | address);
             }
         }
         break;
@@ -95,7 +87,7 @@ static void sb_process_direct_tel(unsigned char tpci, unsigned char apci)
         }
         if (apci == SB_READ_MASK_VERSION_REQUEST)        // 01pppp11 00000000
         {
-            sb_send_obj_value(SB_OBJ_NCD_ACK);
+            sb_send_obj_value(SB_OBJ_NCD_ACK | senderSeqNo);
             sb_send_obj_value(SB_READ_MASK_VERSION_REQUEST);
         }
         break;
@@ -106,7 +98,7 @@ static void sb_process_direct_tel(unsigned char tpci, unsigned char apci)
         {
             sbConnectedAddr = senderAddr;
             sbConnectedSeqNo = 0;
-            sbConnectedSenderSeqNo = 0;
+            senderSeqNo = 0;
         }
         break;
 
@@ -333,7 +325,7 @@ void sb_send_next_tel()
         {
         case SB_OBJ_NCD_ACK:
             sbSendTelegram[5] = 0x60;
-            sbSendTelegram[6] = 0xc2 | sbConnectedSenderSeqNo;
+            sbSendTelegram[6] = 0xc2 | (objno & 0xff);
             break;
 
         case SB_T_DISCONNECT:
