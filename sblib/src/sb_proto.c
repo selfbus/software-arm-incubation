@@ -11,7 +11,7 @@
 
 
 // Ring buffer for send requests.
-unsigned short sbSendRing[SB_SEND_RING_SIZE];
+unsigned int sbSendRing[SB_SEND_RING_SIZE];
 
 // Index in sbSendRing[] where the next write will occur.
 unsigned short sbSendRingWrite;
@@ -248,9 +248,10 @@ void sb_init_proto()
  * @return 1 if the com object was stored in the ring-buffer, 0 if
  *         the ring buffer is currently full.
  */
-short sb_send_obj_value(unsigned short objno)
+short sb_send_obj_value(unsigned int objno)
 {
-    if (objno <= 0xff && (sb_read_objflags(objno) & SB_COMOBJ_CONF_TRANS_COMM) != SB_COMOBJ_CONF_TRANS_COMM)
+    if ((objno & SB_SEND_UNICAST_CMD_MASK) == 0 &&
+        (sb_read_objflags(objno & 0xff) & SB_COMOBJ_CONF_TRANS_COMM) != SB_COMOBJ_CONF_TRANS_COMM)
     {
         // Do nothing if it is a (standard) com object but transmit or communication is disabled
     }
@@ -281,12 +282,16 @@ void sb_send_next_tel()
     unsigned short destAddr, objType;
     unsigned long objValue = 1;  // FIXME dummy value for group telegram
 
-    unsigned short objno = sbSendRing[sbSendRingRead];
+    unsigned int objno = sbSendRing[sbSendRingRead];
     ++sbSendRingRead;
     sbSendRingRead &= (SB_SEND_RING_SIZE - 1);
 
-    if (objno <= SB_OBJ_MASK)  // send a com-object with a group telegram
+    unsigned int cmd = objno & SB_SEND_CMD_MASK;
+
+    if ((objno & SB_SEND_UNICAST_CMD_MASK) == 0)  // send a com-object with a group telegram
     {
+        objno &= 0xff;
+
         destAddr = 0x1102;  // dummy dest address: 2/1/2
 
         sbSendTelegram[0] = 0xbc; // Control byte
@@ -295,7 +300,7 @@ void sb_send_next_tel()
         sbSendTelegram[4] = destAddr;
         sbSendTelegram[6] = 0;
 
-        if (objno & SB_OBJ_REPLY) sbSendTelegram[7] = 0x40; // ReadValue.response telegram
+        if (cmd == SB_READ_VALUE_RESPONSE) sbSendTelegram[7] = 0x40; // ReadValue.response telegram
         else sbSendTelegram[7] = 0x80; // WriteValue.request telegram
 
         objType = 1; // FIXME dummy object type
@@ -327,8 +332,32 @@ void sb_send_next_tel()
         switch (objno)
         {
         case SB_OBJ_NCD_ACK:
-            sbSendTelegram[5] = 0x60;  // DRL
+            sbSendTelegram[5] = 0x60;
             sbSendTelegram[6] = 0xc2 | sbConnectedSenderSeqNo;
+            break;
+
+        case SB_T_DISCONNECT:
+            sbSendTelegram[5] = 0x60;
+            sbSendTelegram[6] = 0x81;
+            sbConnectedAddr = 0;
+            break;
+
+        case SB_READ_MASK_VERSION_RESPONSE:
+            sbSendTelegram[5] = 0x63;                  // DRL
+//            sbSendTelegram[6] = pcount + 0x43;         // bei response immer eigene Paketnummer senden
+            sbSendTelegram[7] = 0x40;
+            sbSendTelegram[8] = 0x00;
+            sbSendTelegram[9] = 0x12;                  // Maskenversion 1 = BCU1
+//            inc_pcount=1;
+            break;
+
+        case SB_READ_PHYSADDR_RESPONSE:
+            break;
+
+        case SB_READ_MEMORY_RESPONSE:
+            break;
+
+        case SB_READ_ADC_RESPONSE:
             break;
 
         default:

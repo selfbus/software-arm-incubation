@@ -30,13 +30,12 @@ void sb_init_proto();
 /**
  * Add a com object to the sending ring buffer.
  *
- * @param objno - the number of the com object to send. See sb_const.h for constants
- *                for the com object. E.g. SB_OBJ_REPLY to mark the object as being
- *                a reply.
- * @return 1 if the com object was stored in the ring-buffer, 0 if
- *         the ring buffer is currently full.
+ * @param objno - the number of the com object to send. See sb_const.h for constants for the
+ *                com object. E.g. SB_READ_VALUE_RESPONSE to mark the object as a reply.
+ * @return 1 if the com object was stored in the ring-buffer,
+ *         0 if the ring buffer is currently full.
  */
-short sb_send_obj_value (unsigned short objno);
+short sb_send_obj_value(unsigned int objno);
 
 /**
  * Read the object flags.
@@ -84,7 +83,7 @@ extern unsigned short sbConnectedAddr;
 /**
  * Ring buffer for send requests.
  */
-extern unsigned short sbSendRing[SB_SEND_RING_SIZE];
+extern unsigned int sbSendRing[SB_SEND_RING_SIZE];
 
 /**
  * Index in sbSendRing[] where the next write will occur.
