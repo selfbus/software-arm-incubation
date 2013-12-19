@@ -21,12 +21,14 @@ typedef struct
 {
     Telegram_Type    type;
     char unsigned    length;
+    char unsigned    response_count;
     Telegram_Check * check;
     char unsigned    bytes[23];
 } Telegram;
 
 typedef struct
 {
+    char            * name;
     char unsigned     status;
     Test_Case_Setup * setup;
     Telegram        * telegram;

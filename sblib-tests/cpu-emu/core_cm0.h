@@ -615,6 +615,8 @@ __STATIC_INLINE uint32_t NVIC_GetPriority(IRQn_Type IRQn)
  */
 __STATIC_INLINE void NVIC_SystemReset(void)
 {
+    extern unsigned char sbStatus;
+    sbStatus = 0x00;
 }
 
 /*@} end of CMSIS_Core_NVICFunctions */

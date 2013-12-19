@@ -77,7 +77,7 @@ static void sb_process_direct_tel(unsigned char tpci, unsigned char apci)
             if (apci == SB_READ_MEMORY_REQUEST)         // 01pppp10 0000xxxx
             {
                 sb_send_obj_value(SB_OBJ_NCD_ACK | senderSeqNo);
-                sb_send_obj_value(SB_READ_MEMORY_REQUEST | (count << 16) | address);
+                sb_send_obj_value(SB_READ_MEMORY_RESPONSE | (count << 16) | address);
             }
         }
         break;
@@ -91,7 +91,7 @@ static void sb_process_direct_tel(unsigned char tpci, unsigned char apci)
         if (apci == SB_READ_MASK_VERSION_REQUEST)        // 01pppp11 00000000
         {
             sb_send_obj_value(SB_OBJ_NCD_ACK | senderSeqNo);
-            sb_send_obj_value(SB_READ_MASK_VERSION_REQUEST);
+            sb_send_obj_value(SB_READ_MASK_VERSION_RESPONSE);
         }
         break;
 
@@ -224,6 +224,7 @@ void sb_set_pa(unsigned short addr)
 {
     eep[SB_EEP_ADDRTAB + 1] = addr >> 8;
     eep[SB_EEP_ADDRTAB + 1] = addr & 0xFF;
+    sbOwnPhysicalAddr       = addr;
 
     sb_eep_update();
 }

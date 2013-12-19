@@ -15,6 +15,7 @@
 static void run_test(Test_Case * tc)
 {
     int        tn = 0;
+    char msg[1025];
     Telegram * t  = tc->telegram;
 
     sbStatus      = tc->status;
@@ -24,29 +25,42 @@ static void run_test(Test_Case * tc)
     {
         if (TEL_RX == t->type)
         {
+            int s;
             memcpy(sbRecvTelegram, t->bytes, t->length);
             sbRecvTelegramLen = t->length;
             sb_process_tel();
+            s = sb_send_ring_count();
+            snprintf ( msg
+                     , 1024
+                     , "%s: Number of response telegrams for %d incorrect: e=%d, s=%d"
+                     , tc->name, tn, t->response_count, s
+                     );
+            CU_assertImplementation(s == t->response_count, __LINE__, msg, __FILE__, "", CU_FALSE);
         }
         else
         {
             int i;
             sb_send_next_tel();
-            CU_ASSERT(sbSendTelegramLen == (t->length + 1));
+            snprintf ( msg
+                     , 1024
+                     , "%s: Number of bytes in send telegram %d mismatch e=%d, s=%d"
+                     , tc->name, tn, t->length + 2, sbSendTelegramLen
+                     );
+            CU_assertImplementation(sbSendTelegramLen == (t->length + 1), __LINE__, msg, __FILE__, "", CU_FALSE);
             for (i = 0; i < t->length; i++)
             {
                 if (t->bytes[i] != sbSendTelegram[i])
                 {
-                    char msg[1025];
                     snprintf ( msg
                              , 1024
-                             , "Send telegram %d missmatch at byte %d e=%02X, r=%02X"
-                             , tn, i, t->bytes[i], sbSendTelegram[i]
+                             , "%s: Send telegram %d missmatch at byte %d e=%02X, r=%02X"
+                             , tc->name, tn, i, t->bytes[i], sbSendTelegram[i]
                              );
                     CU_assertImplementation(CU_FALSE, __LINE__, msg, __FILE__, "", CU_FALSE);
                 }
             }
         }
+        if (t->check) t->check();
         t++;
         tn++;
         sbState = SB_IDLE;
