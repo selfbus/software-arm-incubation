@@ -352,6 +352,11 @@ void sb_send_next_tel()
             break;
 
         case SB_READ_PHYSADDR_RESPONSE:
+            sbSendTelegram[3] = 0x00;          // Zieladresse auf 0000, da Broadcast
+            sbSendTelegram[4] = 0x00;
+            sbSendTelegram[5] = 0xE1;          // DRL
+            sbSendTelegram[6] = 0x01;
+            sbSendTelegram[7] = 0x40;
             break;
 
         case SB_READ_MEMORY_RESPONSE:
@@ -366,7 +371,7 @@ void sb_send_next_tel()
         }
     }
 
-    sb_send_tel(sbSendTelegram[5] & 0x0f);
+    sb_send_tel(7 + (sbSendTelegram[5] & 0x0f));
 }
 
 static void sb_update_memory(signed char count, unsigned short address, unsigned char * data)

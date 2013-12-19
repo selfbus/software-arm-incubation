@@ -49,6 +49,7 @@ static void run_test(Test_Case * tc)
         }
         t++;
         tn++;
+        sbState = SB_IDLE;
     }
 }
 
