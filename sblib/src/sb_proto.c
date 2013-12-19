@@ -10,6 +10,9 @@
 #endif
 
 
+#define SB_USERRAM_SIZE 256
+unsigned char userram[SB_USERRAM_SIZE];
+
 // Ring buffer for send requests.
 unsigned int sbSendRing[SB_SEND_RING_SIZE];
 
@@ -270,8 +273,8 @@ void sb_send_next_tel()
     if (sb_send_ring_empty())
         return;
 
-    short length;
-    unsigned short destAddr, objType;
+    short i, length;
+    unsigned short addr, destAddr, objType;
     unsigned long objValue = 1;  // FIXME dummy value for group telegram
 
     unsigned int objno = sbSendRing[sbSendRingRead];
@@ -314,7 +317,7 @@ void sb_send_next_tel()
             }
         }
     }
-    else  // handle a pseudo-object for unicast sending
+    else  // handle a command for unicast sending
     {
         sbSendTelegram[0] = 0xb0; // Control byte
         // 1+2 contain the sender address, which is set by sb_send_tel()
@@ -335,30 +338,45 @@ void sb_send_next_tel()
             break;
 
         case SB_READ_MASK_VERSION_RESPONSE:
-            sbSendTelegram[5] = 0x63;                  // DRL
-//            sbSendTelegram[6] = pcount + 0x43;         // bei response immer eigene Paketnummer senden
+            sbSendTelegram[5] = 0x63;
+            sbSendTelegram[6] = 0x43 | sbConnectedSeqNo;
             sbSendTelegram[7] = 0x40;
             sbSendTelegram[8] = 0x00;
-            sbSendTelegram[9] = 0x12;                  // Maskenversion 1 = BCU1
-//            inc_pcount=1;
+            sbSendTelegram[9] = 0x12; // mask version 1.2: BCU1
+            ++sbConnectedSeqNo; // TODO increment only on successful sending
             break;
 
         case SB_READ_PHYSADDR_RESPONSE:
-            sbSendTelegram[3] = 0x00;          // Zieladresse auf 0000, da Broadcast
+            sbSendTelegram[3] = 0x00; // zero target address, it's a broadcast
             sbSendTelegram[4] = 0x00;
-            sbSendTelegram[5] = 0xE1;          // DRL
+            sbSendTelegram[5] = 0xe1;
             sbSendTelegram[6] = 0x01;
             sbSendTelegram[7] = 0x40;
             break;
 
         case SB_READ_MEMORY_RESPONSE:
+            addr = objno & 0xffff;
+            length = (objno >> 16) & 0x0f;
+            for (i = 0; i < length; ++i, ++addr)
+            {
+                if (addr & 0xff00)
+                    sbSendTelegram[10 + i] = eep[addr & 0xff];
+                else sbSendTelegram[10 + i] = userram[addr];
+            }
+            sbSendTelegram[5] = 0x63 + length;
+            sbSendTelegram[6] = 0x42 | sbConnectedSeqNo;
+            sbSendTelegram[7] = 0x40 | length;
+            sbSendTelegram[8] = addr >> 8;
+            sbSendTelegram[9] = addr;
+            ++sbConnectedSeqNo; // TODO increment only on successful sending
             break;
 
         case SB_READ_ADC_RESPONSE:
+            // TODO implement SB_READ_ADC_RESPONSE
             break;
 
         default:
-            // ignore unknown pseudo-object
+            // ignore unknown command
             return;
         }
     }

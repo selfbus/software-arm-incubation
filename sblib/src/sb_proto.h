@@ -60,6 +60,11 @@ unsigned char sb_read_objflags(unsigned short objno);
 extern unsigned short sbConnectedAddr;
 
 
+/**
+ * 256 byte user ram
+ */
+extern unsigned char userram[];
+
 
 /**
  * @return The number of send requests in the sending ring buffer sbSendRing.
