@@ -100,11 +100,20 @@ void test_group_address_programming (void)
     run_test(& group_address_programming);
 }
 
+extern Test_Case device_info;
+void test_device_info (void)
+{
+    run_test(& device_info);
+}
+
 CU_TestInfo sbp_tests[] = {
+/*
   { "Program physical address",     test_physical_address_programming},
   { "Parameter programming",        test_parameter_programming},
   { "Application programming",      test_application_programming},
   { "Group address programming",    test_group_address_programming},
+*/
+  { "Device info gathering",        test_device_info},
   CU_TEST_INFO_NULL,
 };
 
