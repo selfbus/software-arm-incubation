@@ -86,10 +86,17 @@ void test_application_programming (void)
     run_test(& application_programming);
 }
 
+extern Test_Case group_address_programming;
+void test_group_address_programming (void)
+{
+    run_test(& group_address_programming);
+}
+
 CU_TestInfo sbp_tests[] = {
   { "Program physical address",     test_physical_address_programming},
   { "Parameter programming",        test_parameter_programming},
   { "Application programming",      test_application_programming},
+  { "Group address programming",    test_group_address_programming},
   CU_TEST_INFO_NULL,
 };
 
