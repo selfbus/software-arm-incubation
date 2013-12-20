@@ -6,7 +6,7 @@
 #include "sb_bus.h"
 #include "sb_proto.h"
 #include "sb_const.h"
-#include "sb_eep_emu.h"
+#include "sb_eeprom.h"
 
 static void check_connect(void)
 {
@@ -21,12 +21,12 @@ static void check_disconnect(void)
 static void tc_setup(void)
 {
   sbOwnPhysicalAddr = 0x117E; // set own address to 1.1.126
-  eep [0x04] = 0x00;
-  eep [0x05] = 0x00;
-  eep [0x06] = 0x00;
-  eep [0x07] = 0x00;
-  eep [0x09] = 0x00;
-  eep [0x0D] = 0x00;
+  eeprom[0x04] = 0x00;
+  eeprom[0x05] = 0x00;
+  eeprom[0x06] = 0x00;
+  eeprom[0x07] = 0x00;
+  eeprom[0x09] = 0x00;
+  eeprom[0x0D] = 0x00;
 }
 
 Telegram device_info_t[] =

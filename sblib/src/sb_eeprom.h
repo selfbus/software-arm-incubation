@@ -7,7 +7,7 @@
  */
 
 /**
- * @file  sb_eep_emu.h
+ * @file  sb_eeprom.h
  * @brief EEPROM emulation
  *
  */
@@ -25,10 +25,10 @@ typedef struct {
     unsigned char          state;       //!< internal state
 } SB_Epp;
 
-#define SB_EEP_NO_VALID_PAGE_FOUND   -1
+#define SB_EEPROM_NO_VALID_PAGE_FOUND   -1
 
-extern unsigned char eep[];
-extern SB_Epp eep_r;
+extern unsigned char eeprom[];
+extern SB_Epp eeprom_r;
 
 /**
  * Initializes the EEPROM region.
@@ -42,10 +42,10 @@ extern SB_Epp eep_r;
  * @return              Returns the status:
  *                      - 0                          if a valid ROM page has been copied
  *                                                   to the RAM mirror
- *                      - SB_EEP_NO_VALID_PAGE_FOUND if no valid FLASH page could be found
+ *                      - SB_EEPROM_NO_VALID_PAGE_FOUND if no valid FLASH page could be found
  *                      - SB_EEP_VERSION_MISSMATCH   if the version ID did not match
  */
-int sb_eep_init   (unsigned int  clear);
+int sb_eeprom_init   (unsigned int  clear);
 
 /**
  * Write the current content of the RAM mirror of the EEPROM region into
@@ -53,6 +53,6 @@ int sb_eep_init   (unsigned int  clear);
  * @param region        handle to the EEPROM region
  * @return              status of the operation (0 == OK)
  */
-int sb_eep_update (void);
+int sb_eeprom_update (void);
 
 #endif /* SB_EEP_EMU_H_ */

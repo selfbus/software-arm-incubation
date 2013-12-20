@@ -3,7 +3,7 @@
 #include "sb_proto.h"
 #include "sb_bus.h"
 #include "sb_const.h"
-#include "sb_eep_emu.h"
+#include "sb_eeprom.h"
 
 #ifdef __USE_CMSIS
 # include "LPC11xx.h"
@@ -186,16 +186,16 @@ void sb_process_group_tel(unsigned short destAddr, unsigned char apci)
 
     if (gapos != SB_INVALID_GRP_ADDRESS_IDX)
     {
-        atp    = eep[SB_EEP_ASSOCTABPTR];                  // Base address of the assoc table
-        assmax = atp + eep[atp] * SB_ASSOC_ENTRY_SIZE;     // first entry is the number of assoc's in the table
+        atp    = eeprom[SB_EEP_ASSOCTABPTR];                  // Base address of the assoc table
+        assmax = atp + eeprom[atp] * SB_ASSOC_ENTRY_SIZE;     // first entry is the number of assoc's in the table
 
         // loop over all entry -> one group address could be assigned to multiple com objects
         for (asspos = atp + 1; asspos < assmax; asspos += 2)
         {
             // check of grp-address index in assoc table matches the dest grp address index
-            if (gapos == eep[asspos]) // we found a assoc for our destAddr
+            if (gapos == eeprom[asspos]) // we found a assoc for our destAddr
             {
-                objno    = eep[asspos + 1];         // get the com object number from the assoc table
+                objno    = eeprom[asspos + 1];         // get the com object number from the assoc table
                 objflags = sb_read_objflags(objno); // get the flags for this com-object
 
                 // check if it is a group write request
@@ -273,11 +273,11 @@ void sb_process_tel()
  */
 void sb_set_pa(unsigned short addr)
 {
-    eep[SB_EEP_ADDRTAB + 1] = addr >> 8;
-    eep[SB_EEP_ADDRTAB + 1] = addr & 0xFF;
+    eeprom[SB_EEP_ADDRTAB + 1] = addr >> 8;
+    eeprom[SB_EEP_ADDRTAB + 1] = addr & 0xFF;
     sbOwnPhysicalAddr       = addr;
 
-    sb_eep_update();
+    sb_eeprom_update();
 }
 
 /**
@@ -412,7 +412,7 @@ void sb_send_next_tel()
             for (i = 0; i < length; ++i)
             {
                 if (addr & 0xff00)
-                    sbSendTelegram[10 + i] = eep[(addr & 0xff) + i];
+                    sbSendTelegram[10 + i] = eeprom[(addr & 0xff) + i];
                 else sbSendTelegram[10 + i] = userram[addr + i];
             }
             sbSendTelegram[5] = 0x63 + length;
@@ -455,7 +455,7 @@ static void sb_update_memory(signed char count, unsigned short address, unsigned
     unsigned char   update_ram = 1;
     if (address &  0xFF00)
     {
-        mem        = eep;
+        mem        = eeprom;
         address   &= 0xFF;
         update_ram = 0;
     }
@@ -469,7 +469,7 @@ static void sb_update_memory(signed char count, unsigned short address, unsigned
     }
     if (!update_ram)
     {
-        //sb_eep_update();
+        //sb_eeprom_update();
     }
 }
 
@@ -480,14 +480,14 @@ static unsigned short sb_grp_address2index(unsigned short address)
     unsigned char gah = address >> 8;;
     unsigned char gal = address &  0xFF;
 
-    if (eep[SB_EEP_ADDRTAB] < 0xFF) // && !transparency)
+    if (eeprom[SB_EEP_ADDRTAB] < 0xFF) // && !transparency)
     {
-        if (eep[SB_EEP_ADDRTAB])
+        if (eeprom[SB_EEP_ADDRTAB])
         {
-            for (n = eep[SB_EEP_ADDRTAB] - 1; n; n--)
+            for (n = eeprom[SB_EEP_ADDRTAB] - 1; n; n--)
             {
-                if (  (gah == eep[SB_EEP_ADDRTAB + n * 2 + 1])
-                   && (gal == eep[SB_EEP_ADDRTAB + n * 2 + 2])
+                if (  (gah == eeprom[SB_EEP_ADDRTAB + n * 2 + 1])
+                   && (gal == eeprom[SB_EEP_ADDRTAB + n * 2 + 2])
                    )
                     ga_position = n;
             }
@@ -504,5 +504,5 @@ static unsigned short sb_grp_address2index(unsigned short address)
  */
 unsigned char sb_read_objflags(unsigned short objno)
 {
-    return (eep[eep[SB_EEP_COMMSTABPTR] + 3 + 3 * objno]);
+    return (eeprom[eeprom[SB_EEP_COMMSTABPTR] + 3 + 3 * objno]);
 }

@@ -6,7 +6,7 @@
 #include "sb_bus.h"
 #include "sb_proto.h"
 #include "sb_const.h"
-#include "sb_eep_emu.h"
+#include "sb_eeprom.h"
 
 static void check_connect(void)
 {

@@ -21,7 +21,7 @@ extern unsigned char FLASH [];
 #define SB_FLASH_TOP_ADDRESS    ((int) FLASH + 0x1000*8)
 #endif
 
-#define SB_EEP_FLASH_SECTOR_ADDRESS   (SB_FLASH_TOP_ADDRESS - 0x1000)
+#define SB_EEPROM_FLASH_SECTOR_ADDRESS   (SB_FLASH_TOP_ADDRESS - 0x1000)
 
 /**
  * Returns the number of the FLASH sector based on the passed address.

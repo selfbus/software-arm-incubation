@@ -6,7 +6,7 @@
  *  published by the Free Software Foundation.
  */
 
-#include "sb_eep_emu.h"
+#include "sb_eeprom.h"
 #include "sb_iap.h"
 #include "sb_bus.h"
 
@@ -14,24 +14,24 @@
 # include "LPC11xx.h"
 #endif
 
-#define EEP_SIZE 256
+#define EEPROM_SIZE 256
 
-typedef int eep_size_check[(EEP_SIZE % 256) == 0 ? 1 : -1];
-unsigned char  __attribute__ ((aligned (4))) eep [EEP_SIZE];
-SB_Epp eep_r = {eep, EEP_SIZE, 0x1000 / EEP_SIZE};
+typedef int eep_size_check[(EEPROM_SIZE % 256) == 0 ? 1 : -1];
+unsigned char  __attribute__ ((aligned (4))) eeprom[EEPROM_SIZE];
+SB_Epp eeprom_r = {eeprom, EEPROM_SIZE, 0x1000 / EEPROM_SIZE};
 
 
-int sb_eep_init (unsigned int clear)
+int sb_eeprom_init (unsigned int clear)
 {
     int                   i;
     int                   s  = -1;
-    int                   res = SB_EEP_NO_VALID_PAGE_FOUND;
+    int                   res = SB_EEPROM_NO_VALID_PAGE_FOUND;
     int                   found;
     int                   rom_address;
     const unsigned char * rom;
 
-    eep_r.state   = 0xFF; // highest active page number
-    rom_address   = SB_EEP_FLASH_SECTOR_ADDRESS;
+    eeprom_r.state   = 0xFF; // highest active page number
+    rom_address      = SB_EEPROM_FLASH_SECTOR_ADDRESS;
 
     // if a clear has been forced we need to clear all sectors for this region
     if (clear)
@@ -41,7 +41,7 @@ int sb_eep_init (unsigned int clear)
          */
         while (sbState != SB_IDLE);
         __disable_irq();
-        for (i = 0; i < eep_r.rom_pages; i++, rom_address += eep_r.size)
+        for (i = 0; i < eeprom_r.rom_pages; i++, rom_address += eeprom_r.size)
         {
             int ns = sb_iap_address2sector(rom_address);
             if (s != ns)
@@ -53,27 +53,27 @@ int sb_eep_init (unsigned int clear)
         __enable_irq();
     }
     // find the last valid `page` in the flash area
-    i           = eep_r.rom_pages - 1;
+    i           = eeprom_r.rom_pages - 1;
     found       = 0;
-    rom_address = SB_EEP_FLASH_SECTOR_ADDRESS + i * eep_r.size;
+    rom_address = SB_EEPROM_FLASH_SECTOR_ADDRESS + i * eeprom_r.size;
     while (!found && (i >= 0))
     {
     	rom = (unsigned char *) rom_address;
-        for (s = 0; !found && (s < eep_r.size); s++)
+        for (s = 0; !found && (s < eeprom_r.size); s++)
         {
             found = rom [s] != 0xFF;
         }
-        rom_address -= eep_r.size;
+        rom_address -= eeprom_r.size;
         i           -= !found;
     }
     if (found)
     {
-        unsigned int  * lram = (unsigned int *)  eep_r.ram;
-        unsigned int  * lrom = (unsigned int *) (SB_EEP_FLASH_SECTOR_ADDRESS + i * eep_r.size);
-        eep_r.state = i;
+        unsigned int  * lram = (unsigned int *)  eeprom_r.ram;
+        unsigned int  * lrom = (unsigned int *) (SB_EEPROM_FLASH_SECTOR_ADDRESS + i * eeprom_r.size);
+        eeprom_r.state = i;
         res           = 0;
         /* copy the content of the FLASH into the RAM mirror */
-        for (i = 0; i < eep_r.size; i += 4)
+        for (i = 0; i < eeprom_r.size; i += 4)
         {
             * lram++ = * lrom++;
         }
@@ -81,21 +81,21 @@ int sb_eep_init (unsigned int clear)
     return res;
 }
 
-int sb_eep_update (void)
+int sb_eeprom_update (void)
 {
     int res            = 0; // OK
-    int page           = eep_r.state;
-    int current_sector = sb_iap_address2sector (SB_EEP_FLASH_SECTOR_ADDRESS + page * eep_r.size);
+    int page           = eeprom_r.state;
+    int current_sector = sb_iap_address2sector (SB_EEPROM_FLASH_SECTOR_ADDRESS + page * eeprom_r.size);
     int erase_required = 0;
     int new_sector;
 
-    if (++page >= eep_r.rom_pages)
+    if (++page >= eeprom_r.rom_pages)
     {
         /* we mad a wrap around therefore we need to erase the page */
         page           = 0;
         erase_required = 1;
     }
-    new_sector      = sb_iap_address2sector(SB_EEP_FLASH_SECTOR_ADDRESS + page * eep_r.size);
+    new_sector      = sb_iap_address2sector(SB_EEPROM_FLASH_SECTOR_ADDRESS + page * eeprom_r.size);
     erase_required |= (new_sector != current_sector);
     if (erase_required)
     {   /* The new page will be in a new sector -> we need to erase
@@ -115,13 +115,13 @@ int sb_eep_update (void)
        while (sbState != SB_IDLE);
        __disable_irq();
         res      = sb_iap_program
-                ( (SB_EEP_FLASH_SECTOR_ADDRESS + page * eep_r.size)
-                , (int) (eep_r.ram)
-                , eep_r.size
+                ( (SB_EEPROM_FLASH_SECTOR_ADDRESS + page * eeprom_r.size)
+                , (int) (eeprom_r.ram)
+                , eeprom_r.size
                 );
         if (0 == res)
         {   // set the new active page number
-            eep_r.state = page;
+            eeprom_r.state = page;
         }
     }
     __enable_irq();
@@ -134,18 +134,18 @@ int sb_eep_update (void)
 void sb_eep_test (void)
 {
     unsigned int uid, part_id;
-    sb_eep_init     (0);
+    sb_eeprom_init     (0);
     sb_iap_read_uid (& uid, & part_id);
-    eep [0]     = 0x01;
-    eep [1]     = 0x23;
-    eep [2]     = 0x45;
-    eep [256-5] = 0xEF;
-    sb_eep_update   ()  ;
+    eeprom[0]     = 0x01;
+    eeprom[1]     = 0x23;
+    eeprom[2]     = 0x45;
+    eeprom[256-5] = 0xEF;
+    sb_eeprom_update   ()  ;
 
-    eep [0]     = 0xAF;
-    eep [1]     = 0xFE;
-    eep [2]     = 0xDE;
-    eep [256-5] = 0x55;
-    sb_eep_update   ();
+    eeprom[0]     = 0xAF;
+    eeprom[1]     = 0xFE;
+    eeprom[2]     = 0xDE;
+    eeprom[256-5] = 0x55;
+    sb_eeprom_update   ();
 }
 #endif /* EEP_TEST */
