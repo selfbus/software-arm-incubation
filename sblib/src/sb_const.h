@@ -13,7 +13,8 @@
 #define SB_DATA_PDU_MISC_OPERATIONS    0x43
 #define SB_CONNECT_PDU                 0x80
 #define SB_DISCONNECT_PDU              0x81
-#define SB_NACK_PDU                    0x83
+#define SB_ACK_PDU                     0xc2
+#define SB_NACK_PDU                    0xc3
 
 // APDU commands
 #define SB_SET_PHYSADDR_REQUEST        0XC0

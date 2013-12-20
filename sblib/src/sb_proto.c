@@ -57,6 +57,7 @@ static void sb_process_direct_tel(unsigned char tpci, unsigned char apci)
 {
     unsigned short senderAddr = (sbRecvTelegram[1] << 8) | sbRecvTelegram[2];
     unsigned short senderSeqNo = sbRecvTelegram[6] & 0x3c;
+    static unsigned short dummy = 0;
 
     // See fb_lpc922.c line 547..599 for example implementation
     switch (tpci)
@@ -84,14 +85,14 @@ static void sb_process_direct_tel(unsigned char tpci, unsigned char apci)
 
     // Misc operations
     case SB_DATA_PDU_MISC_OPERATIONS:
-        if (apci == SB_RESTART_REQUEST)                   // 01pppp11 10000000
+        if (apci == SB_RESTART_REQUEST)
         {
-            NVIC_SystemReset(); // Software Reset
+            NVIC_SystemReset();  // Software Reset
         }
-        if (apci == SB_READ_MASK_VERSION_REQUEST)        // 01pppp11 00000000
+        if (apci == SB_READ_MASK_VERSION_REQUEST)
         {
             sb_send_obj_value(SB_OBJ_NCD_ACK | senderSeqNo);
-            sb_send_obj_value(SB_READ_MASK_VERSION_RESPONSE);
+            sb_send_obj_value(SB_READ_MASK_VERSION_RESPONSE | 0x0012); // mask version 0x0012: BCU1
         }
         break;
 
@@ -118,6 +119,14 @@ static void sb_process_direct_tel(unsigned char tpci, unsigned char apci)
         {
             sb_send_obj_value(SB_T_DISCONNECT); // Send disconnect
         }
+        break;
+
+    case SB_ACK_PDU:
+        // Acknowledge: nothing to be done
+        break;
+
+    default:
+        ++dummy;  // to allow a breakpoint here
         break;
     }
 }
@@ -284,7 +293,7 @@ void sb_send_next_tel()
 
     unsigned int cmd = objno & SB_SEND_CMD_MASK;
 
-    if ((objno & SB_SEND_UNICAST_CMD_MASK) == 0)  // send a com-object with a group telegram
+    if ((cmd & SB_SEND_UNICAST_CMD_MASK) == 0)  // send a com-object with a group telegram
     {
         objno &= 0xff;
 
@@ -325,7 +334,7 @@ void sb_send_next_tel()
         sbSendTelegram[3] = sbConnectedAddr >> 8;
         sbSendTelegram[4] = sbConnectedAddr;
 
-        switch (objno)
+        switch (cmd)
         {
         case SB_OBJ_NCD_ACK:
             sbSendTelegram[5] = 0x60;
@@ -342,8 +351,8 @@ void sb_send_next_tel()
             sbSendTelegram[5] = 0x63;
             sbSendTelegram[6] = 0x43 | sbConnectedSeqNo;
             sbSendTelegram[7] = 0x40;
-            sbSendTelegram[8] = 0x00;
-            sbSendTelegram[9] = 0x12; // mask version 1.2: BCU1
+            sbSendTelegram[8] = objno >> 8; // mask version (high byte)
+            sbSendTelegram[9] = objno;      // mask version (low byte)
             ++sbConnectedSeqNo; // TODO increment only on successful sending
             break;
 
