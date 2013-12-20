@@ -76,7 +76,7 @@ void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqNo)
         address = sbRecvTelegram[7] & 0x3f;  // ADC channel
         count = sbRecvTelegram[8];           // number of samples
         sb_send_obj_value(ackObjNo);
-        sb_send_obj_value(SB_ADC_RESPONSE | (address << 16) | count);
+        sb_send_obj_value(SB_ADC_RESPONSE | (count << 16) | address);
         return;
 
     case SB_MEMORY_READ_PDU:

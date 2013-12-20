@@ -28,6 +28,9 @@ enum SbState
     // Send the bits of the current byte
     SB_SEND_BYTE,
 
+    // Wait between two sendings
+    SB_SEND_WAIT,
+
     // Finish sending
     SB_SEND_END
 };

@@ -96,7 +96,9 @@ static void sb_idle()
     LPC_TMR16B1->MCR = 0;      // Do not handle timer matches
     LPC_TMR16B1->CCR = 6;      // Capture CR0 on falling edge, with interrupt
     LPC_TMR16B1->MR3 = 0xffff; // Set timer match 3 to maximum value
+
     sbState = SB_IDLE;
+    sbSendAck = 0;
 
     GPIOSetValue(BUS_OUT_PORT_PIN, 0);       // Set bus-out pin to 0
     LPC_IOCON_BUS_OUT &= ~(LPC_IOCON_BUS_OUT | BUS_OUT_IOCON_PWM); // Disable bus-out output
@@ -121,6 +123,7 @@ void TIMER16_1_IRQHandler()
     GPIOSetValue(3, 2, 0);				// yellow: end of byte
     GPIOSetValue(3, 3, 0);              // purple: end of telegram
 
+STATE_LOOP:
     switch (sbState)
     {
     case SB_IDLE:
@@ -144,7 +147,8 @@ void TIMER16_1_IRQHandler()
                 sbSendAck = 0;
                 sbCurrentByte &= 0xff;
 
-                if (sbCurrentByte == SB_BUS_ACK || sbSendTelegramTries >= 3) sbSendTelegramLen = 0;
+                if (sbCurrentByte == SB_BUS_ACK || sbSendTelegramTries >= 3)
+                    sbSendTelegramLen = 0;
             }
             else // Received more than one byte, but too short for a telegram or wrong checksum
             {
@@ -183,7 +187,8 @@ void TIMER16_1_IRQHandler()
         break;
 
     case SB_RECV_BYTE: 			// DEBUG info: first expected byte is 0xbc (10111100b, parity 1)
-        if (LPC_TMR16B1->IR & 0x08) timer = sbTimeByte;
+        if (LPC_TMR16B1->IR & 0x08)
+            timer = sbTimeByte;
 
         if (timer >= bitTime + sbTimeBitWait)
         {
@@ -217,16 +222,17 @@ void TIMER16_1_IRQHandler()
         break;
 
     case SB_SEND_INIT:
-        if (!(LPC_TMR16B1->IR & 0x08)) // Do nothing if it's not a timeout
-            break;
-
-        if (sbSendTelegramTries == 1)
+        if (!sbSendAck)
         {
-            // If it is the first repeat, then mark the telegram as being repeated and correct the checksum
-            sbSendTelegram[0] &= ~SB_TEL_REPEAT_FLAG;
-            sbSendTelegram[sbSendTelegramLen - 1] ^= SB_TEL_REPEAT_FLAG;
+            if (sbSendTelegramTries == 1)
+            {
+                // If it is the first repeat, then mark the telegram as being repeated and correct the checksum
+                sbSendTelegram[0] &= ~SB_TEL_REPEAT_FLAG;
+                sbSendTelegram[sbSendTelegramLen - 1] ^= SB_TEL_REPEAT_FLAG;
+            }
+
+            ++sbSendTelegramTries;
         }
-        ++sbSendTelegramTries;
 
         LPC_TMR16B1_MR_OUT = sbTimeBitWait;  // Set the output to 1 after the wait time
         LPC_TMR16B1->MR3 = sbTimeBit;   // Interrupt after bit time
@@ -291,8 +297,28 @@ void TIMER16_1_IRQHandler()
         break;
 
     case SB_SEND_END:
+        LPC_TMR16B1->MR3 = sbTimeBit * 50;
+        LPC_TMR16B1->MCR = 0x600;  // Interrupt and reset timer on timeout (match of MR3)
+        LPC_TMR16B1->CCR = 6;      // Capture CR0 on falling edge, with interrupt
+
         sbSendAck = 0;
-        // no break here
+        sbState = SB_SEND_WAIT;
+        break;
+
+    case SB_SEND_WAIT:
+        if (!(LPC_TMR16B1->IR & 0x08)) // Start receiving if its not a timeout
+        {
+            sbState = SB_IDLE;
+            goto STATE_LOOP;
+        }
+
+        if (sbSendAck || (sbSendTelegramLen && sbSendTelegramTries < 3))
+        {
+            sbState = SB_SEND_INIT;
+            goto STATE_LOOP;
+        }
+
+        break;
 
     default:
         sb_idle();
