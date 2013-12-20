@@ -60,7 +60,7 @@ static unsigned short sb_grp_address2index(unsigned short address);
  * @param apci - the application control field
  * @param senderSeqNo - the sequence number of the sender
  */
-static void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqNo)
+void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqNo)
 {
     const unsigned int ackObjNo = SB_OBJ_NCD_ACK | senderSeqNo;
     const unsigned short senderAddr = (sbRecvTelegram[1] << 8) | sbRecvTelegram[2];
@@ -110,7 +110,6 @@ static void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqN
         sb_send_obj_value(SB_AUTHORIZE_RESPONSE | 0);
     }
 
-
     ++dummy;  // to allow a breakpoint here
 }
 
@@ -122,12 +121,13 @@ static void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqN
  *
  * @param tpci - the transport control field
  */
-static void sb_process_connctrl_tel(unsigned char tpci)
+void sb_process_connctrl_tel(unsigned char tpci)
 {
     unsigned short senderAddr = (sbRecvTelegram[1] << 8) | sbRecvTelegram[2];
 
     if (tpci & 0x40)  // An acknowledgement
     {
+        tpci &= 0xc3;
         if (tpci == SB_ACK_PDU) // A positive acknowledgement
         {
             if (sbIncConnectedSeqNo && sbConnectedAddr == senderAddr)
@@ -159,8 +159,8 @@ static void sb_process_connctrl_tel(unsigned char tpci)
         {
             if (sbConnectedAddr == senderAddr)
             {
-                sbIncConnectedSeqNo = 0;
                 sbConnectedAddr = 0;
+                sbIncConnectedSeqNo = 0;
             }
         }
     }
@@ -172,7 +172,7 @@ static void sb_process_connctrl_tel(unsigned char tpci)
  *
  * @param destAddr - the destination group address.
  */
-static void sb_process_group_tel(unsigned short destAddr, unsigned char apci)
+void sb_process_group_tel(unsigned short destAddr, unsigned char apci)
 {
     unsigned short objno;
     unsigned short objflags;
@@ -419,7 +419,6 @@ void sb_send_next_tel()
             sbSendTelegram[7] = 0x40 | length;
             sbSendTelegram[8] = addr >> 8;
             sbSendTelegram[9] = addr;
-            sbIncConnectedSeqNo = 1;
             break;
 
         case SB_ADC_RESPONSE:
@@ -429,7 +428,6 @@ void sb_send_next_tel()
             sbSendTelegram[8] = (objno >> 16) & 0xff;  // read count
             sbSendTelegram[9] = 0x05;                  // FIXME dummy - value high byte
             sbSendTelegram[10] = 0xb0;                 // FIXME dummy - value low byte
-            sbIncConnectedSeqNo = 1;
             break;
 
         case SB_AUTHORIZE_RESPONSE:
@@ -444,7 +442,8 @@ void sb_send_next_tel()
             return;
         }
     }
-    sbConnectedSeqNo &= 0x3C;
+
+    sbIncConnectedSeqNo = sbSendTelegram[6] & 0x40;
     sb_send_tel(7 + (sbSendTelegram[5] & 0x0f));
 }
 
