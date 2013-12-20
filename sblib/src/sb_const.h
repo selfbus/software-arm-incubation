@@ -4,17 +4,46 @@
 #ifndef sb_const
 #define sb_const
 
+// Mask for ADC / memory application commands
+#define SB_APCI_GROUP_MASK                  0x3c0
+
+// Application commands (see KNX 3/3/7 p.8 Application Layer control field)
+#define SB_GROUP_VALUE_READ_PDU             0x000
+#define SB_GROUP_VALUE_WRITE_PDU            0x080
+#define SB_INDIVIDUAL_ADDRESS_WRITE_PDU     0x0c0
+#define SB_INDIVIDUAL_ADDRESS_READ_PDU      0x100
+#define SB_INDIVIDUAL_ADDRESS_RESPONSE_PDU  0x140
+
+#define SB_ADC_READ_PDU                     0x180
+#define SB_ADC_RESPONSE_PDU                 0x1C0
+
+#define SB_MEMORY_READ_PDU                  0x200
+#define SB_MEMORY_RESPONSE_PDU              0x240
+#define SB_MEMORY_WRITE_PDU                 0x280
+
+#define SB_DEVICEDESCRIPTOR_READ_PDU        0x300
+#define SB_DEVICEDESCRIPTOR_RESPONSE_PDU    0x340
+
+#define SB_RESTART_PDU                      0x380
+
+#define SB_AUTHORIZE_REQUEST_PDU            0x3d1
+#define SB_AUTHORIZE_RESPONSE_PDU           0x3d2
+
 
 // TPCI (TPDU) commands
+#define SB_T_CONNECT_PDU               0x80
+#define SB_T_DISCONNECT_PDU            0x81
+
 #define SB_GROUP_PDU                   0x00
 #define SB_BROADCAST_PDU_SET_PA_REQ    0x00
 #define SB_BROADCAST_PDU_READ_PA       0x01
-#define SB_DATA_PDU_MEMORY_OPERATIONS  0x42
-#define SB_DATA_PDU_MISC_OPERATIONS    0x43
 #define SB_CONNECT_PDU                 0x80
 #define SB_DISCONNECT_PDU              0x81
 #define SB_ACK_PDU                     0xc2
 #define SB_NACK_PDU                    0xc3
+
+#define SB_DATA_PDU_MEMORY_OPERATIONS  0x42
+#define SB_DATA_PDU_MISC_OPERATIONS    0x43
 
 // APDU commands
 #define SB_SET_PHYSADDR_REQUEST        0XC0
@@ -66,10 +95,11 @@
 #define SB_READ_VALUE_RESPONSE         0x01000000
 #define SB_OBJ_NCD_ACK                 0x81000000
 #define SB_READ_MASK_VERSION_RESPONSE  0x82000000
-#define SB_READ_PHYSADDR_RESPONSE      0x83000000
-#define SB_READ_MEMORY_RESPONSE        0x84000000
+#define SB_INDIVIDUAL_ADDRESS_RESPONSE 0x83000000
+#define SB_MEMORY_RESPONSE             0x84000000
 #define SB_T_DISCONNECT                0x85000000
-#define SB_READ_ADC_RESPONSE           0x86000000
+#define SB_ADC_RESPONSE                0x86000000
+#define SB_AUTHORIZE_RESPONSE          0x87000000
 
 // Mask for commands when sending
 #define SB_SEND_CMD_MASK               0xff000000
