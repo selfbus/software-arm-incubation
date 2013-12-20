@@ -15,7 +15,7 @@
 
 static void run_test(Test_Case * tc)
 {
-    int        tn = 0;
+    int        tn = 1;
     char msg[1025];
     Telegram * t  = tc->telegram;
 
@@ -68,15 +68,28 @@ static void run_test(Test_Case * tc)
     }
 }
 
-extern Test_Case prog_pa;
-
-void test_prog_pa (void)
+extern Test_Case physical_address_programming;
+void test_physical_address_programming (void)
 {
-    run_test(& prog_pa);
+    run_test(& physical_address_programming);
+}
+
+extern Test_Case parameter_programming;
+void test_parameter_programming (void)
+{
+    run_test(& parameter_programming);
+}
+
+extern Test_Case application_programming;
+void test_application_programming (void)
+{
+    run_test(& application_programming);
 }
 
 CU_TestInfo sbp_tests[] = {
-  { "Program PA",   test_prog_pa },
+  { "Program physical address",     test_physical_address_programming},
+  { "Parameter programming",        test_parameter_programming},
+  { "Application programming",      test_application_programming},
   CU_TEST_INFO_NULL,
 };
 

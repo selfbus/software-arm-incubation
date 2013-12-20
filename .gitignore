@@ -5,3 +5,5 @@ Release/
 .metadata
 CMSIS_CORE_LPC11xx
 sblib/src/html
+sblib-tests/sblib-Listing.xml
+sblib-tests/sblib-results-Results.xml

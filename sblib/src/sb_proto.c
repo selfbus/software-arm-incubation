@@ -444,20 +444,32 @@ void sb_send_next_tel()
             return;
         }
     }
-
+    sbConnectedSeqNo &= 0x3C;
     sb_send_tel(7 + (sbSendTelegram[5] & 0x0f));
 }
 
 static void sb_update_memory(signed char count, unsigned short address, unsigned char * data)
 {
+    unsigned char * mem        = userram;
+    unsigned char   update_ram = 1;
+    if (address &  0xFF00)
+    {
+        mem        = eep;
+        address   &= 0xFF;
+        update_ram = 0;
+    }
+
     while (count--)
     {
         // count the data for address 0x60 to the status variable as well
-        if (address == 0x60)
+        if (update_ram && (address == 0x60))
             sbStatus = * data;
-        eep [address++] = * data++;
+        mem [address++] = * data++;
     }
-    //sb_eep_update();
+    if (!update_ram)
+    {
+        //sb_eep_update();
+    }
 }
 
 static unsigned short sb_grp_address2index(unsigned short address)
