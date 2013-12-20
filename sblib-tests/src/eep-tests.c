@@ -2,7 +2,8 @@
  * test of the EEPROM emulation
  */
 
-#include "Basic.h"
+#include "CUnit/Basic.h"
+
 #include "sb_eep_emu.h"
 #include "sb_iap.h"
 #include "iap_emu.h"

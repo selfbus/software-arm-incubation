@@ -1,8 +1,9 @@
 // automatically generated from jung2138-pa-programmieren.trx
 
+#include "CUnit/Basic.h"
+
 #include "sb_proto_test.h"
 #include "sb_bus.h"
-#include "Basic.h"
 
 static void verify_address(void)
 {

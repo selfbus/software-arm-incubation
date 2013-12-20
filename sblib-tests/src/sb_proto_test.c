@@ -1,8 +1,9 @@
 /**
- * test of the EEPROM emulation
+ * test of the selfbus protocol implementation
  */
 
-#include "Basic.h"
+#include "CUnit/Basic.h"
+
 #include "sb_eep_emu.h"
 #include "sb_iap.h"
 #include "iap_emu.h"
@@ -81,10 +82,10 @@ CU_TestInfo sbp_tests[] = {
 
 
 CU_SuiteInfo SBP_Suites[] =
-  { { "EEP-EMU" // name
-    , NULL      // suite setup function
-    , NULL      // suite cleanup function
-    , sbp_tests // test cases
+  { { "Protocol Tests"  // name
+    , NULL              // suite setup function
+    , NULL              // suite cleanup function
+    , sbp_tests         // test cases
     }
   , CU_SUITE_INFO_NULL
   };

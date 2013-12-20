@@ -110,7 +110,10 @@ class Trx_File (object) :
         result    = [ "// automatically generated from %s"
                     % (os.path.basename (self.file_name), )
                     , ""
+                    , '#include "CUnit/Basic.h"'
+                    , ""
                     , '#include "sb_proto_test.h"'
+                    , '#include "sb_bus.h"'
                     , ""
                     , "Telegram %s_t[] =\n{ %s\n};"
                     % (name, "\n, ".join (telegrams))
