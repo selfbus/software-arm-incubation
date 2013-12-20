@@ -41,6 +41,9 @@ static void run_test(Test_Case * tc)
         else
         {
             int i;
+            int c = 0;
+            char received [23*3 + 1] = {0};
+            char expected [23*3 + 1] = {0};
             sb_send_next_tel();
             snprintf ( msg
                      , 1024
@@ -48,17 +51,22 @@ static void run_test(Test_Case * tc)
                      , tc->name, tn, t->length + 2, sbSendTelegramLen
                      );
             CU_assertImplementation(sbSendTelegramLen == (t->length + 1), __LINE__, msg, __FILE__, "", CU_FALSE);
+            snprintf (msg, 1024, "%s: Send telegram %d mismatch at byte(s)", tc->name, tn);
             for (i = 0; i < t->length; i++)
             {
+                snprintf (received, 23*3, "%s %02x", received, sbSendTelegram[i]);
+                snprintf (expected, 23*3, "%s %02x", expected, t->bytes[i]);
                 if (t->bytes[i] != sbSendTelegram[i])
                 {
-                    snprintf ( msg
-                             , 1024
-                             , "%s: Send telegram %d missmatch at byte %d e=%02X, r=%02X"
-                             , tc->name, tn, i, t->bytes[i], sbSendTelegram[i]
-                             );
-                    CU_assertImplementation(CU_FALSE, __LINE__, msg, __FILE__, "", CU_FALSE);
+                    c++;
+                    snprintf (msg, 1024, "%s %d, ", msg, i);
                 }
+            }
+            if (c)
+            {
+                msg [strlen (msg) - 1] = '\n';
+                snprintf(msg, 1024, "%s expected: %s\n received: %s", msg, expected, received);
+                CU_assertImplementation(CU_FALSE, __LINE__, msg, __FILE__, "", CU_FALSE);
             }
         }
         if (t->check) t->check();

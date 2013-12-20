@@ -395,6 +395,7 @@ void sb_send_next_tel()
             sbSendTelegram[7] = 0x40;
             sbSendTelegram[8] = objno >> 8; // mask version (high byte)
             sbSendTelegram[9] = objno;      // mask version (low byte)
+            sbIncConnectedSeqNo = 1;
             break;
 
         case SB_INDIVIDUAL_ADDRESS_RESPONSE:
@@ -435,6 +436,7 @@ void sb_send_next_tel()
             sbSendTelegram[6] = 0x43 | sbConnectedSeqNo;
             sbSendTelegram[7] = 0xd2;
             sbSendTelegram[7] = 0x00;
+            sbIncConnectedSeqNo = 1;
             break;
 
         default:
