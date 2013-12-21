@@ -1,4 +1,11 @@
-// sb_proto.c
+/*
+ *  Copyright (c) 2013 Stefan Taferner <stefan.taferner@gmx.at>
+ *                     Martin Glueck <martin@mangari.org>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3 as
+ *  published by the Free Software Foundation.
+ */
 
 #include "sb_proto.h"
 #include "sb_bus.h"
@@ -369,7 +376,7 @@ void sb_send_next_tel()
             }
         }
     }
-    else  // handle a command for unicast sending
+    else  // handle a command for unicast/broadcast sending
     {
         sbSendTelegram[0] = 0xb0; // Control byte
         // 1+2 contain the sender address, which is set by sb_send_tel()
@@ -399,10 +406,10 @@ void sb_send_next_tel()
             break;
 
         case SB_INDIVIDUAL_ADDRESS_RESPONSE:
-            sbSendTelegram[3] = 0x00; // zero target address, it's a broadcast
+            sbSendTelegram[3] = 0x00;  // Zero target address, it's a broadcast
             sbSendTelegram[4] = 0x00;
             sbSendTelegram[5] = 0xe1;
-            sbSendTelegram[6] = 0x01;
+            sbSendTelegram[6] = 0x01;  // SB_INDIVIDUAL_ADDRESS_RESPONSE_PDU
             sbSendTelegram[7] = 0x40;
             break;
 

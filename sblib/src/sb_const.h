@@ -4,6 +4,7 @@
 #ifndef sb_const
 #define sb_const
 
+
 // Mask for ADC / memory application commands
 #define SB_APCI_GROUP_MASK                  0x3c0
 

@@ -1,4 +1,10 @@
-// sb_bus.c
+/*
+ *  Copyright (c) 2013 Stefan Taferner <stefan.taferner@gmx.at>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3 as
+ *  published by the Free Software Foundation.
+ */
 
 #include "sb_bus.h"
 #include "sb_const.h"
@@ -8,22 +14,7 @@
 #endif
 #include "gpio.h"
 
-/**
- * Define to use pin 1.9, comment out to use pin 1.10 for bus output
- */
-#define SB_BUS_OUT_P1_10
-
-#ifdef SB_BUS_OUT_P1_9
-#  define LPC_TMR16B1_MR_OUT LPC_TMR16B1->MR0
-#  define LPC_IOCON_BUS_OUT LPC_IOCON->PIO1_9
-#  define BUS_OUT_IOCON_PWM 1
-#  define BUS_OUT_PORT_PIN 1,9
-#else // use P1_10
-#  define LPC_TMR16B1_MR_OUT LPC_TMR16B1->MR1
-#  define LPC_IOCON_BUS_OUT LPC_IOCON->PIO1_10
-#  define BUS_OUT_IOCON_PWM 2
-#  define BUS_OUT_PORT_PIN 1,10
-#endif
+#include "internal/sb_hal.h"
 
 
 //----- exported variables -----

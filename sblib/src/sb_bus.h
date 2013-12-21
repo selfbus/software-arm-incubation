@@ -1,5 +1,9 @@
-/**
- * Low level EIB bus access functions.
+/*
+ *  Copyright (c) 2013 Stefan Taferner <stefan.taferner@gmx.at>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3 as
+ *  published by the Free Software Foundation.
  */
 #ifndef sb_bus_h
 #define sb_bus_h
@@ -66,7 +70,7 @@ extern unsigned short sbSendTelegramLen;
 /**
  * Status byte. Originally stored in the user-ram at address 0x60.
  */
-extern unsigned char sbStatus;
+#define sbStatus userram[60]
 
 /**
  * Our own physical address on the bus.
@@ -92,6 +96,6 @@ extern void sb_send_tel(unsigned short length);
  *
  * @return 1 if in programming mode, 0 if not.
  */
-#define sb_prog_mode_active() (sbStatus & 0x01)
+#define sb_prog_mode_active() (sbStatus & 1)
 
 #endif /*sb_bus_h*/

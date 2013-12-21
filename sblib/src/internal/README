@@ -1,0 +1,4 @@
+This directory contains files that are internal to the SB-Library.
+
+Do not use any file in this directory from outside the lib. The files
+will be changed witout warning.

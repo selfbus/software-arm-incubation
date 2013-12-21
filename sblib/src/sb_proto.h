@@ -1,5 +1,10 @@
-/**
- * Low level EIB protocol handling
+/*
+ *  Copyright (c) 2013 Stefan Taferner <stefan.taferner@gmx.at>
+ *                     Martin Glueck <martin@mangari.org>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3 as
+ *  published by the Free Software Foundation.
  */
 #ifndef sb_proto_h
 #define sb_proto_h
