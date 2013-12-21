@@ -63,8 +63,9 @@
 
 typedef struct
 {
-    unsigned char reserved1[60];
+    unsigned char data1[0x60];
     unsigned char status;         // 0x0060: System status. See defines like SB_STATUS_PROG above
+    unsigned char data2[0x3f];
 } SbUserRam;
 
 #endif /*SB_BCU1*/
@@ -273,7 +274,7 @@ extern SbUserRam *sbUserRam;
 /**
  * User RAM, plain data array. Points to the same memory as sbUserRam
  */
-extern unsigned char sbUserRamData[];
+extern unsigned char sbUserRamData[SB_USERRAM_SIZE];
 
 
 /**
