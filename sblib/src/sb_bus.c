@@ -306,8 +306,7 @@ STATE_LOOP:
             sbState = SB_SEND_INIT;
             goto STATE_LOOP;
         }
-
-        break;
+        // no break here
 
     default:
         sb_idle();

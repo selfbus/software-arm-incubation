@@ -109,6 +109,7 @@ void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqNo)
         return;
 
     case SB_RESTART_PDU:
+        sb_eeprom_update();
         NVIC_SystemReset();  // Software Reset
         return;
 
@@ -283,8 +284,6 @@ void sb_set_pa(unsigned short addr)
     sbEepromData[SB_EEP_ADDRTAB + 1] = addr >> 8;
     sbEepromData[SB_EEP_ADDRTAB + 1] = addr & 0xFF;
     sbOwnPhysicalAddr = addr;
-
-    sb_eeprom_update();
 }
 
 /**
