@@ -10,15 +10,14 @@
 #include "sb_proto.h"
 #include "sb_bus.h"
 #include "sb_const.h"
+#include "sb_memory.h"
 #include "sb_eeprom.h"
+#include "string.h"
 
 #ifdef __USE_CMSIS
 # include "LPC11xx.h"
 #endif
 
-
-#define SB_USERRAM_SIZE 256
-unsigned char userram[SB_USERRAM_SIZE];
 
 // Ring buffer for send requests.
 unsigned int sbSendRing[SB_SEND_RING_SIZE];
@@ -54,7 +53,6 @@ unsigned char sbMemReadAddress;
 // Com object configuration flag: write + communication enabled
 #define SB_COMOBJ_CONF_WRITE_COMM (SB_COMOBJ_CONF_COMM | SB_COMOBJ_CONF_WRITE)
 
-static void sb_update_memory(signed char count, unsigned short address, unsigned char * data);
 static unsigned short sb_grp_address2index(unsigned short address);
 
 
@@ -97,7 +95,9 @@ void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqNo)
         count = sbRecvTelegram[7] & 0x0f; // number of data byes
         address = (sbRecvTelegram[8] << 8) | sbRecvTelegram[9]; // address of the data block
         sb_send_obj_value(ackObjNo);
-        sb_update_memory(count, address, sbRecvTelegram + 10);
+        if (address >= SB_EEPROM_START && address < SB_EEPROM_END)
+            memcpy(sbEepromData + address - SB_EEPROM_START, sbRecvTelegram + 10, count);
+        else memcpy(sbUserRamData + address - SB_USERRAM_START, sbRecvTelegram + 10, count);
         return;
     }
 
@@ -193,17 +193,17 @@ void sb_process_group_tel(unsigned short destAddr, unsigned char apci)
 
     if (gapos != SB_INVALID_GRP_ADDRESS_IDX)
     {
-        atp    = eeprom[SB_EEP_ASSOCTABPTR];                  // Base address of the assoc table
-        assmax = atp + eeprom[atp] * SB_ASSOC_ENTRY_SIZE;     // first entry is the number of assoc's in the table
+        atp    = sbEepromData[SB_EEP_ASSOCTABPTR];             // Base address of the assoc table
+        assmax = atp + sbEepromData[atp] * SB_ASSOC_ENTRY_SIZE;// first entry is the number of assoc's in the table
 
         // loop over all entry -> one group address could be assigned to multiple com objects
         for (asspos = atp + 1; asspos < assmax; asspos += 2)
         {
             // check of grp-address index in assoc table matches the dest grp address index
-            if (gapos == eeprom[asspos]) // we found a assoc for our destAddr
+            if (gapos == sbEepromData[asspos]) // we found a assoc for our destAddr
             {
-                objno    = eeprom[asspos + 1];         // get the com object number from the assoc table
-                objflags = sb_read_objflags(objno); // get the flags for this com-object
+                objno    = sbEepromData[asspos + 1]; // get the com object number from the assoc table
+                objflags = sb_read_objflags(objno);  // get the flags for this com-object
 
                 // check if it is a group write request
                 if ((apci & 0xC0) == SB_WRITE_GROUP_REQUEST)
@@ -280,9 +280,9 @@ void sb_process_tel()
  */
 void sb_set_pa(unsigned short addr)
 {
-    eeprom[SB_EEP_ADDRTAB + 1] = addr >> 8;
-    eeprom[SB_EEP_ADDRTAB + 1] = addr & 0xFF;
-    sbOwnPhysicalAddr       = addr;
+    sbEepromData[SB_EEP_ADDRTAB + 1] = addr >> 8;
+    sbEepromData[SB_EEP_ADDRTAB + 1] = addr & 0xFF;
+    sbOwnPhysicalAddr = addr;
 
     sb_eeprom_update();
 }
@@ -332,7 +332,7 @@ void sb_send_next_tel()
     if (sb_send_ring_empty())
         return;
 
-    short i, length;
+    short length;
     unsigned short addr, destAddr, objType;
     unsigned long objValue = 1;  // FIXME dummy value for group telegram
 
@@ -416,12 +416,9 @@ void sb_send_next_tel()
         case SB_MEMORY_RESPONSE:
             addr = objno & 0xffff;
             length = (objno >> 16) & 0x3f;
-            for (i = 0; i < length; ++i)
-            {
-                if (addr & 0xff00)
-                    sbSendTelegram[10 + i] = eeprom[(addr & 0xff) + i];
-                else sbSendTelegram[10 + i] = userram[addr + i];
-            }
+            if (addr >= SB_EEPROM_START && addr < SB_EEPROM_END)
+                memcpy(sbSendTelegram + 10, sbEepromData + addr - SB_EEPROM_START, length);
+            else memcpy(sbSendTelegram + 10, sbUserRamData + addr - SB_USERRAM_START, length);
             sbSendTelegram[5] = 0x63 + length;
             sbSendTelegram[6] = 0x42 | sbConnectedSeqNo;
             sbSendTelegram[7] = 0x40 | length;
@@ -456,30 +453,6 @@ void sb_send_next_tel()
     sb_send_tel(7 + (sbSendTelegram[5] & 0x0f));
 }
 
-static void sb_update_memory(signed char count, unsigned short address, unsigned char * data)
-{
-    unsigned char * mem        = userram;
-    unsigned char   update_ram = 1;
-    if (address &  0xFF00)
-    {
-        mem        = eeprom;
-        address   &= 0xFF;
-        update_ram = 0;
-    }
-
-    while (count--)
-    {
-        // count the data for address 0x60 to the status variable as well
-        if (update_ram && (address == 0x60))
-            sbStatus = * data;
-        mem [address++] = * data++;
-    }
-    if (!update_ram)
-    {
-        //sb_eeprom_update();
-    }
-}
-
 static unsigned short sb_grp_address2index(unsigned short address)
 {
     unsigned short ga_position = SB_INVALID_GRP_ADDRESS_IDX;
@@ -487,14 +460,14 @@ static unsigned short sb_grp_address2index(unsigned short address)
     unsigned char gah = address >> 8;;
     unsigned char gal = address &  0xFF;
 
-    if (eeprom[SB_EEP_ADDRTAB] < 0xFF) // && !transparency)
+    if (sbEepromData[SB_EEP_ADDRTAB] < 0xFF) // && !transparency)
     {
-        if (eeprom[SB_EEP_ADDRTAB])
+        if (sbEepromData[SB_EEP_ADDRTAB])
         {
-            for (n = eeprom[SB_EEP_ADDRTAB] - 1; n; n--)
+            for (n = sbEepromData[SB_EEP_ADDRTAB] - 1; n; n--)
             {
-                if (  (gah == eeprom[SB_EEP_ADDRTAB + n * 2 + 1])
-                   && (gal == eeprom[SB_EEP_ADDRTAB + n * 2 + 2])
+                if (  (gah == sbEepromData[SB_EEP_ADDRTAB + n * 2 + 1])
+                   && (gal == sbEepromData[SB_EEP_ADDRTAB + n * 2 + 2])
                    )
                     ga_position = n;
             }
@@ -511,5 +484,5 @@ static unsigned short sb_grp_address2index(unsigned short address)
  */
 unsigned char sb_read_objflags(unsigned short objno)
 {
-    return (eeprom[eeprom[SB_EEP_COMMSTABPTR] + 3 + 3 * objno]);
+    return (sbEepromData[sbEepromData[SB_EEP_COMMSTABPTR] + 3 + 3 * objno]);
 }

@@ -10,6 +10,7 @@
 
 #include "sb_bus.h"
 #include "sb_proto.h"
+#include "sb_memory.h"
 #include "internal/sb_hal.h"
 
 #ifdef __USE_CMSIS
@@ -28,6 +29,8 @@ void sb_init()
 
     LPC_GPIO[SB_PROG_PORT]->DIR |= 1 << SB_PROG_BIT; // Set prog button+led to output
     LPC_IOCON_PROG = SB_PROG_IOCON;                  // IO configuration for prog button+led
+
+    sbUserRam->status = 0x2e;
 }
 
 /**
@@ -58,7 +61,7 @@ void sb_main_loop()
         if (progButtonLevel < 255)
         {
             if (++progButtonLevel == 254)
-                userram[60] ^= 0x81;  // toggle programming mode and checksum bit
+                sbUserRam->status ^= 0x81;  // toggle programming mode and checksum bit
         }
     }
     else if (progButtonLevel > 0)
@@ -68,7 +71,7 @@ void sb_main_loop()
 
     LPC_GPIO[SB_PROG_PORT]->DIR |= 1 << SB_PROG_BIT; // Set prog button+led to output
 
-    if (userram[60] & 1)
+    if (sbUserRam->status & 1)
         LPC_GPIO[SB_PROG_PORT]->MASKED_ACCESS[progButtonMask] = 0;
     else LPC_GPIO[SB_PROG_PORT]->MASKED_ACCESS[progButtonMask] = progButtonMask;
 }

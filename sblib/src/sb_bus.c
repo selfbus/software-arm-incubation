@@ -8,6 +8,7 @@
 
 #include "sb_bus.h"
 #include "sb_const.h"
+#include "sb_memory.h"
 
 #ifdef __USE_CMSIS
 # include "LPC11xx.h"
@@ -32,9 +33,6 @@ unsigned char sbSendTelegram[SB_TELEGRAM_SIZE];
 
 // The size of the to be sent telegram in bytes (including the checksum).
 unsigned short sbSendTelegramLen;
-
-// Status byte (from user-ram 0x60)
-unsigned char sbStatus;
 
 // Our own physical address on the bus
 unsigned short sbOwnPhysicalAddr;
@@ -360,7 +358,7 @@ void sb_init_bus()
     sbState = SB_IDLE;
     sbSendAck = 0;
 
-    sbStatus = 0x2e;
+    sbUserRam->status = 0x2e;
     LPC_SYSCON->SYSAHBCLKCTRL |= 1 << 8; // Enable the clock for the timer
 
 

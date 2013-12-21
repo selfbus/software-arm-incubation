@@ -66,12 +66,6 @@ extern unsigned short sbConnectedAddr;
 
 
 /**
- * 256 byte user ram
- */
-extern unsigned char userram[];
-
-
-/**
  * @return The number of send requests in the sending ring buffer sbSendRing.
  */
 #define sb_send_ring_count() ((sbSendRingWrite - sbSendRingRead) & (SB_SEND_RING_SIZE - 1))

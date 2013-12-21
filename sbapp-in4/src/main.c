@@ -12,6 +12,7 @@
 #include "sb_bus.h"
 #include "sb_proto.h"
 #include "sb_main.h"
+#include "sb_memory.h"
 
 #define LED_PORT 0		// Port for led
 #define LED_BIT 7		// Bit on port for led
@@ -20,17 +21,20 @@
 extern void sb_eep_test (void);
 #endif
 
+
 int main(void)
 {
     int i = 0, on = 0;
     int sendWait = 0;
 
+    sb_init();
+    sb_set_appdata(0, 2, 0x9009);
+
     UART_Init(115200);
     UART_PutString("ARM-SB-Lib Test\n", -1);
+
     // Set our own bus address (0x117e == 1.1.126)
     sbOwnPhysicalAddr = 0x117e;
-
-    sb_init();
 
 #ifdef EEP_TEST
     sb_eep_test();

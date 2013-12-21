@@ -68,11 +68,6 @@ extern unsigned char sbSendTelegram[SB_TELEGRAM_SIZE];
 extern unsigned short sbSendTelegramLen;
 
 /**
- * Status byte. Originally stored in the user-ram at address 0x60.
- */
-#define sbStatus userram[60]
-
-/**
  * Our own physical address on the bus.
  */
 extern unsigned short sbOwnPhysicalAddr;
@@ -96,6 +91,6 @@ extern void sb_send_tel(unsigned short length);
  *
  * @return 1 if in programming mode, 0 if not.
  */
-#define sb_prog_mode_active() (sbStatus & 1)
+#define sb_prog_mode_active() (sbUserRam->status & 1)
 
 #endif /*sb_bus_h*/

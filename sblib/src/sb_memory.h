@@ -55,7 +55,10 @@
  */
 #if defined(SB_BCU1)
 
+#define SB_USERRAM_START 0
 #define SB_USERRAM_SIZE 256
+
+#define SB_EEPROM_START 0x100
 #define SB_EEPROM_SIZE 256
 
 typedef struct
@@ -64,12 +67,41 @@ typedef struct
     unsigned char status;         // 0x0060: System status. See defines like SB_STATUS_PROG above
 } SbUserRam;
 
+#endif /*SB_BCU1*/
+
+
+/*
+ * User RAM and EEPROM structures for BCU2
+ */
+#if defined(SB_BCU2)
+#   error BCU2 structures are not yet implemented
+
+
+#define SB_USERRAM_START 0
+#define SB_USERRAM_SIZE 256
+
+#define SB_EEPROM_START 0x100
+#define SB_EEPROM_SIZE 1024
+
+#endif /*SB_BCU2*/
+
+/** End addres of userram +1 */
+#define SB_USERRAM_END (SB_EEPROM_START + SB_EEPROM_SIZE)
+
+/** End address of eeprom +1 */
+#define SB_EEPROM_END (SB_EEPROM_START + SB_EEPROM_SIZE)
+
+
+#if defined(SB_BCU1) || defined(SB_BCU2)
 typedef struct
 {
     unsigned char optionReg;      // 0x0100: EEPROM option register
-    unsigned short manuData;      // 0x0101: Manufacturing data
-    unsigned short manufacturer;  // 0x0103: Software manufacturer
-    unsigned short deviceType;    // 0x0105: Device type
+    unsigned char manuDataH;      // 0x0101: Manufacturing data high byte
+    unsigned char manuDataL;      // 0x0102: Manufacturing data low byte
+    unsigned char manufacturerH;  // 0x0103: Software manufacturer high byte
+    unsigned char manufacturerL;  // 0x0104: Software manufacturer low byte
+    unsigned char deviceTypeH;    // 0x0105: Device type high byte
+    unsigned char deviceTypeL;    // 0x0106: Device type low byte
     unsigned char version;        // 0x0107: Software version
     unsigned char checkLimit;     // 0x0108: EEPROM check limit
     unsigned char peiTypeExpectd; // 0x0109: PEI type that the software requires
@@ -80,27 +112,30 @@ typedef struct
     unsigned char routeCnt;       // 0x010e: Routing count constant
     unsigned char maxRetransmit;  // 0x010f: INAK and BUSY retransmit limit
     unsigned char confDesc;       // 0x0110: Configuration descriptor
-    unsigned char assocTabPtr;    // 0x0111: Low byte of the pointer to association table
-    unsigned char commsTabPtr;    // 0x0112: Low byte of the pointer to communication objects table
-    unsigned char usrInitPtr;     // 0x0113: Low byte of the pointer to user initialization function
-    unsigned char usrProgPtr;     // 0x0114: Low byte of the pointer to user program function
-    unsigned char usrSavePtr;     // 0x0115: Low byte of the pointer to user save function
-    unsigned char user[223];      // 0x0116: User EEPROM
-    unsigned char checksum;       // 0x01ff: EEPROM checksum
+    unsigned char assocTabPtr;    // 0x0111: Low byte of the pointer to association table (BCU1 only)
+    unsigned char commsTabPtr;    // 0x0112: Low byte of the pointer to communication objects table (BCU1 only)
+    unsigned char usrInitPtr;     // 0x0113: Low byte of the pointer to user initialization function (BCU1 only)
+    unsigned char usrProgPtr;     // 0x0114: Low byte of the pointer to user program function (BCU1 only)
+    unsigned char usrSavePtr;     // 0x0115: Low byte of the pointer to user save function (BCU1 only)
+#if defined(SB_BCU1)
+    unsigned char user[223];      // 0x0116: User EEPROM: 223 bytes BCU1, 858 bytes BCU2
+    unsigned char checksum;       // 0x01ff: EEPROM checksum (BCU1 only)
+#else //defined(SB_BCU2)
+    unsigned char user[858];      // 0x0116: User EEPROM: 223 bytes BCU1, 858 bytes BCU2
+    unsigned char system[858];    // 0x0470: System EEPROM (BCU2 only)
+#endif
 } SbEeprom;
-#endif /*SB_BCU1*/
+#endif
 
 
-/*
- * User RAM and EEPROM structures for BCU2
+/**
+ * Set manufacturer data, manufacturer-ID, and device type.
+ *
+ * @param data - the manufacturer data
+ * @param manufacturer - the manufacturer ID
+ * @param deviceType - the device type
  */
-#if defined(SB_BCU2)
-#   error BCU2 structures are not yet implemented
-
-#define SB_USERRAM_SIZE 256
-#define SB_EEPROM_SIZE 1024
-
-#endif /*SB_BCU2*/
+void sb_set_appdata(unsigned short data, unsigned short manufacturer, unsigned short deviceType);
 
 
 /**
@@ -249,7 +284,7 @@ extern SbEeprom *sbEeprom;
 /**
  * User EEPROM, plain data array. Points to the same memory as sbEeprom
  */
-extern unsigned char sbEepromData[];
+extern unsigned char* sbEepromData;
 
 
 #endif /*sb_memory_h*/
