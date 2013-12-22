@@ -75,14 +75,19 @@ typedef struct
  * User RAM and EEPROM structures for BCU2
  */
 #if defined(SB_BCU2)
-#   error BCU2 structures are not yet implemented
-
 
 #define SB_USERRAM_START 0
 #define SB_USERRAM_SIZE 256
 
 #define SB_EEPROM_START 0x100
 #define SB_EEPROM_SIZE 1024
+
+typedef struct
+{
+    unsigned char data1[0x60];
+    unsigned char status;         // 0x0060: System status. See defines like SB_STATUS_PROG above
+    unsigned char data2[0x3f];
+} SbUserRam;
 
 #endif /*SB_BCU2*/
 

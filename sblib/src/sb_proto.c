@@ -105,7 +105,14 @@ void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqNo)
     {
     case SB_DEVICEDESCRIPTOR_READ_PDU:
         sb_send_obj_value(ackObjNo);
-        sb_send_obj_value(SB_READ_MASK_VERSION_RESPONSE | 0x12); // mask version: 0x12,0x13: BCU1, 0x20: BCU2
+        // Send mask version: 0x12,0x13: BCU1, 0x20: BCU2
+#if defined(SB_BCU1)
+        sb_send_obj_value(SB_DEVICEDESCRIPTOR_RESPONSE | 0x12);
+#elif defined(SB_BCU2)
+        sb_send_obj_value(SB_DEVICEDESCRIPTOR_RESPONSE | 0x20);
+#else
+#   error no BCU version defined?
+#endif
         return;
 
     case SB_RESTART_PDU:
@@ -116,6 +123,7 @@ void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqNo)
     case SB_AUTHORIZE_REQUEST_PDU:
         sb_send_obj_value(ackObjNo);
         sb_send_obj_value(SB_AUTHORIZE_RESPONSE | 0);
+        return;
     }
 
     ++dummy;  // to allow a breakpoint here
@@ -395,13 +403,12 @@ void sb_send_next_tel()
             sbConnectedAddr = 0;
             break;
 
-        case SB_READ_MASK_VERSION_RESPONSE:
+        case SB_DEVICEDESCRIPTOR_RESPONSE:
             sbSendTelegram[5] = 0x63;
             sbSendTelegram[6] = 0x43 | sbConnectedSeqNo;
             sbSendTelegram[7] = 0x40;
             sbSendTelegram[8] = objno >> 8; // mask version (high byte)
             sbSendTelegram[9] = objno;      // mask version (low byte)
-            sbIncConnectedSeqNo = 1;
             break;
 
         case SB_INDIVIDUAL_ADDRESS_RESPONSE:
@@ -438,8 +445,7 @@ void sb_send_next_tel()
             sbSendTelegram[5] = 0x62;
             sbSendTelegram[6] = 0x43 | sbConnectedSeqNo;
             sbSendTelegram[7] = 0xd2;
-            sbSendTelegram[7] = 0x00;
-            sbIncConnectedSeqNo = 1;
+            sbSendTelegram[8] = 0x00;
             break;
 
         default:
