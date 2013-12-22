@@ -12,7 +12,7 @@
 #include "sb_const.h"
 #include "sb_memory.h"
 #include "sb_eeprom.h"
-#include "string.h"
+#include <string.h>
 
 #ifdef __USE_CMSIS
 # include "LPC11xx.h"
