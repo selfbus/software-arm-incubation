@@ -39,10 +39,10 @@ void sb_init()
  */
 void sb_main_loop()
 {
-    if (sbRecvTelegramLen)
+    if (sbRecvTelegramLen && sbSendCurTelegram == 0)
         sb_process_tel();
 
-    if (!sb_send_ring_empty() && sbSendTelegramLen == 0)
+    if (!sb_send_ring_empty() && sbSendCurTelegram == 0)
         sb_send_next_tel();
 
 #if 0

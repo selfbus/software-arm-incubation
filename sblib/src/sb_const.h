@@ -8,7 +8,10 @@
 // Mask for ADC / memory application commands
 #define SB_APCI_GROUP_MASK                  0x3c0
 
+//
 // Application commands (see KNX 3/3/7 p.8 Application Layer control field)
+//
+
 #define SB_GROUP_VALUE_READ_PDU             0x000
 #define SB_GROUP_VALUE_WRITE_PDU            0x080
 #define SB_INDIVIDUAL_ADDRESS_WRITE_PDU     0x0c0
@@ -30,28 +33,21 @@
 #define SB_AUTHORIZE_REQUEST_PDU            0x3d1
 #define SB_AUTHORIZE_RESPONSE_PDU           0x3d2
 
+//
+// Transport commands
+//
+
+#define SB_T_CONNECT_PDU                    0x80
+#define SB_T_DISCONNECT_PDU                 0x81
+#define SB_T_ACK_PDU                        0xc2
+#define SB_T_NACK_PDU                       0xc3
+
 
 // TPCI (TPDU) commands
-#define SB_T_CONNECT_PDU               0x80
-#define SB_T_DISCONNECT_PDU            0x81
 
 #define SB_GROUP_PDU                   0x00
-#define SB_BROADCAST_PDU_SET_PA_REQ    0x00
-#define SB_BROADCAST_PDU_READ_PA       0x01
-#define SB_CONNECT_PDU                 0x80
-#define SB_DISCONNECT_PDU              0x81
-#define SB_ACK_PDU                     0xc2
-#define SB_NACK_PDU                    0xc3
-
-#define SB_DATA_PDU_MEMORY_OPERATIONS  0x42
-#define SB_DATA_PDU_MISC_OPERATIONS    0x43
 
 // APDU commands
-#define SB_SET_PHYSADDR_REQUEST        0XC0
-#define SB_READ_PHYSADDR_REQUEST       0X00
-#define SB_WRITE_MEMORY_REQUEST        0x80
-#define SB_READ_MEMORY_REQUEST         0x00
-#define SB_RESTART_REQUEST             0x80
 #define SB_READ_MASK_VERSION_REQUEST   0x00
 #define SB_WRITE_GROUP_REQUEST         0x80
 #define SB_READ_GROUP_REQUEST          0x00

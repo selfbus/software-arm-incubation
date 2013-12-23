@@ -72,7 +72,7 @@ int main(void)
             sendWait = 0x2fffff;
 
             sbSendTelegram[7] ^= 1;
-            sb_send_tel(8);
+            sb_send_tel(sbSendTelegram, 8);
         }
     }
 

@@ -8,6 +8,8 @@
  */
 
 #include "sb_proto.h"
+#include "internal/sb_proto_p.h"
+
 #include "sb_bus.h"
 #include "sb_const.h"
 #include "sb_memory.h"
@@ -38,11 +40,8 @@ unsigned char sbConnectedSeqNo;
 // The sequence number shall be incremented upon successful send
 unsigned char sbIncConnectedSeqNo;
 
-// for memory reads, holds the number of requested bytes
-unsigned char sbMemReadNoBytes;
-
-// for memory reads, holds the start address of the request
-unsigned char sbMemReadAddress;
+// Buffer for sending a connected control telegram
+unsigned char sbSendConCtrlTelegram[8];
 
 // Com object configuration flag: transmit + communication enabled
 #define SB_COMOBJ_CONF_TRANS_COMM (SB_COMOBJ_CONF_COMM | SB_COMOBJ_CONF_TRANS)
@@ -57,6 +56,60 @@ static unsigned short sb_grp_address2index(unsigned short address);
 
 
 /**
+ * Send a connection control telegram.
+ *
+ * @param cmd - the transport command, see SB_T_xx defines
+ * @param senderSeqNo - the sequence number of the sender, 0 if not required
+ */
+void sb_send_con_ctrl_tel(unsigned char cmd, unsigned char senderSeqNo)
+{
+    if (cmd & 0x40)  // Add the sequence number if the command shall contain it
+        cmd |= senderSeqNo & 0x3c;
+
+    sbSendConCtrlTelegram[0] = 0xb0; // Control byte
+    // 1+2 contain the sender address, which is set by sb_send_tel()
+    sbSendConCtrlTelegram[3] = sbConnectedAddr >> 8;
+    sbSendConCtrlTelegram[4] = sbConnectedAddr;
+    sbSendConCtrlTelegram[5] = 0x60;
+    sbSendConCtrlTelegram[6] = cmd;
+
+    sb_send_tel(sbSendConCtrlTelegram, 7);
+}
+
+/**
+ * Process a device-descriptor-read request.
+ *
+ * @param id - the device-descriptor type ID
+ *
+ * @return 1 on success, 0 on failure
+ */
+unsigned short sb_process_device_descriptor_read(unsigned char id)
+{
+    switch (id)
+    {
+    case 0:
+        sbSendTelegram[5] = 0x63;
+        sbSendTelegram[6] = 0x43;
+        sbSendTelegram[7] = 0x40;
+#if defined(SB_BCU1)
+        sbSendTelegram[8] = 0x00;  // mask version (high byte)
+        sbSendTelegram[9] = 0x12;  // mask version (low byte)
+#elif defined(SB_BCU2)
+        sbSendTelegram[8] = 0x00;  // mask version (high byte)
+        sbSendTelegram[9] = 0x20;  // mask version (low byte)
+#else
+#   error no BCU version defined?
+#endif
+        break;
+
+    default:
+        return 0; // unknown device descriptor
+    }
+
+    return 1;
+}
+
+/**
  * Process a unicast telegram with our physical address as destination address.
  * The telegram is stored in sbRecvTelegram[].
  *
@@ -67,66 +120,103 @@ static unsigned short sb_grp_address2index(unsigned short address);
  */
 void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqNo)
 {
-    const unsigned int ackObjNo = SB_OBJ_NCD_ACK | senderSeqNo;
     const unsigned short senderAddr = (sbRecvTelegram[1] << 8) | sbRecvTelegram[2];
-    static unsigned short dummy = 0;
     unsigned short count, address;
+    unsigned char sendAck = 0;
+    unsigned char sendTel = 0;
 
     if (sbConnectedAddr != senderAddr) // ensure that the sender is correct
         return;
+
+    sbSendTelegram[6] = 0;
 
     switch (apci & SB_APCI_GROUP_MASK)  // ADC / memory commands use the low bits for data
     {
     case SB_ADC_READ_PDU:
         address = sbRecvTelegram[7] & 0x3f;  // ADC channel
         count = sbRecvTelegram[8];           // number of samples
-        sb_send_obj_value(ackObjNo);
-        sb_send_obj_value(SB_ADC_RESPONSE | (count << 16) | address);
-        return;
+        sbSendTelegram[5] = 0x64;
+        sbSendTelegram[6] = 0x41;
+        sbSendTelegram[7] = 0xc0 | (address & 0x3f); // channel
+        sbSendTelegram[8] = count;                   // read count
+        sbSendTelegram[9] = 0x05;                    // FIXME dummy - value high byte
+        sbSendTelegram[10] = 0xb0;                   // FIXME dummy - value low byte
+        sendAck = SB_T_ACK_PDU;
+        sendTel = 1;
+        break;
 
     case SB_MEMORY_READ_PDU:
+        sendAck = SB_T_ACK_PDU;
+        sendTel = 1;
         count = sbRecvTelegram[7] & 0x0f; // number of data byes
         address = (sbRecvTelegram[8] << 8) | sbRecvTelegram[9]; // address of the data block
-        sb_send_obj_value(ackObjNo);
-        sb_send_obj_value(SB_MEMORY_RESPONSE | (count << 16) | address);
-        return;
+        if (address >= SB_EEPROM_START && address < SB_EEPROM_END)
+            memcpy(sbSendTelegram + 10, sbEepromData + address - SB_EEPROM_START, count);
+        else memcpy(sbSendTelegram + 10, sbUserRamData + address - SB_USERRAM_START, count);
+        sbSendTelegram[5] = 0x63 + count;
+        sbSendTelegram[6] = 0x42;
+        sbSendTelegram[7] = 0x40 | count;
+        sbSendTelegram[8] = address >> 8;
+        sbSendTelegram[9] = address;
+        break;
 
     case SB_MEMORY_WRITE_PDU:
         count = sbRecvTelegram[7] & 0x0f; // number of data byes
         address = (sbRecvTelegram[8] << 8) | sbRecvTelegram[9]; // address of the data block
-        sb_send_obj_value(ackObjNo);
+        sendAck = SB_T_ACK_PDU;
         if (address >= SB_EEPROM_START && address < SB_EEPROM_END)
             memcpy(sbEepromData + address - SB_EEPROM_START, sbRecvTelegram + 10, count);
         else memcpy(sbUserRamData + address - SB_USERRAM_START, sbRecvTelegram + 10, count);
-        return;
-    }
+        break;
 
-    switch (apci)
-    {
     case SB_DEVICEDESCRIPTOR_READ_PDU:
-        sb_send_obj_value(ackObjNo);
-        // Send mask version: 0x12,0x13: BCU1, 0x20: BCU2
-#if defined(SB_BCU1)
-        sb_send_obj_value(SB_DEVICEDESCRIPTOR_RESPONSE | 0x12);
-#elif defined(SB_BCU2)
-        sb_send_obj_value(SB_DEVICEDESCRIPTOR_RESPONSE | 0x20);
-#else
-#   error no BCU version defined?
-#endif
-        return;
+        if (sb_process_device_descriptor_read(apci & 0x3f))
+        {
+            sendAck = SB_T_ACK_PDU;
+            sendTel = 1;
+        }
+        else sendAck = SB_T_NACK_PDU;
+        break;
 
-    case SB_RESTART_PDU:
-        sb_eeprom_update();
-        NVIC_SystemReset();  // Software Reset
-        return;
+    default:
+        switch (apci)
+        {
+        case SB_RESTART_PDU:
+            sb_eeprom_update();
+            NVIC_SystemReset();  // Software Reset
+            break;
 
-    case SB_AUTHORIZE_REQUEST_PDU:
-        sb_send_obj_value(ackObjNo);
-        sb_send_obj_value(SB_AUTHORIZE_RESPONSE | 0);
-        return;
+        case SB_AUTHORIZE_REQUEST_PDU:
+            sbSendTelegram[5] = 0x62;
+            sbSendTelegram[6] = 0x43;
+            sbSendTelegram[7] = 0xd2;
+            sbSendTelegram[8] = 0x00;
+            sendAck = SB_T_ACK_PDU;
+            sendTel = 1;
+            break;
+        }
+        break;
     }
 
-    ++dummy;  // to allow a breakpoint here
+    if (sendAck)
+        sb_send_con_ctrl_tel(sendAck, senderSeqNo);
+
+    if (sendTel)
+    {
+        sbSendTelegram[0] = 0xbc; // Control byte
+        // 1+2 contain the sender address, which is set by sb_send_tel()
+        sbSendTelegram[3] = sbConnectedAddr >> 8;
+        sbSendTelegram[4] = sbConnectedAddr;
+
+        if (sbSendTelegram[6] & 0x40) // Add sequence number if applicable
+        {
+            sbSendTelegram[6] |= sbConnectedSeqNo;
+            sbIncConnectedSeqNo = 1;
+        }
+        else sbIncConnectedSeqNo = 0;
+
+        sb_send_tel(sbSendTelegram, sb_tel_length(sbSendTelegram));
+    }
 }
 
 /**
@@ -137,32 +227,33 @@ void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqNo)
  *
  * @param tpci - the transport control field
  */
-void sb_process_connctrl_tel(unsigned char tpci)
+void sb_process_con_ctrl_tel(unsigned char tpci)
 {
     unsigned short senderAddr = (sbRecvTelegram[1] << 8) | sbRecvTelegram[2];
 
     if (tpci & 0x40)  // An acknowledgement
     {
         tpci &= 0xc3;
-        if (tpci == SB_ACK_PDU) // A positive acknowledgement
+        if (tpci == SB_T_ACK_PDU) // A positive acknowledgement
         {
             if (sbIncConnectedSeqNo && sbConnectedAddr == senderAddr)
             {
                 sbConnectedSeqNo += 4;
                 sbConnectedSeqNo &= 0x3c;
+                sbIncConnectedSeqNo = 0;
             }
         }
-        else if (tpci == SB_NACK_PDU)  // A negative acknowledgement
+        else if (tpci == SB_T_NACK_PDU)  // A negative acknowledgement
         {
             if (sbConnectedAddr == senderAddr)
-                sb_send_obj_value(SB_T_DISCONNECT);
+                sb_send_con_ctrl_tel(SB_T_DISCONNECT_PDU, 0);
         }
 
         sbIncConnectedSeqNo = 0;
     }
     else  // A connect/disconnect command
     {
-        if (tpci == SB_CONNECT_PDU)  // Open a direct data connection
+        if (tpci == SB_T_CONNECT_PDU)  // Open a direct data connection
         {
             if (sbConnectedAddr == 0)
             {
@@ -171,7 +262,7 @@ void sb_process_connctrl_tel(unsigned char tpci)
                 sbIncConnectedSeqNo = 0;
             }
         }
-        else if (tpci == SB_DISCONNECT_PDU)  // Close the direct data connection
+        else if (tpci == SB_T_DISCONNECT_PDU)  // Close the direct data connection
         {
             if (sbConnectedAddr == senderAddr)
             {
@@ -251,12 +342,21 @@ void sb_process_tel()
     {
         if (sb_prog_mode_active()) // we are in programming mode
         {
-            if (tpci == SB_BROADCAST_PDU_SET_PA_REQ && apci == SB_INDIVIDUAL_ADDRESS_WRITE_PDU)
+            if (apci == SB_INDIVIDUAL_ADDRESS_WRITE_PDU)
             {
                 sb_set_pa((sbRecvTelegram[8] << 8) | sbRecvTelegram[9]);
             }
-            else if (tpci == SB_BROADCAST_PDU_READ_PA && apci == SB_INDIVIDUAL_ADDRESS_READ_PDU)
-                sb_send_obj_value(SB_INDIVIDUAL_ADDRESS_RESPONSE);
+            else if (apci == SB_INDIVIDUAL_ADDRESS_READ_PDU)
+            {
+                sbSendTelegram[0] = 0xbc; // Control byte
+                // 1+2 contain the sender address, which is set by sb_send_tel()
+                sbSendTelegram[3] = 0x00;  // Zero target address, it's a broadcast
+                sbSendTelegram[4] = 0x00;
+                sbSendTelegram[5] = 0xe1;
+                sbSendTelegram[6] = 0x01;  // SB_INDIVIDUAL_ADDRESS_RESPONSE_PDU
+                sbSendTelegram[7] = 0x40;
+                sb_send_tel(sbSendTelegram, 8);
+            }
         }
     }
     else if ((sbRecvTelegram[5] & 0x80) == 0) // a physical destination address
@@ -265,7 +365,7 @@ void sb_process_tel()
         {
             if (tpci & 0x80)  // A connection control command
             {
-                sb_process_connctrl_tel(sbRecvTelegram[6]);
+                sb_process_con_ctrl_tel(sbRecvTelegram[6]);
             }
             else
             {
@@ -382,80 +482,9 @@ void sb_send_next_tel()
                 objValue >>= 8;
             }
         }
+
+        sb_send_tel(sbSendTelegram, sb_tel_length(sbSendTelegram));
     }
-    else  // handle a command for unicast/broadcast sending
-    {
-        sbSendTelegram[0] = 0xb0; // Control byte
-        // 1+2 contain the sender address, which is set by sb_send_tel()
-        sbSendTelegram[3] = sbConnectedAddr >> 8;
-        sbSendTelegram[4] = sbConnectedAddr;
-
-        switch (cmd)
-        {
-        case SB_OBJ_NCD_ACK:
-            sbSendTelegram[5] = 0x60;
-            sbSendTelegram[6] = 0xc2 | (objno & 0x3c);
-            break;
-
-        case SB_T_DISCONNECT:
-            sbSendTelegram[5] = 0x60;
-            sbSendTelegram[6] = 0x81;
-            sbConnectedAddr = 0;
-            break;
-
-        case SB_DEVICEDESCRIPTOR_RESPONSE:
-            sbSendTelegram[5] = 0x63;
-            sbSendTelegram[6] = 0x43 | sbConnectedSeqNo;
-            sbSendTelegram[7] = 0x40;
-            sbSendTelegram[8] = objno >> 8; // mask version (high byte)
-            sbSendTelegram[9] = objno;      // mask version (low byte)
-            break;
-
-        case SB_INDIVIDUAL_ADDRESS_RESPONSE:
-            sbSendTelegram[3] = 0x00;  // Zero target address, it's a broadcast
-            sbSendTelegram[4] = 0x00;
-            sbSendTelegram[5] = 0xe1;
-            sbSendTelegram[6] = 0x01;  // SB_INDIVIDUAL_ADDRESS_RESPONSE_PDU
-            sbSendTelegram[7] = 0x40;
-            break;
-
-        case SB_MEMORY_RESPONSE:
-            addr = objno & 0xffff;
-            length = (objno >> 16) & 0x3f;
-            if (addr >= SB_EEPROM_START && addr < SB_EEPROM_END)
-                memcpy(sbSendTelegram + 10, sbEepromData + addr - SB_EEPROM_START, length);
-            else memcpy(sbSendTelegram + 10, sbUserRamData + addr - SB_USERRAM_START, length);
-            sbSendTelegram[5] = 0x63 + length;
-            sbSendTelegram[6] = 0x42 | sbConnectedSeqNo;
-            sbSendTelegram[7] = 0x40 | length;
-            sbSendTelegram[8] = addr >> 8;
-            sbSendTelegram[9] = addr;
-            break;
-
-        case SB_ADC_RESPONSE:
-            sbSendTelegram[5] = 0x64;
-            sbSendTelegram[6] = 0x41 | sbConnectedSeqNo;
-            sbSendTelegram[7] = 0xc0 | (objno & 0x3f); // channel
-            sbSendTelegram[8] = (objno >> 16) & 0xff;  // read count
-            sbSendTelegram[9] = 0x05;                  // FIXME dummy - value high byte
-            sbSendTelegram[10] = 0xb0;                 // FIXME dummy - value low byte
-            break;
-
-        case SB_AUTHORIZE_RESPONSE:
-            sbSendTelegram[5] = 0x62;
-            sbSendTelegram[6] = 0x43 | sbConnectedSeqNo;
-            sbSendTelegram[7] = 0xd2;
-            sbSendTelegram[8] = 0x00;
-            break;
-
-        default:
-            // ignore unknown command
-            return;
-        }
-    }
-
-    sbIncConnectedSeqNo = sbSendTelegram[6] & 0x40;
-    sb_send_tel(7 + (sbSendTelegram[5] & 0x0f));
 }
 
 static unsigned short sb_grp_address2index(unsigned short address)

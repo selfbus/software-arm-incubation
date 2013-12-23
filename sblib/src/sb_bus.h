@@ -62,10 +62,14 @@ extern unsigned short sbRecvTelegramLen;
 extern unsigned char sbSendTelegram[SB_TELEGRAM_SIZE];
 
 /**
- * The length of the telegram to be sent in bytes, including the checksum.
- * Zero if no telegram is being sent.
+ * The telegram that is currently being sent.
  */
-extern unsigned short sbSendTelegramLen;
+extern unsigned char *sbSendCurTelegram;
+
+/**
+ * The telegram to be sent after sbSendTelegram is done.
+ */
+extern unsigned char *sbSendNextTelegram;
 
 /**
  * Our own physical address on the bus.
@@ -75,15 +79,26 @@ extern unsigned short sbOwnPhysicalAddr;
 /**
  * Initialize the bus access.
  */
-extern void sb_init_bus();
+void sb_init_bus();
 
 /**
- * Send the telegram that is stored in sbSendTelegram[].
- * The function calculates the checksum and sets the sender address before sending.
+ * Prepare the telegram for sending. Set the sender address to our own
+ * address, and calculate the checksum of the telegram.
+ * Stores the checksum at telegram[length].
  *
+ * @param telegram - the telegram to process
+ * @param length - the length of the telegram
+ */
+void sb_prepare_tel(unsigned char* telegram, unsigned short length);
+
+/**
+ * Send a telegram. The checksum byte will be added at the end of telegram[].
+ * Ensure that there is at least one byte space at the end of telegram[].
+ *
+ * @param telegram - the telegram to be sent.
  * @param length - the length of the telegram in sbSendTelegram[], without the checksum
  */
-extern void sb_send_tel(unsigned short length);
+void sb_send_tel(unsigned char* telegram, unsigned short length);
 
 /**
  * Test if we are in programming mode (the button on the controller is pressed and
@@ -92,5 +107,15 @@ extern void sb_send_tel(unsigned short length);
  * @return 1 if in programming mode, 0 if not.
  */
 #define sb_prog_mode_active() (sbUserRam->status & 1)
+
+/**
+ * Get the length of a telegram, including the protocol header but excluding
+ * the checksum byte.
+ *
+ * @param telegram - the telegram to query
+ *
+ * @return The length of the telegram, excluding the checksum byte.
+ */
+#define sb_tel_length(telegram) (7 + (telegram[5] & 15))
 
 #endif /*sb_bus_h*/
