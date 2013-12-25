@@ -15,10 +15,12 @@
  */
 void sb_process_tel();
 
+#ifdef OLD_CODE
 /**
  * Send the next telegram of the sending ring buffer.
  */
 void sb_send_next_tel();
+#endif
 
 /**
  * Set our physical address.
@@ -31,24 +33,6 @@ void sb_set_pa(unsigned short addr);
  * Initialize the protocol.
  */
 void sb_init_proto();
-
-/**
- * Add a com object to the sending ring buffer.
- *
- * @param objno - the number of the com object to send. See sb_const.h for constants for the
- *                com object. E.g. SB_READ_VALUE_RESPONSE to mark the object as a reply.
- * @return 1 if the com object was stored in the ring-buffer,
- *         0 if the ring buffer is currently full.
- */
-short sb_send_obj_value(unsigned int objno);
-
-/**
- * Read the object flags.
- *
- * @param objno - the number of the com object
- * @return The object flags of the com object.
- */
-unsigned char sb_read_objflags(unsigned short objno);
 
 /**
  * Test if there is a direct data connection active.
@@ -64,6 +48,10 @@ unsigned char sb_read_objflags(unsigned short objno);
  */
 extern unsigned short sbConnectedAddr;
 
+/**
+ * Indicates that EEPROM memory was written and needs to be flushed.
+ */
+extern unsigned short sbEepromDirty;
 
 /**
  * @return The number of send requests in the sending ring buffer sbSendRing.
@@ -99,8 +87,6 @@ extern unsigned short sbSendRingWrite;
  */
 extern unsigned short sbSendRingRead;
 
-void sb_write_value_req(unsigned short objno);
-void sb_read_value_req(unsigned short objno);
 unsigned long sb_read_obj_value(unsigned short objno);
 
 #endif /*sb_proto_h*/

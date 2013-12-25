@@ -6,11 +6,15 @@
  *  published by the Free Software Foundation.
  */
 
+#include "sb_props.h"
 #include "sb_memory.h"
-#include "sb_eeprom.h"
 
-unsigned char __attribute__ ((aligned (4))) sbUserRamData[SB_USERRAM_SIZE];
-SbUserRam *sbUserRam = (SbUserRam*) sbUserRamData;
+#ifdef SB_BCU1
 
-unsigned char *sbEepromData = (unsigned char*) eeprom;
-SbEeprom *sbEeprom = (SbEeprom*) eeprom;
+void sb_props_read_tel(unsigned char objectIdx, unsigned char propertyId,
+                       unsigned char count, unsigned short start)
+{
+    // Dummy implementation: unused for BCU1
+}
+
+#endif //SB_BCU1

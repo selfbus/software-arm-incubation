@@ -21,7 +21,7 @@ unsigned char  __attribute__ ((aligned (4))) eeprom[EEPROM_SIZE];
 SB_Epp eeprom_r = {eeprom, EEPROM_SIZE, 0x1000 / EEPROM_SIZE};
 
 
-int sb_eeprom_init (unsigned int clear)
+int sb_eeprom_init(unsigned int clear)
 {
     int                   i;
     int                   s  = -1;
@@ -81,7 +81,7 @@ int sb_eeprom_init (unsigned int clear)
     return res;
 }
 
-int sb_eeprom_update (void)
+int sb_eeprom_update()
 {
     int res            = 0; // OK
     int page           = eeprom_r.state;

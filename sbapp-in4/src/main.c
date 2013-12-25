@@ -24,11 +24,11 @@ extern void sb_eep_test (void);
 
 int main(void)
 {
-    int i = 0, on = 0;
-    int sendWait = 0;
+    int sendTrigger = 0;
+    unsigned char testValue = 1;
 
     sb_init();
-    sb_set_appdata(0, 2, 0x9009);
+    sb_set_appdata(0, 2, 0x9009, 0);
 
     UART_Init(115200);
     UART_PutString("ARM-SB-Lib Test\n", -1);
@@ -43,36 +43,38 @@ int main(void)
     GPIOSetDir(LED_PORT, LED_BIT, 1);
     GPIOSetValue(LED_PORT, LED_BIT, 0);
 
-    sbSendTelegram[0] = 0xbc;
-    sbSendTelegram[1] = 0x0;  // 1+2: source address: will be set by sb_send_tel() to sbOwnPhysicalAddr
-    sbSendTelegram[2] = 0x0;
-    sbSendTelegram[3] = 0x11; // 3+4: dest address: 2/1/2
-    sbSendTelegram[4] = 0x2;
-    sbSendTelegram[5] = 0xe1;
-    sbSendTelegram[6] = 0x0;
-    sbSendTelegram[7] = 0x80;
 
     while (1)
     {
         sb_main_loop();
 
-        i = (i + 1) & 0x1fffff;
-
-        if (!i)
+        // Send a specific telegram if P1.11 is low
+        if (GPIOGetValue(1, 11) == 0)
         {
-            on = !on;
-            GPIOSetValue(LED_PORT, LED_BIT, 0);
+            if (sendTrigger < 10240 && sbSendCurTelegram == 0)
+            {
+                if (++sendTrigger == 10239)
+                {
+                    GPIOSetValue(LED_PORT, LED_BIT, 1);
+
+                    sbSendTelegram[0] = 0xbc;
+                    sbSendTelegram[1] = 0x0;  // 1+2: source address: will be set by sb_send_tel() to sbOwnPhysicalAddr
+                    sbSendTelegram[2] = 0x0;
+                    sbSendTelegram[3] = 0x11; // 3+4: dest address: 2/1/2
+                    sbSendTelegram[4] = 0x2;
+                    sbSendTelegram[5] = 0xe1;
+                    sbSendTelegram[6] = 0x0;
+                    sbSendTelegram[7] = 0x80 | testValue;
+                    testValue ^= 1;
+
+                    sb_send_tel(sbSendTelegram, 8);
+                }
+            }
         }
-
-        if (sendWait > 0)
-            --sendWait;
-        else if (GPIOGetValue(1, 11) == 0)
+        else if (sendTrigger > 0)
         {
-            GPIOSetValue(LED_PORT, LED_BIT, 1);
-            sendWait = 0x2fffff;
-
-            sbSendTelegram[7] ^= 1;
-            sb_send_tel(sbSendTelegram, 8);
+            if (!--sendTrigger)
+                GPIOSetValue(LED_PORT, LED_BIT, 0);
         }
     }
 

@@ -61,7 +61,7 @@
 #define SB_EEPROM_START 0x100
 #define SB_EEPROM_SIZE 256
 
-typedef struct
+typedef struct SbUserRam
 {
     unsigned char data1[0x60];
     unsigned char status;         // 0x0060: System status. See defines like SB_STATUS_PROG above
@@ -82,7 +82,7 @@ typedef struct
 #define SB_EEPROM_START 0x100
 #define SB_EEPROM_SIZE 1024
 
-typedef struct
+typedef struct SbUserRam
 {
     unsigned char data1[0x60];
     unsigned char status;         // 0x0060: System status. See defines like SB_STATUS_PROG above
@@ -99,7 +99,7 @@ typedef struct
 
 
 #if defined(SB_BCU1) || defined(SB_BCU2)
-typedef struct
+typedef struct SbEeprom
 {
     unsigned char optionReg;      // 0x0100: EEPROM option register
     unsigned char manuDataH;      // 0x0101: Manufacturing data high byte
@@ -124,10 +124,12 @@ typedef struct
     unsigned char usrProgPtr;     // 0x0114: Low byte of the pointer to user program function (BCU1 only)
     unsigned char usrSavePtr;     // 0x0115: Low byte of the pointer to user save function (BCU1 only)
 #if defined(SB_BCU1)
-    unsigned char user[223];      // 0x0116: User EEPROM: 223 bytes BCU1, 858 bytes BCU2
+    unsigned char addrTabSize;    // 0x0116: Size of the address table
+    unsigned char addrTab[2];     // 0x0117+: Address table, 2 bytes per entry. Real array size is addrTabSize*2
+    unsigned char user[220];      // 0x0116: User EEPROM: max 220 bytes (BCU1)
     unsigned char checksum;       // 0x01ff: EEPROM checksum (BCU1 only)
 #else //defined(SB_BCU2)
-    unsigned char user[858];      // 0x0116: User EEPROM: 223 bytes BCU1, 858 bytes BCU2
+    unsigned char user[858];      // 0x0116: User EEPROM: 858 bytes (BCU2)
     unsigned char system[858];    // 0x0470: System EEPROM (BCU2 only)
 #endif
 } SbEeprom;
@@ -135,21 +137,11 @@ typedef struct
 
 
 /**
- * Set manufacturer data, manufacturer-ID, and device type.
- *
- * @param data - the manufacturer data
- * @param manufacturer - the manufacturer ID
- * @param deviceType - the device type
- */
-void sb_set_appdata(unsigned short data, unsigned short manufacturer, unsigned short deviceType);
-
-
-/**
  * Communication object descriptor.
  *
  * @see SbComsTab - this structure is used in the communications table.
  */
-typedef struct
+typedef struct SbComDesc
 {
     /** Data pointer. Either to userRam or to eeprom, depending on bit 5 of the config byte */
     unsigned char dataPtr;
@@ -236,7 +228,7 @@ typedef struct
 /**
  * Communications table.
  */
-typedef struct
+typedef struct SbComTab
 {
     /** Number of objects */
     unsigned char count;
@@ -247,28 +239,6 @@ typedef struct
     /** Table of object descriptors. */
     SbComDesc desc[];
 } SbComTab;
-
-
-/** Communication Flag: transmission status mask */
-#define SB_COMFLAG_TRANS_MASK 0x3
-
-/** Communication Flag: transmission status: idle/ok */
-#define SB_COMFLAG_OK         0x0
-
-/** Communication Flag: transmission status: idle/error */
-#define SB_COMFLAG_ERROR      0x1
-
-/** Communication Flag: transmission status: transmitting */
-#define SB_COMFLAG_TRANSMIT   0x2
-
-/** Communication Flag: transmission status: transmission request */
-#define SB_COMFLAG_TRANSREQ   0x3
-
-/** Communication Flag: data request: 0=idle/response, 1=data request */
-#define SB_COMFLAG_DATAREQ    0x4
-
-/** Communication Flag: update: 0=not updated, 1=updated */
-#define SB_COMFLAG_UPDATE     0x8
 
 
 /**

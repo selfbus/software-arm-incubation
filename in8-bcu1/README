@@ -1,0 +1,8 @@
+in8-bcu1
+========
+
+This is an example application that uses the SBLib with BCU1 emulation.
+The emulated device is a Jung 2118 with 8 digital inputs.
+
+Please use the Jung 2118 VD for ETS configuration from this site:
+http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?search=2118&rpp=10

@@ -45,7 +45,7 @@ extern SB_Epp eeprom_r;
  *                      - SB_EEPROM_NO_VALID_PAGE_FOUND if no valid FLASH page could be found
  *                      - SB_EEP_VERSION_MISSMATCH   if the version ID did not match
  */
-int sb_eeprom_init   (unsigned int  clear);
+int sb_eeprom_init(unsigned int clear);
 
 /**
  * Write the current content of the RAM mirror of the EEPROM region into
@@ -53,6 +53,6 @@ int sb_eeprom_init   (unsigned int  clear);
  * @param region        handle to the EEPROM region
  * @return              status of the operation (0 == OK)
  */
-int sb_eeprom_update (void);
+int sb_eeprom_update();
 
 #endif /* SB_EEP_EMU_H_ */

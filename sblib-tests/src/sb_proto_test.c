@@ -10,6 +10,7 @@
 #include "sb_bus.h"
 #include "sb_proto.h"
 #include "sb_const.h"
+#include "sb_memory.h"
 
 #include "sb_proto_test.h"
 
@@ -19,7 +20,7 @@ static void run_test(Test_Case * tc)
     char msg[1025];
     Telegram * t  = tc->telegram;
 
-    sbStatus      = tc->status;
+    sbUserRam->status = tc->status;
     if (tc->setup) tc->setup();
 
     while (END != t->type)
@@ -48,9 +49,9 @@ static void run_test(Test_Case * tc)
             snprintf ( msg
                      , 1024
                      , "%s: Number of bytes in send telegram %d mismatch e=%d, s=%d"
-                     , tc->name, tn, t->length + 2, sbSendTelegramLen
+                     , tc->name, tn, t->length + 2, sb_tel_length(sbSendTelegram)
                      );
-            CU_assertImplementation(sbSendTelegramLen == (t->length + 1), __LINE__, msg, __FILE__, "", CU_FALSE);
+            CU_assertImplementation(sb_tel_length(sbSendTelegram) == (t->length + 1), __LINE__, msg, __FILE__, "", CU_FALSE);
             snprintf (msg, 1024, "%s: Send telegram %d mismatch at byte(s)", tc->name, tn);
             for (i = 0; i < t->length; i++)
             {

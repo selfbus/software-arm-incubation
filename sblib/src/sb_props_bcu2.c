@@ -6,11 +6,17 @@
  *  published by the Free Software Foundation.
  */
 
+#include "sb_props.h"
 #include "sb_memory.h"
-#include "sb_eeprom.h"
 
-unsigned char __attribute__ ((aligned (4))) sbUserRamData[SB_USERRAM_SIZE];
-SbUserRam *sbUserRam = (SbUserRam*) sbUserRamData;
+#ifdef SB_BCU2
 
-unsigned char *sbEepromData = (unsigned char*) eeprom;
-SbEeprom *sbEeprom = (SbEeprom*) eeprom;
+// See KNX 6/6 Profiles, p. 94+
+
+void sb_props_read_tel(unsigned char objectIdx, unsigned char propertyId,
+                       unsigned char count, unsigned short start)
+{
+    // TODO implement me
+}
+
+#endif //SB_BCU2

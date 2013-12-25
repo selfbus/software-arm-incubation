@@ -11,6 +11,8 @@
 #include "sb_bus.h"
 #include "sb_proto.h"
 #include "sb_memory.h"
+#include "sb_eeprom.h"
+#include "sb_comobj.h"
 #include "internal/sb_hal.h"
 
 #ifdef __USE_CMSIS
@@ -24,6 +26,7 @@
  */
 void sb_init()
 {
+    sb_eeprom_init(0);
     sb_init_bus();
     sb_init_proto();
 
@@ -42,13 +45,15 @@ void sb_main_loop()
     if (sbRecvTelegramLen && sbSendCurTelegram == 0)
         sb_process_tel();
 
-    if (!sb_send_ring_empty() && sbSendCurTelegram == 0)
+    if (sbSendCurTelegram == 0)
         sb_send_next_tel();
 
-#if 0
-    if (sb_eeprom_dirty() && sbStatem == SB_IDLE && !sb_prog_mode_active() && !sb_connected() && sb_send_ring_empty())
-        sb_eeprom_write();
-#endif
+    if (sbEepromDirty && sbState == SB_IDLE && sbSendCurTelegram == 0 &&
+        !sb_prog_mode_active() && !sb_connected())
+    {
+        sbEepromDirty = 0;
+        sb_eeprom_update();
+    }
 
     //
     // Handle programming-mode button and LED
@@ -74,4 +79,27 @@ void sb_main_loop()
     if (sbUserRam->status & 1)
         LPC_GPIO[SB_PROG_PORT]->MASKED_ACCESS[progButtonMask] = 0;
     else LPC_GPIO[SB_PROG_PORT]->MASKED_ACCESS[progButtonMask] = progButtonMask;
+}
+
+/**
+ * Set manufacturer data, manufacturer-ID, and device type.
+ *
+ * @param data - the manufacturer data
+ * @param manufacturer - the manufacturer ID
+ * @param deviceType - the device type
+ * @param version - the version of the application program
+ */
+void sb_set_appdata(unsigned short data, unsigned short manufacturer, unsigned short deviceType,
+                    unsigned char version)
+{
+    sbEeprom->manuDataH = data >> 8;
+    sbEeprom->manuDataL = data;
+
+    sbEeprom->manufacturerH = manufacturer >> 8;
+    sbEeprom->manufacturerL = manufacturer;
+
+    sbEeprom->deviceTypeH = deviceType >> 8;
+    sbEeprom->deviceTypeL = deviceType;
+
+    sbEeprom->version = version;
 }

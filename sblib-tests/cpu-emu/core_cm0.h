@@ -34,6 +34,7 @@
    POSSIBILITY OF SUCH DAMAGE.
    ---------------------------------------------------------------------------*/
 
+#include "sb_memory.h"
 
 #if defined ( __ICCARM__ )
  #pragma system_include  /* treat file as system include file for MISRA check */
@@ -615,8 +616,7 @@ __STATIC_INLINE uint32_t NVIC_GetPriority(IRQn_Type IRQn)
  */
 __STATIC_INLINE void NVIC_SystemReset(void)
 {
-    extern unsigned char sbStatus;
-    sbStatus = 0x00;
+    sbUserRam->status = 0x00;
 }
 
 /*@} end of CMSIS_Core_NVICFunctions */

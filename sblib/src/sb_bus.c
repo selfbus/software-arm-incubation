@@ -382,6 +382,8 @@ void sb_send_tel(unsigned char* telegram, unsigned short length)
  */
 void sb_init_bus()
 {
+    sbOwnPhysicalAddr = (sbEeprom->addrTab[0] << 8) | sbEeprom->addrTab[1];
+
     sbRecvTelegramLen = 0;
 
     sbState = SB_IDLE;

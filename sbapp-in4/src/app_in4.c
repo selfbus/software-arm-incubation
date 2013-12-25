@@ -7,15 +7,3 @@
  */
 
 #include "sb_proto.h"
-
-void sb_write_value_req(unsigned short objno)
-{
-
-}
-
-void sb_read_value_req(unsigned short objno)
-{
-
-}
-
-

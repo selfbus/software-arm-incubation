@@ -33,6 +33,10 @@
 #define SB_AUTHORIZE_REQUEST_PDU            0x3d1
 #define SB_AUTHORIZE_RESPONSE_PDU           0x3d2
 
+#define SB_PROPERTY_VALUE_READ_PDU          0x3d5
+#define SB_PROPERTY_VALUE_RESPONSE_PDU      0x3d6
+#define SB_PROPERTY_VALUE_WRITE_PDU         0x3d7
+
 //
 // Transport commands
 //
