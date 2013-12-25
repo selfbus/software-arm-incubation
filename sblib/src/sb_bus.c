@@ -69,10 +69,12 @@ static short sbSendTelegramTries;
 // Send an acknowledge or not-acknowledge byte if != 0
 static unsigned char sbSendAck;
 
-//----- Telegram bits and constants -----
 
 // Telegram repeat flag in byte #0 of the telegram: 1=not repeated, 0=repeated
 #define SB_TEL_REPEAT_FLAG 0x20
+
+// When to generate an interrupt even when idle. This is to wakeup from sleep sometimes.
+#define IDLE_TIMEOUT (sbTimeBit << 7)
 
 /*
  * The timer16_1 is used as follows:
@@ -88,9 +90,9 @@ static unsigned char sbSendAck;
  */
 static void sb_idle()
 {
-    LPC_TMR16B1->MCR = 0;      // Do not handle timer matches
-    LPC_TMR16B1->CCR = 6;      // Capture CR0 on falling edge, with interrupt
-    LPC_TMR16B1->MR3 = 0xffff; // Set timer match 3 to maximum value
+    LPC_TMR16B1->MR3 = IDLE_TIMEOUT; // wakeup from possible sleep every now and then
+    LPC_TMR16B1->MCR = 0x600;        // Interrupt and reset timer on timeout (match of MR3)
+    LPC_TMR16B1->CCR = 6;            // Capture CR0 on falling edge, with interrupt
 
     sbState = SB_IDLE;
     sbSendAck = 0;
@@ -122,6 +124,8 @@ STATE_LOOP:
     switch (sbState)
     {
     case SB_IDLE:
+        if (LPC_TMR16B1->IR & 0x08) // Timeout: do nothing
+            break;
         sbSendAck = 0;
         sbNextByte = 0;
         checksum = 0xff;
@@ -428,15 +432,12 @@ void sb_init_bus()
     LPC_TMR16B1->TCR = 1;		// Enable the timer
     NVIC_EnableIRQ(TIMER_16_1_IRQn); // Enable the timer interrupt
 
-
     //
     // Calculate timer ticks
     //
     unsigned short usecTicks = SystemCoreClock / 1000000;
 
-    // TODO Use the highest possible prescaler
-//    LPC_TMR16B1->PR = 1;
-//    usecTicks >>= 1;
+    // Use the highest possible prescaler
     int i;
     for (i = 0; !(usecTicks & 1); ++i)
         usecTicks >>= 1;
@@ -448,6 +449,8 @@ void sb_init_bus()
     sbTimeBitPulse = 35 * usecTicks;
     sbTimeByte = (10 * 104 + 50) * usecTicks;
 
+    LPC_TMR16B1->MR3 = IDLE_TIMEOUT; // wakeup from possible sleep every now and then
+    LPC_TMR16B1->MCR = 0x600;        // Interrupt and reset timer on timeout (match of MR3)
 
     //
     // Init GPIOs for debugging

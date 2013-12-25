@@ -37,17 +37,15 @@ int main()
     {
         sb_main_loop();
 
-#ifdef DISABLED  // need some more work to make P1.11 function with this
         if (sbSendCurTelegram == 0 && sbState == SB_IDLE)
             __WFI();  // goto sleep until an interrupt happens
-#endif
 
         // Send a specific telegram if P1.11 is low
         if (GPIOGetValue(1, 11) == 0)
         {
-            if (sendTrigger < 8192)
+            if (sendTrigger < 10)
             {
-                if (++sendTrigger == 8191)
+                if (++sendTrigger == 9)
                 {
                     GPIOSetValue(LED_PORT, LED_BIT, 1);
 
