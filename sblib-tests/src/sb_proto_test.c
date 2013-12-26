@@ -27,11 +27,12 @@ static void run_test(Test_Case * tc)
     {
         if (TEL_RX == t->type)
         {
-            int s;
+            int s = 0;
             memcpy(sbRecvTelegram, t->bytes, t->length);
             sbRecvTelegramLen = t->length;
             sb_process_tel();
-            s = sb_send_ring_count();
+            if (sbSendCurTelegram)  s++;
+            if (sbSendNextTelegram) s++;
             snprintf ( msg
                      , 1024
                      , "%s: Number of response telegrams for %d incorrect: e=%d, s=%d"
@@ -44,31 +45,38 @@ static void run_test(Test_Case * tc)
             int i;
             int c = 0;
             char received [23*3 + 1] = {0};
-            char expected [23*3 + 1] = {0};
-            sb_send_next_tel();
+            char expected [23*3 + 1] = {0};;
+            char temp[1025];
+            //sb_send_next_tel();
             snprintf ( msg
                      , 1024
                      , "%s: Number of bytes in send telegram %d mismatch e=%d, s=%d"
-                     , tc->name, tn, t->length + 2, sb_tel_length(sbSendTelegram)
+                     , tc->name, tn, t->length + 0, sb_tel_length(sbSendCurTelegram)
                      );
-            CU_assertImplementation(sb_tel_length(sbSendTelegram) == (t->length + 1), __LINE__, msg, __FILE__, "", CU_FALSE);
-            snprintf (msg, 1024, "%s: Send telegram %d mismatch at byte(s)", tc->name, tn);
+            CU_assertImplementation(sb_tel_length(sbSendCurTelegram) == (t->length + 0), __LINE__, msg, __FILE__, "", CU_FALSE);
+            snprintf (msg, 1024, "%s: Send telegram %d mismatch at byte(s) ", tc->name, tn);
             for (i = 0; i < t->length; i++)
             {
-                snprintf (received, 23*3, "%s %02x", received, sbSendTelegram[i]);
-                snprintf (expected, 23*3, "%s %02x", expected, t->bytes[i]);
-                if (t->bytes[i] != sbSendTelegram[i])
+                snprintf(temp, 255, " %02x", sbSendCurTelegram[i]);
+                strcat(received, temp);
+                snprintf(temp, 255, " %02x", t->bytes[i]);
+                strcat(expected, temp);
+                if (t->bytes[i] != sbSendCurTelegram[i])
                 {
                     c++;
-                    snprintf (msg, 1024, "%s %d, ", msg, i);
+                    snprintf (temp, 1024, "%d, ", i);
+                    strcat(msg, temp);
                 }
             }
             if (c)
             {
-                msg [strlen (msg) - 1] = '\n';
-                snprintf(msg, 1024, "%s expected: %s\n received: %s", msg, expected, received);
+                msg [strlen (msg) - 2] = '\n'; // remove the last ', ' sequence
+                snprintf(temp, 1024, "expected: %s\n received: %s", expected, received);
+                strcat(msg, temp);
                 CU_assertImplementation(CU_FALSE, __LINE__, msg, __FILE__, "", CU_FALSE);
             }
+            sbSendCurTelegram = sbSendNextTelegram;
+            sbSendNextTelegram = NULL;
         }
         if (t->check) t->check();
         t++;
@@ -108,12 +116,11 @@ void test_device_info (void)
 }
 
 CU_TestInfo sbp_tests[] = {
-/*
+
   { "Program physical address",     test_physical_address_programming},
   { "Parameter programming",        test_parameter_programming},
   { "Application programming",      test_application_programming},
   { "Group address programming",    test_group_address_programming},
-*/
   { "Device info gathering",        test_device_info},
   CU_TEST_INFO_NULL,
 };
