@@ -76,7 +76,7 @@ void sb_main_loop()
 
     LPC_GPIO[SB_PROG_PORT]->DIR |= 1 << SB_PROG_BIT; // Set prog button+led to output
 
-    if (sbUserRam->status & 1)
+    if (sbUserRam->status & SB_STATUS_PROG)
         LPC_GPIO[SB_PROG_PORT]->MASKED_ACCESS[progButtonMask] = 0;
     else LPC_GPIO[SB_PROG_PORT]->MASKED_ACCESS[progButtonMask] = progButtonMask;
 }

@@ -60,7 +60,7 @@ void sb_send_con_ctrl_tel(unsigned char cmd, unsigned char senderSeqNo)
     if (cmd & 0x40)  // Add the sequence number if the command shall contain it
         cmd |= senderSeqNo & 0x3c;
 
-    sbSendConCtrlTelegram[0] = 0xb0; // Control byte
+    sbSendConCtrlTelegram[0] = 0xb0 | (sbRecvTelegram[0] & 0x0c); // Control byte
     // 1+2 contain the sender address, which is set by sb_send_tel()
     sbSendConCtrlTelegram[3] = sbConnectedAddr >> 8;
     sbSendConCtrlTelegram[4] = sbConnectedAddr;
@@ -212,7 +212,7 @@ void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqNo)
 
     if (sendTel)
     {
-        sbSendTelegram[0] = 0xbc; // Control byte
+        sbSendTelegram[0] = 0xb0 | (sbRecvTelegram[0] & 0x0c); // Control byte
         // 1+2 contain the sender address, which is set by sb_send_tel()
         sbSendTelegram[3] = sbConnectedAddr >> 8;
         sbSendTelegram[4] = sbConnectedAddr;
@@ -302,7 +302,7 @@ void sb_process_tel()
             }
             else if (apci == SB_INDIVIDUAL_ADDRESS_READ_PDU)
             {
-                sbSendTelegram[0] = 0xbc; // Control byte
+                sbSendTelegram[0] = 0xb0 | (sbRecvTelegram[0] & 0x0c); // Control byte
                 // 1+2 contain the sender address, which is set by sb_send_tel()
                 sbSendTelegram[3] = 0x00;  // Zero target address, it's a broadcast
                 sbSendTelegram[4] = 0x00;

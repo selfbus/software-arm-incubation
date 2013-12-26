@@ -77,6 +77,19 @@ extern unsigned char *sbSendNextTelegram;
 extern unsigned short sbOwnPhysicalAddr;
 
 /**
+ * Set the wakeup timer when the bus is idle.
+ *
+ * @param timeout - the timeout in usec between timer wakeups.
+ *
+ * @brief When the bus is idle, a bus-timer interrupt is generated regularily.
+ * Use this function to set the time between wakeups. The timer is a 16bit
+ * timer with an active prescaler. For 48MHz system clock the maximum available
+ * time is 5400 usec. If the given time is too high, the maximum available timer
+ * value is used instead.
+ */
+void sb_set_wakeup_time(unsigned short timeout);
+
+/**
  * Initialize the bus access.
  */
 void sb_init_bus();

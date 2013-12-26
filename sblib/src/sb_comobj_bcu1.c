@@ -43,7 +43,7 @@ unsigned char sb_get_objflags(unsigned short objno)
  * @param objno - the com-object to query
  * @return The communication flags.
  */
-unsigned char sb_get_comm_flags(unsigned short objno)
+unsigned char sb_get_flags(unsigned short objno)
 {
     // The flags table contains two com-objects per byte
 
@@ -54,14 +54,14 @@ unsigned char sb_get_comm_flags(unsigned short objno)
 }
 
 /**
- * Set the communication (RAM) flags of a com-object. This does not
- * clear already set flags of the com-object.
+ * Set one or more communication (RAM) flags of a com-object. This does not
+ * change already set flags of the com-object. See sb_unset_flags().
  * See SB_COMFLAG_ defines below.
  *
- * @param objno - the com-object to set
+ * @param objno - the com-object to process
  * @param flags - the flags to set.
  */
-void sb_set_comm_flags(unsigned short objno, unsigned char flags)
+void sb_set_flags(unsigned short objno, unsigned char flags)
 {
     // The flags table contains two com-objects per byte
 
@@ -72,19 +72,21 @@ void sb_set_comm_flags(unsigned short objno, unsigned char flags)
 }
 
 /**
- * Clear the communication (RAM) flags of a com-object.
+ * Unset one or more communication (RAM) flags of a com-object. Only the specified
+ * flags are cleared. See sb_set_flags().
+ * See SB_COMFLAG_ defines below.
  *
- * @param objno - the com-object to clear
+ * @param objno - the com-object to process
+ * @param flags - the flags to clear. Use SB_COMFLAG_ALL to clear all flags.
  */
-void sb_clear_comm_flags(unsigned short objno)
+void sb_unset_flags(unsigned short objno, unsigned char flags)
 {
     // The flags table contains two com-objects per byte
 
-    unsigned char mask;
-    if (objno & 1) mask = 0x0f;
-    else mask = 0xf0;
+    if (objno & 1) flags <<= 4;
+    else flags &= 15;
 
-    sbUserRamData[sbEepromData[sbEeprom->commsTabPtr + 1] + (objno >> 1)] &= mask;
+    sbUserRamData[sbEepromData[sbEeprom->commsTabPtr + 1] + (objno >> 1)] &= ~flags;
 }
 
 /**
@@ -99,7 +101,7 @@ void sb_clear_comm_flags(unsigned short objno)
 void sb_send_obj_value(unsigned short objno)
 {
     if ((sb_get_objflags(objno) & SB_COMOBJ_CONF_TRANS_COMM) == SB_COMOBJ_CONF_TRANS_COMM)
-        sb_set_comm_flags(objno, SB_COMFLAG_TRANSREQ);
+        sb_set_flags(objno, SB_COMFLAG_TRANSREQ);
 }
 
 /**
@@ -188,7 +190,7 @@ void sb_write_value_req(unsigned short objno)
     if (count) memcpy(valuePtr, sbRecvTelegram + 7, count);
     else *valuePtr = sbRecvTelegram[6] & 0x3f;
 
-    sb_set_comm_flags(objno, SB_COMFLAG_UPDATE);
+    sb_set_flags(objno, SB_COMFLAG_UPDATE);
 }
 
 /**
@@ -199,7 +201,7 @@ void sb_write_value_req(unsigned short objno)
 void sb_read_value_req(unsigned short objno)
 {
     if ((sb_get_objflags(objno) & SB_COMOBJ_CONF_READ_COMM) == SB_COMOBJ_CONF_READ_COMM)
-        sb_set_comm_flags(objno, SB_COMFLAG_TRANSREQ | SB_COMFLAG_DATAREQ);
+        sb_set_flags(objno, SB_COMFLAG_TRANSREQ | SB_COMFLAG_DATAREQ);
 }
 
 #endif // not SB_CUSTOM_READWRITE_VALUE

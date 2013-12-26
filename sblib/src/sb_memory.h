@@ -43,7 +43,7 @@
 #define SB_STATUS_USR     0x20
 
 // System status: download mode enabled
-#define SB_STATUS_DWN     0x80
+#define SB_STATUS_DWN     0x40
 
 // System status: parity bit
 #define SB_STATUS_PARITY  0x80

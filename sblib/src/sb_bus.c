@@ -17,6 +17,19 @@
 
 #include "internal/sb_hal.h"
 
+/*
+ * The timer16_1 is used as follows:
+ *
+ * Capture register CR0 is used for receiving
+ * Match register MR0 or MR1 is used as PWM for sending, depending on which output pin is used
+ * Match register MR3 is used for timeouts while sending / receiving
+ *
+ */
+
+// Enable debug statements for debugging the bus access in this file
+//#define D(x) x
+#define D(x)
+
 
 //----- exported variables -----
 // The state of the lib's receiver/sender
@@ -51,11 +64,11 @@ static unsigned short sbTimeBit;
 // Time between two bits (69 usec)
 static unsigned short sbTimeBitWait;
 
-// Duration of a bit pulse (35 usec)
-static unsigned short sbTimeBitPulse;
-
 // Maximum time from start bit to stop bit, including a safety extra
 static unsigned short sbTimeByte;
+
+// Time to wakeup when idle
+static unsigned short sbTimeWakeup;
 
 // The current byte that is received/sent
 static unsigned short sbCurrentByte;
@@ -73,24 +86,13 @@ static unsigned char sbSendAck;
 // Telegram repeat flag in byte #0 of the telegram: 1=not repeated, 0=repeated
 #define SB_TEL_REPEAT_FLAG 0x20
 
-// When to generate an interrupt even when idle. This is to wakeup from sleep sometimes.
-#define IDLE_TIMEOUT (sbTimeBit << 7)
-
-/*
- * The timer16_1 is used as follows:
- *
- * Capture register CR0 is used for receiving
- * Match register MR0 or MR1 is used as PWM for sending, depending on which output pin is used
- * Match register MR3 is used for timeouts while sending / receiving
- *
- */
 
 /**
  * Switch to idle state
  */
 static void sb_idle()
 {
-    LPC_TMR16B1->MR3 = IDLE_TIMEOUT; // wakeup from possible sleep every now and then
+    LPC_TMR16B1->MR3 = sbTimeWakeup; // wakeup from possible sleep every now and then
     LPC_TMR16B1->MCR = 0x600;        // Interrupt and reset timer on timeout (match of MR3)
     LPC_TMR16B1->CCR = 6;            // Capture CR0 on falling edge, with interrupt
 
@@ -107,18 +109,18 @@ static void sb_idle()
 void TIMER16_1_IRQHandler()
 {
     static unsigned short bitMask;
-    static unsigned short tick = 0;
+    D(static unsigned short tick = 0);
     static unsigned short bitTime = 0;
     static unsigned char parity, checksum;
     unsigned short timer = LPC_TMR16B1->CR0;
     unsigned int val;
 
     // Debug output
-    GPIOSetValue(0, 6, ++tick & 1); 	// brown: interrupt tick
-    GPIOSetValue(3, 0, sbState==SB_SEND_BIT_0); // red
-    GPIOSetValue(3, 1, 0);          	// orange
-    GPIOSetValue(3, 2, 0);				// yellow: end of byte
-    GPIOSetValue(3, 3, 0);              // purple: end of telegram
+    D(GPIOSetValue(0, 6, ++tick & 1)); 	// brown: interrupt tick
+    D(GPIOSetValue(3, 0, sbState==SB_SEND_BIT_0)); // red
+    D(GPIOSetValue(3, 1, 0));          	// orange
+    D(GPIOSetValue(3, 2, 0));				// yellow: end of byte
+    D(GPIOSetValue(3, 3, 0));              // purple: end of telegram
 
 STATE_LOOP:
     switch (sbState)
@@ -132,10 +134,10 @@ STATE_LOOP:
         // no break here
 
     case SB_RECV_START:
-        GPIOSetValue(3, 1, 1);  // orange
+        D(GPIOSetValue(3, 1, 1));   // orange
         if (LPC_TMR16B1->IR & 0x08)	// Timeout while waiting for next start byte
         {
-            GPIOSetValue(3, 3, 1);              // purple: end of telegram
+            D(GPIOSetValue(3, 3, 1));         // purple: end of telegram
             if (sbNextByte >= 8 && !checksum) // Received a valid telegram with correct checksum
             {
                 sbRecvTelegramLen = sbNextByte;
@@ -206,8 +208,8 @@ STATE_LOOP:
 
         if (LPC_TMR16B1->IR & 0x08)  // Timer timeout: end of byte
         {
-            GPIOSetValue(3, 2, 1);		// yellow: end of byte
-//            GPIOSetValue(3, 1, parity);	// orange: parity bit ok
+            D(GPIOSetValue(3, 2, 1));		 // yellow: end of byte
+//            D(GPIOSetValue(3, 1, parity)); // orange: parity bit ok
 
             if (sbNextByte < SB_TELEGRAM_SIZE)
             {
@@ -251,7 +253,7 @@ STATE_LOOP:
         LPC_IOCON_BUS_OUT = val;        // Configure bus-out pin as PWM output
         LPC_TMR16B1->MCR = 0x600;		// Interrupt and reset timer on match of MR3
         LPC_TMR16B1->CCR = 2;           // Capture CR0 on falling edge, without interrupt
-        GPIOSetValue(3, 2, 1);          // yellow: start of byte
+        D(GPIOSetValue(3, 2, 1));       // yellow: start of byte
         sbState = SB_SEND_BIT_0;
         sbNextByte = 0;
         break;
@@ -272,7 +274,7 @@ STATE_LOOP:
         // no break here
 
     case SB_SEND_BYTE:
-        GPIOSetValue(3, 2, 1);      // yellow: send next bits
+        D(GPIOSetValue(3, 2, 1));      // yellow: send next bits
         timer = sbTimeBit;
         while ((sbCurrentByte & bitMask) && bitMask <= 0x100)
         {
@@ -296,7 +298,7 @@ STATE_LOOP:
             }
         }
         LPC_TMR16B1->MR3 = timer;	// Reset and interrupt at the next 0 bit
-        LPC_TMR16B1_MR_OUT = timer - sbTimeBitPulse;
+        LPC_TMR16B1_MR_OUT = timer - (sbTimeBit - sbTimeBitWait);
         break;
 
     case SB_SEND_END:
@@ -382,6 +384,24 @@ void sb_send_tel(unsigned char* telegram, unsigned short length)
 }
 
 /**
+ * Set the wakeup timer when the bus is idle.
+ *
+ * @param timeout - the time in usec between timer wakeups.
+ *
+ * @brief When the bus is idle, a bus-timer interrupt is generated regularily.
+ * Use this function to set the time between wakeups. The timer is a 16bit
+ * timer with an active prescaler. For 48MHz system clock the maximum available
+ * time is 5400 usec. If the given time is too high, the maximum available timer
+ * value is used instead.
+ */
+void sb_set_wakeup_time(unsigned short timeout)
+{
+    int tval = timeout * (SystemCoreClock / 1000000);
+    if (tval > 65535) sbTimeWakeup = 65535;
+    else sbTimeWakeup = tval;
+}
+
+/**
  * Initialize the bus access.
  */
 void sb_init_bus()
@@ -396,7 +416,6 @@ void sb_init_bus()
     sbSendCurTelegram = 0;
     sbSendNextTelegram = 0;
 
-    sbUserRam->status = 0x2e;
     LPC_SYSCON->SYSAHBCLKCTRL |= 1 << 8; // Enable the clock for the timer
 
 
@@ -446,23 +465,24 @@ void sb_init_bus()
     // Calculate timer waits
     sbTimeBit = 104 * usecTicks;
     sbTimeBitWait = 69 * usecTicks;
-    sbTimeBitPulse = 35 * usecTicks;
+    //sbTimeBitPulse = 35 * usecTicks;
     sbTimeByte = (10 * 104 + 50) * usecTicks;
+    sbTimeWakeup = usecTicks << 10;  // roughly every msec
 
-    LPC_TMR16B1->MR3 = IDLE_TIMEOUT; // wakeup from possible sleep every now and then
+    LPC_TMR16B1->MR3 = sbTimeWakeup; // wakeup from possible sleep every now and then
     LPC_TMR16B1->MCR = 0x600;        // Interrupt and reset timer on timeout (match of MR3)
 
     //
     // Init GPIOs for debugging
     //
-    GPIOSetDir(3, 0, 1);  // 0: input, 1: output
-    GPIOSetDir(3, 1, 1);  // 0: input, 1: output
-    GPIOSetDir(3, 2, 1);  // 0: input, 1: output
-    GPIOSetDir(3, 3, 1);  // 0: input, 1: output
-    GPIOSetDir(0, 6, 1);
+    D(GPIOSetDir(3, 0, 1));  // 0: input, 1: output
+    D(GPIOSetDir(3, 1, 1));  // 0: input, 1: output
+    D(GPIOSetDir(3, 2, 1));  // 0: input, 1: output
+    D(GPIOSetDir(3, 3, 1));  // 0: input, 1: output
+    D(GPIOSetDir(0, 6, 1));
 
-    GPIOSetValue(3, 0, 0);
-    GPIOSetValue(3, 1, 0);
-    GPIOSetValue(3, 2, 0);
-    GPIOSetValue(0, 6, 0);
+    D(GPIOSetValue(3, 0, 0));
+    D(GPIOSetValue(3, 1, 0));
+    D(GPIOSetValue(3, 2, 0));
+    D(GPIOSetValue(0, 6, 0));
 }

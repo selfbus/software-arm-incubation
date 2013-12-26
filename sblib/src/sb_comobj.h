@@ -34,27 +34,30 @@ void* sb_get_value_ptr(unsigned short objno);
  * @param objno - the com-object to query
  * @return The communication flags.
  */
-unsigned char sb_get_comm_flags(unsigned short objno);
+unsigned char sb_get_flags(unsigned short objno);
 
 /**
- * Set the communication (RAM) flags of a com-object. This does not
- * clear already set flags of the com-object.
+ * Set one or more communication (RAM) flags of a com-object. This does not
+ * change already set flags of the com-object. See sb_unset_flags().
  * See SB_COMFLAG_ defines below.
  *
- * @param objno - the com-object to set
+ * @param objno - the com-object to process
  * @param flags - the flags to set.
  */
-void sb_set_comm_flags(unsigned short objno, unsigned char flags);
+void sb_set_flags(unsigned short objno, unsigned char flags);
 
 /**
- * Clear the communication (RAM) flags of a com-object.
+ * Unset one or more communication (RAM) flags of a com-object. Only the specified
+ * flags are cleared. See sb_set_flags().
+ * See SB_COMFLAG_ defines below.
  *
- * @param objno - the com-object to clear
+ * @param objno - the com-object to process
+ * @param flags - the flags to clear. Use SB_COMFLAG_ALL to clear all flags.
  */
-void sb_clear_comm_flags(unsigned short objno);
+void sb_unset_flags(unsigned short objno, unsigned char flags);
 
 /**
- * Get the object flags.
+ * Get the configuration flags of a com-object.
  *
  * @param objno - the number of the com-object.
  * @return The object flags of the com-object.
@@ -114,6 +117,9 @@ void sb_read_value_req(unsigned short objno);
 
 /** Communication Flag: update: 0=not updated, 1=updated */
 #define SB_COMFLAG_UPDATE     0x8
+
+/** All communication flags. */
+#define SB_COMFLAG_ALL        0x15
 
 
 // Com object configuration flag: transmit + communication enabled
