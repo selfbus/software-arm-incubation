@@ -110,8 +110,10 @@ void TIMER16_1_IRQHandler()
 {
     static unsigned short bitMask;
     D(static unsigned short tick = 0);
-    static unsigned short bitTime = 0;
-    static unsigned char parity, checksum;
+    static unsigned short bitTime; // the bit-time within a byte when receiving
+    static unsigned char parity;   // parity bit of the current byte
+    static unsigned char valid;    // 1 if parity is valid for all bits of the telegram
+    static unsigned char checksum; // checksum of the telegram: 0 if valid at end of telegram
     unsigned short timer = LPC_TMR16B1->CR0;
     unsigned int val;
 
@@ -131,6 +133,7 @@ STATE_LOOP:
         sbSendAck = 0;
         sbNextByte = 0;
         checksum = 0xff;
+        valid = 1;
         // no break here
 
     case SB_RECV_START:
@@ -138,7 +141,7 @@ STATE_LOOP:
         if (LPC_TMR16B1->IR & 0x08)	// Timeout while waiting for next start byte
         {
             D(GPIOSetValue(3, 3, 1));         // purple: end of telegram
-            if (sbNextByte >= 8 && !checksum) // Received a valid telegram with correct checksum
+            if (sbNextByte >= 8 && !checksum && valid) // Received a valid telegram with correct checksum
             {
                 sbRecvTelegramLen = sbNextByte;
                 sbSendAck = SB_BUS_ACK;
@@ -211,6 +214,7 @@ STATE_LOOP:
             D(GPIOSetValue(3, 2, 1));		 // yellow: end of byte
 //            D(GPIOSetValue(3, 1, parity)); // orange: parity bit ok
 
+            valid &= parity;
             if (sbNextByte < SB_TELEGRAM_SIZE)
             {
                 sbRecvTelegram[sbNextByte++] = sbCurrentByte;
