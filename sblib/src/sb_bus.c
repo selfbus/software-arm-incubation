@@ -67,9 +67,6 @@ static unsigned short sbTimeBitWait;
 // Maximum time from start bit to stop bit, including a safety extra
 static unsigned short sbTimeByte;
 
-// Time to wakeup when idle
-static unsigned short sbTimeWakeup;
-
 // The current byte that is received/sent
 static unsigned short sbCurrentByte;
 
@@ -90,11 +87,11 @@ static unsigned char sbSendAck;
 /**
  * Switch to idle state
  */
-static void sb_idle()
+static void sb_idle_state()
 {
-    LPC_TMR16B1->MR3 = sbTimeWakeup; // wakeup from possible sleep every now and then
-    LPC_TMR16B1->MCR = 0x600;        // Interrupt and reset timer on timeout (match of MR3)
-    LPC_TMR16B1->CCR = 6;            // Capture CR0 on falling edge, with interrupt
+    LPC_TMR16B1->MR3 = 0xffff;
+    LPC_TMR16B1->MCR = 0;     // Do not interrupt or reset timer on timeout (match of MR3)
+    LPC_TMR16B1->CCR = 6;     // Capture CR0 on falling edge, with interrupt
 
     sbState = SB_IDLE;
     sbSendAck = 0;
@@ -174,7 +171,7 @@ STATE_LOOP:
                 LPC_TMR16B1->MR3 = sbTimeBit * 15; // Wait 15 bit times before sending the bus acknowledgement
             else if (sbSendCurTelegram)
                 LPC_TMR16B1->MR3 = sbTimeBit * 50; // Wait at least 50 bit times before sending
-            else sb_idle();
+            else sb_idle_state();
 
             break;
         }
@@ -330,7 +327,7 @@ STATE_LOOP:
         // no break here
 
     default:
-        sb_idle();
+        sb_idle_state();
         break;
     }
 
@@ -385,24 +382,6 @@ void sb_send_tel(unsigned char* telegram, unsigned short length)
         LPC_TMR16B1->MCR = 0x600;  // Interrupt and reset timer on match of MR3
         LPC_TMR16B1->TC = 99;
     }
-}
-
-/**
- * Set the wakeup timer when the bus is idle.
- *
- * @param timeout - the time in usec between timer wakeups.
- *
- * @brief When the bus is idle, a bus-timer interrupt is generated regularily.
- * Use this function to set the time between wakeups. The timer is a 16bit
- * timer with an active prescaler. For 48MHz system clock the maximum available
- * time is 5400 usec. If the given time is too high, the maximum available timer
- * value is used instead.
- */
-void sb_set_wakeup_time(unsigned short timeout)
-{
-    int tval = timeout * (SystemCoreClock / 1000000);
-    if (tval > 65535) sbTimeWakeup = 65535;
-    else sbTimeWakeup = tval;
 }
 
 /**
@@ -471,10 +450,9 @@ void sb_init_bus()
     sbTimeBitWait = 69 * usecTicks;
     //sbTimeBitPulse = 35 * usecTicks;
     sbTimeByte = (10 * 104 + 50) * usecTicks;
-    sbTimeWakeup = usecTicks << 10;  // roughly every msec
 
-    LPC_TMR16B1->MR3 = sbTimeWakeup; // wakeup from possible sleep every now and then
-    LPC_TMR16B1->MCR = 0x600;        // Interrupt and reset timer on timeout (match of MR3)
+    LPC_TMR16B1->MR3 = 0xffff;
+    LPC_TMR16B1->MCR = 0;    // Do not interrupt or reset timer on timeout (match of MR3)
 
     //
     // Init GPIOs for debugging

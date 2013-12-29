@@ -77,22 +77,14 @@ extern unsigned char *sbSendNextTelegram;
 extern unsigned short sbOwnPhysicalAddr;
 
 /**
- * Set the wakeup timer when the bus is idle.
+ * Test if the bus is idle and no telegram is about to being sent.
  *
- * @param timeout - the timeout in usec between timer wakeups.
- *
- * @brief When the bus is idle, a bus-timer interrupt is generated regularily.
- * Use this function to set the time between wakeups. The timer is a 16bit
- * timer with an active prescaler. For 48MHz system clock the maximum available
- * time is 5400 usec. If the given time is too high, the maximum available timer
- * value is used instead.
+ * @return 1 when idle, 0 when not.
  */
-void sb_set_wakeup_time(unsigned short timeout);
-
-/**
- * Initialize the bus access.
- */
-void sb_init_bus();
+static inline char sb_idle()
+{
+    return sbState == SB_IDLE && sbSendCurTelegram == 0 && sbRecvTelegramLen == 0;
+}
 
 /**
  * Prepare the telegram for sending. Set the sender address to our own
@@ -112,6 +104,11 @@ void sb_prepare_tel(unsigned char* telegram, unsigned short length);
  * @param length - the length of the telegram in sbSendTelegram[], without the checksum
  */
 void sb_send_tel(unsigned char* telegram, unsigned short length);
+
+/**
+ * Initialize the bus access.
+ */
+void sb_init_bus();
 
 /**
  * Test if we are in programming mode (the button on the controller is pressed and

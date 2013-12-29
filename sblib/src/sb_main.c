@@ -20,12 +20,54 @@
 #endif
 #include "gpio.h"
 
+/**
+ * The system time in usec since the last reset. The resolution of this time
+ * depends on the wakeup time. This time is not available when the wakeup timer
+ * is disabled.
+ *
+ * @see sb_set_wakeup_time()
+ */
+unsigned int sbSysTime;
+
+// Increment for sbSysTime on SysTick timeout
+static unsigned int sbSysTickInc = -1;
+
+/**
+ * The system tick handler.
+ */
+void SysTick_Handler()
+{
+    ++sbSysTime;
+}
+
+/**
+ * Set the wakeup timer.
+ *
+ * @param timeout - the timeout in usec between wakeups. 0 to disable the timer.
+ *
+ * @brief This timer generates wakeup interrupts. It uses the SysTick timer, which
+ * is a 24bit timer that runs with the system clock. The default timeout is 1msec.
+ * Shorter timeouts give exacter sbSysTime. Longer timeouts use less resources.
+ */
+void sb_set_wakeup_time(unsigned short timeout)
+{
+    sbSysTickInc = timeout;
+
+    if (timeout)
+    {
+        unsigned short usecTicks = SystemCoreClock / 1000000; // Timer ticks in one usec
+        SysTick_Config(timeout * usecTicks);
+    }
+    else SysTick->CTRL = 0; // disable SysTick timer
+}
 
 /**
  * Initialize the library. Call this function once when the program starts.
  */
 void sb_init()
 {
+    sb_set_wakeup_time(1000);
+
     sb_eeprom_init(0);
     sb_init_bus();
     sb_init_proto();
@@ -54,6 +96,11 @@ void sb_main_loop()
         sbEepromDirty = 0;
         sb_eeprom_update();
     }
+
+    //
+    // Handle system time
+    //
+
 
     //
     // Handle programming-mode button and LED
