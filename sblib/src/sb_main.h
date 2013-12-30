@@ -47,6 +47,6 @@ unsigned int sbSysTime;
  * is a 24bit timer that runs with the system clock. The default timeout is 1msec.
  * Shorter timeouts give exacter sbSysTime. Longer timeouts use less resources.
  */
-void sb_set_wakeup_time(unsigned short timeout);
+void sb_set_wakeup_time(unsigned int timeout);
 
 #endif /*sb_main_h*/
