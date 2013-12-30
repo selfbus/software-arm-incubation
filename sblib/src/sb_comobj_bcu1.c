@@ -23,7 +23,7 @@
 #define SB_COMFLAG_CLEAR_LOW (~(SB_COMFLAG_TRANS_MASK | SB_COMFLAG_DATAREQ) | 0xf0)
 
 // Mask for clearing the relevant com flags when sending a com-object at the high nibble
-#define SB_COMFLAG_CLEAR_HIGH (~(SB_COMFLAG_TRANS_MASK | SB_COMFLAG_DATAREQ) << 4)
+#define SB_COMFLAG_CLEAR_HIGH ((~(SB_COMFLAG_TRANS_MASK | SB_COMFLAG_DATAREQ) << 4) | 0x0f)
 
 
 /**
@@ -290,6 +290,48 @@ void sb_send_group_tel(unsigned short objno, unsigned short destAddr, unsigned c
     else sbSendTelegram[7] |= *valuePtr & 0x3f;
 
     sb_send_tel(sbSendTelegram, 8 + count);
+}
+
+/**
+ * Process all com-objects. For every com-object that has the given flags set,
+ * call the callback function. The flags are cleared during processing.
+ *
+ * @param flags - the communication (RAM) flags that must be set.
+ * @param callback - pointer to the function to call when the flags are set.
+ *                   The function gets the com-object number as an argument
+ *
+ * @example sb_process_flags(SB_COMFLAG_UPDATE, &comobj_updated);
+ */
+void sb_process_flags(unsigned char flags, void (*callback)(unsigned char))
+{
+    unsigned char matchLow = flags;
+    unsigned char matchHigh = flags << 4;
+
+    unsigned char* commsTab = sbEepromData + sbEeprom->commsTabPtr;
+    unsigned char* flagsTab = sbUserRamData + commsTab[1];
+    unsigned char objFlags, objno, numObjs = commsTab[0];
+
+    for (objno = 0; objno < numObjs; ++objno)
+    {
+        objFlags = flagsTab[objno >> 1];
+
+        if (objno & 1)
+        {
+            if ((objFlags & matchHigh) == matchHigh)
+            {
+                flagsTab[objno >> 1] &= ~matchHigh;
+                (*callback)(objno);
+            }
+        }
+        else
+        {
+            if ((objFlags & matchLow) == matchLow)
+            {
+                flagsTab[objno >> 1] &= ~matchLow;
+                (*callback)(objno);
+            }
+        }
+    }
 }
 
 /**

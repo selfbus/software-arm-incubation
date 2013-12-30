@@ -57,6 +57,18 @@ void sb_set_flags(unsigned short objno, unsigned char flags);
 void sb_unset_flags(unsigned short objno, unsigned char flags);
 
 /**
+ * Process all com-objects. For every com-object that has the given flags set,
+ * call the callback function. The flags are cleared during processing.
+ *
+ * @param flags - the communication (RAM) flags that must be set.
+ * @param callback - pointer to the function to call when the flags are set.
+ *                   The function gets the com-object number as an argument
+ *
+ * @example sb_process_flags(SB_COMFLAG_UPDATE, &comobj_updated);
+ */
+void sb_process_flags(unsigned char flags, void (*callback)(unsigned char));
+
+/**
  * Get the configuration flags of a com-object.
  *
  * @param objno - the number of the com-object.
@@ -81,6 +93,8 @@ void sb_process_group_tel(unsigned short destAddr, unsigned char apci);
  */
 void sb_send_next_tel();
 
+
+#ifdef SB_CUSTOM_READWRITE_VALUE
 /**
  * Called when a write-value-request group telegram was received.
  * The value to be written is stored in sbRecvTelegram[].
@@ -95,6 +109,7 @@ void sb_write_value_req(unsigned short objno);
  * @param objno - the com-object to write the value.
  */
 void sb_read_value_req(unsigned short objno);
+#endif /*defined SB_CUSTOM_READWRITE_VALUE*/
 
 
 /** Communication Flag: transmission status mask */
