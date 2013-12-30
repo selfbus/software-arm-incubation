@@ -37,7 +37,7 @@ static unsigned int sbSysTickInc = -1;
  */
 void SysTick_Handler()
 {
-    ++sbSysTime;
+    sbSysTime += sbSysTickInc;
 }
 
 /**
@@ -49,7 +49,7 @@ void SysTick_Handler()
  * is a 24bit timer that runs with the system clock. The default timeout is 1msec.
  * Shorter timeouts give exacter sbSysTime. Longer timeouts use less resources.
  */
-void sb_set_wakeup_time(unsigned short timeout)
+void sb_set_wakeup_time(unsigned int timeout)
 {
     sbSysTickInc = timeout;
 
