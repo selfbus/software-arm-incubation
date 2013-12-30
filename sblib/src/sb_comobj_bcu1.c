@@ -115,9 +115,9 @@ void* sb_get_value_ptr(unsigned short objno)
     // Pointer to the object descriptor
     SbComDesc* desc = (SbComDesc*) (sbEepromData + sbEeprom->commsTabPtr + objno * 3 + 2);
 
-    if (desc->config & SB_COMCONF_MEM)
-        return sbUserRamData + desc->dataPtr;
-    return sbEepromData + desc->dataPtr;
+    if (desc->config & SB_COMCONF_MEM) // 0 if user RAM, >0 if user EEPROM
+        return sbEepromData + desc->dataPtr;
+    return sbUserRamData + desc->dataPtr;
 }
 
 /**
@@ -184,10 +184,10 @@ unsigned short sb_find_send_group_addr(unsigned short objno)
  */
 void sb_write_value_req(unsigned short objno)
 {
-    short count = sbRecvTelegram[5] & 15;
     unsigned char* valuePtr = sb_get_value_ptr(objno);
+    short count = (sbRecvTelegram[5] & 15) - 1;
 
-    if (count) memcpy(valuePtr, sbRecvTelegram + 7, count);
+    if (count > 0) memcpy(valuePtr, sbRecvTelegram + 7, count);
     else *valuePtr = sbRecvTelegram[6] & 0x3f;
 
     sb_set_flags(objno, SB_COMFLAG_UPDATE);
