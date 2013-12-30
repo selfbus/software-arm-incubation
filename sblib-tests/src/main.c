@@ -3,6 +3,7 @@
 
 extern  CU_SuiteInfo EEP_Suites[];
 extern  CU_SuiteInfo SBP_Suites[];
+extern  CU_SuiteInfo SYST_Suites[];
 
 /* The main() function for setting up and running the tests.
  * Returns a CUE_SUCCESS on successful running, another
@@ -15,7 +16,7 @@ int main(int argc, char *argv[])
    /* initialize the CUnit test registry */
    if (CUE_SUCCESS != CU_initialize_registry())
       return CU_get_error();
-   if (CUE_SUCCESS != CU_register_nsuites(2, EEP_Suites, SBP_Suites))
+   if (CUE_SUCCESS != CU_register_nsuites(3, SYST_Suites, EEP_Suites, SBP_Suites))
    {
        CU_cleanup_registry();
        return CU_get_error();

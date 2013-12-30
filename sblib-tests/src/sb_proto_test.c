@@ -116,7 +116,6 @@ void test_device_info (void)
 }
 
 CU_TestInfo sbp_tests[] = {
-
   { "Program physical address",     test_physical_address_programming},
   { "Parameter programming",        test_parameter_programming},
   { "Application programming",      test_application_programming},
