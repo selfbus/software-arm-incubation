@@ -19,10 +19,14 @@
 #endif
 
 #include "gpio.h"
+#include "sb_utils.h"
 
 
 // The previous value of the input pins
 unsigned short lastInputsVal;
+
+// Data structure for the debouncing of the inputs
+SbDebounce inputDebounce = {0x00};
 
 // The com-object values
 ComObjectValues* comObjValues = (ComObjectValues*)(sbUserRamData + UR_COM_OBJ_VALUE0);
@@ -32,19 +36,6 @@ ComObjectValues* comObjValues = (ComObjectValues*)(sbUserRamData + UR_COM_OBJ_VA
 
 // Mask for clearing the relevant com flags when sending a com-object at the high nibble
 #define SB_COMFLAG_CLEAR_HIGH ((~SB_COMFLAG_UPDATE << 4) | 0x0f)
-
-
-/**
- * Debounce a byte.
- *
- * @param current - the current value
- * @return The debounced value
- */
-unsigned char debounce(unsigned char current)
-{
-    // TODO implement debouncing
-    return current;
-}
 
 /**
  * Get the configured input type of the idx-th input.
@@ -83,7 +74,7 @@ void handle_switch_input(unsigned char channel, unsigned char val)
  */
 void handle_inputs()
 {
-    unsigned char inputsVal = debounce(LPC_GPIO[2]->DATA & 0xff);
+    unsigned char inputsVal = sb_debounce(LPC_GPIO[2]->DATA & 0xff, SB_DEBOUNCE_10MS, & inputDebounce);
 
     if (lastInputsVal == 0xffff) // handle all input pins on first run
         lastInputsVal = ~inputsVal;
@@ -152,6 +143,4 @@ void app_init()
     LPC_IOCON->PIO2_5 = 0x30;
     LPC_IOCON->PIO2_6 = 0x30;
     LPC_IOCON->PIO2_7 = 0x30;
-
-    lastInputsVal = 0xffff;
 }
