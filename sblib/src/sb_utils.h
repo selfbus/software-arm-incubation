@@ -10,9 +10,9 @@
 #ifndef SB_UTILS_H_
 #define SB_UTILS_H_
 
-#include "internal/sb_timer.h"
+#include "sb_timer.h"
 
-#define SB_DEBOUNCE_10MS    (10000 / 100)
+#define SB_DEBOUNCE_10MS    (10000)
 
 typedef struct
 {

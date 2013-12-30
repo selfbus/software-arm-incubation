@@ -17,14 +17,25 @@ typedef struct
     unsigned int  period;
 } SbTimer;
 
+/**
+ * The system time in usec since the last reset. The resolution of this time
+ * depends on the wakeup time. This time is not available when the wakeup timer
+ * is disabled.
+ *
+ * @see sb_set_wakeup_time()
+ */
+extern unsigned int sbSysTime;
 
 /**
- * Initialization of the timer module.
+ * Set the wakeup timer.
  *
- * Internally the internal 16 timer 0 hardware timer is used.
+ * @param timeout - the timeout in usec between wakeups. 0 to disable the timer.
+ *
+ * @brief This timer generates wakeup interrupts. It uses the SysTick timer, which
+ * is a 24bit timer that runs with the system clock. The default timeout is 1msec.
+ * Shorter timeouts give exacter sbSysTime. Longer timeouts use less resources.
  */
-
-void sb_timer_init(void);
+void sb_set_wakeup_time(unsigned int timeout);
 
 /**
  * Start a new timer. To define a single shot timer use 0 as period.
@@ -32,9 +43,9 @@ void sb_timer_init(void);
  * the period will be used as offset.
  *
  * @param timer   The timer object which should be started
- * @param offset  Number of 100µs ticks after which the first timer event
- *                should expire the first time.
- * @param period  Number of 100µs ticks defining the period of cyclic timer
+ * @param offset  Microseconds after which the timer should expire for
+ *                the first time.
+ * @param period  Period of cyclic timer in microseconds
  */
 void sb_timer_start(SbTimer * timer, unsigned int offset, unsigned int period);
 

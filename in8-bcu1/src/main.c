@@ -12,6 +12,7 @@
 #include "sb_main.h"
 #include "sb_comobj.h"
 #include "sb_bus.h"
+#include "sb_timer.h"
 
 #ifdef __USE_CMSIS
 # include "LPC11xx.h"

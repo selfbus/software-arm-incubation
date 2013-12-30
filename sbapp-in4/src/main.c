@@ -22,12 +22,30 @@ extern void sb_eep_test (void);
 #endif
 
 
+#include "sb_timer.h"
+
+void timer_test()
+{
+    int i;
+    SbTimer timer;
+
+    sb_timer_start(& timer, 0, 500000);
+    for(i = 0;i < 10;i ++)
+    {
+        while(! sb_timer_check( &timer));
+        GPIOSetValue(LED_PORT, LED_BIT, 1);
+        while(! sb_timer_check( &timer));
+        GPIOSetValue(LED_PORT, LED_BIT, 0);
+    }
+}
+
 int main(void)
 {
     int sendTrigger = 0;
     unsigned char testValue = 1;
 
     sb_init();
+    timer_test();
     sb_set_appdata(0, 2, 0x9009, 0);
 
     UART_Init(115200);

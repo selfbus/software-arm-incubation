@@ -6,7 +6,7 @@
  *  published by the Free Software Foundation.
  */
 #include "CUnit/Basic.h"
-#include "internal/sb_timer.h"
+#include "sb_timer.h"
 #include "sb_utils.h"
 
 #ifdef __USE_CMSIS
@@ -18,41 +18,38 @@
 
 static void timer_tick(unsigned int t)
 {
-    unsigned int old = LPC_TMR16B0->TC;
-    LPC_TMR16B0->TC = (LPC_TMR16B0->TC + t) & 0xFFFF;
-    if (LPC_TMR16B0->TC < old) LPC_TMR16B0->IR |=  (1 << 3);
-    else                       LPC_TMR16B0->IR &= ~(1 << 3);
+    sbSysTime += t;
 }
 
 void test_systick_timer_single (void)
 {
     SbTimer timer1;
-    sb_timer_init();
     timer_tick(2);
-    sb_timer_start(& timer1, 4, 0); // single shot timer for 2 ms @ 500µs
-    timer_tick(1);
+    sb_timer_start(& timer1, 1000 * 20, 0); // single shot timer for 2ms
+    timer_tick(1000 * 5);
+    CU_ASSERT(0 == sb_timer_check(& timer1));
+    timer_tick(1000 * 5);
+    CU_ASSERT(0 == sb_timer_check(& timer1));
+    timer_tick(1000 * 5);
+    CU_ASSERT(0 == sb_timer_check(& timer1));
+    timer_tick(1000 * 5);
     CU_ASSERT(0 == sb_timer_check(& timer1));
     timer_tick(1);
+    CU_ASSERT(1 == sb_timer_check(& timer1));
     CU_ASSERT(0 == sb_timer_check(& timer1));
-    timer_tick(1);
+    timer_tick(4294937292U);
+    sb_timer_start(& timer1, 1000 * 20, 0); // single shot timer for 2 ms @ 500µs
+    timer_tick(1000 * 5);
     CU_ASSERT(0 == sb_timer_check(& timer1));
-    timer_tick(1);
+    timer_tick(1000 * 5);
+    CU_ASSERT(0 == sb_timer_check(& timer1));
+    timer_tick(1000 * 5);
+    CU_ASSERT(0 == sb_timer_check(& timer1));
+    timer_tick(1000 * 5);
     CU_ASSERT(0 == sb_timer_check(& timer1));
     timer_tick(1);
     CU_ASSERT(1 == sb_timer_check(& timer1));
     CU_ASSERT(0 == sb_timer_check(& timer1));
-    timer_tick(0xFFFF - 9);
-    sb_timer_start(& timer1, 4, 0); // single shot timer for 2 ms @ 500µs
-    timer_tick(1);
-    CU_ASSERT(0 == sb_timer_check(& timer1));
-    timer_tick(1);
-    CU_ASSERT(0 == sb_timer_check(& timer1));
-    timer_tick(1);
-    CU_ASSERT(0 == sb_timer_check(& timer1));
-    timer_tick(1);
-    CU_ASSERT(0 == sb_timer_check(& timer1));
-    timer_tick(1);
-    CU_ASSERT(1 == sb_timer_check(& timer1));
 }
 
 void test_systick_timer_periodic (void)
@@ -60,20 +57,19 @@ void test_systick_timer_periodic (void)
     SbTimer timer1;
     int i;
 
-    sb_timer_init();
     timer_tick(2);
-    sb_timer_start(& timer1, 0, 4); // timer with 2 ms period @ 500µs
-    timer_tick(1);
+    sb_timer_start(& timer1, 0, 1000 * 20); // timer with 2 ms period @ 500µs
+    timer_tick(1000 * 5);
     CU_ASSERT(0 == sb_timer_check(& timer1));
     for (i = 0;i < 20000;i++)
     {
-        timer_tick(1);
+        timer_tick(1000 * 5);
         CU_ASSERT(0 == sb_timer_check(& timer1));
-        timer_tick(1);
+        timer_tick(1000 * 5);
         CU_ASSERT(0 == sb_timer_check(& timer1));
-        timer_tick(1);
+        timer_tick(1000 * 5);
         CU_ASSERT(0 == sb_timer_check(& timer1));
-        timer_tick(1);
+        timer_tick(1000 * 5);
         CU_ASSERT(1 == sb_timer_check(& timer1));
     }
 }
@@ -82,26 +78,25 @@ void test_debounce(void)
 {
     SbDebounce debounce = {0x0000};
 
-    sb_timer_init();
     timer_tick(2);
     CU_ASSERT(0x0000 == sb_debounce(0x0001, SB_DEBOUNCE_10MS, & debounce));
-    timer_tick(50);
+    timer_tick(1000 * 5);
     CU_ASSERT(0x0000 == sb_debounce(0x0001, SB_DEBOUNCE_10MS, & debounce));
-    timer_tick(50 + 1);
+    timer_tick(1000 * 5 + 1);
     CU_ASSERT(0x0001 == sb_debounce(0x0001, SB_DEBOUNCE_10MS, & debounce));
-    timer_tick(50);
+    timer_tick(1000 * 5);
     CU_ASSERT(0x0001 == sb_debounce(0x0002, SB_DEBOUNCE_10MS, & debounce));
-    timer_tick(50);
+    timer_tick(1000 * 5);
     CU_ASSERT(0x0001 == sb_debounce(0x0001, SB_DEBOUNCE_10MS, & debounce));
-    timer_tick(50);
+    timer_tick(1000 * 5);
     CU_ASSERT(0x0001 == sb_debounce(0x0002, SB_DEBOUNCE_10MS, & debounce));
-    timer_tick(50);
+    timer_tick(1000 * 5);
     CU_ASSERT(0x0001 == sb_debounce(0x0001, SB_DEBOUNCE_10MS, & debounce));
-    timer_tick(50);
+    timer_tick(1000 * 5);
     CU_ASSERT(0x0001 == sb_debounce(0x0002, SB_DEBOUNCE_10MS, & debounce));
-    timer_tick(50);
+    timer_tick(1000 * 5);
     CU_ASSERT(0x0001 == sb_debounce(0x0002, SB_DEBOUNCE_10MS, & debounce));
-    timer_tick(50 + 1);
+    timer_tick(1000 * 5 + 1);
     CU_ASSERT(0x0002 == sb_debounce(0x0002, SB_DEBOUNCE_10MS, & debounce));
 }
 

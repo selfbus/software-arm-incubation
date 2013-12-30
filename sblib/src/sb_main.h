@@ -29,24 +29,5 @@ void sb_main_loop();
  */
 void sb_set_appdata(unsigned short data, unsigned short manufacturer, unsigned short deviceType,
                     unsigned char version);
-/**
- * The system time in usec since the last reset. The resolution of this time
- * depends on the wakeup time. This time is not available when the wakeup timer
- * is disabled.
- *
- * @see sb_set_wakeup_time()
- */
-unsigned int sbSysTime;
-
-/**
- * Set the wakeup timer.
- *
- * @param timeout - the timeout in usec between wakeups. 0 to disable the timer.
- *
- * @brief This timer generates wakeup interrupts. It uses the SysTick timer, which
- * is a 24bit timer that runs with the system clock. The default timeout is 1msec.
- * Shorter timeouts give exacter sbSysTime. Longer timeouts use less resources.
- */
-void sb_set_wakeup_time(unsigned int timeout);
 
 #endif /*sb_main_h*/

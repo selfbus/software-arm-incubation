@@ -19,47 +19,7 @@
 # include "LPC11xx.h"
 #endif
 #include "gpio.h"
-
-/**
- * The system time in usec since the last reset. The resolution of this time
- * depends on the wakeup time. This time is not available when the wakeup timer
- * is disabled.
- *
- * @see sb_set_wakeup_time()
- */
-unsigned int sbSysTime;
-
-// Increment for sbSysTime on SysTick timeout
-static unsigned int sbSysTickInc = -1;
-
-/**
- * The system tick handler.
- */
-void SysTick_Handler()
-{
-    sbSysTime += sbSysTickInc;
-}
-
-/**
- * Set the wakeup timer.
- *
- * @param timeout - the timeout in usec between wakeups. 0 to disable the timer.
- *
- * @brief This timer generates wakeup interrupts. It uses the SysTick timer, which
- * is a 24bit timer that runs with the system clock. The default timeout is 1msec.
- * Shorter timeouts give exacter sbSysTime. Longer timeouts use less resources.
- */
-void sb_set_wakeup_time(unsigned int timeout)
-{
-    sbSysTickInc = timeout;
-
-    if (timeout)
-    {
-        unsigned short usecTicks = SystemCoreClock / 1000000; // Timer ticks in one usec
-        SysTick_Config(timeout * usecTicks);
-    }
-    else SysTick->CTRL = 0; // disable SysTick timer
-}
+#include "sb_timer.h"
 
 /**
  * Initialize the library. Call this function once when the program starts.
