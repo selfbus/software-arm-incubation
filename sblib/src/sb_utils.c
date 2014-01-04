@@ -7,18 +7,43 @@
  */
 
 #include "sb_utils.h"
+#include "sb_timer.h"
 
-unsigned int sb_debounce(unsigned int value, unsigned int time, SbDebounce * debounce)
+/**
+ * Initialize a debounce structure. It is sufficient to call this method
+ * once, e.g. in the program's init() function.
+ *
+ * @param debounce - the debounce structure.
+ * @param value - the value to set as the initial debounced value.
+ */
+void sb_init_debounce(SbDebounce* debounce, unsigned int value)
 {
-    if (value != debounce->old)
-    {
-        sb_timer_start(& debounce->debounce_timer, time, 0);
-    }
-    else if (sb_timer_check(& debounce->debounce_timer))
-    {
-        debounce->valid = value;
-    }
-    debounce->old = value;
-    return debounce->valid;
+    debounce->valid = value;
+    debounce->time = 0;
 }
 
+/**
+ * Debounce an integer value. The debounced value is returned until a new
+ * value stays the same for all sb_debounce() calls within the timeout duration.
+ *
+ * @param current - the current value.
+ * @param timeout - the time to wait unti the value becomes valid, in usec.
+ * @param debounce - the debounce structure.
+ *
+ * @return The debounced value.
+ */
+unsigned int sb_debounce(unsigned int current, unsigned int timeout, SbDebounce* debounce)
+{
+    if (debounce->old != current || !debounce->time || sbSysTime < debounce->time)
+    {
+        debounce->time = sbSysTime;
+        debounce->old = current;
+    }
+    else if (debounce->old == current && sbSysTime >= debounce->time + timeout)
+    {
+        debounce->time = 0;
+        debounce->valid = current;
+    }
+
+    return debounce->valid;
+}

@@ -6,21 +6,45 @@
  *  published by the Free Software Foundation.
  */
 
+#ifndef sb_utils_h
+#define sb_utils_h
 
-#ifndef SB_UTILS_H_
-#define SB_UTILS_H_
+// Constant for debouncing 10 msec
+#define SB_DEBOUNCE_10MS    10000
 
-#include "sb_timer.h"
+// Constant for debouncing 100 msec
+#define SB_DEBOUNCE_100MS   100000
 
-#define SB_DEBOUNCE_10MS    (10000)
 
+/**
+ * The debounce data structure.
+ */
 typedef struct
 {
     unsigned int valid;
     unsigned int old;
-    SbTimer      debounce_timer;
+    unsigned int time;
 } SbDebounce;
 
-unsigned int sb_debounce(unsigned int value, unsigned int time, SbDebounce * debounce);
+/**
+ * Initialize a debounce structure. It is sufficient to call this method
+ * once, e.g. in the program's init() function.
+ *
+ * @param debounce - the debounce structure.
+ * @param value - the value to set as the initial debounced value.
+ */
+void sb_init_debounce(SbDebounce* debounce, unsigned int value);
 
-#endif /* SB_UTILS_H_ */
+/**
+ * Debounce an integer value. The debounced value is returned until a new
+ * value stays the same for all sb_debounce() calls within the timeout duration.
+ *
+ * @param current - the current value.
+ * @param timeout - the time to wait unti the value becomes valid, in usec.
+ * @param debounce - the debounce structure.
+ *
+ * @return The debounced value.
+ */
+unsigned int sb_debounce(unsigned int current, unsigned int timeout, SbDebounce* debounce);
+
+#endif /*sb_utils_h*/

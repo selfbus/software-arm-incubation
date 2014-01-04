@@ -19,6 +19,7 @@
 static void timer_tick(unsigned int t)
 {
     sbSysTime += t;
+//    sbSysTime &= (1 << 24) - 1; // it's a 24bit timer in the ARM
 }
 
 void test_systick_timer_single (void)
@@ -57,26 +58,28 @@ void test_systick_timer_periodic (void)
     SbTimer timer1;
     int i;
 
+    sbSysTime = 0;
     timer_tick(2);
     sb_timer_start(& timer1, 0, 1000 * 20); // timer with 2 ms period @ 500µs
     timer_tick(1000 * 5);
-    CU_ASSERT(0 == sb_timer_check(& timer1));
-    for (i = 0;i < 20000;i++)
+    CU_ASSERT_FATAL(0 == sb_timer_check(& timer1));
+    for (i = 0; i < 20000; i++)
     {
         timer_tick(1000 * 5);
-        CU_ASSERT(0 == sb_timer_check(& timer1));
+        CU_ASSERT_FATAL(0 == sb_timer_check(& timer1));
         timer_tick(1000 * 5);
-        CU_ASSERT(0 == sb_timer_check(& timer1));
+        CU_ASSERT_FATAL(0 == sb_timer_check(& timer1));
         timer_tick(1000 * 5);
-        CU_ASSERT(0 == sb_timer_check(& timer1));
+        CU_ASSERT_FATAL(0 == sb_timer_check(& timer1));
         timer_tick(1000 * 5);
-        CU_ASSERT(1 == sb_timer_check(& timer1));
+        CU_ASSERT_FATAL(1 == sb_timer_check(& timer1));
     }
 }
 
 void test_debounce(void)
 {
-    SbDebounce debounce = {0x0000};
+    SbDebounce debounce;
+    sb_init_debounce(&debounce, 0);
 
     timer_tick(2);
     CU_ASSERT(0x0000 == sb_debounce(0x0001, SB_DEBOUNCE_10MS, & debounce));
@@ -100,10 +103,30 @@ void test_debounce(void)
     CU_ASSERT(0x0002 == sb_debounce(0x0002, SB_DEBOUNCE_10MS, & debounce));
 }
 
-CU_TestInfo syst_tests[] = {
-    { "SysTick timer single",     test_systick_timer_single},
-    { "SysTick timer periodic",   test_systick_timer_periodic},
-    { "Debounce test",            test_debounce},
+
+//
+// Test debouncing with sbSysTime overflow
+//
+void test_debounce_sbSysTime_overflow()
+{
+    SbDebounce debounce;
+    sb_init_debounce(&debounce, 0);
+
+    sbSysTime = -1;
+    CU_ASSERT(0x0000 == sb_debounce(0x0002, SB_DEBOUNCE_10MS, & debounce));
+    timer_tick(1000 * 5);
+    CU_ASSERT(0x0000 == sb_debounce(0x0002, SB_DEBOUNCE_10MS, & debounce));
+    timer_tick(SB_DEBOUNCE_10MS);
+    CU_ASSERT(0x0002 == sb_debounce(0x0002, SB_DEBOUNCE_10MS, & debounce));
+}
+
+
+CU_TestInfo syst_tests[] =
+{
+    { "SysTick timer single",     test_systick_timer_single },
+    { "SysTick timer periodic",   test_systick_timer_periodic },
+    { "Debounce test",            test_debounce },
+    { "Debouncing with sbSysTime overflow", test_debounce_sbSysTime_overflow },
   CU_TEST_INFO_NULL,
 };
 

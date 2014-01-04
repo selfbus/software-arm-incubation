@@ -77,6 +77,16 @@ void sb_process_flags(unsigned char flags, void (*callback)(unsigned char));
 unsigned char sb_get_objflags(unsigned short objno);
 
 /**
+ * Find the first index of a group address in the address table.
+ * The result will be >= 1 as the first entry of the address table is the
+ * physical address of the device.
+ *
+ * @param groupAddr - the group address to find.
+ * @return The index of the group address, 0 if not found.
+ */
+unsigned short sb_index_of_group_addr(unsigned short groupAddr);
+
+/**
  * Process a multicast group telegram.
  *
  * This function is called by sb_process_tel(). It is usually not required to call

@@ -8,6 +8,7 @@
 
 #include "sb_bus.h"
 #include "sb_const.h"
+#include "sb_comobj.h"
 #include "sb_memory.h"
 
 #ifdef __USE_CMSIS
@@ -140,8 +141,19 @@ STATE_LOOP:
             D(GPIOSetValue(3, 3, 1));         // purple: end of telegram
             if (sbNextByte >= 8 && !checksum && valid) // Received a valid telegram with correct checksum
             {
+                unsigned short destAddr = (sbRecvTelegram[3] << 8) | sbRecvTelegram[4];
                 sbRecvTelegramLen = sbNextByte;
-                sbSendAck = SB_BUS_ACK;
+
+                // We ACK the telegram only if it's for us
+                if (sbRecvTelegram[5] & 0x80)
+                {
+                    if (destAddr == 0 || sb_index_of_group_addr(destAddr))
+                        sbSendAck = SB_BUS_ACK;
+                }
+                else if (destAddr == sbOwnPhysicalAddr)
+                {
+                    sbSendAck = SB_BUS_ACK;
+                }
             }
             else if (sbNextByte == 1)   // Received a spike or a bus acknowledgment
             {
@@ -168,9 +180,15 @@ STATE_LOOP:
             sbState = SB_SEND_INIT;    // might be changed by sb_idle() below
 
             if (sbSendAck)
-                LPC_TMR16B1->MR3 = sbTimeBit * 15; // Wait 15 bit times before sending the bus acknowledgement
+            {
+                // Wait before sending the bus acknowledgement
+                LPC_TMR16B1->MR3 = sbTimeBit * 11 + (sbTimeBit >> 1);
+            }
             else if (sbSendCurTelegram)
-                LPC_TMR16B1->MR3 = sbTimeBit * 50; // Wait at least 50 bit times before sending
+            {
+                // Wait at least 50 bit times before sending
+                LPC_TMR16B1->MR3 = sbTimeBit * 50;
+            }
             else sb_idle_state();
 
             break;

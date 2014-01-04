@@ -122,13 +122,14 @@ typedef struct SbEeprom
     unsigned char commsTabPtr;    // 0x0112: Low byte of the pointer to communication objects table (BCU1 only)
     unsigned char usrInitPtr;     // 0x0113: Low byte of the pointer to user initialization function (BCU1 only)
     unsigned char usrProgPtr;     // 0x0114: Low byte of the pointer to user program function (BCU1 only)
-    unsigned char usrSavePtr;     // 0x0115: Low byte of the pointer to user save function (BCU1 only)
 #if defined(SB_BCU1)
+    unsigned char usrSavePtr;     // 0x0115: Low byte of the pointer to user save function (BCU1 only)
     unsigned char addrTabSize;    // 0x0116: Size of the address table
     unsigned char addrTab[2];     // 0x0117+: Address table, 2 bytes per entry. Real array size is addrTabSize*2
     unsigned char user[220];      // 0x0116: User EEPROM: max 220 bytes (BCU1)
     unsigned char checksum;       // 0x01ff: EEPROM checksum (BCU1 only)
 #else //defined(SB_BCU2)
+    unsigned char appType;        // 0x0115: Application program type: 0=BCU2, else BCU1
     unsigned char user[858];      // 0x0116: User EEPROM: 858 bytes (BCU2)
     unsigned char system[858];    // 0x0470: System EEPROM (BCU2 only)
 #endif

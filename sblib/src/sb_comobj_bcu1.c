@@ -128,7 +128,7 @@ void* sb_get_value_ptr(unsigned short objno)
  * @param groupAddr - the group address to find.
  * @return The index of the group address, 0 if not found.
  */
-short sb_index_of_group_addr(unsigned short groupAddr)
+unsigned short sb_index_of_group_addr(unsigned short groupAddr)
 {
     const unsigned char addrHigh = groupAddr >> 8;;
     const unsigned char addrLow = groupAddr;
@@ -151,13 +151,13 @@ short sb_index_of_group_addr(unsigned short groupAddr)
 }
 
 /**
- * Find the first group address for the given com-object, that also has write
- * and communication enabled.
+ * Find the first group address for the given com-object that has write and
+ * communication enabled.
  *
  * @param objno - the com-object to find
  * @return The group address, or 0 if not found.
  */
-unsigned short sb_find_send_group_addr(unsigned short objno)
+unsigned short sb_get_send_group_addr(unsigned short objno)
 {
     unsigned char* assocTab = sbEepromData + sbEeprom->assocTabPtr;
     unsigned char* assocTabEnd = assocTab + (assocTab[0] << 1);
@@ -357,7 +357,7 @@ void sb_send_next_tel()
         {
             flagsTab[objno >> 1] &= (objno & 1) ? SB_COMFLAG_CLEAR_HIGH : SB_COMFLAG_CLEAR_LOW;
 
-            addr = sb_find_send_group_addr(objno);
+            addr = sb_get_send_group_addr(objno);
             if (addr)
             {
                 startIdx = objno + 1;

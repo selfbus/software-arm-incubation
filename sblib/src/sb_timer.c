@@ -37,7 +37,7 @@ void SysTick_Handler()
 /**
  * Set the wakeup timer.
  *
- * @param timeout - the timeout in usec between wakeups. 0 to disable the timer.
+ * @param timeout - the timeout in usec between wakeups.
  *
  * @brief This timer generates wakeup interrupts. It uses the SysTick timer, which
  * is a 24bit timer that runs with the system clock. The default timeout is 1msec.
@@ -45,8 +45,6 @@ void SysTick_Handler()
  */
 void sb_set_wakeup_time(unsigned int timeout)
 {
-    if(!timeout) timeout = 1000; // default wakeup timeout of 1ms
-
     sbSysTickInc = timeout;
     SysTick_Config(SystemCoreClock / 1000000 * timeout);
     NVIC_EnableIRQ(SysTick_IRQn);

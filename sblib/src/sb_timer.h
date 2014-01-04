@@ -29,7 +29,7 @@ extern unsigned int sbSysTime;
 /**
  * Set the wakeup timer.
  *
- * @param timeout - the timeout in usec between wakeups. 0 to disable the timer.
+ * @param timeout - the timeout in usec between wakeups.
  *
  * @brief This timer generates wakeup interrupts. It uses the SysTick timer, which
  * is a 24bit timer that runs with the system clock. The default timeout is 1msec.

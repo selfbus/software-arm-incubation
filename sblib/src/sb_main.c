@@ -13,6 +13,7 @@
 #include "sb_memory.h"
 #include "sb_eeprom.h"
 #include "sb_comobj.h"
+#include "sb_timer.h"
 #include "internal/sb_hal.h"
 
 #ifdef __USE_CMSIS
@@ -20,6 +21,10 @@
 #endif
 #include "gpio.h"
 #include "sb_timer.h"
+
+// Bitmask for the prog button/led
+#define PROG_BUTTON_MASK (1 << SB_PROG_BIT)
+
 
 /**
  * Initialize the library. Call this function once when the program starts.
@@ -36,6 +41,10 @@ void sb_init()
     LPC_IOCON_PROG = SB_PROG_IOCON;                  // IO configuration for prog button+led
 
     sbUserRam->status = 0x2e;
+
+#ifdef SB_BCU2
+    sbEeprom->appType = 0;  // Set to BCU2 application. ETS reads this when programming.
+#endif
 }
 
 /**
@@ -65,27 +74,24 @@ void sb_main_loop()
     //
     // Handle programming-mode button and LED
     //
-    static unsigned short progButtonLevel = 0;
-    const unsigned int progButtonMask = 1 << SB_PROG_BIT;
-    LPC_GPIO[SB_PROG_PORT]->DIR &= ~progButtonMask; // Set prog button+led to input
-    if (LPC_GPIO[SB_PROG_PORT]->MASKED_ACCESS[progButtonMask] == 0)
+    static unsigned int toggleProgButtonTime = 0;
+    LPC_GPIO[SB_PROG_PORT]->DIR &= ~PROG_BUTTON_MASK; // Set prog button+led to input
+    if (LPC_GPIO[SB_PROG_PORT]->MASKED_ACCESS[PROG_BUTTON_MASK] == 0)
     {
-        if (progButtonLevel < 255)
+        if (toggleProgButtonTime)
         {
-            if (++progButtonLevel == 254)
+            if (sbSysTime >= toggleProgButtonTime)
                 sbUserRam->status ^= 0x81;  // toggle programming mode and checksum bit
         }
+        else toggleProgButtonTime = sbSysTime + 100000; // 100ms time
     }
-    else if (progButtonLevel > 0)
-    {
-        --progButtonLevel;
-    }
+    else toggleProgButtonTime = 0;
 
     LPC_GPIO[SB_PROG_PORT]->DIR |= 1 << SB_PROG_BIT; // Set prog button+led to output
 
     if (sbUserRam->status & SB_STATUS_PROG)
-        LPC_GPIO[SB_PROG_PORT]->MASKED_ACCESS[progButtonMask] = 0;
-    else LPC_GPIO[SB_PROG_PORT]->MASKED_ACCESS[progButtonMask] = progButtonMask;
+        LPC_GPIO[SB_PROG_PORT]->MASKED_ACCESS[PROG_BUTTON_MASK] = 0;
+    else LPC_GPIO[SB_PROG_PORT]->MASKED_ACCESS[PROG_BUTTON_MASK] = PROG_BUTTON_MASK;
 }
 
 /**
