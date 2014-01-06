@@ -58,5 +58,8 @@
 #  define SB_PROG_IOCON   0x20                   /* IOCON configuration for prog button+led */
 #endif
 
+// Bitmask for programming mode button and led
+#define SB_PROG_MASK  (1 << SB_PROG_BIT)
+
 
 #endif /*sb_hal_h*/

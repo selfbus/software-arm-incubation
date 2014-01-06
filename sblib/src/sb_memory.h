@@ -55,41 +55,34 @@
  */
 #if defined(SB_BCU1)
 
-#define SB_USERRAM_START 0
-#define SB_USERRAM_SIZE 256
+# define SB_USERRAM_START 0
+# define SB_USERRAM_SIZE 256
 
-#define SB_EEPROM_START 0x100
-#define SB_EEPROM_SIZE 256
+# define SB_EEPROM_START 0x100
+# define SB_EEPROM_SIZE 256
 
-typedef struct SbUserRam
-{
-    unsigned char data1[0x60];
-    unsigned char status;         // 0x0060: System status. See defines like SB_STATUS_PROG above
-    unsigned char data2[0x3f];
-} SbUserRam;
+#elif defined(SB_BCU2)
 
-#endif /*SB_BCU1*/
+# define SB_USERRAM_START 0
+# define SB_USERRAM_SIZE 256
+
+# define SB_EEPROM_START 0x100
+# define SB_EEPROM_SIZE 1024
+
+#endif /*SB_BCU2*/
 
 
 /*
  * User RAM and EEPROM structures for BCU2
  */
-#if defined(SB_BCU2)
-
-#define SB_USERRAM_START 0
-#define SB_USERRAM_SIZE 256
-
-#define SB_EEPROM_START 0x100
-#define SB_EEPROM_SIZE 1024
-
 typedef struct SbUserRam
 {
-    unsigned char data1[0x60];
+    unsigned char reserved;       // 0x0000: Let's avoid address 0
+    unsigned char progRunning;    // 0x0001: Application program active (Selfbus extension)
+    unsigned char data1[0x5e];
     unsigned char status;         // 0x0060: System status. See defines like SB_STATUS_PROG above
-    unsigned char data2[0x3f];
+    unsigned char data2[SB_USERRAM_SIZE - 0x60];
 } SbUserRam;
-
-#endif /*SB_BCU2*/
 
 /** End addres of userram +1 */
 #define SB_USERRAM_END (SB_EEPROM_START + SB_EEPROM_SIZE)
@@ -126,12 +119,19 @@ typedef struct SbEeprom
     unsigned char usrSavePtr;     // 0x0115: Low byte of the pointer to user save function (BCU1 only)
     unsigned char addrTabSize;    // 0x0116: Size of the address table
     unsigned char addrTab[2];     // 0x0117+: Address table, 2 bytes per entry. Real array size is addrTabSize*2
-    unsigned char user[220];      // 0x0116: User EEPROM: max 220 bytes (BCU1)
+    unsigned char user[220];      // 0x0116: User EEPROM: 220 bytes (BCU1)
     unsigned char checksum;       // 0x01ff: EEPROM checksum (BCU1 only)
 #else //defined(SB_BCU2)
     unsigned char appType;        // 0x0115: Application program type: 0=BCU2, else BCU1
-    unsigned char user[858];      // 0x0116: User EEPROM: 858 bytes (BCU2)
-    unsigned char system[858];    // 0x0470: System EEPROM (BCU2 only)
+    unsigned char addrTabSize;    // 0x0116: Size of the address table ?
+    unsigned char addrTab[2];     // 0x0117+:Address table, 2 bytes per entry. Real array size is addrTabSize*2
+    unsigned char user[856];      // >0x0119:User EEPROM: 856 bytes (BCU2)
+                                  // ------  System EEPROM below
+    unsigned char appLoaded;      // 0x0470: Application load control state (BCU2, Selfbus extension)
+    unsigned char appRunning;     // 0x0471: Application run control state (BCU2, Selfbus extension)
+    unsigned char addrTabLoaded;  // 0x0472: Address table load control state (BCU2, Selfbus extension)
+    unsigned char assocTabLoaded; // 0x0473: Association table load control state (BCU2, Selfbus extension)
+    unsigned char system[139];    // 0x0474: Rest of the system EEPROM (BCU2 only)
 #endif
 } SbEeprom;
 #endif
@@ -142,7 +142,7 @@ typedef struct SbEeprom
  *
  * @see SbComsTab - this structure is used in the communications table.
  */
-typedef struct SbComDesc
+typedef struct
 {
     /** Data pointer. Either to userRam or to eeprom, depending on bit 5 of the config byte */
     unsigned char dataPtr;
@@ -229,7 +229,7 @@ typedef struct SbComDesc
 /**
  * Communications table.
  */
-typedef struct SbComTab
+typedef struct
 {
     /** Number of objects */
     unsigned char count;
@@ -240,6 +240,21 @@ typedef struct SbComTab
     /** Table of object descriptors. */
     SbComDesc desc[];
 } SbComTab;
+
+
+/**
+ * Structure for the global variables.
+ */
+typedef struct
+{
+    /** Is the application running? */
+    unsigned char appRunning;
+} SbGlobal;
+
+/**
+ * The global variables.
+ */
+extern SbGlobal* sbGlobal;
 
 
 /**

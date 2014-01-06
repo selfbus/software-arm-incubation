@@ -197,11 +197,19 @@ void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqNo)
             break;
 
         case SB_PROPERTY_VALUE_READ_PDU:
+            sbSendTelegram[5] = 0x65;
+            sbSendTelegram[6] = 0x43;
+            sbSendTelegram[7] = 0xd6;
             index = sbSendTelegram[8] = sbRecvTelegram[8];
             id = sbSendTelegram[9] = sbRecvTelegram[9];
             count = (sbSendTelegram[10] = sbRecvTelegram[10]) >> 4;
-            address = (sbRecvTelegram[10] << 4) | (sbSendTelegram[11] = sbRecvTelegram[11]);
-            sb_props_read_tel(index, id, count, address);
+            address = ((sbRecvTelegram[10] & 15) << 4) | (sbSendTelegram[11] = sbRecvTelegram[11]);
+            if (sb_props_read_tel(index, id, count, address))
+            {
+                sendAck = SB_T_ACK_PDU;
+                sendTel = 1;
+            }
+            else sendAck = SB_T_NACK_PDU;
             break;
         }
         break;
@@ -217,8 +225,9 @@ void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqNo)
         sbSendTelegram[3] = sbConnectedAddr >> 8;
         sbSendTelegram[4] = sbConnectedAddr;
 
-        if (sbSendTelegram[6] & 0x40) // Add sequence number if applicable
+        if (sbSendTelegram[6] & 0x40) // Add the sequence number if applicable
         {
+            sbSendTelegram[6] &= ~0x3c;
             sbSendTelegram[6] |= sbConnectedSeqNo;
             sbIncConnectedSeqNo = 1;
         }
@@ -269,6 +278,7 @@ void sb_process_con_ctrl_tel(unsigned char tpci)
                 sbConnectedAddr = senderAddr;
                 sbConnectedSeqNo = 0;
                 sbIncConnectedSeqNo = 0;
+                sbSendAck = 0;
             }
         }
         else if (tpci == SB_T_DISCONNECT_PDU)  // Close the direct data connection
@@ -276,7 +286,9 @@ void sb_process_con_ctrl_tel(unsigned char tpci)
             if (sbConnectedAddr == senderAddr)
             {
                 sbConnectedAddr = 0;
+                sbConnectedSeqNo = 0;
                 sbIncConnectedSeqNo = 0;
+                sbSendAck = 0;
             }
         }
     }

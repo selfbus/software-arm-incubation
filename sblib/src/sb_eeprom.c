@@ -36,7 +36,7 @@ int sb_eeprom_init(unsigned int clear)
     // if a clear has been forced we need to clear all sectors for this region
     if (clear)
     {
-        /* before we erase the FLash we need to disable the interrupts.
+        /* before we erase the Flash we need to disable the interrupts.
          * Wait until the bus module is in the idle state
          */
         while (sbState != SB_IDLE);
@@ -52,7 +52,7 @@ int sb_eeprom_init(unsigned int clear)
         }
         __enable_irq();
     }
-    // find the last valid `page` in the flash area
+    // find the last valid 'page' in the flash area
     i           = eeprom_r.rom_pages - 1;
     found       = 0;
     rom_address = SB_EEPROM_FLASH_SECTOR_ADDRESS + i * eeprom_r.size;

@@ -7,7 +7,16 @@
  */
 
 #include "sb_utils.h"
+
+#include "internal/sb_hal.h"
 #include "sb_timer.h"
+
+#ifdef __USE_CMSIS
+# include "LPC11xx.h"
+#endif
+
+#include "gpio.h"
+
 
 /**
  * Initialize a debounce structure. It is sufficient to call this method
@@ -18,7 +27,7 @@
  */
 void sb_init_debounce(SbDebounce* debounce, unsigned int value)
 {
-    debounce->valid = value;
+    debounce->value = value;
     debounce->time = 0;
 }
 
@@ -34,16 +43,37 @@ void sb_init_debounce(SbDebounce* debounce, unsigned int value)
  */
 unsigned int sb_debounce(unsigned int current, unsigned int timeout, SbDebounce* debounce)
 {
-    if (debounce->old != current || !debounce->time || sbSysTime < debounce->time)
+    if (debounce->last != current || !debounce->time || sbSysTime < debounce->time)
     {
         debounce->time = sbSysTime;
-        debounce->old = current;
+        debounce->last = current;
     }
-    else if (debounce->old == current && sbSysTime >= debounce->time + timeout)
+    else if (debounce->last == current && sbSysTime >= debounce->time + timeout)
     {
         debounce->time = 0;
-        debounce->valid = current;
+        debounce->value = current;
     }
 
-    return debounce->valid;
+    return debounce->value;
+}
+
+/**
+ * Indicates a fatal error and stops program execution.
+ * The prog led will flash fast to indicate the error.
+ */
+void sb_fatal()
+{
+    unsigned int mask;
+
+    LPC_GPIO[SB_PROG_PORT]->DIR |= 1 << SB_PROG_BIT; // Set prog button+led to output
+    SysTick_Config(0xffffffUL);
+
+    while (1)
+    {
+        if (SysTick->VAL & 0x800000)
+            mask = SB_PROG_MASK;
+        else mask = 0;
+
+        LPC_GPIO[SB_PROG_PORT]->MASKED_ACCESS[SB_PROG_MASK] = mask;
+    }
 }

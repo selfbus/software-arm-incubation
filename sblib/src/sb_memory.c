@@ -14,3 +14,6 @@ SbUserRam *sbUserRam = (SbUserRam*) sbUserRamData;
 
 unsigned char *sbEepromData = (unsigned char*) eeprom;
 SbEeprom *sbEeprom = (SbEeprom*) eeprom;
+
+static SbGlobal sbGlobalData;
+SbGlobal *sbGlobal = &sbGlobalData;

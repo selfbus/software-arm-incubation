@@ -8,8 +8,24 @@
 #ifndef sb_main_h
 #define sb_main_h
 
+#include "sb_memory.h"
+
+// Define trick to ensure that it is not possible to link a program that is
+// compiled with SB_BCU1 with the SB_BCU2 library and vice versa. This trick
+// renames the function sb_init() to either sb_init_bcu1() or sb_init_bcu2().
+#ifdef SB_BCU2
+#   define sb_init  sb_init_bcu2
+#else
+#   define sb_init  sb_init_bcu1
+#endif
+
+
 /**
  * Initialize the library. Call this function once when the program starts.
+ *
+ * If you get an error when linking your program, saying that sb_init_bcu1 or
+ * sb_init_bcu2 is missing, then the define constants SB_BCU1 / SB_BCU2 of
+ * library and application do not match.
  */
 void sb_init();
 

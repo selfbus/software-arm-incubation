@@ -72,6 +72,11 @@ extern unsigned char *sbSendCurTelegram;
 extern unsigned char *sbSendNextTelegram;
 
 /**
+ * Send an acknowledge or not-acknowledge byte if != 0
+ */
+unsigned char sbSendAck;
+
+/**
  * Our own physical address on the bus.
  */
 extern unsigned short sbOwnPhysicalAddr;
@@ -81,7 +86,7 @@ extern unsigned short sbOwnPhysicalAddr;
  *
  * @return 1 when idle, 0 when not.
  */
-static inline char sb_idle()
+static inline char sb_bus_idle()
 {
     return sbState == SB_IDLE && sbSendCurTelegram == 0 && sbRecvTelegramLen == 0;
 }

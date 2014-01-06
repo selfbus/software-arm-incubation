@@ -11,10 +11,11 @@
 
 #ifdef SB_BCU1
 
-void sb_props_read_tel(unsigned char objectIdx, unsigned char propertyId,
-                       unsigned char count, unsigned short start)
+unsigned char sb_props_read_tel(unsigned char objectIdx, unsigned char propertyId,
+                                unsigned char count, unsigned short start)
 {
     // Dummy implementation: unused for BCU1
+    return 0;
 }
 
 #endif //SB_BCU1

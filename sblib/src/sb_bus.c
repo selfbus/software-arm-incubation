@@ -7,9 +7,11 @@
  */
 
 #include "sb_bus.h"
+
 #include "sb_const.h"
 #include "sb_comobj.h"
 #include "sb_memory.h"
+#include "sb_utils.h"
 
 #ifdef __USE_CMSIS
 # include "LPC11xx.h"
@@ -57,6 +59,9 @@ unsigned char *sbSendNextTelegram;
 // Our own physical address on the bus
 unsigned short sbOwnPhysicalAddr;
 
+// Send an acknowledge or not-acknowledge byte if != 0
+unsigned char sbSendAck;
+
 //----- private variables -----
 
 // Default time between two bits (104 usec)
@@ -77,13 +82,11 @@ static short sbNextByte;
 // The number of repeats when sending a telegram
 static short sbSendTelegramTries;
 
-// Send an acknowledge or not-acknowledge byte if != 0
-static unsigned char sbSendAck;
-
 
 // Telegram repeat flag in byte #0 of the telegram: 1=not repeated, 0=repeated
 #define SB_TEL_REPEAT_FLAG 0x20
 
+static int debugLine = 0;
 
 /**
  * Switch to idle state
@@ -99,6 +102,77 @@ static void sb_idle_state()
 
     GPIOSetValue(BUS_OUT_PORT_PIN, 0);       // Set bus-out pin to 0
     LPC_IOCON_BUS_OUT &= ~(LPC_IOCON_BUS_OUT | BUS_OUT_IOCON_PWM); // Disable bus-out output
+}
+
+/**
+ * Handle the received bytes on a low level. This function is used by
+ * the function TIMER16_1_IRQHandler() to decide about further processing of the
+ * received bytes.
+ *
+ * @param valid - 1 if all bytes had correct parity and the checksum is correct, 0 if not
+ */
+static void sb_handle_tel(unsigned char valid)
+{
+    D(GPIOSetValue(3, 3, 1));         // purple: end of telegram
+
+    if (sbNextByte >= 8 && valid) // Received a valid telegram with correct checksum
+    {
+        unsigned short destAddr = (sbRecvTelegram[3] << 8) | sbRecvTelegram[4];
+        unsigned char processTel = 0;
+
+        // We ACK the telegram only if it's for us
+        if (sbRecvTelegram[5] & 0x80)
+        {
+            if (destAddr == 0 || sb_index_of_group_addr(destAddr))
+                processTel = 1;
+        }
+        else if (destAddr == sbOwnPhysicalAddr)
+        {
+            processTel = 1;
+        }
+
+        // Only process the telegram if it is for us
+        if (processTel)
+        {
+            sbRecvTelegramLen = sbNextByte;
+            sbSendAck = SB_BUS_ACK;
+        }
+    }
+    else if (sbNextByte == 1)   // Received a spike or a bus acknowledgment
+    {
+        sbCurrentByte &= 0xff;
+
+        if ((sbCurrentByte == SB_BUS_ACK || sbSendTelegramTries >= 3) && sbSendCurTelegram)
+        {
+            // Prepare the next telegram for sending
+            sbSendCurTelegram[0] = 0;
+            sbSendCurTelegram = sbSendNextTelegram;
+            sbSendNextTelegram = 0;
+            sbSendTelegramTries = 0;
+            sbSendTelegramLen = 0;
+        }
+    }
+    else // Received more than one byte, but too short for a telegram or wrong checksum
+    {
+        sbRecvTelegramLen = 0;
+        sbSendAck = SB_BUS_NACK;
+    }
+
+    LPC_TMR16B1->MCR = 0x600;  // Interrupt and reset timer on timeout (match of MR3)
+    sbState = SB_SEND_INIT;    // might be changed by sb_idle() below
+    debugLine = __LINE__;
+
+    if (sbSendAck)
+    {
+        // Wait before sending the bus acknowledgement
+        LPC_TMR16B1->MR3 = sbTimeBit * 11 + (sbTimeBit >> 1);
+    }
+    else if (sbSendCurTelegram)
+    {
+        // Wait at least 50 bit times before sending
+        LPC_TMR16B1->MR3 = sbTimeBit * 50;
+    }
+    else sb_idle_state();
 }
 
 /**
@@ -136,64 +210,11 @@ STATE_LOOP:
 
     case SB_RECV_START:
         D(GPIOSetValue(3, 1, 1));   // orange
-        if (LPC_TMR16B1->IR & 0x08)	// Timeout while waiting for next start byte
+        if (LPC_TMR16B1->IR & 0x08)	// Timeout while waiting for the next start byte
         {
-            D(GPIOSetValue(3, 3, 1));         // purple: end of telegram
-            if (sbNextByte >= 8 && !checksum && valid) // Received a valid telegram with correct checksum
-            {
-                unsigned short destAddr = (sbRecvTelegram[3] << 8) | sbRecvTelegram[4];
-                sbRecvTelegramLen = sbNextByte;
-
-                // We ACK the telegram only if it's for us
-                if (sbRecvTelegram[5] & 0x80)
-                {
-                    if (destAddr == 0 || sb_index_of_group_addr(destAddr))
-                        sbSendAck = SB_BUS_ACK;
-                }
-                else if (destAddr == sbOwnPhysicalAddr)
-                {
-                    sbSendAck = SB_BUS_ACK;
-                }
-            }
-            else if (sbNextByte == 1)   // Received a spike or a bus acknowledgment
-            {
-                sbSendAck = 0;
-                sbCurrentByte &= 0xff;
-
-                if (sbCurrentByte == SB_BUS_ACK || sbSendTelegramTries >= 3)
-                {
-                    // Prepare the next telegram for being sent
-                    sbSendCurTelegram[0] = 0;
-                    sbSendCurTelegram = sbSendNextTelegram;
-                    sbSendNextTelegram = 0;
-                    sbSendTelegramTries = 0;
-                    sbSendTelegramLen = 0;
-                }
-            }
-            else // Received more than one byte, but too short for a telegram or wrong checksum
-            {
-                sbRecvTelegramLen = 0;
-                sbSendAck = SB_BUS_NACK;
-            }
-
-            LPC_TMR16B1->MCR = 0x600;  // Interrupt and reset timer on timeout (match of MR3)
-            sbState = SB_SEND_INIT;    // might be changed by sb_idle() below
-
-            if (sbSendAck)
-            {
-                // Wait before sending the bus acknowledgement
-                LPC_TMR16B1->MR3 = sbTimeBit * 11 + (sbTimeBit >> 1);
-            }
-            else if (sbSendCurTelegram)
-            {
-                // Wait at least 50 bit times before sending
-                LPC_TMR16B1->MR3 = sbTimeBit * 50;
-            }
-            else sb_idle_state();
-
+            sb_handle_tel(valid && !checksum);
             break;
         }
-
         LPC_TMR16B1->MR3 = sbTimeByte;
         LPC_TMR16B1->TCR = 2;		// Reset the timer
         LPC_TMR16B1->TCR = 1;		// Enable the timer
@@ -205,7 +226,7 @@ STATE_LOOP:
         parity = 1;
         break;
 
-    case SB_RECV_BYTE: 			// DEBUG info: first expected byte is 0xbc (10111100b, parity 1)
+    case SB_RECV_BYTE:
         if (LPC_TMR16B1->IR & 0x08)
             timer = sbTimeByte;
 
@@ -242,6 +263,12 @@ STATE_LOOP:
         break;
 
     case SB_SEND_INIT:
+        if (!sbSendAck && !sbSendCurTelegram)
+        {
+            sb_idle_state();
+            break;
+        }
+
         sbState = SB_SEND_START;
         if (sbSendCurTelegram)
             sbSendTelegramLen = sb_tel_length(sbSendCurTelegram) + 1;
@@ -249,6 +276,10 @@ STATE_LOOP:
         // No break here
 
     case SB_SEND_START:
+#ifdef DEBUG
+        if (!sbSendAck && !sbSendCurTelegram)
+            sb_fatal();
+#endif
         if (!sbSendAck)
         {
             if (sbSendTelegramTries == 1)
@@ -340,6 +371,7 @@ STATE_LOOP:
         if (sbSendAck || (sbSendTelegramLen && sbSendTelegramTries < 3))
         {
             sbState = SB_SEND_START;
+            debugLine = __LINE__;
             goto STATE_LOOP;
         }
         // no break here
@@ -388,13 +420,14 @@ void sb_send_tel(unsigned char* telegram, unsigned short length)
 
     if (!sbSendCurTelegram) sbSendCurTelegram = telegram;
     else if (!sbSendNextTelegram) sbSendNextTelegram = telegram;
-    else while (1) {}   // soft fault: send buffer overflow
+    else sb_fatal();   // soft fault: send buffer overflow
 
     // Start sending if the bus is idle
     if (sbState == SB_IDLE && !(LPC_TMR16B1->IR & 0x10))
     {
         sbSendTelegramTries = 0;
         sbState = SB_SEND_INIT;
+        debugLine = __LINE__;
 
         LPC_TMR16B1->MR3 = 100;
         LPC_TMR16B1->MCR = 0x600;  // Interrupt and reset timer on match of MR3

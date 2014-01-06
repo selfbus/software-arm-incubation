@@ -40,14 +40,13 @@ int main()
 {
     sb_init();                       // Initialize the library
     sb_set_appdata(0, 4, 0x7054, 2); // We are a "Jung 2118" device, version 0.2
-    sb_set_wakeup_time(5000);        // Optional: set wakeup time (default is 1 msec)
 
     init();
     app_init();
 
     while (1)
     {
-        if (sb_idle())
+        if (sb_bus_idle())
             __WFI();              // Sleep (until the next wakeup time)
 
         sb_main_loop();           // The lib's main loop

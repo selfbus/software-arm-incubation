@@ -26,7 +26,7 @@
 unsigned short lastInputsVal;
 
 // Data structure for the debouncing of the inputs
-SbDebounce inputDebounce = {0x00};
+SbDebounce inputDebounce;
 
 // The com-object values
 ComObjectValues* comObjValues = (ComObjectValues*)(sbUserRamData + UR_COM_OBJ_VALUE0);
@@ -76,7 +76,7 @@ void handle_inputs()
 {
     unsigned char inputsVal = sb_debounce(LPC_GPIO[2]->DATA & 0xff, SB_DEBOUNCE_10MS, & inputDebounce);
 
-    if (lastInputsVal == 0xffff) // handle all input pins on first run
+    if (lastInputsVal == -1) // handle all input pins on first run
         lastInputsVal = ~inputsVal;
 
     if (inputsVal != lastInputsVal)
@@ -143,4 +143,7 @@ void app_init()
     LPC_IOCON->PIO2_5 = 0x30;
     LPC_IOCON->PIO2_6 = 0x30;
     LPC_IOCON->PIO2_7 = 0x30;
+
+    lastInputsVal = -1;
+    sb_init_debounce(&inputDebounce, 0);
 }

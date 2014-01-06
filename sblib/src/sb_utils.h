@@ -21,9 +21,9 @@
  */
 typedef struct
 {
-    unsigned int valid;
-    unsigned int old;
-    unsigned int time;
+    unsigned int value;  // The currently valid value
+    unsigned int last;   // The value of the last sb_debounce() call
+    unsigned int time;   // The system time when the value last changed
 } SbDebounce;
 
 /**
@@ -46,5 +46,27 @@ void sb_init_debounce(SbDebounce* debounce, unsigned int value);
  * @return The debounced value.
  */
 unsigned int sb_debounce(unsigned int current, unsigned int timeout, SbDebounce* debounce);
+
+/**
+ * Indicates a fatal error and stops program execution.
+ * The prog led will flash fast to indicate the error.
+ */
+void sb_fatal();
+
+/**
+ * Calculate the offset of a member in a structure.
+ *
+ * @param type - the type or structure
+ * @param field - the field within the type
+ *
+ * @brief E.g. for the structure
+ *        struct foo
+ *        {
+ *            short a;
+ *            short b;
+ *        };
+ *        SB_OFFSET_OF(foo, b) returns 2
+ */
+#define SB_OFFSET_OF(type, field) ((unsigned long) &(((type *) 0)->field))
 
 #endif /*sb_utils_h*/
