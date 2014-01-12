@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2013 Stefan Taferner <stefan.taferner@gmx.at>
+ *  Copyright (c) 2014 Stefan Taferner <stefan.taferner@gmx.at>
  *                     Martin Glueck <martin@mangari.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -197,6 +197,7 @@ void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqNo)
             break;
 
         case SB_PROPERTY_VALUE_READ_PDU:
+        case SB_PROPERTY_VALUE_WRITE_PDU:
             sbSendTelegram[5] = 0x65;
             sbSendTelegram[6] = 0x43;
             sbSendTelegram[7] = 0xd6;
@@ -204,12 +205,24 @@ void sb_process_direct_tel(unsigned short apci, unsigned short senderSeqNo)
             id = sbSendTelegram[9] = sbRecvTelegram[9];
             count = (sbSendTelegram[10] = sbRecvTelegram[10]) >> 4;
             address = ((sbRecvTelegram[10] & 15) << 4) | (sbSendTelegram[11] = sbRecvTelegram[11]);
-            if (sb_props_read_tel(index, id, count, address))
+
+            sendAck = SB_T_NACK_PDU;
+            if (apci == SB_PROPERTY_VALUE_READ_PDU)
             {
-                sendAck = SB_T_ACK_PDU;
-                sendTel = 1;
+                if (sb_props_read_tel(index, id, count, address))
+                {
+                    sendAck = SB_T_ACK_PDU;
+                    sendTel = 1;
+                }
             }
-            else sendAck = SB_T_NACK_PDU;
+            else
+            {
+                if (sb_props_write_tel(index, id, count, address))
+                {
+                    sendAck = SB_T_ACK_PDU;
+                    sendTel = 1;
+                }
+            }
             break;
         }
         break;

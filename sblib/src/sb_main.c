@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2013 Stefan Taferner <stefan.taferner@gmx.at>
+ *  Copyright (c) 2014 Stefan Taferner <stefan.taferner@gmx.at>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -45,9 +45,14 @@ void sb_init()
 
     sbUserRam->status = 0x2e;
     sbUserRam->progRunning = 1;
+    sbEeprom->runError = 0;
+    sbEeprom->portADDR = 0;
 
 #ifdef SB_BCU2
     sbEeprom->appType = 0;  // Set to BCU2 application. ETS reads this when programming.
+
+    if (sbEeprom->appLoaded > 1)
+        sbEeprom->appLoaded = 0;
 #endif
 }
 

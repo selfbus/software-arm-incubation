@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2013 Stefan Taferner <stefan.taferner@gmx.at>
+ *  Copyright (c) 2014 Stefan Taferner <stefan.taferner@gmx.at>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -131,7 +131,8 @@ typedef struct SbEeprom
     unsigned char appRunning;     // 0x0471: Application run control state (BCU2, Selfbus extension)
     unsigned char addrTabLoaded;  // 0x0472: Address table load control state (BCU2, Selfbus extension)
     unsigned char assocTabLoaded; // 0x0473: Association table load control state (BCU2, Selfbus extension)
-    unsigned char system[139];    // 0x0474: Rest of the system EEPROM (BCU2 only)
+    unsigned short serviceControl;// 0x0474: Service control (BCU2, Selfbus extension)
+    unsigned char system[137];    // 0x0476: Rest of the system EEPROM (BCU2 only)
 #endif
 } SbEeprom;
 #endif

@@ -39,7 +39,7 @@ int main()
             __WFI();              // Sleep (until the next wakeup time)
 
         sb_main_loop();           // The lib's main loop
-//        handle_inputs();          // Handle the input pins
-//        handle_comobj_updates();  // Handle updates of the com-objects
+        handle_inputs();          // Handle the input pins
+        handle_comobj_updates();  // Handle updates of the com-objects
     }
 }

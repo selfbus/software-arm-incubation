@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2013 Stefan Taferner <stefan.taferner@gmx.at>
+ *  Copyright (c) 2014 Stefan Taferner <stefan.taferner@gmx.at>
  *                     Martin Glueck <martin@mangari.org>
  *
  *  This program is free software; you can redistribute it and/or modify

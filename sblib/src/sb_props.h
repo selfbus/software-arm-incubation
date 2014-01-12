@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2013 Stefan Taferner <stefan.taferner@gmx.at>
+ *  Copyright (c) 2014 Stefan Taferner <stefan.taferner@gmx.at>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -13,7 +13,7 @@
 // See KNX 3/7/3 Standardized Identifier Tables, p. 17 for property data types
 
 // Property data type: 1 byte load/run control
-#define SB_PDT_CONTROL         1
+#define SB_PDT_CONTROL         0
 
 // Property data type: 1 byte unsigned char
 #define SB_PDT_UNSIGNED_CHAR   1
@@ -83,6 +83,9 @@ typedef struct SbPropDef
 #define SB_PROPDEF_END { 0, 0, 0 }
 
 
+// Device object property: service control
+#define SB_PID_SERVICE_CONTROL     8
+
 // Device object property: serial number
 #define SB_PID_SERIAL_NUMBER       11
 
@@ -94,6 +97,9 @@ typedef struct SbPropDef
 
 // Device object property: PEI type
 #define SB_PID_PEI_TYPE            16
+
+// Device object property: port configuration
+#define SB_PID_PORT_CONFIGURATION  17
 
 
 // Application object property: load state control
@@ -122,5 +128,20 @@ typedef struct SbPropDef
  */
 unsigned char sb_props_read_tel(unsigned char objectIdx, unsigned char propertyId,
                                 unsigned char count, unsigned short start);
+
+/**
+ * Process a property-value write telegram.
+ * The data to be written is stored in sbRecvTelegram[12+].
+ *
+ * @param objectIdx - the object index
+ * @param propertyId - the property ID
+ * @param count - the number of elements to write
+ * @param start - the index of the first element to write
+ *
+ * @return 1 if the request was processed, 0 if objectIdx or propertyId are
+ *         unsupported or the property is not writable.
+ */
+unsigned char sb_props_write_tel(unsigned char objectIdx, unsigned char propertyId,
+                                 unsigned char count, unsigned short start);
 
 #endif /*sb_props_h*/

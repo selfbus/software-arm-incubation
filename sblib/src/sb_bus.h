@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2013 Stefan Taferner <stefan.taferner@gmx.at>
+ *  Copyright (c) 2014 Stefan Taferner <stefan.taferner@gmx.at>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -74,7 +74,7 @@ extern unsigned char *sbSendNextTelegram;
 /**
  * Send an acknowledge or not-acknowledge byte if != 0
  */
-unsigned char sbSendAck;
+extern unsigned char sbSendAck;
 
 /**
  * Our own physical address on the bus.
