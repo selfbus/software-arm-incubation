@@ -11,6 +11,12 @@
 #define sblib_utils_h
 
 /**
+ * Call when a fatal application error happens. This function will never
+ * return and the program LED will blink rapidly to indicate the error.
+ */
+void fatalError();
+
+/**
  * Get the offset of a field in a class, structure or type.
  *
  * @param type - the class, structure or type.

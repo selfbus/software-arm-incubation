@@ -31,6 +31,14 @@ void delay(unsigned int msec);
 unsigned int millis();
 
 /**
+ * Get the number of milliseconds that elapsed since the reference time.
+ *
+ * @param ref - the reference time to compare with
+ * @return The numer of milliseconds since time.
+ */
+unsigned int elapsed(unsigned int ref);
+
+/**
  * The number of CPU clock cycles per microsecond.
  */
 #define clockCyclesPerMicrosecond() (SystemCoreClock / 1000000)
@@ -412,6 +420,12 @@ ALWAYS_INLINE unsigned int millis()
     return systemTime;
 }
 
+ALWAYS_INLINE unsigned int elapsed(unsigned int ref)
+{
+    extern unsigned int systemTime;
+    return systemTime - ref;
+}
+
 ALWAYS_INLINE void Timer::begin()
 {
     LPC_SYSCON->SYSAHBCLKCTRL |= 1 << (7 + timerNum);
@@ -455,7 +469,6 @@ ALWAYS_INLINE int Timer::flags()
     return flags;
 }
 
-//__attribute__((ALWAYS_INLINE))
 //void Timer::match(short channel, unsigned int value)
 //{
 //    volatile uint32_t* mr = &timer->MR0 + channel;

@@ -10,8 +10,8 @@
 #include <sblib/digital_pin.h>
 
 #include <sblib/arrays.h>
-#include <sblib/hooks.h>
 #include <sblib/platform.h>
+#include <sblib/utils.h>
 
 // The location value for the IO configuration of the RXD pin
 static const int rxPinLocation[] = { PIO1_6, PIO2_7, PIO3_1, PIO3_4 };

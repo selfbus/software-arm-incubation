@@ -1,5 +1,5 @@
 /*
- *  hooks.cpp - Predefined callback hooks.
+ *  utils.cpp - Utility functions.
  *
  *  Copyright (c) 2014 Stefan Taferner <stefan.taferner@gmx.at>
  *
@@ -8,7 +8,7 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/hooks.h>
+#include <sblib/utils.h>
 
 #include <sblib/digital_pin.h>
 #include <sblib/platform.h>

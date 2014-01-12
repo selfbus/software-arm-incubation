@@ -42,6 +42,36 @@ public:
      * Wait until all bytes are written.
      */
     virtual void flush() = 0;
+
+protected:
+    /**
+     * Create a stream with the default timeout of 1 second.
+     */
+    Stream();
+
+    /**
+     * Read the next byte. Wait up to the number of milliseconds that are configured
+     * as timeout.
+     *
+     * @return The read byte (0..255) or -1 if no byte was read.
+     */
+    int timedRead();
+
+//    int timedPeek(); // private method to peek stream with timeout
+//    int peekNextDigit(); // returns the next numeric digit in the stream or -1 if timeout
+
+    unsigned int timeout; // timeout for timed reads in milliseconds
 };
+
+
+//
+//  Inline functions
+//
+
+inline Stream::Stream()
+{
+    timeout = 1000;
+}
+
 
 #endif /*sblib_print_h*/

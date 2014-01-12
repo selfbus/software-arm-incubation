@@ -54,11 +54,6 @@ int Print::println()
     return write('\r') + write('\n');
 }
 
-int Print::write(byte ch)
-{
-    return 0;
-}
-
 int Print::write(const byte* data, int count)
 {
     int wlen = 0;
