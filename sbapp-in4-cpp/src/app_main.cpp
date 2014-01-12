@@ -1,5 +1,5 @@
 /*
- *  A simple application that blinks the LED of the LPCxpresso board (on pin PIO0.7)
+ *  main.cpp - The application's main.
  *
  *  Copyright (c) 2014 Stefan Taferner <stefan.taferner@gmx.at>
  *
@@ -8,7 +8,7 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/core.h>
+#include <sblib/eib.h>
 
 
 /*
@@ -16,7 +16,6 @@
  */
 void setup()
 {
-    pinMode(PIO0_7, OUTPUT);
 }
 
 /*
@@ -24,6 +23,4 @@ void setup()
  */
 void loop()
 {
-    digitalWrite(PIO0_7, !digitalRead(PIO0_7));
-    delay(500);
 }
