@@ -10,8 +10,9 @@
 #ifndef sblib_digital_pin_h
 #define sblib_digital_pin_h
 
-#include <sblib/types.h>
 #include <sblib/ioports.h>
+#include <sblib/platform.h>
+#include <sblib/types.h>
 
 
 /**
@@ -28,7 +29,7 @@ void pinMode(int pin, int mode);
  * @param pin - the pin to set: PIO0_0, PIO0_1, ...
  * @param value - the value to set: true or false.
  */
-void digitalWrite(int pin, boolean value);
+void digitalWrite(int pin, bool value);
 
 /**
  * Read the value of a digital input pin.
@@ -36,7 +37,7 @@ void digitalWrite(int pin, boolean value);
  * @param pin - the pin to read: PIO0_0, PIO0_1, ...
  * @return The value of the pin: true (1) or false (0).
  */
-boolean digitalRead(int pin);
+bool digitalRead(int pin);
 
 /**
  * Get the port number of the pin.
@@ -169,5 +170,21 @@ enum PinMode
  * This enables the UART RXD function on pin PIO1_6.
  */
 #define PINMODE_FUNC(f) ((f) << 18)
+
+
+//
+//  Inline functions
+//
+
+inline void digitalWrite(int pin, bool value)
+{
+    unsigned short mask = digitalPinToBitMask(pin);
+    gpioPorts[digitalPinToPort(pin)]->MASKED_ACCESS[mask] = value ? mask : 0;
+}
+
+inline bool digitalRead(int pin)
+{
+    return gpioPorts[digitalPinToPort(pin)]->MASKED_ACCESS[digitalPinToBitMask(pin)] != 0;
+}
 
 #endif /*sblib_digital_pin_h*/

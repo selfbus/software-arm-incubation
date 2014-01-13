@@ -16,6 +16,7 @@
  */
 void setup()
 {
+    bus.begin();
 }
 
 /*

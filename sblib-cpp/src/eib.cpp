@@ -12,7 +12,7 @@
 
 
 // The default bus access object
-Bus bus(timer16_1);
+Bus bus(timer16_1, PIO1_8, PIO1_10, CAP0, MAT1);
 
 // The interrupt handler for the default bus access object
 BUS_TIMER_INTERRUPT_HANDLER(TIMER16_1_IRQHandler, bus);

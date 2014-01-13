@@ -87,14 +87,3 @@ void pinMode(int pin, int mode)
 
     *(ioconPointer(pin)) = iocon;
 }
-
-void digitalWrite(int pin, boolean value)
-{
-    unsigned short mask = digitalPinToBitMask(pin);
-    gpioPorts[digitalPinToPort(pin)]->MASKED_ACCESS[mask] = value ? mask : 0;
-}
-
-boolean digitalRead(int pin)
-{
-    return gpioPorts[digitalPinToPort(pin)]->MASKED_ACCESS[digitalPinToBitMask(pin)] != 0;
-}

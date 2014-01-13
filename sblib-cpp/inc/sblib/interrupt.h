@@ -52,6 +52,11 @@ void noInterrupts();
 void interrupts();
 
 /**
+ * Wait for an interrupt. Puts the processor to sleep until an interrupt occurs.
+ */
+void waitForInterrupt();
+
+/**
  * Enable an interrupt.
  *
  * @param interruptType - the interrupt to enable: TIMER_16_0_IRQn, I2C_IRQn, ...
@@ -102,6 +107,11 @@ ALWAYS_INLINE void noInterrupts()
 ALWAYS_INLINE void interrupts()
 {
     __enable_irq();
+}
+
+ALWAYS_INLINE void waitForInterrupt()
+{
+    __WFI();
 }
 
 ALWAYS_INLINE void enableInterrupt(IRQn_Type interruptType)

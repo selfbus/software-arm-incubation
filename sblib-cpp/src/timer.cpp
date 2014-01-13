@@ -53,6 +53,17 @@ Timer::Timer(byte aTimerNum)
     timer = timers[aTimerNum];
 }
 
+void Timer::begin()
+{
+    LPC_SYSCON->SYSAHBCLKCTRL |= 1 << (7 + timerNum);
+    timer->EMR = 0;
+}
+
+void Timer::end()
+{
+    LPC_SYSCON->SYSAHBCLKCTRL &= ~(1 << (7 + timerNum));
+}
+
 void Timer::interrupts()
 {
     NVIC_EnableIRQ((IRQn_Type) (TIMER_16_0_IRQn + timerNum));

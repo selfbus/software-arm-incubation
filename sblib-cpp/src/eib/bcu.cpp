@@ -11,8 +11,8 @@
 #include <sblib/eib/bcu.h>
 
 
-UserRam userRam;
-byte* userRamData = (byte*) &userRam;
+byte  __attribute__ ((aligned (4))) userRamData[USER_RAM_SIZE];
+UserRam& userRam = *(UserRam*) userRamData;
 
-UserEeprom userEeprom;
-byte* userEepromData = (byte*) &userEeprom;
+byte  __attribute__ ((aligned (4))) userEepromData[USER_EEPROM_SIZE];
+UserEeprom& userEeprom = *(UserEeprom*) userEepromData;

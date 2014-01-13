@@ -10,7 +10,9 @@
 #ifndef sblib_bits_h
 #define sblib_bits_h
 
+#include <sblib/platform.h>
 #include <sblib/types.h>
+
 
 /**
  * Compute the value of the specified bit.
@@ -74,5 +76,35 @@
  */
 #define highByte(val) (((val) >> ((sizeof(val) - 1) << 3)) & 255)
 
+/**
+ * Reverse the byte order of an integer.
+ *
+ * @param val - the value to reverse.
+ * @return The value with reversed byte order.
+ */
+unsigned int reverseByteOrder(unsigned int val);
+
+/**
+ * Reverse the byte order of a short integer.
+ *
+ * @param val - the value to reverse.
+ * @return The value with reversed byte order.
+ */
+unsigned short reverseByteOrder(unsigned short val);
+
+
+//
+//  Inline functions
+//
+
+ALWAYS_INLINE unsigned int reverseByteOrder(unsigned int val)
+{
+    return __REV(val);
+}
+
+ALWAYS_INLINE unsigned short reverseByteOrder(unsigned short val)
+{
+    return __REV16(val);
+}
 
 #endif /*sblib_bits_h*/

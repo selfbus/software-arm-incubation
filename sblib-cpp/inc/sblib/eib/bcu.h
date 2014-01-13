@@ -31,30 +31,33 @@ class UserEeprom;
 
 
 /**
- * The user RAM as class.
+ * The user RAM.
  */
-extern UserRam userRam;
+extern UserRam& userRam;
 
 /**
  * The user RAM as data array.
  * The array is 256 bytes.
  */
-extern byte* userRamData;
+extern byte userRamData[USER_RAM_SIZE];
 
 /**
- * The user EEPROM as class.
+ * The user EEPROM.
  */
-extern UserEeprom userEeprom;
+extern UserEeprom& userEeprom;
 
 /**
  * The user EEPROM as data array.
  * The array is 255 bytes for BCU 1 and 1023 bytes for BCU 2.
  */
-extern byte* userEepromData;
+extern byte userEepromData[USER_EEPROM_SIZE];
 
 
 /**
  * The user RAM.
+ *
+ * The user RAM can be accessed by name, like userRam.status and as an array, like
+ * userRam[addr]. Please note that the start address of the RAM is subtracted.
  */
 class UserRam
 {
@@ -64,11 +67,24 @@ public:
     byte data1[0x5e];
     byte status;         //!< 0x0060: System status. See defines like SB_STATUS_PROG above
     byte data2[USER_RAM_SIZE - 0x60];
+
+    /**
+     * Access the user RAM like an ordinary array. The start address is subtracted
+     * when accessing the RAM.
+     *
+     * @param idx - the index of the data byte to access.
+     * @return The data byte.
+     */
+    byte& operator[](int idx);
 };
 
 
 /**
  * The user EEPROM.
+ *
+ * The user EEPROM can be accessed by name, like userEeprom.status and as an array, like
+ * userEeprom[addr]. Please note that the start address of the EEPROM is subtracted. That means
+ * userEeprom[0x107] is the correct address for userEeprom.version; not userEeprom[0x07].
  */
 class UserEeprom
 {
@@ -113,6 +129,15 @@ public:
     word serviceControl; //!< 0x0474: Service control (BCU2, Selfbus extension)
     byte system[137];    //!< 0x0476: Rest of the system EEPROM (BCU2 only)
 #endif /*BCU_TYPE*/
+
+    /**
+     * Access the user EEPROM like an ordinary array. The start address is subtracted
+     * when accessing the EEPROM. So use userEeprom[0x107] to access userEeprom.version.
+     *
+     * @param idx - the index of the data byte to access.
+     * @return The data byte.
+     */
+    byte& operator[](int idx);
 };
 
 
@@ -121,5 +146,21 @@ public:
 
 /** End address of the user EEPROM +1, when ETS talks with us. */
 #define USER_EEPROM_END (USER_EEPROM_START + USER_EEPROM_SIZE)
+
+
+//
+//  Inline functions
+//
+
+inline byte& UserRam::operator[](int idx)
+{
+    return *(((byte*) this) + idx - USER_RAM_START);
+}
+
+inline byte& UserEeprom::operator[](int idx)
+{
+    return *(((byte*) this) + idx - USER_EEPROM_START);
+}
+
 
 #endif /*sblib_bcu_h*/

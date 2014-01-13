@@ -152,13 +152,27 @@ public:
     void reset();
 
     /**
-     * Enable timer interrupts.
+     * Read the current value of the timer.
+     *
+     * @return The timer value.
+     */
+    unsigned int value() const;
+
+    /**
+     * Set the current value of the timer.
+     *
+     * @param val - The new timer value.
+     */
+    void value(unsigned int val);
+
+    /**
+     * Enable timer interrupts for this timer.
      * Use start() to start the timer.
      */
     void interrupts();
 
     /**
-     * Disable timer interrupts.
+     * Disable timer interrupts for this timer.
      * Use stop() to stop the timer.
      */
     void noInterrupts();
@@ -181,6 +195,7 @@ public:
      * DISABLE:      Disable matching for this match channel.
      * INTERRUPT:    Generate a timer interrupt when the contents of the match channel matches
      *               the value of the timer.
+     * RESET:        Reset the timer on match.
      * STOP:         Stop the timer when the contents of the match channel matches the value
      *               of the timer.
      * CLEAR:        Clear the digital pin of the match channel to 0 on match.
@@ -426,16 +441,6 @@ ALWAYS_INLINE unsigned int elapsed(unsigned int ref)
     return systemTime - ref;
 }
 
-ALWAYS_INLINE void Timer::begin()
-{
-    LPC_SYSCON->SYSAHBCLKCTRL |= 1 << (7 + timerNum);
-}
-
-ALWAYS_INLINE void Timer::end()
-{
-    LPC_SYSCON->SYSAHBCLKCTRL &= ~(1 << (7 + timerNum));
-}
-
 ALWAYS_INLINE void Timer::prescaler(unsigned int factor)
 {
     timer->PR = factor;
@@ -462,6 +467,16 @@ ALWAYS_INLINE void Timer::reset()
     timer->TCR &= 2;
 }
 
+ALWAYS_INLINE unsigned int Timer::value() const
+{
+    return timer->TC;
+}
+
+ALWAYS_INLINE void Timer::value(unsigned int val)
+{
+    timer->TC = val;
+}
+
 ALWAYS_INLINE int Timer::flags()
 {
     int flags = timer->IR;
@@ -478,6 +493,12 @@ ALWAYS_INLINE int Timer::flags()
 ALWAYS_INLINE unsigned int Timer::match(int channel) const
 {
     return *(&(timer->MR0) + channel);
+}
+
+
+ALWAYS_INLINE unsigned int Timer::capture(int channel) const
+{
+    return *(&(timer->CR0) + channel);
 }
 
 ALWAYS_INLINE void Timer::pwmEnable(int channel)

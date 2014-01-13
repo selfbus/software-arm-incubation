@@ -42,6 +42,24 @@ public:
      * End using the EIB bus coupling unit.
      */
     void end();
+
+    /**
+     * Test if the programming mode is active. This is also indicated
+     * by the programming mode LED.
+     *
+     * @return 1 if the programming mode is active, 0 if not.
+     */
+    boolean programmingMode() const;
 };
+
+
+//
+//  Inline functions
+//
+
+inline boolean EIB::programmingMode() const
+{
+    return false;
+}
 
 #endif /*sblib_eib_h*/
