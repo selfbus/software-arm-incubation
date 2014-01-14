@@ -12,6 +12,14 @@
 
 #include <sblib/core.h>
 
+class Bus;
+
+/**
+ * The EIB bus access object.
+ */
+extern Bus bus;
+
+
 // The state of the lib's telegram sending/receiving
 enum SbState
 {
@@ -77,7 +85,7 @@ extern unsigned char sbSendTelegram[SB_TELEGRAM_SIZE];
 /**
  * The telegram that is currently being sent.
  */
-extern unsigned char *sbSendCurTelegram;
+extern unsigned char *sendCurTelegram;
 
 /**
  * The telegram to be sent after sbSendTelegram is done.
@@ -137,7 +145,7 @@ public:
     void end();
 
     /**
-     * Test if the bus is idle and no telegram is about to being sent or received.
+     * Test if the bus is idle, no telegram is about to being sent or received.
      *
      * @return true when idle, false when not.
      */
@@ -158,7 +166,27 @@ public:
      */
     void timerInterruptHandler();
 
-    /** The state of the lib's telegram sending/receiving */
+    /**
+     * Test if there is a telegram being sent.
+     *
+     * @return True if there is a telegram to be sent, false if not.
+     */
+    bool sendingTelegram() const;
+
+    /**
+     * Test if there is a received telegram in bus.telegram[].
+     *
+     * @return True if there is a telegram in bus.telegram[], false if not.
+     */
+    bool telegramReceived() const;
+
+    /**
+     * Discard the received telegram. Call this method when you successfully
+     * processed the telegram.
+     */
+    void discardReceivedTelegram();
+
+    /** The state of the telegram sending/receiving */
     enum State
     {
         IDLE,                //!< The lib is idle. No receiving or sending.
@@ -188,8 +216,6 @@ private:
      */
     void idleState();
 
-    int indexOfGroupAddr(int addr) const;
-
     /**
      * Prepare the telegram for sending. Set the sender address to our own
      * address, and calculate the checksum of the telegram.
@@ -209,52 +235,75 @@ private:
      */
     void handleTelegram(bool valid);
 
-private:
-    Timer& timer;            //!< The timer
-    byte state;              //!< The state of the lib's telegram sending/receiving
+protected:
+    friend class BCU;
+    unsigned short ownAddr;  //!< Our own physical address on the bus
     byte sendAck;            //!< Send an acknowledge or not-acknowledge byte if != 0
+
+private:
+    byte state;              //!< The state of the lib's telegram sending/receiving
     byte telegramLen;        //!< The total length of the received telegram in telegram[]
     byte sbNextByte;         //!< The number of the next byte in the telegram
     byte sendTries;          //!< The number of repeats when sending a telegram
 
+    Timer& timer;            //!< The timer
     int currentByte;         //!< The current byte that is received/sent, including the parity bit
-    unsigned short ownAddr;  //!< Our own physical address on the bus
+
+    // The size of the to be sent telegram in bytes (including the checksum).
+    unsigned short sendTelegramLen;
+
+    // The telegram that is currently being sent.
+    unsigned char *sendCurTelegram;
+
+    // The telegram to be sent after sbSendTelegram is done.
+    unsigned char *sbSendNextTelegram;
 };
 
 
 /**
- * Get the length of a telegram, including the protocol header but excluding
- * the checksum byte.
- *
- * @param telegram - the telegram to query
- *
- * @return The length of the telegram, excluding the checksum byte.
- */
-#define sb_tel_length(telegram) (7 + (telegram[5] & 15))
-
-
-//
-//  Inline functions
-//
-
-/**
- * Test if the bus is idle and no telegram is about to being sent.
- *
- * @return true when idle, false when not.
- */
-inline bool Bus::idle() const
-{
-    return state == SB_IDLE && sbSendCurTelegram == 0 && telegramLen == 0;
-}
-
-
-/**
- * Create an interrupt handler for the EIB bus access.
+ * Create an interrupt handler for the EIB bus access. This macro must be used
+ * once for every Bus object that is created. For the default bus object, this is
+ * done.
  *
  * @param handler - the name of the interrupt handler, e.g. TIMER16_0_IRQHandler
  * @param busObj - the bus object that shall receive the interrupt.
  */
 #define BUS_TIMER_INTERRUPT_HANDLER(handler, busObj) \
     extern "C" void handler() { busObj.timerInterruptHandler(); }
+
+/**
+ * Get the size of a telegram, including the protocol header but excluding
+ * the checksum byte.
+ *
+ * @param telegram - the telegram to query
+ *
+ * @return The size of the telegram, excluding the checksum byte.
+ */
+#define telegramSize(tel) (7 + (tel[5] & 15))
+
+
+//
+//  Inline functions
+//
+
+inline bool Bus::idle() const
+{
+    return state == SB_IDLE && sendCurTelegram == 0 && telegramLen == 0;
+}
+
+inline bool Bus::sendingTelegram() const
+{
+    return sendCurTelegram != 0;
+}
+
+inline bool Bus::telegramReceived() const
+{
+    return telegramLen != 0;
+}
+
+inline void Bus::discardReceivedTelegram()
+{
+    telegramLen = 0;
+}
 
 #endif /*sblib_bus_h*/

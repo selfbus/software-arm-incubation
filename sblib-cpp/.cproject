@@ -44,7 +44,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/inc}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.cpp.lib.debug.option.optimization.level.791497628" name="Optimization Level" superClass="com.crt.advproject.cpp.lib.debug.option.optimization.level"/>
-								<option id="gnu.cpp.compiler.option.warnings.allwarn.2088451825" superClass="gnu.cpp.compiler.option.warnings.allwarn" value="false" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.warnings.allwarn.2088451825" name="All warnings (-Wall)" superClass="gnu.cpp.compiler.option.warnings.allwarn" value="false" valueType="boolean"/>
 								<inputType id="com.crt.advproject.compiler.cpp.input.1961619982" superClass="com.crt.advproject.compiler.cpp.input"/>
 							</tool>
 							<tool id="com.crt.advproject.gcc.lib.debug.1381579034" name="MCU C Compiler" superClass="com.crt.advproject.gcc.lib.debug">
@@ -64,7 +64,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/inc}&quot;"/>
 								</option>
-								<option id="com.crt.advproject.gcc.lib.debug.option.optimization.level.1981043732" name="Optimization Level" superClass="com.crt.advproject.gcc.lib.debug.option.optimization.level"/>
+								<option id="com.crt.advproject.gcc.lib.debug.option.optimization.level.1981043732" name="Optimization Level" superClass="com.crt.advproject.gcc.lib.debug.option.optimization.level" value="gnu.c.optimization.level.optimize" valueType="enumerated"/>
+								<option id="com.crt.advproject.gcc.lib.debug.option.debugging.level.1226848548" name="Debug Level" superClass="com.crt.advproject.gcc.lib.debug.option.debugging.level" value="gnu.c.debugging.level.default" valueType="enumerated"/>
 								<inputType id="com.crt.advproject.compiler.input.538775871" superClass="com.crt.advproject.compiler.input"/>
 							</tool>
 							<tool id="com.crt.advproject.gas.lib.debug.1846050850" name="MCU Assembler" superClass="com.crt.advproject.gas.lib.debug">

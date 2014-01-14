@@ -11,37 +11,17 @@
 #include <sblib/eib/com_objects.h>
 
 
-void ComObjects::set(short objno, int value)
+int nextUpdatedObject()
 {
-    ComType t = type(objno);
+    return -1;
 }
 
-void ComObjects::set(short objno, byte* value)
+void processGroupTelegram(int addr, int apci)
 {
-    ComType t = type(objno);
+
 }
 
-int ComObjects::asInt(short objno) const
-{
-    return 0;
-}
-
-byte* ComObjects::asArray(short objno) const
-{
-    return 0;
-}
-
-ComType ComObjects::type(short objno) const
-{
-    return BIT_1;
-}
-
-short ComObjects::size(short objno) const
-{
-    return 0;
-}
-
-short ComObjects::count() const
+byte* objectFlagsTable()
 {
     return 0;
 }

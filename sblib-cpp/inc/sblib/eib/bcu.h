@@ -11,156 +11,153 @@
 #define sblib_bcu_h
 
 #include <sblib/types.h>
+#include <sblib/eib/bus.h>
+#include <sblib/eib/bcu_type.h>
+#include <sblib/eib/user_memory.h>
 
-// Fallback to BCU1 if BCU_TYPE is not defined
-#ifndef BCU_TYPE
-# define BCU_TYPE 0x10
-#endif
-
-// Include BCU specific stuff
-#if BCU_TYPE == 0x10
-#  include <sblib/eib/bcu_1.h>
-#elif BCU_TYPE == 0x20
-#  include <sblib/eib/bcu_2.h>
-#else
-#  error "Unsupported BCU type"
-#endif
-
-class UserRam;
-class UserEeprom;
+class BCU;
+class BUS;
 
 
 /**
- * The user RAM.
+ * The EIB bus coupling unit.
  */
-extern UserRam& userRam;
-
-/**
- * The user RAM as data array.
- * The array is 256 bytes.
- */
-extern byte userRamData[USER_RAM_SIZE];
-
-/**
- * The user EEPROM.
- */
-extern UserEeprom& userEeprom;
-
-/**
- * The user EEPROM as data array.
- * The array is 255 bytes for BCU 1 and 1023 bytes for BCU 2.
- */
-extern byte userEepromData[USER_EEPROM_SIZE];
+extern BCU bcu;
 
 
 /**
- * The user RAM.
- *
- * The user RAM can be accessed by name, like userRam.status and as an array, like
- * userRam[addr]. Please note that the start address of the RAM is subtracted.
+ * Class for controlling all BCU related things.
  */
-class UserRam
+class BCU
 {
 public:
-    byte reserved;       //!< 0x0000: Let's avoid address 0
-    byte progRunning;    //!< 0x0001: Application program active (Selfbus extension)
-    byte data1[0x5e];
-    byte status;         //!< 0x0060: System status. See defines like SB_STATUS_PROG above
-    byte data2[USER_RAM_SIZE - 0x60];
+    /**
+     * Begin using the EIB bus coupling unit.
+     */
+    void begin();
 
     /**
-     * Access the user RAM like an ordinary array. The start address is subtracted
-     * when accessing the RAM.
-     *
-     * @param idx - the index of the data byte to access.
-     * @return The data byte.
+     * End using the EIB bus coupling unit.
      */
-    byte& operator[](int idx);
-};
-
-
-/**
- * The user EEPROM.
- *
- * The user EEPROM can be accessed by name, like userEeprom.status and as an array, like
- * userEeprom[addr]. Please note that the start address of the EEPROM is subtracted. That means
- * userEeprom[0x107] is the correct address for userEeprom.version; not userEeprom[0x07].
- */
-class UserEeprom
-{
-public:
-    byte optionReg;      //!< 0x0100: EEPROM option register
-    byte manuDataH;      //!< 0x0101: Manufacturing data high byte
-    byte manuDataL;      //!< 0x0102: Manufacturing data low byte
-    byte manufacturerH;  //!< 0x0103: Software manufacturer high byte
-    byte manufacturerL;  //!< 0x0104: Software manufacturer low byte
-    byte deviceTypeH;    //!< 0x0105: Device type high byte
-    byte deviceTypeL;    //!< 0x0106: Device type low byte
-    byte version;        //!< 0x0107: Software version
-    byte checkLimit;     //!< 0x0108: EEPROM check limit
-    byte peiTypeExpectd; //!< 0x0109: PEI type that the software requires
-    byte syncRate;       //!< 0x010a: Baud rate for serial synchronous PEI
-    byte portCDDR;       //!< 0x010b: Port C DDR settings (PEI type 17)
-    byte portADDR;       //!< 0x010c: Port A DDR settings
-    byte runError;       //!< 0x010d: Runtime error flags
-    byte routeCnt;       //!< 0x010e: Routing count constant
-    byte maxRetransmit;  //!< 0x010f: INAK and BUSY retransmit limit
-    byte confDesc;       //!< 0x0110: Configuration descriptor
-    byte assocTabPtr;    //!< 0x0111: Low byte of the pointer to association table (BCU1 only)
-    byte commsTabPtr;    //!< 0x0112: Low byte of the pointer to communication objects table (BCU1 only)
-    byte usrInitPtr;     //!< 0x0113: Low byte of the pointer to user initialization function (BCU1 only)
-    byte usrProgPtr;     //!< 0x0114: Low byte of the pointer to user program function (BCU1 only)
-#if BCU_TYPE == 0x10
-    byte usrSavePtr;     //!< 0x0115: Low byte of the pointer to user save function (BCU1 only)
-    byte addrTabSize;    //!< 0x0116: Size of the address table
-    byte addrTab[2];     //!< 0x0117+: Address table, 2 bytes per entry. Real array size is addrTabSize*2
-    byte user[220];      //!< 0x0116: User EEPROM: 220 bytes (BCU1)
-    byte checksum;       //!< 0x01ff: EEPROM checksum (BCU1 only)
-#elif BCU_TYPE == 0x20
-    byte appType;        //!< 0x0115: Application program type: 0=BCU2, else BCU1
-    byte addrTabSize;    //!< 0x0116: Size of the address table ?
-    byte addrTab[2];     //!< 0x0117+:Address table, 2 bytes per entry. Real array size is addrTabSize*2
-    byte user[856];      //!< 0x0119+:User EEPROM: 856 bytes (BCU2)
-                         //!< ------  System EEPROM below
-    byte appLoaded;      //!< 0x0470: Application load control state (BCU2, Selfbus extension)
-    byte appRunning;     //!< 0x0471: Application run control state (BCU2, Selfbus extension)
-    byte addrTabLoaded;  //!< 0x0472: Address table load control state (BCU2, Selfbus extension)
-    byte assocTabLoaded; //!< 0x0473: Association table load control state (BCU2, Selfbus extension)
-    word serviceControl; //!< 0x0474: Service control (BCU2, Selfbus extension)
-    byte system[137];    //!< 0x0476: Rest of the system EEPROM (BCU2 only)
-#endif /*BCU_TYPE*/
+    void end();
 
     /**
-     * Access the user EEPROM like an ordinary array. The start address is subtracted
-     * when accessing the EEPROM. So use userEeprom[0x107] to access userEeprom.version.
+     * Set manufacturer data, manufacturer-ID, and device type.
      *
-     * @param idx - the index of the data byte to access.
-     * @return The data byte.
+     * @param data - the manufacturer data (16 bit)
+     * @param manufacturer - the manufacturer ID (16 bit)
+     * @param deviceType - the device type (16 bit)
+     * @param version - the version of the application program (8 bit)
      */
-    byte& operator[](int idx);
+    void appData(int data, int manufacturer, int deviceType, byte version);
+
+    /**
+     * Set our own physical address
+     *
+     * @param addr - the physical address
+     */
+    void setOwnAddress(int addr);
+
+    /**
+     * Test if the programming mode is active. This is also indicated
+     * by the programming mode LED.
+     *
+     * @return True if the programming mode is active, false if not.
+     */
+    bool programmingMode() const;
+
+    /**
+     * Test if the user application is active. The application is active
+     * if the application layer is active in userRam.status and the programming
+     * mode is not active.
+     *
+     * @return True if the user application is active, false if not.
+     */
+    bool applicationRunning() const;
+
+    /**
+     * Test if a direct data connection is open.
+     *
+     * @return True if a connection is open, false if not.
+     */
+    bool directConnection() const;
+
+    /**
+     * Process the received telegram from bus.telegram.
+     * Called by main()
+     */
+    void processTelegram();
+
+    /**
+     * A buffer for sending telegrams. This buffer is considered library private
+     * and should rather not be used by the application program.
+     */
+    byte sendTelegram[Bus::TELEGRAM_SIZE];
+
+protected:
+    /**
+     * Process a unicast connection control telegram with our physical address as
+     * destination address. The telegram is stored in sbRecvTelegram[].
+     *
+     * When this function is called, the sender address is != 0 (not a broadcast).
+     *
+     * @param tpci - the transport control field
+     */
+    void processConControlTelegram(int tpci);
+
+    /**
+     * Process a unicast telegram with our physical address as destination address.
+     * The telegram is stored in sbRecvTelegram[].
+     *
+     * When this function is called, the sender address is != 0 (not a broadcast).
+     *
+     * @param apci - the application control field
+     * @param senderSeqNo - the sequence number of the sender
+     */
+    void processDirectTelegram(int apci, int senderSeqNo);
+
+    /**
+     * Send a connection control telegram.
+     *
+     * @param cmd - the transport command, see SB_T_xx defines
+     * @param senderSeqNo - the sequence number of the sender, 0 if not required
+     */
+    void sendConControlTelegram(int cmd, int senderSeqNo);
+
+    /**
+     * Process a device-descriptor-read request.
+     *
+     * @param id - the device-descriptor type ID
+     *
+     * @return True on success, false on failure
+     */
+    bool processDeviceDescriptorReadTelegram(int id);
+
+private:
+    byte sendCtrlTelegram[8];   //!< A short buffer for connection control telegrams.
+    int  connectedAddr;         //!< Remote address of the connected partner.
+    int  connectedSeqNo;        //!< Sequence number for connected data telegrams.
+    bool incConnectedSeqNo;     //!< True if the sequence number shall be incremented on ACK.
 };
-
-
-/** End address of the user RAM +1, when ETS talks with us. */
-#define USER_RAM_END (USER_RAM_START + USER_RAM_SIZE)
-
-/** End address of the user EEPROM +1, when ETS talks with us. */
-#define USER_EEPROM_END (USER_EEPROM_START + USER_EEPROM_SIZE)
 
 
 //
 //  Inline functions
 //
 
-inline byte& UserRam::operator[](int idx)
+inline bool BCU::programmingMode() const
 {
-    return *(((byte*) this) + idx - USER_RAM_START);
+    return (userRam.status & BCU_STATUS_PROG) == BCU_STATUS_PROG;
 }
 
-inline byte& UserEeprom::operator[](int idx)
+inline bool BCU::applicationRunning() const
 {
-    return *(((byte*) this) + idx - USER_EEPROM_START);
+    return (userRam.status & (BCU_STATUS_PROG | BCU_STATUS_AL) ) == BCU_STATUS_AL;
 }
 
+inline bool BCU::directConnection() const
+{
+    return connectedAddr != 0;
+}
 
 #endif /*sblib_bcu_h*/

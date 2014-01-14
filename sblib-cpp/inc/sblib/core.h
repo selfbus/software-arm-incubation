@@ -12,6 +12,7 @@
 
 #include <sblib/analog_pin.h>
 #include <sblib/bits.h>
+#include <sblib/debounce.h>
 #include <sblib/digital_pin.h>
 #include <sblib/interrupt.h>
 #include <sblib/main.h>

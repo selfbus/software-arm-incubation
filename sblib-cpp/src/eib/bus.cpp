@@ -12,6 +12,15 @@
 
 #include <sblib/core.h>
 #include <sblib/platform.h>
+#include <sblib/eib/addr_tables.h>
+#include <sblib/eib/user_memory.h>
+
+
+// The EIB bus access object
+Bus bus(timer16_1, PIO1_8, PIO1_10, CAP0, MAT1);
+
+// The interrupt handler for the EIB bus access object
+BUS_TIMER_INTERRUPT_HANDLER(TIMER16_1_IRQHandler, bus);
 
 
 /*
@@ -42,15 +51,6 @@ int txPin = PIO1_10;
 
 // The telegram buffer for sending
 unsigned char sbSendTelegram[SB_TELEGRAM_SIZE];
-
-// The size of the to be sent telegram in bytes (including the checksum).
-unsigned short sbSendTelegramLen;
-
-// The telegram that is currently being sent.
-unsigned char *sbSendCurTelegram;
-
-// The telegram to be sent after sbSendTelegram is done.
-unsigned char *sbSendNextTelegram;
 
 //----- private variables -----
 
@@ -92,20 +92,20 @@ static LPC_GPIO_TypeDef (* const LPC_GPIO[4]) = { LPC_GPIO0, LPC_GPIO1, LPC_GPIO
 
 Bus::Bus(Timer& aTimer, int aRxPin, int aTxPin, byte aCaptureChannel, byte aMatchChannel)
 :timer(aTimer)
-,state(Bus::IDLE)
 {
+    state = Bus::IDLE;
 }
 
 void Bus::begin()
 {
-    ownAddr = 0x11fe; // FIXME (sbEeprom->addrTab[0] << 8) | sbEeprom->addrTab[1];
+    ownAddr = (userEeprom.addrTab[0] << 8) | userEeprom.addrTab[1];
 
     telegramLen = 0;
 
     state = Bus::IDLE;
     sendAck = 0;
     sbSendTelegram[0] = 0;
-    sbSendCurTelegram = 0;
+    sendCurTelegram = 0;
     sbSendNextTelegram = 0;
 
     LPC_SYSCON->SYSAHBCLKCTRL |= 1 << 8; // Enable the clock for the timer
@@ -183,12 +183,6 @@ void Bus::idleState()
     LPC_IOCON_BUS_OUT &= ~(LPC_IOCON_BUS_OUT | BUS_OUT_IOCON_PWM); // Disable bus-out output
 }
 
-int Bus::indexOfGroupAddr(int addr) const
-{
-    // TODO temporary function
-    return 1;
-}
-
 void Bus::handleTelegram(bool valid)
 {
     D(digitalWrite(PIO3_3, 1));         // purple: end of telegram
@@ -201,7 +195,7 @@ void Bus::handleTelegram(bool valid)
         // We ACK the telegram only if it's for us
         if (telegram[5] & 0x80)
         {
-            if (destAddr == 0 || indexOfGroupAddr(destAddr))
+            if (destAddr == 0 || indexOfAddr(destAddr) >= 0)
                 processTel = true;
         }
         else if (destAddr == ownAddr)
@@ -209,8 +203,12 @@ void Bus::handleTelegram(bool valid)
             processTel = true;
         }
 
-        // Only process the telegram if it is for us
-        if (processTel)
+        // Only process the telegram if it is for us or if we want to get all telegrams
+        if (!(userRam.status & BCU_STATUS_TL))
+        {
+            telegramLen = sbNextByte;
+        }
+        else if (processTel)
         {
             telegramLen = sbNextByte;
             sendAck = SB_BUS_ACK;
@@ -220,14 +218,14 @@ void Bus::handleTelegram(bool valid)
     {
         currentByte &= 0xff;
 
-        if ((currentByte == SB_BUS_ACK || sendTries >= 3) && sbSendCurTelegram)
+        if ((currentByte == SB_BUS_ACK || sendTries >= 3) && sendCurTelegram)
         {
             // Prepare the next telegram for sending
-            sbSendCurTelegram[0] = 0;
-            sbSendCurTelegram = sbSendNextTelegram;
+            sendCurTelegram[0] = 0;
+            sendCurTelegram = sbSendNextTelegram;
             sbSendNextTelegram = 0;
             sendTries = 0;
-            sbSendTelegramLen = 0;
+            sendTelegramLen = 0;
         }
     }
     else // Received more than one byte, but too short for a telegram or wrong checksum
@@ -245,7 +243,7 @@ void Bus::handleTelegram(bool valid)
         // Wait before sending the bus acknowledgement
         LPC_TMR16B1->MR3 = BIT_TIME * 11 + (BIT_TIME >> 1);
     }
-    else if (sbSendCurTelegram)
+    else if (sendCurTelegram)
     {
         // Wait at least 50 bit times before sending
         LPC_TMR16B1->MR3 = BIT_TIME * 50;
@@ -261,7 +259,7 @@ void Bus::timerInterruptHandler()
     static unsigned char parity;   // parity bit of the current byte
     static unsigned char valid;    // 1 if parity is valid for all bits of the telegram
     static unsigned char checksum; // checksum of the telegram: 0 if valid at end of telegram
-    unsigned short timer = LPC_TMR16B1->CR0;
+    unsigned short rxTime = LPC_TMR16B1->CR0;
     unsigned int val;
 
     // Debug output
@@ -303,12 +301,12 @@ STATE_LOOP:
 
     case Bus::RECV_BYTE:
         if (LPC_TMR16B1->IR & 0x08)
-            timer = BYTE_TIME;
+            rxTime = BYTE_TIME;
 
-        if (timer >= bitTime + BIT_WAIT_TIME)
+        if (rxTime >= bitTime + BIT_WAIT_TIME)
         {
             bitTime += BIT_TIME;
-            while (timer >= bitTime + BIT_WAIT_TIME && bitMask <= 0x100)
+            while (rxTime >= bitTime + BIT_WAIT_TIME && bitMask <= 0x100)
             {
                 currentByte |= bitMask;
                 parity = !parity;
@@ -338,21 +336,21 @@ STATE_LOOP:
         break;
 
     case Bus::SEND_INIT:
-        if (!sendAck && !sbSendCurTelegram)
+        if (!sendAck && !sendCurTelegram)
         {
             idleState();
             break;
         }
 
         state = Bus::SEND_START;
-        if (sbSendCurTelegram)
-            sbSendTelegramLen = sb_tel_length(sbSendCurTelegram) + 1;
-        else sbSendTelegramLen = 0;
+        if (sendCurTelegram)
+            sendTelegramLen = telegramSize(sendCurTelegram) + 1;
+        else sendTelegramLen = 0;
         // No break here
 
     case Bus::SEND_START:
 #ifdef DEBUG
-        if (!sendAck && !sbSendCurTelegram)
+        if (!sendAck && !sendCurTelegram)
             fatalError();
 #endif
         if (!sendAck)
@@ -360,8 +358,8 @@ STATE_LOOP:
             if (sendTries == 1)
             {
                 // If it is the first repeat, then mark the telegram as being repeated and correct the checksum
-                sbSendCurTelegram[0] &= ~SB_TEL_REPEAT_FLAG;
-                sbSendCurTelegram[sbSendTelegramLen - 1] ^= SB_TEL_REPEAT_FLAG;
+                sendCurTelegram[0] &= ~SB_TEL_REPEAT_FLAG;
+                sendCurTelegram[sendTelegramLen - 1] ^= SB_TEL_REPEAT_FLAG;
             }
 
             ++sendTries;
@@ -388,7 +386,7 @@ STATE_LOOP:
 
         if (sendAck)
             currentByte = sendAck;
-        else currentByte = sbSendCurTelegram[sbNextByte++];
+        else currentByte = sendCurTelegram[sbNextByte++];
 
         // Calculate the parity bit
         for (bitMask = 1; bitMask < 0x100; bitMask <<= 1)
@@ -400,19 +398,19 @@ STATE_LOOP:
 
     case Bus::SEND_BYTE:
         D(digitalWrite(PIO3_2, 1));    // yellow: send next bits
-        timer = BIT_TIME;
+        rxTime = BIT_TIME;
         while ((currentByte & bitMask) && bitMask <= 0x100)
         {
             bitMask <<= 1;
-            timer += BIT_TIME;
+            rxTime += BIT_TIME;
         }
         bitMask <<= 1;
 
         if (bitMask > 0x200)
         {
-            timer += BIT_TIME * 3; // Stop bit + inter-byte timeout
+            rxTime += BIT_TIME * 3; // Stop bit + inter-byte timeout
 
-            if (sbNextByte < sbSendTelegramLen && !sendAck)
+            if (sbNextByte < sendTelegramLen && !sendAck)
             {
                 state = Bus::SEND_BIT_0;
             }
@@ -422,8 +420,8 @@ STATE_LOOP:
                 LPC_IOCON_BUS_OUT &= ~(LPC_IOCON_BUS_OUT | BUS_OUT_IOCON_PWM); // Disable bus-out output
             }
         }
-        LPC_TMR16B1->MR3 = timer;   // Reset and interrupt at the next 0 bit
-        LPC_TMR16B1_MR_OUT = timer - (BIT_TIME - BIT_WAIT_TIME);
+        LPC_TMR16B1->MR3 = rxTime;   // Reset and interrupt at the next 0 bit
+        LPC_TMR16B1_MR_OUT = rxTime - (BIT_TIME - BIT_WAIT_TIME);
         break;
 
     case Bus::SEND_END:
@@ -443,7 +441,7 @@ STATE_LOOP:
         }
 
         // FIXME the next telegram is not sent if sbSendTelegramTries>=3
-        if (sendAck || (sbSendTelegramLen && sendTries < 3))
+        if (sendAck || (sendTelegramLen && sendTries < 3))
         {
             state = Bus::SEND_START;
             debugLine = __LINE__;
@@ -493,7 +491,7 @@ void Bus::sendTelegram(unsigned char* telegram, unsigned short length)
 {
     prepareTelegram(telegram, length);
 
-    if (!sbSendCurTelegram) sbSendCurTelegram = telegram;
+    if (!sendCurTelegram) sendCurTelegram = telegram;
     else if (!sbSendNextTelegram) sbSendNextTelegram = telegram;
     else fatalError();   // soft fault: send buffer overflow
 

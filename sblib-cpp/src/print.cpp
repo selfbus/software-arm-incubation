@@ -46,7 +46,7 @@ int Print::print(unsigned int value, Base base, int digits)
     }
     while (--digits > 0 || value);
 
-    return write((byte*) pos, buf + (PRINTBUF_SIZE + 1) - pos);
+    return write((byte*) pos, buf + PRINTBUF_SIZE - pos);
 }
 
 int Print::println()

@@ -16,7 +16,10 @@
  */
 void setup()
 {
-    bus.begin();
+    // FIXME remove when eeprom writing is ported
+    bcu.setOwnAddress(0x117d); // 1.1.125
+
+    bcu.appData(0, 2, 0x9009, 0x01);  // we are a ABB TSU/4.2 version 0.1
 }
 
 /*
@@ -24,4 +27,15 @@ void setup()
  */
 void loop()
 {
+    int idx;
+
+    // Handle updated communication objects
+    while ((idx = nextUpdatedObject()) >= 0)
+    {
+
+    }
+
+    // Sleep until the next 1 msec timer interrupt occurs (or shorter)
+    if (bus.idle())
+        __WFI();
 }

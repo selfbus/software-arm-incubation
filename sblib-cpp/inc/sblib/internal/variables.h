@@ -10,7 +10,18 @@
 #ifndef sblib_internal_variables_h
 #define sblib_internal_variables_h
 
+#include <sblib/eib/user_memory.h>
+
 // System time in milliseconds (from timer.cpp)
 extern unsigned int systemTime;
+
+// user_memory.cpp
+extern byte userRamData[USER_RAM_SIZE];
+
+// user_memory.cpp
+extern byte userEepromData[USER_EEPROM_SIZE];
+
+// user_memory.cpp
+extern byte userEepromDirty;
 
 #endif /*sblib_internal_variables_h*/

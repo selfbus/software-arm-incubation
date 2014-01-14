@@ -10,11 +10,17 @@
 
 #include <sblib/main.h>
 
+#include <sblib/eib.h>
 #include <sblib/interrupt.h>
 #include <sblib/timer.h>
 
 #include <sblib/internal/functions.h>
 #include <sblib/internal/variables.h>
+
+// Pin of the programming mode button+led
+#define PROG_PIN  PIO1_5
+
+Debouncer progButtonDebouncer;
 
 
 /**
@@ -25,6 +31,10 @@ static inline void lib_setup()
     // Configure the system timer to call SysTick_Handler once every 1 msec
     SysTick_Config(SystemCoreClock / 1000);
     systemTime = 0;
+
+    progButtonDebouncer.value(1);
+
+    bcu.begin();
 }
 
 /**
@@ -40,6 +50,26 @@ int main()
 
     while (1)
     {
-        loop();
+        if (bus.telegramReceived() && !bus.sendingTelegram() && (userRam.status & BCU_STATUS_TL))
+            bcu.processTelegram();
+
+//        if (sbSendCurTelegram == 0)
+//            sb_send_next_tel();
+
+        // Detect the falling edge of pressing the prog button
+        pinMode(PROG_PIN, INPUT);
+        int oldValue = progButtonDebouncer.value();
+        if (!progButtonDebouncer.debounce(digitalRead(PROG_PIN), 10) && oldValue)
+            userRam.status ^= 0x81;  // toggle programming mode and checksum bit
+
+        pinMode(PROG_PIN, OUTPUT);
+        digitalWrite(PROG_PIN, !(userRam.status & BCU_STATUS_PROG));
+
+        if (userEeprom.isModified() && bus.idle() && !bcu.directConnection())
+            writeUserEeprom();
+
+        if (bcu.applicationRunning())
+            loop();
+        else __WFI();
     }
 }

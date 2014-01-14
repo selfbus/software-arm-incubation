@@ -13,74 +13,45 @@
 #include <sblib/eib/bcu.h>
 #include <sblib/eib/types.h>
 
-class ComObjects;
+// Alternative API:
 
+int objectRead(int objno);
+void objectWrite(int objno, int value);
+
+float objectReadFloat(int objno);
+void objectWrite(int objno, float value);
+
+byte* objectReadArray(int objno);
+void objectWrite(int objno, byte* value);
+
+ComType objectType(int objno);
+int objectSize(int objno);
 
 /**
- * The communication objects of the device.
+ * Get the index of the next communication object that was
+ * updated via the bus.
+ *
+ * @return The index of the next updated com-object, -1 if none.
  */
-extern ComObjects comObjects;
-
+int nextUpdatedObject();
 
 /**
- * Class for the communication objects.
+ * Process a multicast group telegram.
+ *
+ * This function is called by bcu.processTelegram(). It is usually not required to call
+ * this function from within a user program. The telegram that is processed is read from
+ * bus.telegram[].
+ *
+ * @param addr - the destination group address.
  */
-class ComObjects
-{
-public:
-    /**
-     * Set the value of a communication object.
-     *
-     * @param objno - the number of the communication object.
-     * @param value - the value to set.
-     */
-    void set(short objno, int value);
+void processGroupTelegram(int addr, int apci);
 
-    /**
-     * Set the value of a communication object. The number of bytes
-     * to be set depends on the type of the communication object.
-     *
-     * @param objno - the number of the communication object.
-     * @param value - the array of value bytes to set.
-     */
-    void set(short objno, byte* value);
-
-    /**
-     * Get the value of a communication object as an integer value.
-     *
-     * @param objno - the number of the communication object.
-     * @return The value of the communication object.
-     */
-    int asInt(short objno) const;
-
-    /**
-     * Get a pointer to the value of a communication object.
-     *
-     * @param objno - the number of the communication object.
-     * @return A pointer to the value of the communication object.
-     */
-    byte* asArray(short objno) const;
-
-    /**
-     * Get the type of a communication object.
-     *
-     * @param objno - the number of the communication object.
-     * @return The type of the communication object.
-     */
-    ComType type(short objno) const;
-
-    /**
-     * Get the size of a communication object in bytes.
-     *
-     * @param objno - the number of the communication object.
-     * @return The size of the communication object.
-     */
-    short size(short objno) const;
-
-    /**
-     * @return The number of communication objects that the device has.
-     */
-    short count() const;
-};
+/**
+ * Get the communication object flags table. This is the table with the
+ * flags that are configured by ETS (not the RAM status flags).
+ *
+ * @return The com-objects flags table.
+ */
+byte* objectFlagsTable();
 
 #endif /*sblib_com_objects_h*/
