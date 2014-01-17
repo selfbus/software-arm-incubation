@@ -491,6 +491,11 @@ void Bus::sendTelegram(unsigned char* telegram, unsigned short length)
 {
     prepareTelegram(telegram, length);
 
+    // Wait until there is a space in the sending queue
+    while (sbSendNextTelegram)
+    {
+    }
+
     if (!sendCurTelegram) sendCurTelegram = telegram;
     else if (!sbSendNextTelegram) sbSendNextTelegram = telegram;
     else fatalError();   // soft fault: send buffer overflow

@@ -10,16 +10,25 @@
 
 #include <sblib/eib.h>
 
+/*
+ * Process the changed communication object.
+ */
+void processObject(int objno)
+{
+
+}
 
 /*
  * Initialize the application.
  */
 void setup()
 {
-    // FIXME remove when eeprom writing is ported
-    bcu.setOwnAddress(0x117d); // 1.1.125
+//    // FIXME remove when eeprom writing is ported
+//    bcu.setOwnAddress(0x117d); // 1.1.125
 
-    bcu.appData(0, 2, 0x9009, 0x01);  // we are a ABB TSU/4.2 version 0.1
+
+//    bcu.appData(0, 2, 0x9009, 0x01); // We are a ABB TSU/4.2 device, version 0.1
+    bcu.appData(0, 4, 0x7054, 2);    // We are a "Jung 2118" device, version 0.2
 }
 
 /*
@@ -27,12 +36,12 @@ void setup()
  */
 void loop()
 {
-    int idx;
+    int objno;
 
     // Handle updated communication objects
-    while ((idx = nextUpdatedObject()) >= 0)
+    while ((objno = nextUpdatedObject()) >= 0)
     {
-
+        processObject(objno);
     }
 
     // Sleep until the next 1 msec timer interrupt occurs (or shorter)

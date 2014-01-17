@@ -19,10 +19,10 @@
 #if BCU_TYPE == 0x10
 
     /** Start address of the user RAM when ETS talks with us. */
-#   define USER_RAM_START 0x50
+#   define USER_RAM_START 0
 
     /** The size of the user RAM in bytes. */
-#   define USER_RAM_SIZE 176
+#   define USER_RAM_SIZE (0x100 - USER_RAM_START)
 
     /** Start address of the user EEPROM when ETS talks with us. */
 #   define USER_EEPROM_START 0x100
@@ -33,16 +33,16 @@
 #elif BCU_TYPE == 0x20
 
     /** Start address of the user RAM when ETS talks with us. */
-#   define USER_RAM_START 0x50
+#   define USER_RAM_START 0
 
     /** The size of the user RAM in bytes. */
-#   define USER_RAM_SIZE 176
+#   define USER_RAM_SIZE (0x100 - USER_RAM_START)
 
     /** Start address of the user EEPROM when ETS talks with us. */
 #   define USER_EEPROM_START 0x100
 
     /** The size of the user EEPROM in bytes. */
-#   define USER_EEPROM_SIZE 1023
+#   define USER_EEPROM_SIZE 1024
 
 
 #else /* BCU_TYPE contains an unknown value. */

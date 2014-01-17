@@ -33,15 +33,6 @@ int indexOfAddr(int addr);
 int objectOfAddr(int addr);
 
 /**
- * Get the group address for sending the value of a communication object.
- *
- * @param objno - the communication object to find
- * @return The address for sending, or 0 if not found.
- */
-int addrForWriteObject(int objno);
-
-
-/**
  * Get the address table. The address table contains the configured group addresses
  * and our own physical address.
  *

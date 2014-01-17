@@ -21,7 +21,6 @@
  */
 unsigned int* ioconPointer(short pin);
 
-
 /**
  * Low level table of the IO ports
  */

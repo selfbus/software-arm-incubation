@@ -36,9 +36,8 @@ void BCU::begin()
     incConnectedSeqNo = false;
 
     userRam.status = BCU_STATUS_LL | BCU_STATUS_TL | BCU_STATUS_AL | BCU_STATUS_USR;
-    userRam.progRunning = 1;
 
-    userEeprom.runError = 0;
+    userEeprom.runError = 0xff;
     userEeprom.portADDR = 0;
 
 #if BCU_TYPE >= 0x20
@@ -116,7 +115,7 @@ void BCU::processTelegram()
                 sendTelegram[3] = 0x00;  // Zero target address, it's a broadcast
                 sendTelegram[4] = 0x00;
                 sendTelegram[5] = 0xe1;
-                sendTelegram[6] = 0x01;  // APCI_INDIVIDUAL_ADDRESS_RESPONSE_PDU
+                sendTelegram[6] = 0x01;  // APCI_INDIVIDUAL_ADDRESS_RESPONSE_PDU (0x0140)
                 sendTelegram[7] = 0x40;
                 bus.sendTelegram(sendTelegram, 8);
             }
@@ -138,7 +137,7 @@ void BCU::processTelegram()
     }
     else if (tpci == T_GROUP_PDU) // a group destination address and multicast
     {
-        processGroupTelegram(destAddr, apci);
+        processGroupTelegram(destAddr, apci & APCI_GROUP_MASK);
     }
 
     // At the end: discard the received telegram
@@ -190,24 +189,22 @@ void BCU::processDirectTelegram(int apci, int senderSeqNo)
         sendTelegram[8] = count;                   // read count
         sendTelegram[9] = 0x05;                    // FIXME dummy - ADC value high byte
         sendTelegram[10] = 0xb0;                   // FIXME dummy - ADC value low byte
-        sendAck = T_ACK_PDU;
         sendTel = true;
         break;
 
     case APCI_MEMORY_READ_PDU:
-        sendAck = T_ACK_PDU;
-        sendTel = true;
         count = bus.telegram[7] & 0x0f; // number of data byes
         address = (bus.telegram[8] << 8) | bus.telegram[9]; // address of the data block
         if (address >= USER_EEPROM_START && address < USER_EEPROM_END)
-            memcpy(sendTelegram + 10, userEepromData + address - USER_EEPROM_START, count);
+            memcpy(sendTelegram + 10, userEepromData + (address - USER_EEPROM_START), count);
         else if (address >= USER_RAM_START && address < USER_RAM_END)
-            memcpy(sendTelegram + 10, userRamData + address - USER_RAM_START, count);
+            memcpy(sendTelegram + 10, userRamData + (address - USER_RAM_START), count);
         sendTelegram[5] = 0x63 + count;
         sendTelegram[6] = 0x42;
         sendTelegram[7] = 0x40 | count;
         sendTelegram[8] = address >> 8;
         sendTelegram[9] = address;
+        sendTel = true;
         break;
 
     case APCI_MEMORY_WRITE_PDU:
@@ -216,21 +213,18 @@ void BCU::processDirectTelegram(int apci, int senderSeqNo)
         sendAck = T_ACK_PDU;
         if (address >= USER_EEPROM_START && address < USER_EEPROM_END)
         {
-            memcpy(userEepromData + address - USER_EEPROM_START, bus.telegram + 10, count);
+            memcpy(userEepromData + (address - USER_EEPROM_START), bus.telegram + 10, count);
             userEeprom.modified();
         }
         else if (address >= USER_RAM_START && address < USER_RAM_END)
         {
-            memcpy(userRamData + address - USER_RAM_START, bus.telegram + 10, count);
+            memcpy(userRamData + (address - USER_RAM_START), bus.telegram + 10, count);
         }
         break;
 
     case APCI_DEVICEDESCRIPTOR_READ_PDU:
         if (processDeviceDescriptorReadTelegram(apci & 0x3f))
-        {
-            sendAck = T_ACK_PDU;
             sendTel = true;
-        }
         else sendAck = T_NACK_PDU;
         break;
 
@@ -247,7 +241,6 @@ void BCU::processDirectTelegram(int apci, int senderSeqNo)
             sendTelegram[6] = 0x43;
             sendTelegram[7] = 0xd2;
             sendTelegram[8] = 0x00;
-            sendAck = T_ACK_PDU;
             sendTel = true;
             break;
 
@@ -263,25 +256,15 @@ void BCU::processDirectTelegram(int apci, int senderSeqNo)
 
             sendAck = T_NACK_PDU;
             if (apci == APCI_PROPERTY_VALUE_READ_PDU)
-            {
-                if (propertiesReadTelegram(index, id, count, address))
-                {
-                    sendAck = T_ACK_PDU;
-                    sendTel = true;
-                }
-            }
-            else
-            {
-                if (propertiesWriteTelegram(index, id, count, address))
-                {
-                    sendAck = T_ACK_PDU;
-                    sendTel = true;
-                }
-            }
+                sendTel = propertiesReadTelegram(index, id, count, address);
+            else sendTel = propertiesWriteTelegram(index, id, count, address);
             break;
         }
         break;
     }
+
+    if (sendTel)
+        sendAck = T_ACK_PDU;
 
     if (sendAck)
         sendConControlTelegram(sendAck, senderSeqNo);
@@ -324,7 +307,10 @@ void BCU::processConControlTelegram(int tpci)
         else if (tpci == T_NACK_PDU)  // A negative acknowledgement
         {
             if (connectedAddr == senderAddr)
+            {
                 sendConControlTelegram(T_DISCONNECT_PDU, 0);
+                connectedAddr = 0;
+            }
         }
 
         incConnectedSeqNo = true;
@@ -346,8 +332,6 @@ void BCU::processConControlTelegram(int tpci)
             if (connectedAddr == senderAddr)
             {
                 connectedAddr = 0;
-                connectedSeqNo = 0;
-                incConnectedSeqNo = 0;
                 bus.sendAck = 0;
             }
         }

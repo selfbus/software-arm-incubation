@@ -49,7 +49,7 @@ public:
      *
      * @param newValue - the new debounced value.
      */
-    void value(int newValue);
+    void init(int newValue);
 
     /**
      * @return The last temporary value that was sent to debounce()
@@ -71,7 +71,7 @@ inline int Debouncer::value() const
     return valid;
 }
 
-inline void Debouncer::value(int newValue)
+inline void Debouncer::init(int newValue)
 {
     valid = newValue;
     time = 0;

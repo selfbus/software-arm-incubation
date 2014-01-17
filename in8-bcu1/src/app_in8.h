@@ -9,19 +9,35 @@
 #ifndef app_in8_h
 #define app_in8_h
 
-/**
- * Handle input pins.
- */
-void handle_inputs();
+#include "com_objs.h"
+
 
 /**
- * Handle updates of the com-objects.
+ * Number of input channels. Default: 8.
+ * Can be set at compile time.
  */
-void handle_comobj_updates();
+#ifndef NUM_CHANNELS
+#  define NUM_CHANNELS 8
+#endif
 
 /**
- * Initialize the application.
+ * A communication object was updated from somebody via the EIB bus.
+ *
+ * @param objno - the ID of the communication object.
  */
-void app_init();
+void objectUpdated(int objno);
 
-#endif /* app_in8_h */
+/**
+ * The value of an input channel changed.
+ *
+ * @param channel - the input channel (0..)
+ * @param value - the new value
+ */
+void inputChanged(int channel, int value);
+
+/**
+ * The values of the communication objects
+ */
+extern ObjectValues& objectValues;
+
+#endif /*app_in8_h*/

@@ -34,8 +34,7 @@ void loop()
 {
     if (bus.telegramReceived())
     {
-        int sz = telegramSize(bus.telegram);
-        for (int i = 0; i < sz; ++i)
+        for (int i = 0; i < bus.telegramLen; ++i)
         {
             if (i) serial.print(" ");
             serial.print(bus.telegram[i], HEX, 2);

@@ -23,9 +23,19 @@ class UserEeprom;
 extern UserRam& userRam;
 
 /**
+ * The user RAM as plain array.
+ */
+extern byte userRamData[USER_RAM_SIZE];
+
+/**
  * The user EEPROM.
  */
 extern UserEeprom& userEeprom;
+
+/**
+ * The user EEPROM.
+ */
+extern byte userEepromData[USER_EEPROM_SIZE];
 
 
 /**
@@ -37,8 +47,7 @@ extern UserEeprom& userEeprom;
 class UserRam
 {
 public:
-    byte progRunning;    //!< 0x0050: Application program active (Selfbus extension)
-    byte data1[0x0e];    //!< 0x0051: Reserved (registers)
+    byte data1[0x60 - USER_RAM_START]; //!< Reserved
     byte status;         //!< 0x0060: BCU/system status. See enum BcuStatus below.
     byte data2[USER_RAM_SIZE - 0x60];
 
@@ -72,7 +81,7 @@ public:
     byte deviceTypeL;    //!< 0x0106: Device type low byte
     byte version;        //!< 0x0107: Software version
     byte checkLimit;     //!< 0x0108: EEPROM check limit
-    byte peiTypeExpectd; //!< 0x0109: PEI type that the software requires
+    byte peiType;        //!< 0x0109: PEI type that the application requires
     byte syncRate;       //!< 0x010a: Baud rate for serial synchronous PEI
     byte portCDDR;       //!< 0x010b: Port C DDR settings (PEI type 17)
     byte portADDR;       //!< 0x010c: Port A DDR settings
@@ -92,7 +101,7 @@ public:
     byte checksum;       //!< 0x01ff: EEPROM checksum (BCU1 only)
 #elif BCU_TYPE == 0x20
     byte appType;        //!< 0x0115: Application program type: 0=BCU2, else BCU1
-    byte addrTabSize;    //!< 0x0116: Size of the address table ?
+    byte addrTabSize;    //!< 0x0116: Size of the address table
     byte addrTab[2];     //!< 0x0117+:Address table, 2 bytes per entry. Real array size is addrTabSize*2
     byte user[856];      //!< 0x0119+:User EEPROM: 856 bytes (BCU2)
                          //!< ------  System EEPROM below
@@ -160,7 +169,10 @@ inline byte& UserEeprom::operator[](int idx)
 inline void UserEeprom::modified()
 {
     extern byte userEepromModified;
+    extern unsigned int writeUserEepromTime;
+
     userEepromModified = 1;
+    writeUserEepromTime = 0;
 }
 
 inline bool UserEeprom::isModified() const

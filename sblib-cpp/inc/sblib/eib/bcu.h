@@ -67,9 +67,9 @@ public:
     bool programmingMode() const;
 
     /**
-     * Test if the user application is active. The application is active
-     * if the application layer is active in userRam.status and the programming
-     * mode is not active.
+     * Test if the user application is active. The application is active if the
+     * application layer is active in userRam.status, the programming mode is not
+     * active, and the run error in userEeprom.runError is 0xff (no error).
      *
      * @return True if the user application is active, false if not.
      */
@@ -93,6 +93,13 @@ public:
      * and should rather not be used by the application program.
      */
     byte sendTelegram[Bus::TELEGRAM_SIZE];
+
+    /**
+     * The pin where the programming LED + button are connected. The default pin
+     * is PIO1_5. This variable may be changed in setup(), if required. If set
+     * to 0, the programming LED + button are not handled by the library.
+     */
+    int progPin;
 
 protected:
     /**
@@ -152,7 +159,8 @@ inline bool BCU::programmingMode() const
 
 inline bool BCU::applicationRunning() const
 {
-    return (userRam.status & (BCU_STATUS_PROG | BCU_STATUS_AL) ) == BCU_STATUS_AL;
+    return (userRam.status & (BCU_STATUS_PROG|BCU_STATUS_AL)) == BCU_STATUS_AL &&
+        userEeprom.runError == 0xff; // ETS sets the run error to 0 when programming
 }
 
 inline bool BCU::directConnection() const

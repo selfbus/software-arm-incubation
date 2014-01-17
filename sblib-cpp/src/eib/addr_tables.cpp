@@ -46,7 +46,7 @@ int objectOfAddr(int addr)
     return -1;
 }
 
-int addrForWriteObject(int objno)
+int addrForSendObject(int objno)
 {
     return 0;
 }
@@ -60,7 +60,9 @@ byte* assocTable()
 {
 #if BCU_TYPE == 0x10
     return ((byte*) &userEeprom) + userEeprom.assocTabPtr;
+
 #else
+    // BCU2:  KNX 3/5/1 p.126 & p.129
 #   error Unsupported BCU_TYPE
 #endif
 }

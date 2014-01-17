@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2013 Stefan Taferner <stefan.taferner@gmx.at>
+ *  Copyright (c) 2013-2014 Stefan Taferner <stefan.taferner@gmx.at>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -8,36 +8,31 @@
 #ifndef com_objs_h
 #define com_objs_h
 
+#include <sblib/types.h>
+
+/**
+ * The secondary channel values can either be 1 or 2 bytes long. For 1 byte
+ * values use b[0], for 2 byte values use s.
+ */
+union SecondaryValue
+{
+    byte b[2];         //!< byte values, use b[0] (b[1] is unused)
+    unsigned short s;  //!< 2 byte values for
+};
+
 /**
  * A structure for the com-object values.
  */
-typedef struct ComObjectValues
+struct ObjectValues
 {
-    unsigned char primary[8];   // the primary input values
-    unsigned char secondary[8]; // the secondary input values
-    unsigned char lock[8];      // the lock values
-} ComObjectValues;
+    byte primary[8];             //!< the primary values
+    SecondaryValue secondary[8]; //!< the secondary values, either 1 or 2 bytes each
+    byte lock[8];                //!< the lock values
+    byte lastLock[8];            //!< the previous lock values
+};
 
 // User ram address: value of com-object #0
 #define UR_COM_OBJ_VALUE0              0x0053
-
-// Eeprom address: telegram rate limit active (bit 2)
-#define EE_TEL_RATE_LIMIT_ACTIVE       0x0010
-
-// Eeprom address: telegram rate limit: telegrams per 17 sec
-#define EE_TEL_RATE_LIMIT              0x00d3
-
-// Eeprom address: input debounce time in 0.5 msec
-#define EE_INPUT_DEBOUNCE_TIME         0x00d2
-
-// Eeprom address: bit 0-6: bus power return start delay factor
-#define EE_BUS_RETURN_DELAY_FACT       0x00d4
-
-// Eeprom address: bit 4-7: bus power return start delay base
-#define EE_BUS_RETURN_DELAY_BASE       0x00fe
-
-// Eeprom address: bit 0-3: input 1 type (4 bit). See INPUT_TYPE_xx defines
-#define EE_INPUT1_TYPE                 0x00ce
 
 
 // Input type: unused / no function

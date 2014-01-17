@@ -21,6 +21,7 @@
 #define PROG_PIN  PIO1_5
 
 Debouncer progButtonDebouncer;
+unsigned int writeUserEepromTime;
 
 
 /**
@@ -31,8 +32,10 @@ static inline void lib_setup()
     // Configure the system timer to call SysTick_Handler once every 1 msec
     SysTick_Config(SystemCoreClock / 1000);
     systemTime = 0;
+    writeUserEepromTime = 0;
 
-    progButtonDebouncer.value(1);
+    bcu.progPin = PROG_PIN;
+    progButtonDebouncer.init(1);
 
     bcu.begin();
 }
@@ -56,20 +59,31 @@ int main()
 //        if (sbSendCurTelegram == 0)
 //            sb_send_next_tel();
 
-        // Detect the falling edge of pressing the prog button
-        pinMode(PROG_PIN, INPUT);
-        int oldValue = progButtonDebouncer.value();
-        if (!progButtonDebouncer.debounce(digitalRead(PROG_PIN), 10) && oldValue)
-            userRam.status ^= 0x81;  // toggle programming mode and checksum bit
+        if (bcu.progPin)
+        {
+            // Detect the falling edge of pressing the prog button
+            pinMode(bcu.progPin, INPUT);
+            int oldValue = progButtonDebouncer.value();
+            if (!progButtonDebouncer.debounce(digitalRead(bcu.progPin), 50) && oldValue)
+                userRam.status ^= 0x81;  // toggle programming mode and checksum bit
 
-        pinMode(PROG_PIN, OUTPUT);
-        digitalWrite(PROG_PIN, !(userRam.status & BCU_STATUS_PROG));
+            pinMode(bcu.progPin, OUTPUT);
+            digitalWrite(bcu.progPin, !(userRam.status & BCU_STATUS_PROG));
+        }
 
-        if (userEeprom.isModified() && bus.idle() && !bcu.directConnection())
-            writeUserEeprom();
+        if (userEeprom.isModified() && bus.idle() && bus.telegramLen == 0 && !bcu.directConnection())
+        {
+            if (writeUserEepromTime)
+            {
+                if (millis() - writeUserEepromTime > 0)
+                    writeUserEeprom();
+            }
+            else writeUserEepromTime = millis() + 50;
+        }
 
-        if (bcu.applicationRunning())
+        // We must enter loop() if the prog button is handled inside loop()
+        if (bcu.applicationRunning() || !bcu.progPin)
             loop();
-        else __WFI();
+        else waitForInterrupt();
     }
 }

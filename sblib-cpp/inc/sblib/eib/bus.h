@@ -210,6 +210,11 @@ public:
      */
     byte telegram[TELEGRAM_SIZE];
 
+    /**
+     * The total length of the received telegram in telegram[].
+     */
+    byte telegramLen;
+
 private:
     /**
      * Switch to idle state
@@ -237,12 +242,11 @@ private:
 
 protected:
     friend class BCU;
-    unsigned short ownAddr;  //!< Our own physical address on the bus
     byte sendAck;            //!< Send an acknowledge or not-acknowledge byte if != 0
+    unsigned short ownAddr;  //!< Our own physical address on the bus
 
 private:
     byte state;              //!< The state of the lib's telegram sending/receiving
-    byte telegramLen;        //!< The total length of the received telegram in telegram[]
     byte sbNextByte;         //!< The number of the next byte in the telegram
     byte sendTries;          //!< The number of repeats when sending a telegram
 
@@ -288,7 +292,7 @@ private:
 
 inline bool Bus::idle() const
 {
-    return state == SB_IDLE && sendCurTelegram == 0 && telegramLen == 0;
+    return state == SB_IDLE && sendCurTelegram == 0;
 }
 
 inline bool Bus::sendingTelegram() const
