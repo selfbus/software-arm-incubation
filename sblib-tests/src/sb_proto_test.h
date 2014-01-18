@@ -7,22 +7,22 @@
 
 #include <string.h>
 
-typedef void (Test_Case_Setup) (void);
-typedef void (Telegram_Check) (void);
+typedef void (TestCaseSetup) (void);
+typedef void (TelegramCheck) (void);
 
 typedef enum
 {
   TEL_RX
 , TEL_TX
 , END
-} Telegram_Type;
+} TelegramType;
 
 typedef struct
 {
-    Telegram_Type    type;
+    TelegramType    type;
     char unsigned    length;
     char unsigned    response_count;
-    Telegram_Check * check;
+    TelegramCheck * check;
     char unsigned    bytes[23];
 } Telegram;
 
@@ -30,7 +30,7 @@ typedef struct
 {
     char            * name;
     char unsigned     status;
-    Test_Case_Setup * setup;
+    TestCaseSetup * setup;
     Telegram        * telegram;
 } Test_Case;
 

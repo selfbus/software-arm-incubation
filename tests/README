@@ -1,0 +1,18 @@
+SBLib-Cpp Unit Tests
+====================
+
+This project contains unit tests for the C++ version of the SB-Lib.
+The unit tests are executed on the host computer (PC), not on the ARM.
+
+Prerequisites
+-------------
+
+- 32bit GCC
+- Catch in the Eclipse workspace
+
+Executing
+---------
+
+Starting the unit tests (all projects in the tests directory) from within Eclipse 
+did not produce any output for me (StefanT) under Linux. Starting the unit tests 
+from a shell works fine.
