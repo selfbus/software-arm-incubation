@@ -17,7 +17,7 @@ typedef struct
     unsigned short ownAddress;
 } ProtocolTestState;
 
-ProtocolTestState protoState[2];
+static ProtocolTestState protoState[2];
 
 #define VaS(s) ((ProtocolTestState *) (s))
 
@@ -37,7 +37,7 @@ static void disconnect(void * state)
     VaS(state)->connected = false;
 }
 
-Telegram device_info_t[] =
+static Telegram testCaseTelegrams[] =
 { {TEL_RX,  7, 0, connect             , {0xB0, 0x00, 0x01, 0x11, 0x7E, 0x60, 0x80}} //   1
 , {TEL_RX,  8, 2, NULL                , {0xB0, 0x00, 0x01, 0x11, 0x7E, 0x61, 0x43, 0x00}} //   2
 , {TEL_TX,  7, 0, NULL                , {0xB0, 0x11, 0x7E, 0x00, 0x01, 0x60, 0xC2}} //   3
@@ -93,17 +93,17 @@ static void gatherProtocolState(ProtocolTestState * state, ProtocolTestState * r
     }
 }
 
-Test_Case deviceInfo =
+static Test_Case testCase =
 {
   "Device Info Test"
 , tc_setup
 , (StateFunction *) gatherProtocolState
 , (TestCaseState *) protoState
-, device_info_t
+, testCaseTelegrams
 };
 
 
 TEST_CASE("Protocol tests", "[protocol][device-info]")
 {
-    executeTest(& deviceInfo);
+    executeTest(& testCase);
 }
