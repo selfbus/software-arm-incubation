@@ -24,6 +24,7 @@ byte  __attribute__ ((aligned (4))) userEepromData[USER_EEPROM_SIZE];
 UserEeprom& userEeprom = *(UserEeprom*) userEepromData;
 
 byte userEepromModified;
+unsigned int writeUserEepromTime;
 
 
 #define NUM_EEPROM_PAGES  (SB_EEPROM_SECTOR_SIZE / USER_EEPROM_SIZE)

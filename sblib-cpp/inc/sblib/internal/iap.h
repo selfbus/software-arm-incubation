@@ -9,6 +9,10 @@
 #ifndef sblib_iap_h
 #define sblib_iap_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <sblib/types.h>
 
 
@@ -40,8 +44,8 @@ enum IAP_Status
 #else
   /* for the test we simulate a 32k FlASH */
   extern unsigned char FLASH [];
-# define SB_FLASH_BASE_ADDRESS   ((int) FLASH)
-# define SB_FLASH_TOP_ADDRESS    ((int) FLASH + 0x1000*8)
+# define SB_FLASH_BASE_ADDRESS   ((unsigned char *) FLASH)
+# define SB_FLASH_TOP_ADDRESS    ((unsigned char *) FLASH + 0x1000*8)
 #endif
 
 #define SB_EEPROM_SECTOR_SIZE           0x1000
@@ -89,5 +93,9 @@ IAP_Status iapReadUID(byte* uid);
  * @return Status code, see enum IAP_Status above
  */
 IAP_Status iapReadPartID(unsigned int* partId);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* SB_IAP_H_ */

@@ -21,7 +21,7 @@
 #define PROG_PIN  PIO1_5
 
 Debouncer progButtonDebouncer;
-unsigned int writeUserEepromTime;
+extern unsigned int writeUserEepromTime;
 
 
 /**

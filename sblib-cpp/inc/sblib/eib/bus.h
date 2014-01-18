@@ -306,4 +306,8 @@ inline void Bus::discardReceivedTelegram()
     telegramLen = 0;
 }
 
+inline void Bus::end()
+{
+}
+
 #endif /*sblib_bus_h*/

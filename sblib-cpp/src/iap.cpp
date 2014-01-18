@@ -12,14 +12,6 @@
 #include <string.h>
 
 
-#if defined(__LPC11XX__) || defined(__LPC13XX__) || defined(__LPC17XX__)
-#  define IAP_LOCATION      0x1FFF1FF1
-#elif defined(__LPC2XXX__)
-#  define IAP_LOCATION      0x7FFFFFF1
-#else
-#  error "Unsupported processor"
-#endif
-
 
 /**
  * IAP command codes.
@@ -54,9 +46,16 @@ struct IAP_Parameter
 typedef void (*IAP_Func)(unsigned int * cmd, unsigned int * stat);
 
 #ifndef IAP_EMULATION
-#  define IAP_Call ((IAP_Func) 0x1FFF1FF1)
+#  if defined(__LPC11XX__) || defined(__LPC13XX__) || defined(__LPC17XX__)
+#    define IAP_LOCATION      0x1FFF1FF1
+#  elif defined(__LPC2XXX__)
+#    define IAP_LOCATION      0x7FFFFFF1
+#  else
+#    error "Unsupported processor"
+#  endif
+#  define IAP_Call ((IAP_Func) IAP_LOCATION)
 #else
-   extern void IAP_Call (unsigned int * cmd, unsigned int * stat);
+   extern "C" void IAP_Call (unsigned int * cmd, unsigned int * stat);
 #endif
 
 
