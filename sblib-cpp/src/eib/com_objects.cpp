@@ -61,7 +61,7 @@ int objectSendAddr(int objno)
         if (assocTab[1] == objno)
         {
             byte* addr = userEeprom.addrTab + (assocTab[0] << 1);
-            return (addr[1] << 8) | addr[0];
+            return (addr[0] << 8) | addr[1];
         }
     }
 
@@ -239,7 +239,7 @@ byte* objectConfigTable()
 byte* objectFlagsTable()
 {
 #if BCU_TYPE == 0x10
-    return userEepromData + objectConfigTable()[1];
+    return userRamData + userEepromData[userEeprom.commsTabPtr + 1];
 #else
 #   error Unsupported BCU_TYPE
 #endif

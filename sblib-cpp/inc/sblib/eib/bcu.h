@@ -119,9 +119,8 @@ protected:
      * When this function is called, the sender address is != 0 (not a broadcast).
      *
      * @param apci - the application control field
-     * @param senderSeqNo - the sequence number of the sender
      */
-    void processDirectTelegram(int apci, int senderSeqNo);
+    void processDirectTelegram(int apci);
 
     /**
      * Send a connection control telegram.

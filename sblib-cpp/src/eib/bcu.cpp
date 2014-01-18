@@ -98,7 +98,7 @@ void BCU::processTelegram()
 {
     unsigned short destAddr = (bus.telegram[3] << 8) | bus.telegram[4];
     unsigned char tpci = bus.telegram[6] & 0xc3; // Transport control field (see KNX 3/3/4 p.6 TPDU)
-    unsigned short apci = bus.telegram[7] | ((bus.telegram[6] & 3) << 8);
+    unsigned short apci = ((bus.telegram[6] & 3) << 8) | bus.telegram[7];
 
     if (destAddr == 0) // a broadcast
     {
@@ -131,7 +131,7 @@ void BCU::processTelegram()
             }
             else
             {
-                processDirectTelegram(apci, bus.telegram[6] & 0x3c);
+                processDirectTelegram(apci);
             }
         }
     }
@@ -166,9 +166,10 @@ bool BCU::processDeviceDescriptorReadTelegram(int id)
     return false; // unknown device descriptor
 }
 
-void BCU::processDirectTelegram(int apci, int senderSeqNo)
+void BCU::processDirectTelegram(int apci)
 {
     const int senderAddr = (bus.telegram[1] << 8) | bus.telegram[2];
+    const int senderSeqNo = bus.telegram[6] & 0x3c;
     int count, address, index, id;
     unsigned char sendAck = 0;
     bool sendTel = false;
@@ -268,6 +269,7 @@ void BCU::processDirectTelegram(int apci, int senderSeqNo)
 
     if (sendAck)
         sendConControlTelegram(sendAck, senderSeqNo);
+    else sendCtrlTelegram[0] = 0;
 
     if (sendTel)
     {

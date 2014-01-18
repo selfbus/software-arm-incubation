@@ -59,7 +59,7 @@ byte* addrTable()
 byte* assocTable()
 {
 #if BCU_TYPE == 0x10
-    return ((byte*) &userEeprom) + userEeprom.assocTabPtr;
+    return userEepromData + userEeprom.assocTabPtr;
 
 #else
     // BCU2:  KNX 3/5/1 p.126 & p.129

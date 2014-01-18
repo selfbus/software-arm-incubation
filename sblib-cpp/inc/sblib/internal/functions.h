@@ -17,6 +17,11 @@ void readUserEeprom();
 void writeUserEeprom();
 
 /*
+ * Send the next communication object that is flagged to be sent.
+ */
+void sendNextGroupTelegram();
+
+/*
  * Process a property-value read telegram. (properties.cpp)
  *
  * @param objectIdx - the object index

@@ -56,8 +56,8 @@ int main()
         if (bus.telegramReceived() && !bus.sendingTelegram() && (userRam.status & BCU_STATUS_TL))
             bcu.processTelegram();
 
-//        if (sbSendCurTelegram == 0)
-//            sb_send_next_tel();
+        if (!bus.sendingTelegram())
+            sendNextGroupTelegram();
 
         if (bcu.progPin)
         {
