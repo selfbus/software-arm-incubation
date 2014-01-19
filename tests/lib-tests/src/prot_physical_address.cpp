@@ -40,7 +40,7 @@ static void disconnect(void * state)
 
 static void phy_addr_changed(void * state)
 {
-    VaS(state)->ownAddress = 0x1112;
+    VaS(state)->ownAddress = userEeprom.addrTab[0] << 8 | userEeprom.addrTab[1];
 }
 
 static void clearProgMode(void * state)
