@@ -47,8 +47,26 @@ extern byte userEepromData[USER_EEPROM_SIZE];
 class UserRam
 {
 public:
-    byte data1[0x60 - USER_RAM_START]; //!< Reserved
-    byte status;         //!< 0x0060: BCU/system status. See enum BcuStatus below.
+    /** Reserved */
+    byte data1[0x5f - USER_RAM_START];
+
+    /**
+     * 0x005f: Device control (BCU2, Selfbus extension).
+     *
+     * Bit 0: set if the application program is stopped.
+     * Bit 1: a telegram with our own physical address was received.
+     * Bit 2: send a memory-response telegram automatically on memory-write.
+     */
+    byte deviceControl;
+
+    /**
+     * 0x0060: BCU / system status. See enum BcuStatus below.
+     */
+    byte status;
+
+    /**
+     * Reserved for application program.
+     */
     byte data2[USER_RAM_SIZE - 0x60];
 
     /**
@@ -93,13 +111,13 @@ public:
     byte commsTabPtr;    //!< 0x0112: Low byte of the pointer to communication objects table (BCU1 only)
     byte usrInitPtr;     //!< 0x0113: Low byte of the pointer to user initialization function (BCU1 only)
     byte usrProgPtr;     //!< 0x0114: Low byte of the pointer to user program function (BCU1 only)
-#if BCU_TYPE == 0x10
+#if BCU_TYPE == 10
     byte usrSavePtr;     //!< 0x0115: Low byte of the pointer to user save function (BCU1 only)
     byte addrTabSize;    //!< 0x0116: Size of the address table
     byte addrTab[2];     //!< 0x0117+: Address table, 2 bytes per entry. Real array size is addrTabSize*2
     byte user[220];      //!< 0x0116: User EEPROM: 220 bytes (BCU1)
     byte checksum;       //!< 0x01ff: EEPROM checksum (BCU1 only)
-#elif BCU_TYPE == 0x20
+#elif BCU_TYPE == 20
     byte appType;        //!< 0x0115: Application program type: 0=BCU2, else BCU1
     byte addrTabSize;    //!< 0x0116: Size of the address table
     byte addrTab[2];     //!< 0x0117+:Address table, 2 bytes per entry. Real array size is addrTabSize*2
@@ -110,7 +128,10 @@ public:
     byte addrTabLoaded;  //!< 0x0472: Address table load control state (BCU2, Selfbus extension)
     byte assocTabLoaded; //!< 0x0473: Association table load control state (BCU2, Selfbus extension)
     word serviceControl; //!< 0x0474: Service control (BCU2, Selfbus extension)
-    byte system[137];    //!< 0x0476: Rest of the system EEPROM (BCU2 only)
+    byte serial[6];      //!< 0x0476: Hardware serial number (BCU2, Selfbus extension, 4 byte aligned)
+    byte system[131];    //!< 0x047c: Rest of the system EEPROM (BCU2 only)
+#else
+#   error "Unsupported BCU type"
 #endif /*BCU_TYPE*/
 
     /**

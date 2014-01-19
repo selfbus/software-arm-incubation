@@ -13,8 +13,11 @@
 #include <sblib/eib/apci.h>
 #include <sblib/eib/bus.h>
 #include <sblib/eib/com_objects.h>
+#include <sblib/eib/properties.h>
 #include <sblib/eib/user_memory.h>
 
+#include <sblib/version.h>
+#include <sblib/internal/iap.h>
 #include <sblib/internal/functions.h>
 #include <sblib/internal/variables.h>
 
@@ -36,11 +39,12 @@ void BCU::begin()
     incConnectedSeqNo = false;
 
     userRam.status = BCU_STATUS_LL | BCU_STATUS_TL | BCU_STATUS_AL | BCU_STATUS_USR;
+    userRam.deviceControl = 0;
 
     userEeprom.runError = 0xff;
     userEeprom.portADDR = 0;
 
-#if BCU_TYPE >= 0x20
+#if BCU_TYPE >= 20
     userEeprom.appType = 0;  // Set to BCU2 application. ETS reads this when programming.
 
     if (userEeprom.appLoaded > 1)
@@ -68,6 +72,12 @@ void BCU::appData(int data, int manufacturer, int deviceType, byte version)
     userEeprom.deviceTypeL = deviceType;
 
     userEeprom.version = version;
+
+#if BCU_TYPE >= 20
+    iapReadPartID((unsigned int*) (userEeprom.serial));
+    userEeprom.serial[4] = SBLIB_VERSION >> 8;
+    userEeprom.serial[5] = SBLIB_VERSION;
+#endif
 }
 
 void BCU::setOwnAddress(int addr)
@@ -151,14 +161,14 @@ bool BCU::processDeviceDescriptorReadTelegram(int id)
         sendTelegram[5] = 0x63;
         sendTelegram[6] = 0x43;
         sendTelegram[7] = 0x40;
-#if BCU_TYPE == 0x10
+#if BCU_TYPE == 10
         sendTelegram[8] = 0x00;  // mask version (high byte)
         sendTelegram[9] = 0x12;  // mask version (low byte)
-#elif BCU_TYPE == 0x20
+#elif BCU_TYPE == 20
         sendTelegram[8] = 0x00;  // mask version (high byte)
         sendTelegram[9] = 0x20;  // mask version (low byte)
 #else
-#   error Incompatible BCU version
+#   error Unsupported BCU_TYPE
 #endif
         return true;
     }
@@ -247,6 +257,7 @@ void BCU::processDirectTelegram(int apci)
 
         case APCI_PROPERTY_VALUE_READ_PDU:
         case APCI_PROPERTY_VALUE_WRITE_PDU:
+#if BCU_TYPE >= 20
             sendTelegram[5] = 0x65;
             sendTelegram[6] = 0x43;
             sendTelegram[7] = 0xd6;
@@ -257,8 +268,11 @@ void BCU::processDirectTelegram(int apci)
 
             sendAck = T_NACK_PDU;
             if (apci == APCI_PROPERTY_VALUE_READ_PDU)
-                sendTel = propertiesReadTelegram(index, id, count, address);
-            else sendTel = propertiesWriteTelegram(index, id, count, address);
+                sendTel = propertiesReadTelegram(index, (PropertyID) id, count, address);
+            else sendTel = propertiesWriteTelegram(index, (PropertyID) id, count, address);
+#else
+            sendAck = T_NACK_PDU;  // BCU1 does not support properties
+#endif
             break;
         }
         break;

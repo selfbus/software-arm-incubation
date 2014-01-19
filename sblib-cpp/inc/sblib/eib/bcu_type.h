@@ -12,12 +12,11 @@
 
 // Fallback to BCU1 if BCU_TYPE is not defined
 #ifndef BCU_TYPE
-# define BCU_TYPE 0x10
+# define BCU_TYPE 10
 #endif
 
 
-#if BCU_TYPE == 0x10
-
+#if BCU_TYPE == 10
     /** Start address of the user RAM when ETS talks with us. */
 #   define USER_RAM_START 0
 
@@ -30,8 +29,7 @@
     /** The size of the user EEPROM in bytes. */
 #   define USER_EEPROM_SIZE 256
 
-#elif BCU_TYPE == 0x20
-
+#elif BCU_TYPE == 20
     /** Start address of the user RAM when ETS talks with us. */
 #   define USER_RAM_START 0
 

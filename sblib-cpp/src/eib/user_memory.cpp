@@ -79,10 +79,9 @@ void writeUserEeprom()
 
         page = 0;
     }
-    else page += EEPROM_PAGE_SIZE;
-
-    if (!page)
-        page = SB_EEPROM_FLASH_SECTOR_ADDRESS;
+    else if (page)
+        page += EEPROM_PAGE_SIZE;
+    else page = SB_EEPROM_FLASH_SECTOR_ADDRESS;
 
     userEepromData[USER_EEPROM_SIZE - 1] = 0; // mark the page as in use
     IAP_Status rc = iapProgram(page, userEepromData, USER_EEPROM_SIZE);

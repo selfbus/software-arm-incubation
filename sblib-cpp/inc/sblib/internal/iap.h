@@ -73,13 +73,21 @@ IAP_Status iapEraseSector(int sector);
 IAP_Status iapProgram(byte* rom, const byte* ram, unsigned int size);
 
 /**
- * Read the part identification number and unique id of the CPU.
+ * Read the unique ID of the CPU. The ID is 16 bytes long.
  *
- * @param uid - will contain the UID of the CPU after the call
- * @param partId - will contain the part identification number of the CPU after the call
+ * @param uid - will contain the 16 byte UID after the call.
  *
  * @return Status code, see enum IAP_Status above
  */
-IAP_Status iapReadUID(unsigned int* uid, unsigned int* partId);
+IAP_Status iapReadUID(byte* uid);
+
+/**
+ * Read the 32 bit part identification number of the CPU.
+ *
+ * @param partId - will contain the 32 bit part identification number after the call.
+ *
+ * @return Status code, see enum IAP_Status above
+ */
+IAP_Status iapReadPartID(unsigned int* partId);
 
 #endif /* SB_IAP_H_ */

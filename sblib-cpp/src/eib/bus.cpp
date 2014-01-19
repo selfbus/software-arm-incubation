@@ -47,15 +47,6 @@ int txPin = PIO1_10;
 
 
 
-//----- exported variables -----
-
-// The telegram buffer for sending
-unsigned char sbSendTelegram[SB_TELEGRAM_SIZE];
-
-//----- private variables -----
-
-
-
 
 // Telegram repeat flag in byte #0 of the telegram: 1=not repeated, 0=repeated
 #define SB_TEL_REPEAT_FLAG 0x20
@@ -64,19 +55,6 @@ static int debugLine = 0;
 
 
 static LPC_GPIO_TypeDef (* const LPC_GPIO[4]) = { LPC_GPIO0, LPC_GPIO1, LPC_GPIO2, LPC_GPIO3 };
-
-//void GPIOSetValue(uint32_t portNum, uint32_t bitPosi, uint32_t bitVal)
-//{
-//    LPC_GPIO[portNum]->MASKED_ACCESS[(1 << bitPosi)] = (bitVal << bitPosi);
-//}
-
-//void GPIOSetDir(uint32_t portNum, uint32_t bitPosi, uint32_t dir)
-//{
-//    if (dir)
-//        LPC_GPIO[portNum]->DIR |= 1 << bitPosi;
-//    else
-//        LPC_GPIO[portNum]->DIR &= ~(1 << bitPosi);
-//}
 
 
 
@@ -104,7 +82,6 @@ void Bus::begin()
 
     state = Bus::IDLE;
     sendAck = 0;
-    sbSendTelegram[0] = 0;
     sendCurTelegram = 0;
     sbSendNextTelegram = 0;
 

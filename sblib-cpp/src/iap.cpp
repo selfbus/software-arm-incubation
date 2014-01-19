@@ -9,6 +9,8 @@
 #include <sblib/internal/iap.h>
 
 #include <sblib/platform.h>
+#include <string.h>
+
 
 #if defined(__LPC11XX__) || defined(__LPC13XX__) || defined(__LPC17XX__)
 #  define IAP_LOCATION      0x1FFF1FF1
@@ -17,6 +19,7 @@
 #else
 #  error "Unsupported processor"
 #endif
+
 
 /**
  * IAP command codes.
@@ -118,20 +121,25 @@ IAP_Status iapProgram(byte* rom, const byte* ram, unsigned int size)
     return (IAP_Status) p.stat;
 }
 
-IAP_Status iapReadUID(unsigned int* uid, unsigned int* partId)
+IAP_Status iapReadUID(byte* uid)
 {
     IAP_Parameter p;
+    p.cmd = CMD_READ_UID;
 
+    IAP_Call(&p.cmd, &p.stat);
+    memcpy(uid, p.res, 16);
+
+    return (IAP_Status) p.stat;
+}
+
+IAP_Status iapReadPartID(unsigned int* partId)
+{
+    IAP_Parameter p;
     p.cmd = CMD_READ_PART_ID;
-    IAP_Call (&p.cmd, &p.stat);
+
+    IAP_Call(&p.cmd, &p.stat);
     *partId = p.res[0];
 
-    if (p.stat == IAP_SUCCESS)
-    {
-        p.cmd = CMD_READ_UID;
-        IAP_Call (&p.cmd, &p.stat);
-        *uid = p.res[0];
-    }
     return (IAP_Status) p.stat;
 }
 

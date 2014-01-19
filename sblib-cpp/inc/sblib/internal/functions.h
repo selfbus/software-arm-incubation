@@ -32,7 +32,7 @@ void sendNextGroupTelegram();
  * @return True if the request was processed, false if objectIdx or propertyId are
  *         unsupported.
  */
-bool propertiesReadTelegram(int objectIdx, int propertyId, int count, int start);
+bool propertiesReadTelegram(int objectIdx, PropertyID propertyId, int count, int start);
 
 /*
  * Process a property-value write telegram. (properties.cpp)
@@ -46,6 +46,6 @@ bool propertiesReadTelegram(int objectIdx, int propertyId, int count, int start)
  * @return True if the request was processed, false if objectIdx or propertyId are
  *         unsupported or the property is not writable.
  */
-bool propertiesWriteTelegram(int objectIdx, int propertyId, int count, int start);
+bool propertiesWriteTelegram(int objectIdx, PropertyID propertyId, int count, int start);
 
 #endif /*sblib_internal_functions_h*/

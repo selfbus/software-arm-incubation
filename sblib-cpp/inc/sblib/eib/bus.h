@@ -11,6 +11,7 @@
 #define sblib_bus_h
 
 #include <sblib/core.h>
+#include <sblib/eib/bcu_type.h>
 
 class Bus;
 
@@ -76,11 +77,6 @@ enum SbState
 
 // The size of the telegram buffer in bytes
 #define SB_TELEGRAM_SIZE 24
-
-/**
- * The telegram buffer for sending a telegram.
- */
-extern unsigned char sbSendTelegram[SB_TELEGRAM_SIZE];
 
 /**
  * The telegram that is currently being sent.

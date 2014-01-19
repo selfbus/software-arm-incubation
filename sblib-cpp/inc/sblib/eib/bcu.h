@@ -15,9 +15,18 @@
 #include <sblib/eib/bcu_type.h>
 #include <sblib/eib/user_memory.h>
 
-class BCU;
-class BUS;
+// Rename the method appData() to indicate the BCU type. If you get a link error
+// then the library's BCU_TYPE is different from the application's BCU_TYPE.
+#if BCU_TYPE == 10
+# define appData appData_BCU1
+#elif BCU_TYPE == 20
+# define appData appData_BCU2
+#else
+# error Unsupported BCU_TYPE
+#endif
 
+
+class BCU;
 
 /**
  * The EIB bus coupling unit.
@@ -145,6 +154,8 @@ private:
     int  connectedSeqNo;        //!< Sequence number for connected data telegrams.
     bool incConnectedSeqNo;     //!< True if the sequence number shall be incremented on ACK.
 };
+
+//#undef appData
 
 
 //

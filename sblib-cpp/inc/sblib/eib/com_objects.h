@@ -21,7 +21,7 @@
  * @param objno - the ID of the communication object.
  * @return The value of the com-object.
  */
-int objectRead(int objno);
+unsigned int objectRead(int objno);
 
 /**
  * Get the float value from a communication object. Can be used for
@@ -33,15 +33,15 @@ int objectRead(int objno);
 float objectReadFloat(int objno);
 
 /**
- * Get a pointer to the value bytes of the communication object. Can
- * be used for any communication object. The minimum that is used for
- * a communication object is 1 byte. Use objectSize(objno) to get the
- * size of the communication object's value.
+ * Get a pointer to the value bytes of the communication object. Can be used for
+ * any communication object. The minimum that is used for a communication object
+ * is 1 byte. Use objectSize(objno) to get the size of the communication object's
+ * value.
  *
  * @param objno - the ID of the communication object.
  * @return The value of the com-object.
  */
-byte* objectReadPtr(int objno);
+byte* objectValuePtr(int objno);
 
 /**
  * Get the size of the communication object's value in bytes.
@@ -58,7 +58,7 @@ int objectSize(int objno);
  * @param objno - the ID of the communication object.
  * @param value - the new value of the communication object.
  */
-void objectWrite(int objno, int value);
+void objectWrite(int objno, unsigned int value);
 
 /**
  * Set the value of a communication object. Calling this function triggers the

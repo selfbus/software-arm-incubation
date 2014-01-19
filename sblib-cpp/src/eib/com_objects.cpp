@@ -35,6 +35,43 @@ int objectSize(int objno)
     return objectTypeSizes[type - BYTE_2];
 }
 
+byte* objectValuePtr(int objno)
+{
+    // The object configuration
+    const ComConfig& cfg = objectConfig(objno);
+
+    if (cfg.config & COMCONF_VALUE_TYPE) // 0 if user RAM, >0 if user EEPROM
+        return userEepromData + cfg.dataPtr;
+    return userRamData + cfg.dataPtr;
+}
+
+unsigned int objectRead(int objno)
+{
+    byte* ptr = objectValuePtr(objno);
+    int sz = objectSize(objno);
+    unsigned int value = *ptr++;
+
+    while (--sz > 0)
+    {
+        value <<= 8;
+        value |= *ptr++;
+    }
+
+    return value;
+}
+
+void objectWrite(int objno, unsigned int value)
+{
+    byte* ptr = objectValuePtr(objno);
+    int sz = objectSize(objno);
+
+    for (ptr += sz; sz > 0; --sz)
+    {
+        *--ptr = value;
+        value >>= 8;
+    }
+}
+
 /*
  * @return The number of communication objects.
  */
@@ -77,7 +114,7 @@ int objectSendAddr(int objno)
  */
 void sendGroupTelegram(int objno, int addr, bool isResponse)
 {
-    byte* valuePtr = objectReadPtr(objno);
+    byte* valuePtr = objectValuePtr(objno);
     int sz = objectSize(objno);
 
     bcu.sendTelegram[0] = 0xbc; // Control byte
@@ -153,16 +190,6 @@ int nextUpdatedObject()
     return -1;
 }
 
-byte* objectReadPtr(int objno)
-{
-    // The object configuration
-    const ComConfig& cfg = objectConfig(objno);
-
-    if (cfg.config & COMCONF_VALUE_TYPE) // 0 if user RAM, >0 if user EEPROM
-        return userEepromData + cfg.dataPtr;
-    return userRamData + cfg.dataPtr;
-}
-
 void setObjectFlags(int objno, int flags)
 {
     byte* flagsTab = objectFlagsTable();
@@ -180,7 +207,7 @@ void processGroupReadTelegram(int objno)
 
 void processGroupWriteTelegram(int objno)
 {
-    byte* valuePtr = objectReadPtr(objno);
+    byte* valuePtr = objectValuePtr(objno);
     int count = objectSize(objno);
 
     if (count > 0) memcpy(valuePtr, bus.telegram + 7, count);
@@ -229,8 +256,10 @@ void processGroupTelegram(int addr, int apci)
 
 byte* objectConfigTable()
 {
-#if BCU_TYPE == 0x10
+#if BCU_TYPE == 10
     return userEepromData + userEeprom.commsTabPtr;
+#elif BCU_TYPE == 20
+    return 0; // TODO
 #else
 #   error Unsupported BCU_TYPE
 #endif
@@ -238,8 +267,10 @@ byte* objectConfigTable()
 
 byte* objectFlagsTable()
 {
-#if BCU_TYPE == 0x10
+#if BCU_TYPE == 10
     return userRamData + userEepromData[userEeprom.commsTabPtr + 1];
+#elif BCU_TYPE == 20
+    return 0; // TODO
 #else
 #   error Unsupported BCU_TYPE
 #endif
