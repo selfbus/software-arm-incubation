@@ -180,7 +180,10 @@ void BCU::processDirectTelegram(int apci)
 {
     const int senderAddr = (bus.telegram[1] << 8) | bus.telegram[2];
     const int senderSeqNo = bus.telegram[6] & 0x3c;
-    int count, address, index, id;
+    int count, address, index;
+#if BCU_TYPE >= 20
+    int id;
+#endif
     unsigned char sendAck = 0;
     bool sendTel = false;
 

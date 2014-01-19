@@ -10,6 +10,8 @@
 #ifndef sblib_internal_functions_h
 #define sblib_internal_functions_h
 
+#include "sblib/eib/property_types.h"
+
 // Read userEeprom from Flash. (user_memory.cpp)
 void readUserEeprom();
 

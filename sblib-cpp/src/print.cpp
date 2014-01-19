@@ -30,7 +30,6 @@ int Print::print(int value, Base base, int digits)
 int Print::print(unsigned int value, Base base, int digits)
 {
     byte buf[PRINTBUF_SIZE]; // need the maximum size for binary printing
-    int wlen = 0;
     byte ch;
 
     short b = (short) base;

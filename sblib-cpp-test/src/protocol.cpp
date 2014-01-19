@@ -17,6 +17,7 @@ void executeTest(Test_Case * tc)
     void     * refState  = & tc->states[0];
     void     * stepState = & tc->states[1];
 
+    IAP_Init_Flash(0xFF);
     bcu.begin();
     if(tc->setup) tc->setup();
     tc->gatherState(refState, NULL);

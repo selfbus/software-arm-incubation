@@ -78,7 +78,7 @@ void writeUserEeprom()
         IAP_Status rc = iapEraseSector(sectorId);
         if (rc != IAP_SUCCESS) fatalError(); // erasing failed
 
-        page = 0;
+        page = SB_EEPROM_FLASH_SECTOR_ADDRESS;
     }
     else if (page)
         page += EEPROM_PAGE_SIZE;
