@@ -51,7 +51,6 @@ void BCU::begin()
         userEeprom.appLoaded = 0;
 #endif
 
-    IF_DEBUG(serial.begin(115200);)
 //    IF_DEBUG(
 //        serial.begin(115200);
 //        serial.println();
