@@ -6,7 +6,7 @@
  *  published by the Free Software Foundation.
  */
 
-#include "app_in8.h"
+#include "app_in4.h"
 #include "com_objs.h"
 #include "params.h"
 
@@ -32,7 +32,7 @@ const byte* channelTimingParams = userEepromData + (EE_CHANNEL_TIMING_PARAMS_BAS
  */
 void setup()
 {
-    bcu.appData(0, 4, 0x7054, 2); // We are a "Jung 2118" device, version 0.2
+    bcu.appData(0, 2, 0x9009, 0x01);  // we are a ABB TSU/4.2 version 0.1
 
     pinMode(PIO_LED, OUTPUT);
     digitalWrite(PIO_LED, 0);
