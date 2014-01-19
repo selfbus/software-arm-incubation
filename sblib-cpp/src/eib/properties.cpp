@@ -40,7 +40,6 @@ static const ConstPropValues constPropValues =
     /*order number*/  { 0x11, 0x12, 0x00, 0x00, 0x22, 0x23, 0x00, 0x00, 0x33, 0x34 }
 };
 
-
 //
 // The properties of the device object
 //
@@ -76,7 +75,13 @@ static const PropertyDef deviceObjectProps[] =
 //
 static const PropertyDef addrTabObjectProps[] =
 {
+    // Load state control
     { PID_LOAD_STATE_CONTROL, PDT_CONTROL|PC_WRITABLE|PC_POINTER, PD_USER_EEPROM_OFFSET(addrTabLoaded) },
+
+    // Pointer to the address table
+    { PID_TABLE_REFERENCE, PDT_UNSIGNED_INT, 0x0116 },
+
+    // End of table
     PROPERTY_DEF_TABLE_END
 };
 
@@ -85,7 +90,13 @@ static const PropertyDef addrTabObjectProps[] =
 //
 static const PropertyDef assocTabObjectProps[] =
 {
+    // Load state control
     { PID_LOAD_STATE_CONTROL, PDT_CONTROL|PC_WRITABLE|PC_POINTER, PD_USER_EEPROM_OFFSET(assocTabLoaded) },
+
+    // Pointer to the association table
+    { PID_TABLE_REFERENCE, PDT_UNSIGNED_INT|PC_POINTER, PD_USER_EEPROM_OFFSET(assocTabPtr16) },
+
+    // End of table
     PROPERTY_DEF_TABLE_END
 };
 
@@ -102,6 +113,9 @@ static const PropertyDef appObjectProps[] =
 
     // Program version
     { PID_PROG_VERSION, PDT_GENERIC_05|PC_POINTER, PD_USER_EEPROM_OFFSET(manufacturerH) },
+
+    // Pointer to the communication objects table
+    { PID_TABLE_REFERENCE, PDT_UNSIGNED_INT|PC_POINTER, PD_USER_EEPROM_OFFSET(commsTabPtr16) },
 
     // End of table
     PROPERTY_DEF_TABLE_END
@@ -198,7 +212,7 @@ static byte* propertyValuePtr(const PropertyDef* def)
 }
 
 
-bool propertiesReadTelegram(int objectIdx, PropertyID propertyId, int count, int start)
+bool propertiesValueReadTelegram(int objectIdx, PropertyID propertyId, int count, int start)
 {
     const PropertyDef* def = findProperty(objectIdx, propertyId);
     if (!def) fatalError();  // shall be replaced with "return false" later
@@ -216,7 +230,86 @@ bool propertiesReadTelegram(int objectIdx, PropertyID propertyId, int count, int
     return true;
 }
 
-bool propertiesWriteTelegram(int objectIdx, PropertyID propertyId, int count, int start)
+int loadControl(const PropertyDef* def, byte* valuePtr, const byte* data, int len)
+{
+    int segmentType, addr, length;
+    int state = data[0]; // load state: telegram[12]
+
+    // See KNX 3/5/2, 3.27 DM_LoadStateMachineWrite
+    // See KNX 6/6 Profiles, p. 101 for load states
+    //
+    // State codes 1,2 are incorrect there, see BCU2 help for correct codes:
+    // 0: unloaded
+    // 1: loaded
+    // 2: loading
+
+    // state==3 means write memory. Data:
+    // subState addrL addrH data[6]
+
+    switch (state) // the control state
+    {
+    case 0: // No operation
+        return 0; // reply: unloaded
+
+    case 1: // Start loading
+        return 2; // reply: loading
+
+    case 2: // Load completed
+        *valuePtr = 1;
+        return 1; // reply: loaded
+
+    case 3: // Allocate absolute data segment (segment type 0)
+        segmentType = data[1];
+        addr = makeWord(data[2], data[3]);
+        switch (segmentType)
+        {
+        case 0:  // Allocate absolute data segment (ignored)
+            // See KNX 3/5/2 p.84
+            break;
+
+        case 1:  // Allocate absolute stack segment (ignored)
+            break;
+
+        case 2:  // Allocate absolute task segment
+            // data[3+4]: start address (pointer to the table for property #7)
+            userEeprom.peiType = data[5];
+            userEeprom.manufacturerH = data[6];
+            userEeprom.manufacturerL = data[7];
+            userEeprom.deviceTypeH = data[8];
+            userEeprom.deviceTypeL = data[9];
+            userEeprom.version = data[10];
+            userEeprom.modified();
+            break;
+
+        case 3:  // Task pointer (ignored)
+            break;
+
+        case 4:  // Task control 1 (ignored)
+            // See KNX 3/5/2 p.85
+            break;
+
+        case 5:  // Task control 2
+            addr++; // FIXME: remove this dummy debug statement
+            // See KNX 3/5/2 p.85
+            userEeprom.commsTabPtr16 = makeWord(data[5], data[6]);
+            break;
+
+        default:
+            IF_DEBUG(fatalError());
+            return 3; // reply: error
+        }
+        return 2; // reply: load complete
+
+    case 4: // Unload
+        *valuePtr = 0;
+        return 0;   // reply: unloaded
+    }
+
+    IF_DEBUG(fatalError());
+    return 3; // reply: error
+}
+
+bool propertiesValueWriteTelegram(int objectIdx, PropertyID propertyId, int count, int start)
 {
     const PropertyDef* def = findProperty(objectIdx, propertyId);
     if (!def) return false;
@@ -225,55 +318,58 @@ bool propertiesWriteTelegram(int objectIdx, PropertyID propertyId, int count, in
         fatalError();  // shall be replaced with "return false" later
 
     PropertyDataType type = (PropertyDataType) (def->control & PC_TYPE_MASK);
-    int len = count * propertySize(type);
+    const byte* data = bus.telegram + 12;
+    int len;
+
     byte* valuePtr = propertyValuePtr(def);
     if (!valuePtr) return false;
 
-    --start;
-
     if (type == PDT_CONTROL)
     {
-        // See KNX 6/6 Profiles, p. 101 for load states
-        // State codes 1,2 are incorrect there, see BCU2 help for correct codes:
-        // 0: unloaded
-        // 1: loaded
-        // 2: loading
+        len = bus.telegramLen - 13;
 
-        int state = bus.telegram[12];
+//        IF_DEBUG(
+//            serial.print("loadControl IDX=");
+//            serial.print(objectIdx);
+//            serial.print(" PID=");
+//            serial.print(propertyId);
+//            serial.print(" ");
+//            for (int i = 0; i < len; ++i)
+//            {
+//                if (!i) serial.print(" ");
+//                serial.print(data[i], HEX, 2);
+//            }
+//            serial.println();
+//        )
 
-        // state==3 means write memory. Data:
-        // subState addrL addrH data[6]
-
-        switch (bus.telegram[12]) // the state
-        {
-        case 0: // unloaded
-            break;
-        case 1: // loaded
-            break;
-        case 2: // loading
-            *valuePtr = 1;
-            state = 1; // reply:  loaded
-            break;
-        case 4:
-            *valuePtr = 0;
-            state = 0;  // reply: unloaded
-            break;
-        default:
-            *valuePtr = 1;
-            state = 2;  // reply: loading
-            break;
-        }
-
-        bcu.sendTelegram[12] = state;
+        bcu.sendTelegram[12] = loadControl(def, valuePtr, data, len);
         len = 1;
     }
     else
     {
-        memcpy(valuePtr + start * type, bus.telegram + 12, len);
+        len = count * propertySize(type);
+        --start;
+
+        memcpy(valuePtr + start * type, data, len);
         memcpy(bcu.sendTelegram + 12, valuePtr + start * type, len);
     }
 
     bcu.sendTelegram[5] += len;
+    return true;
+}
+
+bool propertiesDescReadTelegram(int objectIdx, PropertyID propertyId, int propertyIdx)
+{
+    const PropertyDef* def = findProperty(objectIdx, propertyId);
+    if (!def) return false;
+
+    int arrayMaxElems = 1;
+
+    bcu.sendTelegram[11] = (PropertyDataType) (def->control & (PC_TYPE_MASK | PC_WRITABLE));
+    bcu.sendTelegram[12] = (arrayMaxElems >> 8) & 15;
+    bcu.sendTelegram[13] = arrayMaxElems;
+    bcu.sendTelegram[14] = 0x33;
+
     return true;
 }
 

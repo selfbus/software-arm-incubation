@@ -417,7 +417,7 @@ STATE_LOOP:
             goto STATE_LOOP;
         }
 
-        // FIXME the next telegram is not sent if sbSendTelegramTries>=3
+        // FIXME the next telegram is not sent if sendTelegramTries>=3
         if (sendAck || (sendTelegramLen && sendTries < 3))
         {
             state = Bus::SEND_START;

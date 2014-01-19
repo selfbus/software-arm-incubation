@@ -77,6 +77,15 @@
 #define highByte(val) (((val) >> ((sizeof(val) - 1) << 3)) & 255)
 
 /**
+ * Combine two bytes to a 16 bit word.
+ *
+ * @param high - the high byte.
+ * @param low - the low byte.
+ * @return The bytes combined as word.
+ */
+int makeWord(byte high, byte low);
+
+/**
  * Reverse the byte order of an integer.
  *
  * @param val - the value to reverse.
@@ -97,12 +106,17 @@ unsigned short reverseByteOrder(unsigned short val);
 //  Inline functions
 //
 
-ALWAYS_INLINE unsigned int reverseByteOrder(unsigned int val)
+inline int makeWord(byte high, byte low)
+{
+    return (high << 8) | low;
+}
+
+inline unsigned int reverseByteOrder(unsigned int val)
 {
     return __REV(val);
 }
 
-ALWAYS_INLINE unsigned short reverseByteOrder(unsigned short val)
+inline unsigned short reverseByteOrder(unsigned short val)
 {
     return __REV16(val);
 }

@@ -89,6 +89,7 @@ enum PropertyID
     /** Device object property: port configuration. */
     PID_PORT_CONFIGURATION = 17,
 
+
     /** Application object property: load state control. */
     PID_LOAD_STATE_CONTROL = 5,
 
@@ -96,7 +97,11 @@ enum PropertyID
     PID_RUN_STATE_CONTROL = 6,
 
     /** Application object property: program version. */
-    PID_PROG_VERSION = 13
+    PID_PROG_VERSION = 13,
+
+
+    /** Address / association table object property: table address. */
+    PID_TABLE_REFERENCE = 7
 };
 
 

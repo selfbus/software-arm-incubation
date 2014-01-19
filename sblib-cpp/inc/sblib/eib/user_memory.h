@@ -51,7 +51,7 @@ public:
     byte data1[0x5f - USER_RAM_START];
 
     /**
-     * 0x005f: Device control (BCU2, Selfbus extension).
+     * 0x005f: Device control (BCU2, Selfbus extension), see enum DeviceControl below.
      *
      * Bit 0: set if the application program is stopped.
      * Bit 1: a telegram with our own physical address was received.
@@ -129,7 +129,9 @@ public:
     byte assocTabLoaded; //!< 0x0473: Association table load control state (BCU2, Selfbus extension)
     word serviceControl; //!< 0x0474: Service control (BCU2, Selfbus extension)
     byte serial[6];      //!< 0x0476: Hardware serial number (BCU2, Selfbus extension, 4 byte aligned)
-    byte system[131];    //!< 0x047c: Rest of the system EEPROM (BCU2 only)
+    word assocTabPtr16;  //!< 0x047c: 16 bit pointer to the association table (BCU2, Selfbus extension, 2 byte aligned)
+    word commsTabPtr16;  //!< 0x047e: 16 bit pointer to the communication objects table (BCU2, Selfbus extension, 2 byte aligned)
+    byte system[127];    //!< 0x0480: Rest of the system EEPROM (BCU2 only)
 #else
 #   error "Unsupported BCU type"
 #endif /*BCU_TYPE*/
@@ -170,6 +172,17 @@ enum BcuStatus
     BCU_STATUS_USR = 0x20,    //!< BCU status: application program enabled
     BCU_STATUS_DWN = 0x40,    //!< BCU status: download mode enabled
     BCU_STATUS_PARITY = 0x80  //!< BCU status: parity bit: even parity for bits 0..6)
+};
+
+
+/**
+ * Device control flags, for userRam.deviceControl
+ */
+enum DeviceControl
+{
+    DEVCTRL_APP_STOPPED = 0x01,      //!< the application program is stopped.
+    DEVCTRL_OWN_ADDR_IN_USE = 0x02,  //!< a telegram with our own physical address was received.
+    DEVCTRL_MEM_AUTO_RESPONSE = 0x04 //!< send a memory-response telegram automatically on memory-write.
 };
 
 

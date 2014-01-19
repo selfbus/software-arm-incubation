@@ -35,4 +35,18 @@ void fatalError();
  */
 #define OFFSET_OF(type, field)  ((unsigned int) &(((type *) 0)->field))
 
+/**
+ * Include the C++ code snippet if DEBUG is defined, do not include the code
+ * if DEBUG is not defined.
+ *
+ * @param code - the C++ code to include
+ *
+ * @brief Example:  IF_DEBUG(fatalError())
+ */
+#ifdef DEBUG
+#  define IF_DEBUG(code) { code; }
+#else
+#  define IF_DEBUG(code)
+#endif
+
 #endif /*sblib_utils_h*/
