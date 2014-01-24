@@ -77,8 +77,8 @@ void readUserEeprom()
     if (page) memcpy(userEepromData, page, USER_EEPROM_SIZE);
     else memset(userEepromData, 0, USER_EEPROM_SIZE);
 
-#if BCU_TYPE >= 20
     // Initialize essential fields
+#if BCU_TYPE >= 20
     userEeprom.deviceObject.id = 0;
     userEeprom.addrObject.id = 1;
     userEeprom.assocObject.id = 2;
@@ -86,7 +86,6 @@ void readUserEeprom()
     userEeprom.objectReserved[0] = -1; // mark the end of the interface objects
     userEeprom.endObjectsId = -1;      // also mark the end - required when objectReserved is used.
 #endif
-
     userEepromModified = 0;
 }
 

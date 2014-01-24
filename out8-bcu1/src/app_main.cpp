@@ -32,7 +32,7 @@ const byte* channelTimingParams = userEepromData + (EE_CHANNEL_TIMING_PARAMS_BAS
  */
 void setup()
 {
-    bcu.appData(0, 4, 0x7054, 2); // We are a "Jung 2118" device, version 0.2
+    bcu.appData(0, 4, 0x2060, 1); // We are a "Jung 2138.10" device, version 0.1
 
     pinMode(PIO_LED, OUTPUT);
     digitalWrite(PIO_LED, 0);
@@ -70,6 +70,6 @@ void loop()
     }
 #endif
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
-        waitForInterrupt();
+    //if (bus.idle())
+    //    waitForInterrupt();
 }

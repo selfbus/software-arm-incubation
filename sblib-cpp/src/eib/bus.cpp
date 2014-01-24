@@ -137,12 +137,20 @@ void Bus::begin()
     D(pinMode(PIO3_2, OUTPUT));
     D(pinMode(PIO3_3, OUTPUT));
     D(pinMode(PIO0_6, OUTPUT));
+    D(pinMode(PIO0_7, OUTPUT));
+    D(pinMode(PIO2_8, OUTPUT));
+    D(pinMode(PIO2_9, OUTPUT));
+    D(pinMode(PIO2_10, OUTPUT));
 
     D(digitalWrite(PIO3_0, 0));
     D(digitalWrite(PIO3_1, 0));
     D(digitalWrite(PIO3_2, 0));
     D(digitalWrite(PIO3_3, 0));
     D(digitalWrite(PIO0_6, 0));
+    D(digitalWrite(PIO0_7, 0));
+    D(digitalWrite(PIO2_8, 0));
+    D(digitalWrite(PIO2_9, 0));
+    D(digitalWrite(PIO2_10, 0));
 }
 
 void Bus::idleState()
@@ -245,6 +253,8 @@ void Bus::timerInterruptHandler()
     D(digitalWrite(PIO3_1, 0));           // orange
     D(digitalWrite(PIO3_2, 0));               // yellow: end of byte
     D(digitalWrite(PIO3_3, 0));              // purple: end of telegram
+    D(digitalWrite(PIO2_8, 0));              //
+    D(digitalWrite(PIO2_9, 0));              //
 
 STATE_LOOP:
     switch (state)
@@ -321,7 +331,10 @@ STATE_LOOP:
 
         state = Bus::SEND_START;
         if (sendCurTelegram)
+        {
             sendTelegramLen = telegramSize(sendCurTelegram) + 1;
+            D(digitalWrite(PIO2_10, 0));             //
+        }
         else sendTelegramLen = 0;
         // No break here
 
@@ -402,6 +415,7 @@ STATE_LOOP:
         break;
 
     case Bus::SEND_END:
+        D(digitalWrite(PIO2_9, 1));
         LPC_TMR16B1->MR3 = BIT_TIME * 50;
         LPC_TMR16B1->MCR = 0x600;  // Interrupt and reset timer on timeout (match of MR3)
         LPC_TMR16B1->CCR = 6;      // Capture CR0 on falling edge, with interrupt
@@ -420,10 +434,12 @@ STATE_LOOP:
         // FIXME the next telegram is not sent if sendTelegramTries>=3
         if (sendAck || (sendTelegramLen && sendTries < 3))
         {
+            D(digitalWrite(PIO2_10, 0));
             state = Bus::SEND_START;
             debugLine = __LINE__;
             goto STATE_LOOP;
         }
+        D(digitalWrite(PIO2_8, 1));
         // no break here
 
     default:
