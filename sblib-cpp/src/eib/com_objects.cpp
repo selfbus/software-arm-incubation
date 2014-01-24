@@ -12,7 +12,9 @@
 
 #include <sblib/eib/addr_tables.h>
 #include <sblib/eib/apci.h>
+#include <sblib/eib/property_types.h>
 #include <sblib/eib/user_memory.h>
+#include <sblib/internal/functions.h>
 
 #include <string.h>
 
@@ -40,9 +42,17 @@ byte* objectValuePtr(int objno)
     // The object configuration
     const ComConfig& cfg = objectConfig(objno);
 
+#if BCU_TYPE == 10
     if (cfg.config & COMCONF_VALUE_TYPE) // 0 if user RAM, >0 if user EEPROM
         return userEepromData + cfg.dataPtr;
     return userRamData + cfg.dataPtr;
+#elif BCU_TYPE >= 20
+    // TODO Should handle userRam.segment0addr and userRam.segment1addr here
+    // if (cfg.config & COMCONF_VALUE_TYPE) // 0 if segment 0, !=0 if segment 1
+    return userRamData + cfg.dataPtr;
+#else
+#   error Unsupported BCU_TYPE
+#endif
 }
 
 unsigned int objectRead(int objno)
@@ -259,7 +269,7 @@ byte* objectConfigTable()
 #if BCU_TYPE == 10
     return userEepromData + userEeprom.commsTabPtr;
 #elif BCU_TYPE == 20
-    return 0; // TODO
+    return userEeprom.appObject.tablePointer();
 #else
 #   error Unsupported BCU_TYPE
 #endif
@@ -270,7 +280,8 @@ byte* objectFlagsTable()
 #if BCU_TYPE == 10
     return userRamData + userEepromData[userEeprom.commsTabPtr + 1];
 #elif BCU_TYPE == 20
-    return 0; // TODO
+    const byte* configTable = userEeprom.appObject.tablePointer();
+    return userRamData + configTable[1] - USER_RAM_START;
 #else
 #   error Unsupported BCU_TYPE
 #endif

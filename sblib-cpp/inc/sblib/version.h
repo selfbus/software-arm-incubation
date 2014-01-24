@@ -11,8 +11,8 @@
 #define sblib_version_h
 
 /**
- * The version of the library. A two bytes hex number.
+ * The version of the library. An integer value.
  */
-#define SBLIB_VERSION 0x0001
+#define SBLIB_VERSION 0x01
 
 #endif /*sblib_version_h*/

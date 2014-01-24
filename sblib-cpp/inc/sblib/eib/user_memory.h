@@ -12,6 +12,7 @@
 
 #include <sblib/types.h>
 #include <sblib/eib/bcu_type.h>
+#include <sblib/eib/interface_object.h>
 
 class UserRam;
 class UserEeprom;
@@ -48,7 +49,17 @@ class UserRam
 {
 public:
     /** Reserved */
-    byte data1[0x5f - USER_RAM_START];
+    byte data1[0x5e - USER_RAM_START];
+
+    /**
+     * 0x005e: Application run state (BCU2, Selfbus extension).
+     *
+     * 0 = the application program is halted
+     * 1 = the program is running
+     * 2 = the program is ready but not running
+     * 3 = the program is terminated
+     */
+    byte runState;
 
     /**
      * 0x005f: Device control (BCU2, Selfbus extension), see enum DeviceControl below.
@@ -117,21 +128,25 @@ public:
     byte addrTab[2];     //!< 0x0117+: Address table, 2 bytes per entry. Real array size is addrTabSize*2
     byte user[220];      //!< 0x0116: User EEPROM: 220 bytes (BCU1)
     byte checksum;       //!< 0x01ff: EEPROM checksum (BCU1 only)
-#elif BCU_TYPE == 20
+#elif BCU_TYPE >= 20
     byte appType;        //!< 0x0115: Application program type: 0=BCU2, else BCU1
     byte addrTabSize;    //!< 0x0116: Size of the address table
     byte addrTab[2];     //!< 0x0117+:Address table, 2 bytes per entry. Real array size is addrTabSize*2
     byte user[856];      //!< 0x0119+:User EEPROM: 856 bytes (BCU2)
-                         //!< ------  System EEPROM below
-    byte appLoaded;      //!< 0x0470: Application load control state (BCU2, Selfbus extension)
-    byte appRunning;     //!< 0x0471: Application run control state (BCU2, Selfbus extension)
-    byte addrTabLoaded;  //!< 0x0472: Address table load control state (BCU2, Selfbus extension)
-    byte assocTabLoaded; //!< 0x0473: Association table load control state (BCU2, Selfbus extension)
-    word serviceControl; //!< 0x0474: Service control (BCU2, Selfbus extension)
-    byte serial[6];      //!< 0x0476: Hardware serial number (BCU2, Selfbus extension, 4 byte aligned)
-    word assocTabPtr16;  //!< 0x047c: 16 bit pointer to the association table (BCU2, Selfbus extension, 2 byte aligned)
-    word commsTabPtr16;  //!< 0x047e: 16 bit pointer to the communication objects table (BCU2, Selfbus extension, 2 byte aligned)
-    byte system[127];    //!< 0x0480: Rest of the system EEPROM (BCU2 only)
+                         //!< ------  System EEPROM below (Selfbus proprietary BCU2 stuff)
+    InterfaceObject deviceObject; //!< 0x0470: device object
+    InterfaceObject addrObject;   //!< 0x0478: address table object
+    InterfaceObject assocObject;  //!< 0x0480: association table object
+    InterfaceObject appObject;    //!< 0x0488: application program object
+    byte objectReserved[16];      //!< 0x0490: reserved for more objects
+    byte endObjectsId;            //!< 0x0491: the end of the interface objects, do not modify
+
+    byte padding;
+    byte serial[6];      //!< 0x0492: Hardware serial number
+    word serviceControl; //!< 0x047a: Service control
+    word segment0addr;   //!< 0x047c: Address of memory segment 0
+    word segment1addr;   //!< 0x047e: Address of memory segment 1
+    byte appRunning;     //!< 0x0480: Application run control state
 #else
 #   error "Unsupported BCU type"
 #endif /*BCU_TYPE*/
@@ -144,6 +159,16 @@ public:
      * @return The data byte.
      */
     byte& operator[](int idx);
+
+    /**
+     * Get a specific interface object.
+     *
+     * @param id - the ID of the interface object: IOBJ_DEVICE, IOBJ_ADDR_TABLE, ...
+     *
+     * @return The interface object, or 0 if the interface object is unknown. This function
+     *         returns always 0 if the library is compiled for BCU1.
+     */
+    InterfaceObject* interfaceObject(int id);
 
     /**
      * Mark the user EEPROM as modified. The EEPROM will be written to flash when the

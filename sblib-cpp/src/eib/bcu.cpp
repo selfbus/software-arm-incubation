@@ -40,15 +40,13 @@ void BCU::begin()
 
     userRam.status = BCU_STATUS_LL | BCU_STATUS_TL | BCU_STATUS_AL | BCU_STATUS_USR;
     userRam.deviceControl = 0;
+    userRam.runState = 1;
 
     userEeprom.runError = 0xff;
     userEeprom.portADDR = 0;
 
 #if BCU_TYPE >= 20
     userEeprom.appType = 0;  // Set to BCU2 application. ETS reads this when programming.
-
-    if (userEeprom.appLoaded > 1)
-        userEeprom.appLoaded = 0;
 #endif
 
 //    IF_DEBUG(
@@ -83,7 +81,7 @@ void BCU::appData(int data, int manufacturer, int deviceType, byte version)
     userEeprom.version = version;
 
 #if BCU_TYPE >= 20
-    iapReadPartID((unsigned int*) (userEeprom.serial));
+    iapReadPartID((unsigned int*) userEeprom.serial);
     userEeprom.serial[4] = SBLIB_VERSION >> 8;
     userEeprom.serial[5] = SBLIB_VERSION;
 #endif
@@ -191,6 +189,7 @@ void BCU::processDirectTelegram(int apci)
     const int senderSeqNo = bus.telegram[6] & 0x3c;
     int count, address, index;
 #if BCU_TYPE >= 20
+    bool found;
     int id;
 #endif
     unsigned char sendAck = 0;
@@ -288,21 +287,22 @@ void BCU::processDirectTelegram(int apci)
             count = (sendTelegram[10] = bus.telegram[10]) >> 4;
             address = ((bus.telegram[10] & 15) << 4) | (sendTelegram[11] = bus.telegram[11]);
 
-            sendAck = T_NACK_PDU;
             if (apci == APCI_PROPERTY_VALUE_READ_PDU)
-                sendTel = propertiesValueReadTelegram(index, (PropertyID) id, count, address);
-            else sendTel = propertiesValueWriteTelegram(index, (PropertyID) id, count, address);
+                found = propertyValueReadTelegram(index, (PropertyID) id, count, address);
+            else found = propertyValueWriteTelegram(index, (PropertyID) id, count, address);
+            if (!found) sendTelegram[10] = 0;
+            sendTel = true;
             break;
 
         case APCI_PROPERTY_DESCRIPTION_READ_PDU:
-            sendTelegram[5] = 0x65;
-            sendTelegram[6] = 0x40 | (APCI_PROPERTY_DESCRIPTION_RESPONSE_PDU >> 8);
+            sendTelegram[5] = 0x68;
+            sendTelegram[6] = 0x64 | (APCI_PROPERTY_DESCRIPTION_RESPONSE_PDU >> 8);
             sendTelegram[7] = APCI_PROPERTY_DESCRIPTION_RESPONSE_PDU & 0xff;
             index = sendTelegram[8] = bus.telegram[8];
             id = sendTelegram[9] = bus.telegram[9];
             address = (sendTelegram[10] = bus.telegram[10]);
-            sendAck = T_ACK_PDU;
-            sendTel = propertiesDescReadTelegram(index, (PropertyID) id, address);
+            propertyDescReadTelegram(index, (PropertyID) id, address);
+            sendTel = true;
             break;
 #endif
 

@@ -41,7 +41,7 @@ void sendNextGroupTelegram();
  *
  * @return True if the request was processed, false if an error occured.
  */
-bool propertiesValueReadTelegram(int objectIdx, PropertyID propertyId, int count, int start);
+bool propertyValueReadTelegram(int objectIdx, PropertyID propertyId, int count, int start);
 
 /*
  * Process a property-value write telegram. (properties.cpp)
@@ -54,10 +54,11 @@ bool propertiesValueReadTelegram(int objectIdx, PropertyID propertyId, int count
  *
  * @return True if the request was processed, false if an error occured.
  */
-bool propertiesValueWriteTelegram(int objectIdx, PropertyID propertyId, int count, int start);
+bool propertyValueWriteTelegram(int objectIdx, PropertyID propertyId, int count, int start);
 
 /*
- * Process a property-description read telegram. (properties.cpp)
+ * Process a property-description read telegram.
+ * (properties.cpp)
  *
  * @param objectIdx - the object index
  * @param propertyId - the property ID
@@ -65,6 +66,7 @@ bool propertiesValueWriteTelegram(int objectIdx, PropertyID propertyId, int coun
  *
  * @return True if the request was processed, false if an error occured.
  */
-bool propertiesDescReadTelegram(int objectIdx, PropertyID propertyId, int propertyIdx);
+bool propertyDescReadTelegram(int objectIdx, PropertyID propertyId, int propertyIdx);
+
 
 #endif /*sblib_internal_functions_h*/

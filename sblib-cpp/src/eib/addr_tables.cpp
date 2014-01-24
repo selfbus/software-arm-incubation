@@ -10,17 +10,20 @@
 
 #include <sblib/eib/addr_tables.h>
 
+#include <sblib/eib/property_types.h>
 #include <sblib/eib/user_memory.h>
+#include <sblib/internal/functions.h>
 
 
 int indexOfAddr(int addr)
 {
     byte* tab = addrTable();
-    int num = *tab++;
+    int num = *tab;
 
     int addrHigh = addr >> 8;
     int addrLow = addr & 255;
 
+    tab += 3;
     for (int i = 1; i < num; ++i, tab += 2)
     {
         if (tab[0] == addrHigh && tab[1] == addrLow)
@@ -53,7 +56,14 @@ int addrForSendObject(int objno)
 
 byte* addrTable()
 {
+#if BCU_TYPE == 10
     return (byte*) &userEeprom.addrTabSize;
+#elif BCU_TYPE == 20
+    return userEeprom.addrObject.tablePointer();
+#else
+    // BCU2:  KNX 3/5/1 p.126 & p.129
+#   error Unsupported BCU_TYPE
+#endif
 }
 
 byte* assocTable()
@@ -61,7 +71,7 @@ byte* assocTable()
 #if BCU_TYPE == 10
     return userEepromData + userEeprom.assocTabPtr;
 #elif BCU_TYPE == 20
-
+    return userEeprom.assocObject.tablePointer();
 #else
     // BCU2:  KNX 3/5/1 p.126 & p.129
 #   error Unsupported BCU_TYPE

@@ -170,7 +170,7 @@ inline bool BCU::programmingMode() const
 inline bool BCU::applicationRunning() const
 {
     return (userRam.status & (BCU_STATUS_PROG|BCU_STATUS_AL)) == BCU_STATUS_AL &&
-        userEeprom.runError == 0xff; // ETS sets the run error to 0 when programming
+        userRam.runState == 1 && userEeprom.runError == 0xff; // ETS sets the run error to 0 when programming
 }
 
 inline bool BCU::directConnection() const

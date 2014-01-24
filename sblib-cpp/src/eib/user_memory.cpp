@@ -16,6 +16,8 @@
 
 #include <string.h>
 
+// move userRamData to a nice address (ok it's stupid but it helps debugging)
+byte __attribute__ ((aligned (4))) userRamPadding[20];
 
 byte  __attribute__ ((aligned (4))) userRamData[USER_RAM_SIZE];
 UserRam& userRam = *(UserRam*) userRamData;
@@ -31,6 +33,24 @@ unsigned int writeUserEepromTime;
 #define EEPROM_PAGE_SIZE  (SB_EEPROM_SECTOR_SIZE / NUM_EEPROM_PAGES)
 #define LAST_EEPROM_PAGE  (SB_EEPROM_FLASH_SECTOR_ADDRESS + EEPROM_PAGE_SIZE * (NUM_EEPROM_PAGES - 1))
 
+
+InterfaceObject* UserEeprom::interfaceObject(int id)
+{
+#if BCU_TYPE >= 20
+    switch (id)
+    {
+    case IOBJ_DEVICE:
+        return &deviceObject;
+    case IOBJ_ADDR_TABLE:
+        return &addrObject;
+    case IOBJ_ASSOC_TABLE:
+        return &assocObject;
+    case IOBJ_APPLICATION:
+        return &appObject;
+    }
+#endif
+    return 0;
+}
 
 /*
  * Find the last valid page in the flash sector
@@ -56,6 +76,14 @@ void readUserEeprom()
 
     if (page) memcpy(userEepromData, page, USER_EEPROM_SIZE);
     else memset(userEepromData, 0, USER_EEPROM_SIZE);
+
+    // Initialize essential fields
+    userEeprom.deviceObject.id = 0;
+    userEeprom.addrObject.id = 1;
+    userEeprom.assocObject.id = 2;
+    userEeprom.appObject.id = 3;
+    userEeprom.objectReserved[0] = -1; // mark the end of the interface objects
+    userEeprom.endObjectsId = -1;      // also mark the end - required when objectReserved is used.
 
     userEepromModified = 0;
 }

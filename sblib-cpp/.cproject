@@ -46,6 +46,7 @@
 								</option>
 								<option id="com.crt.advproject.cpp.lib.debug.option.optimization.level.791497628" name="Optimization Level" superClass="com.crt.advproject.cpp.lib.debug.option.optimization.level"/>
 								<option id="gnu.cpp.compiler.option.warnings.allwarn.2088451825" name="All warnings (-Wall)" superClass="gnu.cpp.compiler.option.warnings.allwarn" value="false" valueType="boolean"/>
+								<option id="com.crt.advproject.cpp.misc.dialect.188490302" name="C++ Dialect" superClass="com.crt.advproject.cpp.misc.dialect" value="com.crt.advproject.misc.dialect.cppdefault" valueType="enumerated"/>
 								<inputType id="com.crt.advproject.compiler.cpp.input.1961619982" superClass="com.crt.advproject.compiler.cpp.input"/>
 							</tool>
 							<tool id="com.crt.advproject.gcc.lib.debug.1381579034" name="MCU C Compiler" superClass="com.crt.advproject.gcc.lib.debug">
@@ -399,5 +400,18 @@
 &lt;/infoList&gt;
 &lt;/TargetConfig&gt;</projectStorage>
 	</storageModule>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/sblib-cpp"/>
+		</configuration>
+		<configuration configurationName="Debug_BCU1">
+			<resource resourceType="PROJECT" workspacePath="/sblib-cpp"/>
+		</configuration>
+		<configuration configurationName="Release_BCU1">
+			<resource resourceType="PROJECT" workspacePath="/sblib-cpp"/>
+		</configuration>
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/sblib-cpp"/>
+		</configuration>
+	</storageModule>
 </cproject>

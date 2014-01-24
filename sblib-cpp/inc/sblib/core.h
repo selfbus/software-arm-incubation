@@ -20,5 +20,6 @@
 #include <sblib/serial.h>
 #include <sblib/timer.h>
 #include <sblib/utils.h>
+#include <sblib/version.h>
 
 #endif /*sblib_core_h*/

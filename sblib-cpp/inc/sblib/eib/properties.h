@@ -23,8 +23,5 @@
  */
 const PropertyDef* findProperty(PropertyID id, PropertyDef* table);
 
-// Mark the end of a property definition table
-#define PROPERTY_DEF_TABLE_END  { 0, 0, 0 }
-
 #endif /*BCU_TYPE >= 20*/
 #endif /*sblib_properties_h*/

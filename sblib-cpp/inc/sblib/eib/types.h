@@ -81,7 +81,11 @@ enum ComConfigFlag
     /** Com object configuration flag: transmit enabled */
     COMCONF_TRANS = 0x40,
 
-    /** Com object configuration flag: value memory type: 0=ram, 1=eeprom */
+    /**
+     * Com object configuration flag:
+     * BCU1: value memory segment: 0=ram, 1=eeprom
+     * BCU2: memory segment selector (segment 0 or 1)
+     */
     COMCONF_VALUE_TYPE = 0x20,
 
     /** Com object configuration flag: write enabled */
@@ -140,9 +144,6 @@ struct ComConfig
  */
 enum ComFlag
 {
-    /** Communication status flag: transmission status mask */
-    COMFLAG_TRANS_MASK = 0x3,
-
     /** Communication status flag: transmission status: idle/ok */
     COMFLAG_OK = 0x0,
 
@@ -154,6 +155,9 @@ enum ComFlag
 
     /** Communication status flag: transmission status: transmission request */
     COMFLAG_TRANSREQ = 0x3,
+
+    /** Communication status flag: transmission status mask */
+    COMFLAG_TRANS_MASK = 0x3,
 
     /** Communication status flag: data request: 0=idle/response, 1=data request */
     COMFLAG_DATAREQ = 0x4,
