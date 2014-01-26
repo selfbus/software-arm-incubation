@@ -174,7 +174,7 @@ inline bool BCU::applicationRunning() const
         userRam.runState == 1 && userEeprom.runError == 0xff; // ETS sets the run error to 0 when programming
 #elif BCU_TYPE >= 20
     return !(userRam.status & BCU_STATUS_PROG) &&
-        userRam.runState == 1 && userEeprom.appObject.state == 1;
+        userRam.runState == 1 && userEeprom.appRunning == 1;
 #else
 #   error Unsupported BCU_TYPE
 #endif

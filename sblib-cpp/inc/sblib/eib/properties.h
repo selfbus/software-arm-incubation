@@ -21,7 +21,25 @@
  *
  * @return Pointer to the property definition, 0 if not found.
  */
-const PropertyDef* findProperty(PropertyID id, PropertyDef* table);
+const PropertyDef* findProperty(PropertyID id, const PropertyDef* table);
+
+/**
+ * Interface object type ID
+ */
+enum ObjectType
+{
+    /** Device object. */
+    OT_DEVICE = 0,
+
+    /** Address table object. */
+    OT_ADDR_TABLE = 1,
+
+    /** Association table object. */
+    OT_ASSOC_TABLE = 2,
+
+    /** Application program object. */
+    OT_APPLICATION = 3
+};
 
 #endif /*BCU_TYPE >= 20*/
 #endif /*sblib_properties_h*/

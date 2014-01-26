@@ -78,7 +78,7 @@ struct PropertyDef
      *
      * See valuePointer() below.
      */
-    unsigned short valAddr;
+    word valAddr;
 
     /**
      * Get the value pointer.

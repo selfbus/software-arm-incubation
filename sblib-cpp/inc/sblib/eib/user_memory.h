@@ -12,7 +12,6 @@
 
 #include <sblib/types.h>
 #include <sblib/eib/bcu_type.h>
-#include <sblib/eib/interface_object.h>
 
 class UserRam;
 class UserEeprom;
@@ -38,6 +37,15 @@ extern UserEeprom& userEeprom;
  */
 extern byte userEepromData[USER_EEPROM_SIZE];
 
+/**
+ * Get a pointer to a user RAM or EEPROM location. This function translates from
+ * BCU addresses to native addresses.
+ *
+ * @param addr - the 16bit BCU address into user RAM or EEPROM.
+ * @return A pointer to the memory location.
+ */
+byte* userMemoryPtr(int addr);
+
 
 /**
  * The user RAM.
@@ -48,11 +56,18 @@ extern byte userEepromData[USER_EEPROM_SIZE];
 class UserRam
 {
 public:
-    /** Reserved */
-    byte data1[0x5e - USER_RAM_START];
+    /**
+     * 0x0000: Application program data.
+     */
+    byte user1[0x60];
 
     /**
-     * 0x005e: Application run state (BCU2, Selfbus extension).
+     * 0x0060: BCU1 system status. See enum BcuStatus below.
+     */
+    byte status;
+
+    /**
+     * 0x0061: BCU2 application run state.
      *
      * 0 = the application program is halted
      * 1 = the program is running
@@ -62,7 +77,7 @@ public:
     byte runState;
 
     /**
-     * 0x005f: Device control (BCU2, Selfbus extension), see enum DeviceControl below.
+     * 0x0062: BCU2 Device control, see enum DeviceControl below.
      *
      * Bit 0: set if the application program is stopped.
      * Bit 1: a telegram with our own physical address was received.
@@ -71,14 +86,20 @@ public:
     byte deviceControl;
 
     /**
-     * 0x0060: BCU / system status. See enum BcuStatus below.
+     * 0x0063: PEI type. This is the type of the physical external interface
+     *         that is connected to the device. It is not used in Selfbus programs.
      */
-    byte status;
+    byte peiType;
 
     /**
-     * Reserved for application program.
+     * 0x0064: Reserved for system software.
      */
-    byte data2[USER_RAM_SIZE - 0x60];
+    byte reserved[64];
+
+    /**
+     * 0x00C8: Application program data.
+     */
+    byte user2[USER_RAM_SIZE - 0xc8];
 
     /**
      * Access the user RAM like an ordinary array. The start address is subtracted
@@ -87,7 +108,7 @@ public:
      * @param idx - the index of the data byte to access.
      * @return The data byte.
      */
-    byte& operator[](int idx);
+    byte& operator[](int idx) const;
 };
 
 
@@ -110,7 +131,7 @@ public:
     byte deviceTypeL;    //!< 0x0106: Device type low byte
     byte version;        //!< 0x0107: Software version
     byte checkLimit;     //!< 0x0108: EEPROM check limit
-    byte peiType;        //!< 0x0109: PEI type that the application requires
+    byte appPeiType;     //!< 0x0109: PEI type that the application program requires
     byte syncRate;       //!< 0x010a: Baud rate for serial synchronous PEI
     byte portCDDR;       //!< 0x010b: Port C DDR settings (PEI type 17)
     byte portADDR;       //!< 0x010c: Port A DDR settings
@@ -133,20 +154,20 @@ public:
     byte addrTabSize;    //!< 0x0116: Size of the address table
     byte addrTab[2];     //!< 0x0117+:Address table, 2 bytes per entry. Real array size is addrTabSize*2
     byte user[856];      //!< 0x0119+:User EEPROM: 856 bytes (BCU2)
-                         //!< ------  System EEPROM below (Selfbus proprietary BCU2 stuff)
-    InterfaceObject deviceObject; //!< 0x0470: device object
-    InterfaceObject addrObject;   //!< 0x0478: address table object
-    InterfaceObject assocObject;  //!< 0x0480: association table object
-    InterfaceObject appObject;    //!< 0x0488: application program object
-    byte objectReserved[16];      //!< 0x0490: reserved for more objects
-    byte endObjectsId;            //!< 0x0491: the end of the interface objects, do not modify
-
-    byte padding;
-    byte serial[6];      //!< 0x0492: Hardware serial number
-    word serviceControl; //!< 0x047a: Service control
-    word segment0addr;   //!< 0x047c: Address of memory segment 0
-    word segment1addr;   //!< 0x047e: Address of memory segment 1
-    byte appRunning;     //!< 0x0480: Application run control state
+                         //!< ------  System EEPROM below (BCU2)
+    byte loadState[8];   //!< 0x0470: Load state of the system interface objects
+    word addrTabAddr;    //!< 0x0478: Address of the address table
+    word assocTabAddr;   //!< 0x047a: Address of the association table
+    word commsTabAddr;   //!< 0x047c: Address of the communication object table
+    word commsSeg0Addr;  //!< 0x047e: Address of communication object memory segment 0
+    word commsSeg1Addr;  //!< 0x0480: Address of communication object memory segment 1
+    word eibObjAddr;     //!< 0x047c: Address of the application program EIB objects, 0 if unused.
+    byte eibObjCount;    //!< 0x047e: Number of application program EIB objects.
+    byte appRunning;     //!< 0x047f: Application run control state
+    word serviceControl; //!< 0x0480: Service control
+    word padding;        //!< 0x0482: Padding
+    byte serial[6];      //!< 0x0484: Hardware serial number (4 byte aligned)
+    byte order[10];      //!< 0x048a: Ordering information
 #else
 #   error "Unsupported BCU type"
 #endif /*BCU_TYPE*/
@@ -158,17 +179,7 @@ public:
      * @param idx - the index of the data byte to access.
      * @return The data byte.
      */
-    byte& operator[](int idx);
-
-    /**
-     * Get a specific interface object.
-     *
-     * @param id - the ID of the interface object: IOBJ_DEVICE, IOBJ_ADDR_TABLE, ...
-     *
-     * @return The interface object, or 0 if the interface object is unknown. This function
-     *         returns always 0 if the library is compiled for BCU1.
-     */
-    InterfaceObject* interfaceObject(int id);
+    byte& operator[](int idx) const;
 
     /**
      * Mark the user EEPROM as modified. The EEPROM will be written to flash when the
@@ -215,12 +226,12 @@ enum DeviceControl
 //  Inline functions
 //
 
-inline byte& UserRam::operator[](int idx)
+inline byte& UserRam::operator[](int idx) const
 {
     return *(((byte*) this) + idx - USER_RAM_START);
 }
 
-inline byte& UserEeprom::operator[](int idx)
+inline byte& UserEeprom::operator[](int idx) const
 {
     return *(((byte*) this) + idx - USER_EEPROM_START);
 }
@@ -238,6 +249,15 @@ inline bool UserEeprom::isModified() const
 {
     extern byte userEepromModified;
     return userEepromModified;
+}
+
+inline byte* userMemoryPtr(int addr)
+{
+    if (addr >= USER_EEPROM_START && addr <= USER_EEPROM_END)
+        return userEepromData + (addr - USER_EEPROM_START);
+    else if (addr >= USER_RAM_START && addr <= USER_RAM_END)
+        return userRamData + (addr - USER_RAM_START);
+    return 0;
 }
 
 #endif /*sblib_user_memory_h*/

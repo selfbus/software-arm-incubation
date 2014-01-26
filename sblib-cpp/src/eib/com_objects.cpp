@@ -271,7 +271,7 @@ byte* objectConfigTable()
 #if BCU_TYPE == 10
     return userEepromData + userEeprom.commsTabPtr;
 #elif BCU_TYPE == 20
-    return userEeprom.appObject.tablePointer();
+    return userMemoryPtr(userEeprom.commsTabAddr);
 #else
 #   error Unsupported BCU_TYPE
 #endif
@@ -282,8 +282,8 @@ byte* objectFlagsTable()
 #if BCU_TYPE == 10
     return userRamData + userEepromData[userEeprom.commsTabPtr + 1];
 #elif BCU_TYPE == 20
-    const byte* configTable = userEeprom.appObject.tablePointer();
-    return userRamData + configTable[1] - USER_RAM_START;
+    const byte* configTable = objectConfigTable();
+    return userMemoryPtr(configTable[1]);
 #else
 #   error Unsupported BCU_TYPE
 #endif

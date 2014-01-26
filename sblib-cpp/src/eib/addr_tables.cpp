@@ -58,8 +58,8 @@ byte* addrTable()
 {
 #if BCU_TYPE == 10
     return (byte*) &userEeprom.addrTabSize;
-#elif BCU_TYPE == 20
-    return userEeprom.addrObject.tablePointer();
+#elif BCU_TYPE >= 20
+    return userMemoryPtr(userEeprom.addrTabAddr);
 #else
     // BCU2:  KNX 3/5/1 p.126 & p.129
 #   error Unsupported BCU_TYPE
@@ -70,8 +70,8 @@ byte* assocTable()
 {
 #if BCU_TYPE == 10
     return userEepromData + userEeprom.assocTabPtr;
-#elif BCU_TYPE == 20
-    return userEeprom.assocObject.tablePointer();
+#elif BCU_TYPE >= 20
+    return userMemoryPtr(userEeprom.assocTabAddr);
 #else
     // BCU2:  KNX 3/5/1 p.126 & p.129
 #   error Unsupported BCU_TYPE

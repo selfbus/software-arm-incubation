@@ -46,6 +46,7 @@ void BCU::begin()
     userEeprom.portADDR = 0;
 
 #if BCU_TYPE >= 20
+    userRam.peiType = 0;     // PEI type: 0=no adapter connected to PEI.
     userEeprom.appType = 0;  // Set to BCU2 application. ETS reads this when programming.
 #endif
 
