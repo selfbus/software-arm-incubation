@@ -80,6 +80,8 @@ void objectWrite(int objno, unsigned int value)
         *--ptr = value;
         value >>= 8;
     }
+
+    setObjectFlags(objno, COMFLAG_TRANSREQ);
 }
 
 /*
@@ -154,7 +156,7 @@ void sendNextGroupTelegram()
         flags = flagsTab[objno >> 1];
         if (objno & 1) flags >>= 4;
 
-        if ((flags & COMFLAG_TRANS_MASK) == COMFLAG_TRANS_MASK)
+        if ((flags & COMFLAG_TRANS_MASK) == COMFLAG_TRANSREQ)
         {
             flagsTab[objno >> 1] &= (objno & 1) ? 0x0f : 0xf0;
 

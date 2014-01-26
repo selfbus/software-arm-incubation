@@ -49,15 +49,6 @@ void BCU::begin()
     userEeprom.appType = 0;  // Set to BCU2 application. ETS reads this when programming.
 #endif
 
-//    IF_DEBUG(
-//        serial.begin(115200);
-//        serial.println();
-//        serial.println();
-//        serial.print("*** Booting Selfbus library v");
-//        serial.print(SBLIB_VERSION, HEX);
-//        serial.println(" (debug mode)");
-//    )
-
     bus.begin();
 }
 

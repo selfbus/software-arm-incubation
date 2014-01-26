@@ -14,6 +14,25 @@
 
 
 /**
+ * BCU2 interface object ID
+ */
+enum InterfaceObjectID
+{
+    /** Device object. */
+    IOBJ_DEVICE = 0,
+
+    /** Address table object. */
+    IOBJ_ADDR_TABLE = 1,
+
+    /** Association table object. */
+    IOBJ_ASSOC_TABLE = 2,
+
+    /** Application program object. */
+    IOBJ_APPLICATION = 3
+};
+
+
+/**
  * A BCU2 interface object.
  *
  * The interface object contains properties that allow ETS or any other PC client to access
@@ -26,7 +45,7 @@ class InterfaceObject
 
 public:
     /**
-     * The ID of the interface object.
+     * The ID of the interface object, see enum InterfaceObjectID.
      */
     byte id;
 

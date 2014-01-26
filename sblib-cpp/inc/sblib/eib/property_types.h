@@ -111,25 +111,6 @@ struct PropertyDef
 
 
 /**
- * Interface object ID
- */
-enum InterfaceObjectID
-{
-    /** Device object. */
-    IOBJ_DEVICE = 0,
-
-    /** Address table object. */
-    IOBJ_ADDR_TABLE = 1,
-
-    /** Association table object. */
-    IOBJ_ASSOC_TABLE = 2,
-
-    /** Application program object. */
-    IOBJ_APPLICATION = 3
-};
-
-
-/**
  * Property ID.
  */
 // See KNX 3/7/3 Standardized Identifier Tables, p. 17 for property data types
@@ -225,7 +206,7 @@ inline PropertyDataType PropertyDef::type() const
 
 inline bool PropertyDef::isEepromPointer() const
 {
-    return valAddr & PPT_USER_EEPROM != 0;
+    return (valAddr & PPT_USER_EEPROM) != 0;
 }
 
 #endif /*sblib_property_types_h*/

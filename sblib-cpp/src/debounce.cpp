@@ -22,12 +22,12 @@ int Debouncer::debounce(int current, unsigned int timeout)
 {
     const unsigned int now = millis();
 
-    if (last != current || !time)
+    if (last != current)
     {
         time = now;
         last = current;
     }
-    else if (last == current && now - (time + timeout) > 0)
+    else if (time && now - (time + timeout) > 0)
     {
         time = 0;
         valid = current;

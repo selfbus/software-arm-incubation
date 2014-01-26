@@ -1,0 +1,31 @@
+Selfbus EIB Library
+===================
+
+The library uses the following ARM components:
+
+Bus access:
+
+- Pin P1.5 for programming mode led and button
+- Pin P1.8 for EIB IN
+- Pin P1.9 or P1.10 for EIB OUT (default: P1.10)
+- 16bit Timer #1
+
+
+Test setup
+----------
+
+For the ARM we currently use a LPCxpresso prototyping board. The LPC1115 is ideal,
+but LPC1114 or LPC11C24 or any other LPC11xx with at least 32k flash should work.
+
+For bus access we currently use a Selfbus LPC controller board. Any controller
+board should be sufficient, even a module like the Gira smoke detector.
+
+Remove the LPC922 from the controller board and make connections from the following
+pins of the LPC922 socket to the ARM prototyping board:
+
+LPC pin 2 to ARM pin P1.5
+LPC pin 3 to ARM pin P1.10
+LPC pin 5 to ARM pin GND
+LPC pin 8 to ARM pin P1.8
+
+Add a 100pF condensator between ARM pin 1.8 and GND

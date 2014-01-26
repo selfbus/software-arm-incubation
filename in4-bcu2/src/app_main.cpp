@@ -16,8 +16,7 @@
 #define PIO_LED PIO0_7
 
 // Input pins
-static const int inputPins[] =
-    { PIO2_0, PIO2_1, PIO2_2, PIO2_3, PIO2_4, PIO2_5, PIO2_6, PIO2_7 };
+static const int inputPins[] = { PIO2_3, PIO2_2, PIO2_1, PIO2_0 };
 
 // Debouncers for inputs
 Debouncer inputDebouncer[NUM_CHANNELS];
@@ -44,6 +43,9 @@ void setup()
         pinMode(inputPins[channel], INPUT | HYSTERESIS | PULL_UP);
         inputDebouncer[channel].init(digitalRead(inputPins[channel]));
     }
+
+    serial.begin(115200);
+    serial.println("Selfbus TSU/4.2");
 }
 
 /**
@@ -57,7 +59,7 @@ void loop()
     // Handle the input pins
     for (channel = 0; channel < NUM_CHANNELS; ++channel)
     {
-        lastValue = inputDebouncer[channel].lastValue();
+        lastValue = inputDebouncer[channel].value();
         value = inputDebouncer[channel].debounce(digitalRead(inputPins[channel]), debounceTime);
 
         if (lastValue != value)

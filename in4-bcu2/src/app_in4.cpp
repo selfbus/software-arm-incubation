@@ -91,6 +91,11 @@ void inputChanged(int channel, int val)
 {
     params = channelParams + (channel << 2);
 
+    serial.print("input ");
+    serial.print(channel);
+    serial.print(" value ");
+    serial.println(val);
+
     if (objectValues.lock[channel])
         return;
 

@@ -143,4 +143,4 @@ bool propertyDescReadTelegram(int objectIdx, PropertyID propertyId, int index)
     return true;
 }
 
-#endif /* BCU_TYPE == 20 */
+#endif /*BCU_TYPE >= 20*/

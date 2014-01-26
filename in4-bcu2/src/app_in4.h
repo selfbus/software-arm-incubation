@@ -13,11 +13,11 @@
 
 
 /**
- * Number of input channels. Default: 8.
+ * Number of input channels. Default: 4.
  * Can be set at compile time.
  */
 #ifndef NUM_CHANNELS
-#  define NUM_CHANNELS 8
+#  define NUM_CHANNELS 4
 #endif
 
 /**
