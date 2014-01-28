@@ -18,8 +18,6 @@
 #include <sblib/internal/functions.h>
 #include <sblib/internal/variables.h>
 
-#include <string.h>
-
 
 // Documentation:
 // see KNX 6/6 Profiles, p. 94+
@@ -165,7 +163,7 @@ bool propertyValueReadTelegram(int objectIdx, PropertyID propertyId, int count, 
     int size = def->size();
     int len = count * size;
 
-    memcpy(bcu.sendTelegram + 12, valuePtr + start * size, len);
+    reverseCopy(bcu.sendTelegram + 12, valuePtr + start * size, len);
     bcu.sendTelegram[5] += len;
 
     return true;
@@ -198,8 +196,8 @@ bool propertyValueWriteTelegram(int objectIdx, PropertyID propertyId, int count,
         len = count * def->size();
         --start;
 
-        memcpy(valuePtr + start * type, data, len);
-        memcpy(bcu.sendTelegram + 12, valuePtr + start * type, len);
+        reverseCopy(valuePtr + start * type, data, len);
+        reverseCopy(bcu.sendTelegram + 12, valuePtr + start * type, len);
 
         if (def->isEepromPointer())
             userEeprom.modified();

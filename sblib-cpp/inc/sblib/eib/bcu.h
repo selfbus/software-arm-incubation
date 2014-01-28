@@ -36,14 +36,24 @@ extern BCU bcu;
 
 /**
  * Class for controlling all BCU related things.
+ *
+ * In order to use the EIB bus, you need to call bcu.begin() once in your application's
+ * setup() function.
  */
 class BCU
 {
 public:
+    BCU();
+
     /**
-     * Begin using the EIB bus coupling unit.
+     * Begin using the EIB bus coupling unit, and set the  manufacturer-ID, device type,
+     * and program version.
+     *
+     * @param manufacturer - the manufacturer ID (16 bit)
+     * @param deviceType - the device type (16 bit)
+     * @param version - the version of the application program (8 bit)
      */
-    void begin();
+    void begin(int manufacturer, int deviceType, int version);
 
     /**
      * End using the EIB bus coupling unit.
@@ -51,17 +61,8 @@ public:
     void end();
 
     /**
-     * Set manufacturer data, manufacturer-ID, and device type.
-     *
-     * @param data - the manufacturer data (16 bit)
-     * @param manufacturer - the manufacturer ID (16 bit)
-     * @param deviceType - the device type (16 bit)
-     * @param version - the version of the application program (8 bit)
-     */
-    void appData(int data, int manufacturer, int deviceType, byte version);
-
-    /**
-     * Set our own physical address
+     * Set our own physical address. Normally the physical address is set by ETS when
+     * programming the device.
      *
      * @param addr - the physical address
      */
@@ -96,6 +97,12 @@ public:
      * Called by main()
      */
     void processTelegram();
+
+    /**
+     * The BCU's main processing loop. This is like the application's loop() function,
+     * and is called automatically by main() when the BCU is activated with bcu.begin().
+     */
+    void loop();
 
     /**
      * A buffer for sending telegrams. This buffer is considered library private
@@ -149,10 +156,12 @@ protected:
     bool processDeviceDescriptorReadTelegram(int id);
 
 private:
-    byte sendCtrlTelegram[8];   //!< A short buffer for connection control telegrams.
-    int  connectedAddr;         //!< Remote address of the connected partner.
-    int  connectedSeqNo;        //!< Sequence number for connected data telegrams.
-    bool incConnectedSeqNo;     //!< True if the sequence number shall be incremented on ACK.
+    Debouncer progButtonDebouncer; //!< The debouncer for the programming mode button.
+    bool enabled;                  //!< The BCU is enabled. Set by bcu.begin().
+    byte sendCtrlTelegram[8];      //!< A short buffer for connection control telegrams.
+    int  connectedAddr;            //!< Remote address of the connected partner.
+    int  connectedSeqNo;           //!< Sequence number for connected data telegrams.
+    bool incConnectedSeqNo;        //!< True if the sequence number shall be incremented on ACK.
 };
 
 //#undef appData
@@ -169,6 +178,9 @@ inline bool BCU::programmingMode() const
 
 inline bool BCU::applicationRunning() const
 {
+    if (!enabled)
+        return true;
+
 #if BCU_TYPE == 10
     return (userRam.status & (BCU_STATUS_PROG|BCU_STATUS_AL)) == BCU_STATUS_AL &&
         userRam.runState == 1 && userEeprom.runError == 0xff; // ETS sets the run error to 0 when programming

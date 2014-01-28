@@ -28,7 +28,10 @@ extern byte userEepromDirty;
 // Number of interface/property objects
 #define NUM_PROP_OBJECTS 4
 
+#if BCU_TYPE >= 20
 // Table of interface/property objects (property_defs.cpp)
 extern const PropertyDef* const propertiesTab[NUM_PROP_OBJECTS];
+
+#endif
 
 #endif /*sblib_internal_variables_h*/

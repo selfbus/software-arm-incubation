@@ -16,8 +16,6 @@
 #include <sblib/eib/user_memory.h>
 #include <sblib/internal/functions.h>
 
-#include <string.h>
-
 
 // The COMFLAG_UPDATE flag, moved to the high nibble
 #define COMFLAG_UPDATE_HIGH (COMFLAG_UPDATE << 4)
@@ -26,15 +24,26 @@
 #define COMFLAG_TRANS_MASK_HIGH (COMFLAG_TRANS_MASK << 4)
 
 
-// The size of the object types BYTE_2 .. VARDATA in bytes
-const byte objectTypeSizes[8] = { 2, 3, 4, 6, 8, 10, 14, 15 };
+// The size of the object types BIT_7...VARDATA in bytes
+const byte objectTypeSizes[10] = { 1, 1, 2, 3, 4, 6, 8, 10, 14, 15 };
 
 
 int objectSize(int objno)
 {
     int type = objectType(objno);
-    if (type < BYTE_2) return 1;
-    return objectTypeSizes[type - BYTE_2];
+    if (type < BIT_7) return 1;
+    return objectTypeSizes[type - BIT_7];
+}
+
+/*
+ * Get the size of the com-object in bytes, for sending/receiving telegrams.
+ * 0 is returned if the object's size is <= 6 bit.
+ */
+int telegramObjectSize(int objno)
+{
+    int type = objectType(objno);
+    if (type < BIT_7) return 0;
+    return objectTypeSizes[type - BIT_7];
 }
 
 byte* objectValuePtr(int objno)
@@ -127,7 +136,7 @@ int objectSendAddr(int objno)
 void sendGroupTelegram(int objno, int addr, bool isResponse)
 {
     byte* valuePtr = objectValuePtr(objno);
-    int sz = objectSize(objno);
+    int sz = telegramObjectSize(objno);
 
     bcu.sendTelegram[0] = 0xbc; // Control byte
     // 1+2 contain the sender address, which is set by sb_send_tel()
@@ -137,7 +146,7 @@ void sendGroupTelegram(int objno, int addr, bool isResponse)
     bcu.sendTelegram[6] = 0;
     bcu.sendTelegram[7] = isResponse ? 0x40 : 0x80;
 
-    if (sz) memcpy(bcu.sendTelegram + 8, valuePtr, sz);
+    if (sz) reverseCopy(bcu.sendTelegram + 8, valuePtr, sz);
     else bcu.sendTelegram[7] |= *valuePtr & 0x3f;
 
     bus.sendTelegram(bcu.sendTelegram, 8 + sz);
@@ -220,9 +229,9 @@ void processGroupReadTelegram(int objno)
 void processGroupWriteTelegram(int objno)
 {
     byte* valuePtr = objectValuePtr(objno);
-    int count = objectSize(objno);
+    int count = telegramObjectSize(objno);
 
-    if (count > 0) memcpy(valuePtr, bus.telegram + 7, count);
+    if (count > 0) reverseCopy(valuePtr, bus.telegram + 7, count);
     else *valuePtr = bus.telegram[6] & 0x3f;
 
     setObjectFlags(objno, COMFLAG_UPDATE);

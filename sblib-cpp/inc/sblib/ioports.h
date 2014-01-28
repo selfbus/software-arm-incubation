@@ -209,15 +209,14 @@ enum PortPin
  */
 enum AnalogChannel
 {
-	AD0 = 0,
-	AD1 = 1,
-	AD2 = 2,
-	AD3 = 3,
-	AD4 = 4,
-	AD5 = 5,
-	AD6 = 6,
-	AD7 = 7,
-	AD8 = 8
+	AD0 = 0,   //!< Analog channel 0 (this is pin PIO0_11)
+	AD1 = 1,   //!< Analog channel 1 (this is pin PIO1_0)
+	AD2 = 2,   //!< Analog channel 2 (this is pin PIO1_1)
+	AD3 = 3,   //!< Analog channel 3 (this is pin PIO1_2)
+	AD4 = 4,   //!< Analog channel 4 (this is pin PIO1_3)
+	AD5 = 5,   //!< Analog channel 5 (this is pin PIO1_4)
+	AD6 = 6,   //!< Analog channel 6 (this is pin PIO1_10)
+	AD7 = 7    //!< Analog channel 7 (this is pin PIO1_11)
 };
 
 /**

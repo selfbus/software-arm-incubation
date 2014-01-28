@@ -25,7 +25,7 @@ UserRam& userRam = *(UserRam*) userRamData;
 byte  __attribute__ ((aligned (4))) userEepromData[USER_EEPROM_SIZE];
 UserEeprom& userEeprom = *(UserEeprom*) userEepromData;
 
-byte userEepromModified;
+bool userEepromModified;
 unsigned int writeUserEepromTime;
 
 

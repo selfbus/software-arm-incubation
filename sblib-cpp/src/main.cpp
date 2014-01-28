@@ -17,11 +17,6 @@
 #include <sblib/internal/functions.h>
 #include <sblib/internal/variables.h>
 
-// Pin of the programming mode button+led
-#define PROG_PIN  PIO1_5
-
-Debouncer progButtonDebouncer;
-extern unsigned int writeUserEepromTime;
 
 
 /**
@@ -32,12 +27,6 @@ static inline void lib_setup()
     // Configure the system timer to call SysTick_Handler once every 1 msec
     SysTick_Config(SystemCoreClock / 1000);
     systemTime = 0;
-    writeUserEepromTime = 0;
-
-    bcu.progPin = PROG_PIN;
-    progButtonDebouncer.init(1);
-
-    bcu.begin();
 }
 
 /**
@@ -53,36 +42,9 @@ int main()
 
     while (1)
     {
-        if (bus.telegramReceived() && !bus.sendingTelegram() && (userRam.status & BCU_STATUS_TL))
-            bcu.processTelegram();
+        bcu.loop();
 
-        if (!bus.sendingTelegram())
-            sendNextGroupTelegram();
-
-        if (bcu.progPin)
-        {
-            // Detect the falling edge of pressing the prog button
-            pinMode(bcu.progPin, INPUT);
-            int oldValue = progButtonDebouncer.value();
-            if (!progButtonDebouncer.debounce(digitalRead(bcu.progPin), 50) && oldValue)
-                userRam.status ^= 0x81;  // toggle programming mode and checksum bit
-
-            pinMode(bcu.progPin, OUTPUT);
-            digitalWrite(bcu.progPin, !(userRam.status & BCU_STATUS_PROG));
-        }
-
-        if (userEeprom.isModified() && bus.idle() && bus.telegramLen == 0 && !bcu.directConnection())
-        {
-            if (writeUserEepromTime)
-            {
-                if (millis() - writeUserEepromTime > 0)
-                    writeUserEeprom();
-            }
-            else writeUserEepromTime = millis() + 50;
-        }
-
-        // We must enter loop() if the prog button is handled inside loop()
-        if (bcu.applicationRunning() || !bcu.progPin)
+        if (bcu.applicationRunning())
             loop();
         else waitForInterrupt();
     }

@@ -10,6 +10,18 @@
 #ifndef sblib_utils_h
 #define sblib_utils_h
 
+#include <sblib/types.h>
+
+
+/**
+ * Copy from src to dest with reversing the byte order.
+ *
+ * @param dest - the destination to copy to
+ * @param src - the source to copy from
+ * @param len - the number of bytes to copy
+ */
+void reverseCopy(byte* dest, const byte* src, int len);
+
 /**
  * Call when a fatal application error happens. This function will never
  * return and the program LED will blink rapidly to indicate the error.

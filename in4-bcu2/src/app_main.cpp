@@ -31,7 +31,7 @@ const byte* channelTimingParams = userEepromData + (EE_CHANNEL_TIMING_PARAMS_BAS
  */
 void setup()
 {
-    bcu.appData(0, 2, 0x9009, 0x01);  // we are a ABB TSU/4.2 version 0.1
+    bcu.begin(2, 0x9009, 0x01);  // we are a ABB TSU/4.2 version 0.1
 
     pinMode(PIO_LED, OUTPUT);
     digitalWrite(PIO_LED, 0);

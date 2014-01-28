@@ -26,8 +26,20 @@
 
 BCU bcu;
 
+extern unsigned int writeUserEepromTime;
 
-void BCU::begin()
+// Default pin of the programming mode button+led
+#define DEFAULT_PROG_PIN  PIO1_5
+
+
+BCU::BCU()
+:progButtonDebouncer()
+{
+    progPin = DEFAULT_PROG_PIN;
+    enabled = false;
+}
+
+void BCU::begin(int manufacturer, int deviceType, int version)
 {
     readUserEeprom();
 
@@ -45,25 +57,6 @@ void BCU::begin()
     userEeprom.runError = 0xff;
     userEeprom.portADDR = 0;
 
-#if BCU_TYPE >= 20
-    userRam.peiType = 0;     // PEI type: 0=no adapter connected to PEI.
-    userEeprom.appType = 0;  // Set to BCU2 application. ETS reads this when programming.
-#endif
-
-    bus.begin();
-}
-
-void BCU::end()
-{
-    bus.end();
-    writeUserEeprom();
-}
-
-void BCU::appData(int data, int manufacturer, int deviceType, byte version)
-{
-    userEeprom.manuDataH = data >> 8;
-    userEeprom.manuDataL = data;
-
     userEeprom.manufacturerH = manufacturer >> 8;
     userEeprom.manufacturerL = manufacturer;
 
@@ -74,9 +67,26 @@ void BCU::appData(int data, int manufacturer, int deviceType, byte version)
 
 #if BCU_TYPE >= 20
     iapReadPartID((unsigned int*) userEeprom.serial);
-    userEeprom.serial[4] = SBLIB_VERSION >> 8;
-    userEeprom.serial[5] = SBLIB_VERSION;
+    userEeprom.serial[4] = SBLIB_VERSION;
+    userEeprom.serial[5] = SBLIB_VERSION >> 8;
+
+    userRam.peiType = 0;     // PEI type: 0=no adapter connected to PEI.
+    userEeprom.appType = 0;  // Set to BCU2 application. ETS reads this when programming.
 #endif
+
+    writeUserEepromTime = 0;
+    enabled = true;
+
+    bus.begin();
+    progButtonDebouncer.init(1);
+}
+
+void BCU::end()
+{
+    enabled = false;
+
+    bus.end();
+    writeUserEeprom();
 }
 
 void BCU::setOwnAddress(int addr)
@@ -86,6 +96,40 @@ void BCU::setOwnAddress(int addr)
     userEeprom.modified();
 
     bus.ownAddr = addr;
+}
+
+void BCU::loop()
+{
+    if (!enabled)
+        return;
+
+    if (bus.telegramReceived() && !bus.sendingTelegram() && (userRam.status & BCU_STATUS_TL))
+        bcu.processTelegram();
+
+    if (!bus.sendingTelegram())
+        sendNextGroupTelegram();
+
+    if (bcu.progPin)
+    {
+        // Detect the falling edge of pressing the prog button
+        pinMode(bcu.progPin, INPUT);
+        int oldValue = progButtonDebouncer.value();
+        if (!progButtonDebouncer.debounce(digitalRead(bcu.progPin), 50) && oldValue)
+            userRam.status ^= 0x81;  // toggle programming mode and checksum bit
+
+        pinMode(bcu.progPin, OUTPUT);
+        digitalWrite(bcu.progPin, !(userRam.status & BCU_STATUS_PROG));
+    }
+
+    if (userEeprom.isModified() && bus.idle() && bus.telegramLen == 0 && !bcu.directConnection())
+    {
+        if (writeUserEepromTime)
+        {
+            if (millis() - writeUserEepromTime > 0)
+                writeUserEeprom();
+        }
+        else writeUserEepromTime = millis() + 50;
+    }
 }
 
 void BCU::sendConControlTelegram(int cmd, int senderSeqNo)

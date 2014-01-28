@@ -62,7 +62,7 @@ static const PropertyDef deviceObjectProps[] =
 static const PropertyDef addrTabObjectProps[] =
 {
     // Interface object type: 2 bytes
-    { PID_OBJECT_TYPE, PDT_UNSIGNED_INT, 0x0100 },
+    { PID_OBJECT_TYPE, PDT_UNSIGNED_INT, 0x0001 },
 
     // Load state control
     { PID_LOAD_STATE_CONTROL, PDT_CONTROL|PC_WRITABLE|PC_POINTER, PD_USER_EEPROM_OFFSET(loadState[OT_ADDR_TABLE]) },
@@ -80,7 +80,7 @@ static const PropertyDef addrTabObjectProps[] =
 static const PropertyDef assocTabObjectProps[] =
 {
     // Interface object type: 2 bytes
-    { PID_OBJECT_TYPE, PDT_UNSIGNED_INT, 0x0200 },
+    { PID_OBJECT_TYPE, PDT_UNSIGNED_INT, 0x0002 },
 
     // Load state control
     { PID_LOAD_STATE_CONTROL, PDT_CONTROL|PC_WRITABLE|PC_POINTER, PD_USER_EEPROM_OFFSET(loadState[OT_ASSOC_TABLE]) },
@@ -98,7 +98,7 @@ static const PropertyDef assocTabObjectProps[] =
 static const PropertyDef appObjectProps[] =
 {
     // Interface object type: 2 bytes
-    { PID_OBJECT_TYPE, PDT_UNSIGNED_INT, 0x0300 },
+    { PID_OBJECT_TYPE, PDT_UNSIGNED_INT, 0x0003 },
 
     // Load state control
     { PID_LOAD_STATE_CONTROL, PDT_CONTROL|PC_WRITABLE|PC_POINTER, PD_USER_EEPROM_OFFSET(loadState[OT_APPLICATION]) },

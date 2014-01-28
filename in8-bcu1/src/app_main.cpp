@@ -32,7 +32,7 @@ const byte* channelTimingParams = userEepromData + (EE_CHANNEL_TIMING_PARAMS_BAS
  */
 void setup()
 {
-    bcu.appData(0, 4, 0x7054, 2); // We are a "Jung 2118" device, version 0.2
+    bcu.begin(4, 0x7054, 2); // We are a "Jung 2118" device, version 0.2
 
     pinMode(PIO_LED, OUTPUT);
     digitalWrite(PIO_LED, 0);

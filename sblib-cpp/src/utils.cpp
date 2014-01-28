@@ -14,6 +14,16 @@
 #include <sblib/platform.h>
 
 
+void reverseCopy(byte* dest, const byte* src, int len)
+{
+    src += len - 1;
+    while (len > 0)
+    {
+        *dest++ = *src--;
+        --len;
+    }
+}
+
 void fatalError()
 {
     // We use only low level functions here as a fatalError() could happen
