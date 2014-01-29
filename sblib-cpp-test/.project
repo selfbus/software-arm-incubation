@@ -28,7 +28,7 @@
 		<link>
 			<name>sblib-cpp</name>
 			<type>2</type>
-			<location>/projects/selfbus/software-arm-incubation/sblib-cpp</location>
+			<locationURI>PARENT-1-PROJECT_LOC/sblib-cpp/src</locationURI>
 		</link>
 	</linkedResources>
 	<filteredResources>

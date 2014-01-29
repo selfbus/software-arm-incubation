@@ -54,7 +54,10 @@ typedef struct
 typedef struct
 {
     const char            * name;
-          TestCaseSetup * setup;
+          int               manufacturer;
+          int               deviceType;
+          int               version;
+          TestCaseSetup   * setup;
           StateFunction   * gatherState;
           TestCaseState   * states;
           Telegram        * telegram;

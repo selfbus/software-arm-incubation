@@ -89,6 +89,7 @@ static void gatherProtocolState(ProtocolTestState * state, ProtocolTestState * r
 static Test_Case testCase =
 {
   "Phy Addr Prog"
+, 0x0004, 0x2060, 0x01
 , tc_setup
 , (StateFunction *) gatherProtocolState
 , (TestCaseState *) protoState

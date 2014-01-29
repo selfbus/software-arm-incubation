@@ -18,7 +18,7 @@ void executeTest(Test_Case * tc)
     void     * stepState = & tc->states[1];
 
     IAP_Init_Flash(0xFF);
-    bcu.begin();
+    bcu.begin(tc->manufacturer, tc->deviceType, tc->version);
     if(tc->setup) tc->setup();
     tc->gatherState(refState, NULL);
     while(tel->type != END)
@@ -28,7 +28,7 @@ void executeTest(Test_Case * tc)
         INFO("Step " << tn << " of test case " << tc->name);
         if (TEL_RX == tel->type)
         {
-            int s = 0;
+            unsigned int s = 0;
             memcpy(bus.telegram, tel->bytes, tel->length);
             bus.telegramLen = tel->length;
             bcu.processTelegram();

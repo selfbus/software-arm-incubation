@@ -26,7 +26,6 @@ static void tc_setup(void)
     IAP_Init_Flash(0xFF);
     bcu.setOwnAddress(0x1112); // set own address to 1.1.18
     // setup the content of the EEPROM as expected by the ETS
-    bcu.appData(0x2060, 0x0004, 0x2060, 0x01);
     userEeprom.optionReg     = 0xFF;
     userEeprom.checkLimit    = 0xFF;
     userEeprom.routeCnt      = 0x60;
@@ -290,6 +289,7 @@ static void gatherProtocolState(ProtocolTestState * state, ProtocolTestState * r
 static Test_Case testCase =
 {
   "App Prog"
+, 0x0004, 0x2060, 0x01
 , tc_setup
 , (StateFunction *) gatherProtocolState
 , (TestCaseState *) protoState

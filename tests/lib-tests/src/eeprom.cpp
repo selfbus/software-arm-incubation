@@ -44,7 +44,7 @@ TEST_CASE("Test of the basic EEPROM functions","[EEPROM][SBLIB]")
     {
         IAP_Init_Flash(0xFF);
         memcpy(iap_save, iap_calls, sizeof (iap_calls));
-        bcu.begin();
+        bcu.begin(0, 0, 0);
         REQUIRE(iap_calls [I_PREPARE]     == (iap_save [I_PREPARE]     + 0));
         REQUIRE(iap_calls [I_ERASE]       == (iap_save [I_ERASE]       + 0));
         REQUIRE(iap_calls [I_BLANK_CHECK] == (iap_save [I_BLANK_CHECK] + 0));
@@ -74,7 +74,7 @@ TEST_CASE("Enhanced EEPROM tests","[EEPROM][SBLIB][ERASE]")
     SECTION("Start with empty FLASH")
     {
         IAP_Init_Flash(0xFF);
-        bcu.begin();
+        bcu.begin(0, 0, 0);
         memcpy(iap_save, iap_calls, sizeof (iap_calls));
         for(i=0;i < ps;i++) userEeprom[0x100 + i] = pattern[i];
         userEeprom.modified();
@@ -88,7 +88,7 @@ TEST_CASE("Enhanced EEPROM tests","[EEPROM][SBLIB][ERASE]")
     }
     SECTION("Test when first page is valid")
     {
-        bcu.begin();
+        bcu.begin(0, 0, 0);
         memcpy(iap_save, iap_calls, sizeof (iap_calls));
         for(i=0;i < ps;i++) userEeprom[0x100 + i] = pattern[ps - i];
         userEeprom.modified();
@@ -106,7 +106,7 @@ TEST_CASE("Enhanced EEPROM tests","[EEPROM][SBLIB][ERASE]")
         for(i = 0; i < 14; i++)
         {
             memcpy(iap_save, iap_calls, sizeof (iap_calls));
-            bcu.begin();
+            bcu.begin(0, 0, 0);
             userEeprom.modified();
             bcu.end();
             REQUIRE(iap_calls [I_PREPARE]     == (iap_save [I_PREPARE]     + 1));
@@ -116,7 +116,7 @@ TEST_CASE("Enhanced EEPROM tests","[EEPROM][SBLIB][ERASE]")
             REQUIRE(iap_calls [I_COMPARE]     == (iap_save [I_COMPARE]     + 1));
         }
         memcpy(iap_save, iap_calls, sizeof (iap_calls));
-        bcu.begin();
+        bcu.begin(0, 0, 0);
         userEeprom.modified();
         bcu.end();
         REQUIRE(iap_calls [I_PREPARE]     == (iap_save [I_PREPARE]     + 2));
