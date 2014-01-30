@@ -14,7 +14,10 @@
 
 #include "sblib/internal/variables.h"
 
-class Timeout/**
+#define MS2TICKS(m) (m)
+
+class Timeout
+/**
  * A simple timeout class which
  * - can be queried if the specified timeout has expired
  * - can be stopped
@@ -62,13 +65,22 @@ public:
 		return false;
 	};
 
-	/** Returns wether the timeout has been started or nor
+	/** Returns if the timeout has been started or nor
 	 *
 	 * @return If the time as been started
 	 */
 	bool started(void)
 	{
 		return timeout != Timeout::STOPPED;
+	}
+
+	/** Returns if the timeout is clrrently stopped
+	 *
+	 * @return If the time as been stopped
+	 */
+	bool stopped(void)
+	{
+		return timeout == Timeout::STOPPED;
 	}
 
 	/** Stops the currently running timeout */

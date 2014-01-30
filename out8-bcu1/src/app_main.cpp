@@ -6,8 +6,8 @@
  *  published by the Free Software Foundation.
  */
 
-//#include "app_in8.h"
-//#include "com_objs.h"
+#include "app_out8.h"
+#include "com_objs.h"
 //#include "params.h"
 
 #define NUM_CHANNELS 8
@@ -18,14 +18,10 @@
 #define PIO_LED PIO0_7
 
 // Output pins
-static const int outputPins[] =
+const int outputPins[NO_OF_CHANNELS] =
     { PIO2_0, PIO2_1, PIO2_2, PIO2_3, PIO2_4, PIO2_5, PIO2_6, PIO2_7 };
 
-#if 0
 ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
-const byte* channelParams = userEepromData + (EE_CHANNEL_PARAMS_BASE - USER_EEPROM_START);
-const byte* channelTimingParams = userEepromData + (EE_CHANNEL_TIMING_PARAMS_BASE - USER_EEPROM_START);
-#endif
 
 /**
  * Application setup
@@ -42,6 +38,7 @@ void setup()
     {
         pinMode(outputPins[channel], OUTPUT);
     }
+    initApplication();
 }
 
 /**
@@ -49,27 +46,16 @@ void setup()
  */
 void loop()
 {
-#if 0
-    int debounceTime = userEeprom[EE_INPUT_DEBOUNCE_TIME] >> 1;
-    int objno, channel, value, lastValue;
-
-    // Handle the input pins
-    for (channel = 0; channel < NUM_CHANNELS; ++channel)
-    {
-        lastValue = inputDebouncer[channel].lastValue();
-        value = inputDebouncer[channel].debounce(digitalRead(inputPins[channel]), debounceTime);
-
-        if (lastValue != value)
-            inputChanged(channel, value);
-    }
-
+    int objno;
     // Handle updated communication objects
     while ((objno = nextUpdatedObject()) >= 0)
     {
         objectUpdated(objno);
     }
-#endif
+    // check if any of the timeouts for an output has expire and react on them
+    checkTimeouts();
+
     // Sleep up to 1 millisecond if there is nothing to do
-    //if (bus.idle())
-    //    waitForInterrupt();
+    if (bus.idle())
+        waitForInterrupt();
 }
