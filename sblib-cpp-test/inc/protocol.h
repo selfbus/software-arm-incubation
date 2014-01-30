@@ -24,7 +24,6 @@
 #include <stdio.h>
 
 typedef void (TestCaseSetup) (void);
-typedef void (TelegramCheck) (void);
 
 typedef void (StateFunction) (void * state, void * refState);
 typedef void (StepFunction)  (void * state);
@@ -40,7 +39,7 @@ typedef enum
 typedef struct
 {
     TelegramType     type;
-    unsigned char    length;
+    unsigned int     length;
     unsigned int     variable;
     StepFunction   * stepFunction;
     unsigned char    bytes[23];

@@ -9,6 +9,7 @@
  */
 
 #include "protocol.h"
+#include "sblib/internal/variables.h"
 
 void executeTest(Test_Case * tc)
 {
@@ -20,7 +21,7 @@ void executeTest(Test_Case * tc)
     IAP_Init_Flash(0xFF);
     bcu.begin(tc->manufacturer, tc->deviceType, tc->version);
     if(tc->setup) tc->setup();
-    tc->gatherState(refState, NULL);
+    if(tc->gatherState) tc->gatherState(refState, NULL);
     while(tel->type != END)
     {
         // clear the "interrupts" to allow sending of a new telegram
@@ -78,11 +79,12 @@ void executeTest(Test_Case * tc)
             bus.handleTelegram(true);
             REQUIRE(bus.sbSendNextTelegram == NULL);
         }
-        if(tel->stepFunction)
+        else if (TIMER_TICK == tel->type)
         {
-            tel->stepFunction(refState);
+        	systemTime += tel->length;
         }
-        tc->gatherState(stepState, refState);
+        if(tel->stepFunction) tel->stepFunction(refState);
+        if(tc->gatherState)   tc->gatherState(stepState, refState);
         tn++;
         tel++;
     }
