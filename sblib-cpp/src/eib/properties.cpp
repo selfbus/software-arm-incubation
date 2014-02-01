@@ -18,6 +18,8 @@
 #include <sblib/internal/functions.h>
 #include <sblib/internal/variables.h>
 
+#include <string.h>
+
 
 // Documentation:
 // see KNX 6/6 Profiles, p. 94+
@@ -163,7 +165,10 @@ bool propertyValueReadTelegram(int objectIdx, PropertyID propertyId, int count, 
     int size = def->size();
     int len = count * size;
 
-    reverseCopy(bcu.sendTelegram + 12, valuePtr + start * size, len);
+    if (type < PDT_CHAR_BLOCK)
+        reverseCopy(bcu.sendTelegram + 12, valuePtr + start * size, len);
+    else memcpy(bcu.sendTelegram + 12, valuePtr + start * size, len);
+
     bcu.sendTelegram[5] += len;
 
     return true;

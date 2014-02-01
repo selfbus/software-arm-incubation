@@ -114,6 +114,14 @@ public:
     virtual int read();
 
     /**
+     * Query the next byte to be read, without reading it.
+     *
+     * @return the next byte (0..255) or -1 if no byte is available
+     *         for reading.
+     */
+    virtual int peek();
+
+    /**
      * Test if the serial port is ready to being used.
      *
      * @return Always true.

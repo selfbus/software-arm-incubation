@@ -56,7 +56,10 @@ Timer::Timer(byte aTimerNum)
 void Timer::begin()
 {
     LPC_SYSCON->SYSAHBCLKCTRL |= 1 << (7 + timerNum);
+
     timer->EMR = 0;
+    timer->MCR = 0;
+    timer->CCR = 0;
 }
 
 void Timer::end()
@@ -72,11 +75,6 @@ void Timer::interrupts()
 void Timer::noInterrupts()
 {
     NVIC_DisableIRQ((IRQn_Type) (TIMER_16_0_IRQn + timerNum));
-}
-
-void Timer::match(int channel, unsigned int value)
-{
-    (&timer->MR0)[channel] = value;
 }
 
 void Timer::matchMode(int channel, int mode)

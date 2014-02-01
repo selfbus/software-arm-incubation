@@ -67,8 +67,8 @@ void BCU::begin(int manufacturer, int deviceType, int version)
 
 #if BCU_TYPE >= 20
     iapReadPartID((unsigned int*) userEeprom.serial);
-    userEeprom.serial[4] = SBLIB_VERSION;
-    userEeprom.serial[5] = SBLIB_VERSION >> 8;
+    userEeprom.serial[4] = SBLIB_VERSION >> 8;
+    userEeprom.serial[5] = SBLIB_VERSION;
 
     userRam.peiType = 0;     // PEI type: 0=no adapter connected to PEI.
     userEeprom.appType = 0;  // Set to BCU2 application. ETS reads this when programming.

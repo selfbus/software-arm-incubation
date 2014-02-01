@@ -74,6 +74,7 @@ void Serial::begin(int baudRate, SerialConfig config)
 
     // Ensure a clean start, no data in either TX or RX FIFO
     flush();
+    peeked = -1;
 
     // Drop data from the RX FIFO
     while (LPC_UART->LSR & LSR_RDR)
@@ -111,13 +112,27 @@ int Serial::available()
 
 int Serial::read()
 {
+    if (peeked >= 0)
+    {
+        int ch = peeked;
+        peeked = -1;
+        return ch;
+    }
+
     if (LPC_UART->LSR & LSR_RDR)
         return LPC_UART->RBR;
 
     return -1;
 }
 
+int Serial::peek()
+{
+    if (peeked < 0 && (LPC_UART->LSR & LSR_RDR))
+        peeked = LPC_UART->RBR;
+
+    return peeked;
+}
+
 extern "C" void UART_IRQHandler()
 {
-
 }

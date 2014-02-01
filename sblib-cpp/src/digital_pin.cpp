@@ -16,6 +16,7 @@
 // The location value for the IO configuration of the RXD pin
 static const int rxPinLocation[] = { PIO1_6, PIO2_7, PIO3_1, PIO3_4 };
 
+
 // Find a pin in a pin location array. Fail if not found
 short pinLocation(int pin, const int* arr, short count)
 {

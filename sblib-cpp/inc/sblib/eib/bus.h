@@ -21,38 +21,6 @@ class Bus;
 extern Bus bus;
 
 
-// The state of the lib's telegram sending/receiving
-enum SbState
-{
-    // The lib is idle. No receiving or sending.
-    SB_IDLE = 0,
-
-    // The lib is receiving a byte.
-    SB_RECV_BYTE,
-
-    // The lib is waiting for the start bit of the next byte.
-    SB_RECV_START,
-
-    // Start sending the telegram in sbSendTelegram[].
-    SB_SEND_INIT,
-
-    // Start sending the next byte of a telegram
-    SB_SEND_START,
-
-    // Send the first bit of the current byte
-    SB_SEND_BIT_0,
-
-    // Send the bits of the current byte
-    SB_SEND_BYTE,
-
-    // Wait between two sendings
-    SB_SEND_WAIT,
-
-    // Finish sending
-    SB_SEND_END
-};
-
-
 /**
  * Bus short acknowledgment frame: acknowledged
  */
@@ -123,7 +91,7 @@ public:
      * @param captureChannel - the timer capture channel of rxPin, e.g. CAP0
      * @param matchChannel - the timer match channel of txPin, e.g. MAT0
      */
-    Bus(Timer& timer, int rxPin, int txPin, byte captureChannel, byte matchChannel);
+    Bus(Timer& timer, int rxPin, int txPin, int captureChannel, int matchChannel);
 
     /**
      * Begin using the bus.
@@ -192,7 +160,7 @@ public:
         SEND_START,          //!< Start sending the next byte of a telegram
         SEND_BIT_0,          //!< Send the first bit of the current byte
         SEND_BYTE,           //!< Send the bits of the current byte
-        SEND_WAIT,           //!< Wait between two sendings
+        SEND_WAIT,           //!< Wait between two transmissions
         SEND_END             //!< Finish sending
     };
 
@@ -209,7 +177,7 @@ public:
     /**
      * The total length of the received telegram in telegram[].
      */
-    byte telegramLen;
+    int telegramLen;
 
 private:
     /**
@@ -238,25 +206,26 @@ private:
 
 protected:
     friend class BCU;
-    byte sendAck;            //!< Send an acknowledge or not-acknowledge byte if != 0
-    unsigned short ownAddr;  //!< Our own physical address on the bus
+    Timer& timer;            //!< The timer
+    int rxPin, txPin;        //!< The pins for bus receiving and sending
+    int captureChannel, pwmChannel, timeChannel;
+    int ownAddr;             //!< Our own physical address on the bus
+    int sendAck;             //!< Send an acknowledge or not-acknowledge byte if != 0
 
 private:
-    byte state;              //!< The state of the lib's telegram sending/receiving
-    byte sbNextByte;         //!< The number of the next byte in the telegram
-    byte sendTries;          //!< The number of repeats when sending a telegram
+    State state;             //!< The state of the lib's telegram sending/receiving
+    int sendTries;           //!< The number of repeats when sending a telegram
+    int nextByteIndex;       //!< The number of the next byte in the telegram
 
-    Timer& timer;            //!< The timer
     int currentByte;         //!< The current byte that is received/sent, including the parity bit
-
-    // The size of the to be sent telegram in bytes (including the checksum).
-    unsigned short sendTelegramLen;
-
-    // The telegram that is currently being sent.
-    unsigned char *sendCurTelegram;
-
-    // The telegram to be sent after sbSendTelegram is done.
-    unsigned char *sbSendNextTelegram;
+    int sendTelegramLen;     //!< The size of the to be sent telegram in bytes (including the checksum).
+    byte *sendCurTelegram;   //!< The telegram that is currently being sent.
+    byte *sendNextTel;       //!< The telegram to be sent after sbSendTelegram is done.
+    int bitMask;
+    int bitTime; // the bit-time within a byte when receiving
+    int parity;   // parity bit of the current byte
+    int valid;    // 1 if parity is valid for all bits of the telegram
+    int checksum; // checksum of the telegram: 0 if valid at end of telegram
 };
 
 
@@ -273,9 +242,10 @@ private:
 
 /**
  * Get the size of a telegram, including the protocol header but excluding
- * the checksum byte.
+ * the checksum byte. The size is calculated by getting the length from byte 5 of the
+ * telegram and adding 7 for the protocol overhead.
  *
- * @param telegram - the telegram to query
+ * @param tel - the telegram to get the size
  *
  * @return The size of the telegram, excluding the checksum byte.
  */
@@ -288,7 +258,7 @@ private:
 
 inline bool Bus::idle() const
 {
-    return state == SB_IDLE && sendCurTelegram == 0;
+    return state == IDLE && sendCurTelegram == 0;
 }
 
 inline bool Bus::sendingTelegram() const

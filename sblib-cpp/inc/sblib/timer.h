@@ -179,9 +179,25 @@ public:
 
     /**
      * Read the interrupt flags of the timer. This register contains the flags that caused an
-     * interrupt for the timer. Reading the flags clears them.
+     * interrupt for the timer.
+     *
+     * The bits are:
+     *
+     * 0 - interrupt flag for match channel MAT0
+     * 1 - interrupt flag for match channel MAT1
+     * 2 - interrupt flag for match channel MAT2
+     * 3 - interrupt flag for match channel MAT3
+     * 4 - interrupt flag for capture channel CAP0
+     * 5 - interrupt flag for capture channel CAP1
+     *
+     * @see resetFlags()
      */
-    int flags();
+    int flags() const;
+
+    /**
+     * Reset the interrupt flags of the timer.
+     */
+    void resetFlags();
 
     /**
      * Configure a match channel.
@@ -477,24 +493,25 @@ ALWAYS_INLINE void Timer::value(unsigned int val)
     timer->TC = val;
 }
 
-ALWAYS_INLINE int Timer::flags()
+ALWAYS_INLINE int Timer::flags() const
 {
-    int flags = timer->IR;
-    timer->IR = 0xff;
-    return flags;
+    return timer->IR;
 }
 
-//void Timer::match(short channel, unsigned int value)
-//{
-//    volatile uint32_t* mr = &timer->MR0 + channel;
-//    *mr = value;
-//}
+ALWAYS_INLINE void Timer::resetFlags()
+{
+    timer->IR = 0xff;
+}
 
 ALWAYS_INLINE unsigned int Timer::match(int channel) const
 {
     return *(&(timer->MR0) + channel);
 }
 
+ALWAYS_INLINE void Timer::match(int channel, unsigned int value)
+{
+    (&timer->MR0)[channel] = value;
+}
 
 ALWAYS_INLINE unsigned int Timer::capture(int channel) const
 {

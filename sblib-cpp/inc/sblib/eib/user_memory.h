@@ -163,9 +163,9 @@ public:
     word commsSeg1Addr;  //!< 0x0480: Address of communication object memory segment 1
     word eibObjAddr;     //!< 0x047c: Address of the application program EIB objects, 0 if unused.
     byte eibObjCount;    //!< 0x047e: Number of application program EIB objects.
-    byte appRunning;     //!< 0x047f: Application run control state
+    byte padding1;       //!< 0x047f: Padding
     word serviceControl; //!< 0x0480: Service control
-    word padding;        //!< 0x0482: Padding
+    word padding2;       //!< 0x0482: Padding
     byte serial[6];      //!< 0x0484: Hardware serial number (4 byte aligned)
     byte order[10];      //!< 0x048a: Ordering information
 #else

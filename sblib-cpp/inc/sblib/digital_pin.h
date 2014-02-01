@@ -40,6 +40,47 @@ void digitalWrite(int pin, bool value);
 bool digitalRead(int pin);
 
 /**
+ * Output a byte on a digital pin. The output is done bit by bit. The clock pin
+ * pulses the output. Output of a bit happens when the clock pin is high. This
+ * is a software function. For hardware supported output of data, see SPI or I2C.
+ *
+ * @param dataPin - the data pin to output the byte to
+ * @param clockPin - the clock pin
+ * @param bitOrder - the bit order: LSBFIRST or MSBFIRST.
+ * @param val - the value to output.
+ */
+void shiftOut(int dataPin, int clockPin, BitOrder bitOrder, byte val);
+
+/**
+ * Read a byte from a digital pin. The byte is read bit by bit. The clock pin
+ * pulses the reading. Please note that the clock pin is used as output and outputs
+ * the pulses for reading. This is a software function. For hardware supported input
+ * of data, see SPI or I2C.
+ *
+ * @param dataPin - the data pin to read the byte from
+ * @param clockPin - the clock pin
+ * @param bitOrder - the bit order: LSBFIRST or MSBFIRST.
+ *
+ * @return The read byte.
+ */
+byte shiftIn(int dataPin, int clockPin, BitOrder bitOrder);
+
+/**
+ * Measures the length (in microseconds) of a pulse on the pin; state is HIGH
+ * or LOW, the type of pulse to measure. Works on pulses from 2-3 microseconds
+ * to 3 minutes in length, but must be called at least a few dozen microseconds
+ * before the start of the pulse.
+ *
+ * @param pin - the pin to measure.
+ * @param state - the state of the pin to measure: 1 measures a high pulse, 0 measures a low pulse.
+ * @param timeout - the timeout to wait for the pulse to end, in microseconds.
+ *
+ * @return The length of the pulse in microseconds.
+ */
+unsigned int pulseIn(int pin, int state, unsigned int timeout);
+
+
+/**
  * Get the port number of the pin.
  *
  * @param pin - the pin to process, e.g. PIO1_9
@@ -176,13 +217,13 @@ enum PinMode
 //  Inline functions
 //
 
-inline void digitalWrite(int pin, bool value)
+ALWAYS_INLINE void digitalWrite(int pin, bool value)
 {
-    unsigned short mask = digitalPinToBitMask(pin);
+    int mask = digitalPinToBitMask(pin);
     gpioPorts[digitalPinToPort(pin)]->MASKED_ACCESS[mask] = value ? mask : 0;
 }
 
-inline bool digitalRead(int pin)
+ALWAYS_INLINE bool digitalRead(int pin)
 {
     return gpioPorts[digitalPinToPort(pin)]->MASKED_ACCESS[digitalPinToBitMask(pin)] != 0;
 }

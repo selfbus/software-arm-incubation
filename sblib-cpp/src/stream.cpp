@@ -13,34 +13,118 @@
 #include <sblib/math.h>
 #include <sblib/timer.h>
 
+int Stream::parseInt(char skipChar)
+{
+    bool negative = false;
+    int value = 0;
+
+    int ch = peekNextDigit(); // skip leading non numeric characters
+    if (ch == '-')
+    {
+        negative = true;
+        ch = '0';
+    }
+
+    while (ch >= 0)
+    {
+        if (ch >= '0' && ch <= '9')
+            value = value * 10 + ch - '0';
+        else if (ch != skipChar)
+            break;
+
+        read(); // consume the character we got with peek
+        ch = timedPeek();
+    }
+
+    if (negative) return -value;
+    return value;
+}
+
+int Stream::_readBytesUntil(int terminator, char* buffer, int length)
+{
+    int ch, count;
+
+    for (count = 0; count < length; ++count)
+    {
+        ch = timedRead();
+        if (ch < 0 || ch == terminator)
+            break;
+
+        buffer[count] = ch;
+    }
+
+    return count;
+}
+
+bool Stream::findUntil(const char* target, int targetLen, const char* terminator, int termLen)
+{
+    int targetIdx = 0;
+    int termIdx = 0;
+    int ch;
+
+    while ((ch = timedRead()) >= 0)
+    {
+        if (ch == target[targetIdx])
+        {
+            if (++targetIdx >= targetLen)
+                return true;
+        }
+        else targetIdx = 0;
+
+        if (termLen > 0)
+        {
+            if (ch == terminator[termIdx])
+            {
+                if (++termIdx >= termLen)
+                    return false;
+            }
+            else termIdx = 0;
+        }
+    }
+
+    return false;
+}
 
 int Stream::timedRead()
 {
-    int ch, start = millis();
+    int start = millis();
 
-    do
+    int ch = peeked;
+    peeked = -1;
+
+    while (ch < 0 && elapsed(start) < timeout)
     {
         ch = read();
-        if (ch >= 0) return ch;
     }
-    while (elapsed(start) < timeout);
 
-    return -1;
+    return ch;
 }
 
-#ifdef PEEK_NOT_IMPLEMENTED
 int Stream::timedPeek()
 {
-    int ch, start = millis();
+    int start = millis();
 
-    do
+    while (peeked < 0 && elapsed(start) < timeout)
     {
-        ch = peek();
-        if (ch >= 0) return ch;
+        peek();
     }
-    while (elapsed(start) < timeout);
 
-    return -1;
+    return peeked;
 }
-#endif
 
+int Stream::peekNextDigit()
+{
+    int c;
+    while (true)
+    {
+        c = timedPeek();
+        if (c < 0) break; // timeout
+
+        if (c == '-') break;
+        if (c >= '0' && c <= '9') break;
+
+        read(); // discard non-numeric
+    }
+
+    return c;
+}

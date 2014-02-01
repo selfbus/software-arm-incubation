@@ -13,6 +13,7 @@
 #include <sblib/types.h>
 #include <sblib/eib/bus.h>
 #include <sblib/eib/bcu_type.h>
+#include <sblib/eib/properties.h>
 #include <sblib/eib/user_memory.h>
 
 // Rename the method appData() to indicate the BCU type. If you get a link error
@@ -186,7 +187,7 @@ inline bool BCU::applicationRunning() const
         userRam.runState == 1 && userEeprom.runError == 0xff; // ETS sets the run error to 0 when programming
 #elif BCU_TYPE >= 20
     return !(userRam.status & BCU_STATUS_PROG) &&
-        userRam.runState == 1 && userEeprom.appRunning == 1;
+        userRam.runState == 1 && userEeprom.loadState[OT_APPLICATION];
 #else
 #   error Unsupported BCU_TYPE
 #endif

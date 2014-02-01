@@ -10,6 +10,8 @@
 
 #include <sblib/print.h>
 
+#include <string.h>
+
 // The size of the internal buffer in print()
 #define PRINTBUF_SIZE (8 * sizeof(int) + 1)
 
@@ -66,12 +68,7 @@ int Print::write(const byte* data, int count)
 
 int Print::write(const char* str)
 {
-    if (!str)
-        return 0;
-
-    int len = 0;
-    while (str[len])
-        ++len;
-
-    return write((const byte*) str, len);
+    if (str)
+        return write((const byte*) str, strlen(str));
+    return 0;
 }

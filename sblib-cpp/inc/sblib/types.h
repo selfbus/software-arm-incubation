@@ -26,8 +26,20 @@ typedef unsigned short word;
 typedef unsigned char boolean;
 
 /**
- * Configuration modes.
+ * Bit order
  */
+enum BitOrder
+{
+    /**
+     * Bit order: least significant bit first.
+     */
+    LSBFIRST = 1,
+
+    /**
+     * Bit order: most significant bit first.
+     */
+    MSBFIRST
+};
 
 /**
  * Configuration modes for digital pins.

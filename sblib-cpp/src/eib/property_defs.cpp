@@ -40,7 +40,8 @@ static const PropertyDef deviceObjectProps[] =
     { PID_SERIAL_NUMBER, PDT_GENERIC_06|PC_POINTER, PD_USER_EEPROM_OFFSET(serial) },
 
     // Manufacturer ID: unsigned int, stored in userEeprom.manufacturerH (and manufacturerL)
-    { PID_MANUFACTURER_ID, PDT_UNSIGNED_INT|PC_POINTER, PD_USER_EEPROM_OFFSET(manufacturerH) },
+    // Configured as PDT_GENERIC_02 and not as PDT_UNSIGNED_INT to avoid swapping the byte order
+    { PID_MANUFACTURER_ID, PDT_GENERIC_02|PC_POINTER, PD_USER_EEPROM_OFFSET(manufacturerH) },
 
     // Order number: 10 byte data, stored in userEeprom.serial
     // Ok this is a hack. The serial number and the following 4 bytes are returned.
