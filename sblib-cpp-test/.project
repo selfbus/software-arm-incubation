@@ -3,6 +3,8 @@
 	<name>sblib-cpp-test</name>
 	<comment></comment>
 	<projects>
+		<project>Catch</project>
+		<project>sblib-cpp</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

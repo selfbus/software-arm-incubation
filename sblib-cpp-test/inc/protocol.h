@@ -39,7 +39,7 @@ typedef enum
 typedef struct
 {
     TelegramType     type;
-    unsigned int     length;
+    int              length;
     unsigned int     variable;
     StepFunction   * stepFunction;
     unsigned char    bytes[23];
