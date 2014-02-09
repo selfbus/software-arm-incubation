@@ -23,7 +23,6 @@ static ProtocolTestState protoState[2];
 
 static void tc_setup(void)
 {
-    IAP_Init_Flash(0xFF);
     bcu.setOwnAddress(0x117E); // set own address to 1.1.126
 }
 
@@ -97,9 +96,11 @@ static Test_Case testCase =
 {
   "Device Info Test"
 , 0x0004, 0x2060, 0x01
+, NULL
 , tc_setup
 , (StateFunction *) gatherProtocolState
-, (TestCaseState *) protoState
+, (TestCaseState *) &protoState[0]
+, (TestCaseState *) &protoState[1]
 , testCaseTelegrams
 };
 

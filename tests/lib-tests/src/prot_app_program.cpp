@@ -21,11 +21,8 @@ static ProtocolTestState protoState[2];
 
 #define VaS(s) ((ProtocolTestState *) (s))
 
-static void tc_setup(void)
+static void tc_eepromSetup(void)
 {
-    IAP_Init_Flash(0xFF);
-    bcu.setOwnAddress(0x1112); // set own address to 1.1.18
-    // setup the content of the EEPROM as expected by the ETS
     userEeprom.optionReg     = 0xFF;
     userEeprom.checkLimit    = 0xFF;
     userEeprom.routeCnt      = 0x60;
@@ -77,6 +74,11 @@ static void tc_setup(void)
     userEeprom[0x13F] = 0x00;
     userEeprom[0x140] = 0x00;
     userEeprom[0x141] = 0x07;
+}
+
+static void tc_setup(void)
+{
+    bcu.setOwnAddress(0x1112); // set own address to 1.1.18
 }
 
 static void connect(void * state)
@@ -290,9 +292,11 @@ static Test_Case testCase =
 {
   "App Prog"
 , 0x0004, 0x2060, 0x01
+, tc_eepromSetup
 , tc_setup
 , (StateFunction *) gatherProtocolState
-, (TestCaseState *) protoState
+, (TestCaseState *) &protoState[0]
+, (TestCaseState *) &protoState[1]
 , testCaseTelegrams
 };
 

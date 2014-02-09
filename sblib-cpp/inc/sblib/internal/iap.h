@@ -9,10 +9,6 @@
 #ifndef sblib_iap_h
 #define sblib_iap_h
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <sblib/types.h>
 
 
@@ -93,9 +89,5 @@ IAP_Status iapReadUID(byte* uid);
  * @return Status code, see enum IAP_Status above
  */
 IAP_Status iapReadPartID(unsigned int* partId);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* SB_IAP_H_ */

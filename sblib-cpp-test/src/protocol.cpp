@@ -10,15 +10,20 @@
 
 #include "protocol.h"
 #include "sblib/internal/variables.h"
+#include <sblib/internal/iap.h>
+
+extern bool userEepromModified;
 
 void executeTest(Test_Case * tc)
 {
     Telegram * tel = tc->telegram;
     unsigned int tn = 1;
-    void * refState = &tc->states[0];
-    void * stepState = &tc->states[1];
+    void * refState  = tc->refState;
+    void * stepState = tc->stepState;
 
     IAP_Init_Flash(0xFF);
+    if(tc->eepromSetup) tc->eepromSetup();
+    memcpy(SB_EEPROM_FLASH_SECTOR_ADDRESS, userEepromData, 0x100);
     bcu.begin(tc->manufacturer, tc->deviceType, tc->version);
     if (tc->setup) tc->setup();
     if (tc->gatherState) tc->gatherState(refState, NULL);
@@ -26,6 +31,7 @@ void executeTest(Test_Case * tc)
     {
         // clear the "interrupts" to allow sending of a new telegram
         LPC_TMR16B1->IR = 0x00;
+        userEepromModified = false;
         INFO("Step " << tn << " of test case " << tc->name);
         if (TEL_RX == tel->type)
         {
@@ -41,7 +47,7 @@ void executeTest(Test_Case * tc)
         else if (TEL_TX == tel->type)
         {
             int i;
-            int c = 0;
+            int missmatches = 0;
             char msg[1025];
             char numbers[23 * 3 + 1] = { 0 };
             char received[23 * 3 + 1] = { 0 };
@@ -64,7 +70,7 @@ void executeTest(Test_Case * tc)
                 strcat(expected, temp);
                 if (tel->bytes[i] != bus.sendCurTelegram[i])
                 {
-                    c++;
+                	missmatches++;
                     snprintf(temp, 1024, "%d, ", i + 1);
                     strcat(msg, temp);
                 }
@@ -73,12 +79,20 @@ void executeTest(Test_Case * tc)
             snprintf(temp, 1024, "          %s\n expected: %s\n sent:     %s", numbers, expected, received);
             strcat(msg, temp);
             INFO(msg);
-            REQUIRE(c == 0);
+            REQUIRE(missmatches == 0);
 
             bus.currentByte = SB_BUS_ACK;
             bus.nextByteIndex = 1;
             bus.handleTelegram(true);
             REQUIRE(bus.sendNextTel == NULL);
+        }
+        else if (CHECK_TX_BUFFER == tel->type)
+        {
+            unsigned int s = 0;
+            if (bus.sendCurTelegram) s++;
+            if (bus.sendNextTel) s++;
+            INFO("Check if additional telegrams should be sent");
+            REQUIRE(s == tel->variable);
         }
         else if (TIMER_TICK == tel->type)
         {

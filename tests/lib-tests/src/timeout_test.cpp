@@ -45,7 +45,7 @@ static Telegram testCaseTelegrams[] =
 , {TIMER_TICK,   1, 0, _check_expired_no,  {}}
 , {TIMER_TICK,   1, 0, _check_expired_yes, {}}
 // force a wrap-around of the systemTime
-, {TIMER_TICK, -38, 0, _start_to_20,       {}}
+, {TIMER_TICK, (unsigned int) -38, 0, _start_to_20,       {}}
 , {TIMER_TICK,  19, 0, _check_expired_no,  {}}
 , {TIMER_TICK,   1, 0, _check_time_wrap,   {}}
 , {TIMER_TICK,   1, 0, _check_expired_yes, {}}
@@ -61,7 +61,9 @@ static Test_Case testCase =
 {
   "Timeout Test"
 , 0x0004, 0x2060, 0x01
+, NULL
 , tc_setup
+, NULL
 , NULL
 , NULL
 , testCaseTelegrams
@@ -71,5 +73,3 @@ TEST_CASE("Test of the timeout primitives","[TIMEOUT][SBLIB]")
 {
     executeTest(& testCase);
 }
-
-

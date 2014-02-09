@@ -33,6 +33,7 @@ typedef enum
   TEL_RX
 , TEL_TX
 , TIMER_TICK
+, CHECK_TX_BUFFER
 , END
 } TelegramType;
 
@@ -56,9 +57,11 @@ typedef struct
           int               manufacturer;
           int               deviceType;
           int               version;
+          TestCaseSetup   * eepromSetup;
           TestCaseSetup   * setup;
           StateFunction   * gatherState;
-          TestCaseState   * states;
+          TestCaseState   * refState;
+          TestCaseState   * stepState;
           Telegram        * telegram;
 } Test_Case;
 
