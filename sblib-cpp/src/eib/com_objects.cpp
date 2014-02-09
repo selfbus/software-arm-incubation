@@ -114,7 +114,7 @@ int objectSendAddr(int objno)
     byte* assocTab = assocTable();
     byte* assocTabEnd = assocTab + (*assocTab << 1);
 
-    for (++assocTab; assocTab != assocTabEnd; assocTab += 2)
+    for (++assocTab; assocTab < assocTabEnd; assocTab += 2)
     {
         if (assocTab[1] == objno)
         {
@@ -231,8 +231,8 @@ void processGroupWriteTelegram(int objno)
     byte* valuePtr = objectValuePtr(objno);
     int count = telegramObjectSize(objno);
 
-    if (count > 0) reverseCopy(valuePtr, bus.telegram + 7, count);
-    else *valuePtr = bus.telegram[6] & 0x3f;
+    if (count > 0) reverseCopy(valuePtr, bus.telegram + 8, count);
+    else *valuePtr = bus.telegram[7] & 0x3f;
 
     setObjectFlags(objno, COMFLAG_UPDATE);
 }
@@ -241,7 +241,7 @@ void processGroupTelegram(int addr, int apci)
 {
     const ComConfig* configTab = (const ComConfig*) (objectConfigTable() + 2);
     const byte* assocTab = assocTable();
-    const int numAssoc = *assocTab;
+    const int endAssoc = 1 + (*assocTab) * 2;
     int objno, objConf;
 
     // Convert the group address into the index into the group address table
@@ -250,7 +250,7 @@ void processGroupTelegram(int addr, int apci)
 
     // Loop over all entries in the association table, as one group address
     // could be assigned to multiple com-objects.
-    for (int idx = 1; idx < numAssoc; idx += 2)
+    for (int idx = 1; idx < endAssoc; idx += 2)
     {
         // Check if grp-address index in assoc table matches the dest grp address index
         if (gapos == assocTab[idx]) // We found an association for our addr
@@ -263,7 +263,6 @@ void processGroupTelegram(int addr, int apci)
                 // Check if communication and write are enabled
                 if ((objConf & COMCONF_WRITE_COMM) == COMCONF_WRITE_COMM)
                     processGroupWriteTelegram(objno);
-                break;
             }
             else if (apci == APCI_GROUP_VALUE_READ_PDU)
             {
