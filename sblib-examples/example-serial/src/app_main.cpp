@@ -29,6 +29,7 @@ void loop()
 {
     static int value = 0;
 
+    // Write some text to the serial port
     serial.print("Counter value: B");
     serial.println(++value, BIN, 8);
 

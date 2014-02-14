@@ -26,6 +26,7 @@
 								<option id="com.crt.advproject.cpp.hdrlib.1570685655" name="Use headers for C library" superClass="com.crt.advproject.cpp.hdrlib"/>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1531031360" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__NEWLIB__"/>
+									<listOptionValue builtIn="false" value="BCU_TYPE=10"/>
 									<listOptionValue builtIn="false" value="DEBUG"/>
 									<listOptionValue builtIn="false" value="__CODE_RED"/>
 								</option>
@@ -113,6 +114,7 @@
 								<option id="com.crt.advproject.cpp.hdrlib.86506112" name="Use headers for C library" superClass="com.crt.advproject.cpp.hdrlib"/>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1304337873" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__NEWLIB__"/>
+									<listOptionValue builtIn="false" value="BCU_TYPE=10"/>
 									<listOptionValue builtIn="false" value="NDEBUG"/>
 									<listOptionValue builtIn="false" value="__CODE_RED"/>
 								</option>
@@ -160,8 +162,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/Debug}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.link.cpp.multicore.slave.2122885330" name="Multicore slave" superClass="com.crt.advproject.link.cpp.multicore.slave"/>
-								<option id="gnu.cpp.link.option.libs.1486403125" superClass="gnu.cpp.link.option.libs" valueType="libs">
+								<option id="gnu.cpp.link.option.libs.1486403125" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="sblib-cpp"/>
+									<listOptionValue builtIn="false" value="CMSIS_CORE_LPC11xx"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.986695445" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -226,5 +229,12 @@
 &lt;/infoList&gt;&#13;
 &lt;/TargetConfig&gt;</projectStorage>
 	</storageModule>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+	</storageModule>
 </cproject>

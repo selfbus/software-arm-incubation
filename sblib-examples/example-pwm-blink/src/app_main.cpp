@@ -14,6 +14,15 @@
 #include <sblib/core.h>
 
 /*
+ * NOTICE
+ *
+ * The LED to blink has to be connected to pin PIO1_10
+ *
+ * We cannot blink the LED on the LPCxpresso board with PWM.
+ *
+ */
+
+/*
  * Initialize the application.
  */
 void setup()
@@ -23,7 +32,7 @@ void setup()
     // Begin using the timer.
     timer16_1.begin();
 
-    timer16_1.prescaler((SystemCoreClock / 1000) - 1); // let the timer count microseconds
+    timer16_1.prescaler((SystemCoreClock / 1000) - 1); // let the timer count milliseconds
     timer16_1.matchMode(MAT1, SET);  // set the output of PIO2_7 to 1 when the timer matches MAT1
     timer16_1.match(MAT1, 800);      // match MAT1 when the timer reaches this value
     timer16_1.pwmEnable(MAT1);       // enable PWM for match channel MAT1

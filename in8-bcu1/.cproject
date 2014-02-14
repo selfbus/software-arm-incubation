@@ -273,7 +273,7 @@
 			<resource resourceType="PROJECT" workspacePath="/sbapp-in4-cpp"/>
 		</configuration>
 		<configuration configurationName="Debug">
-			<resource resourceType="PROJECT" workspacePath="/sbapp-in4-cpp"/>
+			<resource resourceType="PROJECT" workspacePath="/in8-bcu1"/>
 		</configuration>
 	</storageModule>
 </cproject>

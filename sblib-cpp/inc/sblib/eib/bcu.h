@@ -16,12 +16,12 @@
 #include <sblib/eib/properties.h>
 #include <sblib/eib/user_memory.h>
 
-// Rename the method appData() to indicate the BCU type. If you get a link error
-// then the library's BCU_TYPE is different from the application's BCU_TYPE.
+// Rename the method begin_BCU() of the class BCU to indicate the BCU type. If you get a
+// link error then the library's BCU_TYPE is different from the application's BCU_TYPE.
 #if BCU_TYPE == 10
-# define appData appData_BCU1
-#elif BCU_TYPE == 20
-# define appData appData_BCU2
+# define begin_BCU begin_BCU1
+#elif BCU_TYPE >= 20
+# define begin_BCU begin_BCU2
 #else
 # error Unsupported BCU_TYPE
 #endif
@@ -156,6 +156,11 @@ protected:
      */
     bool processDeviceDescriptorReadTelegram(int id);
 
+    /*
+     * See begin()
+     */
+    void begin_BCU(int manufacturer, int deviceType, int version);
+
 private:
     Debouncer progButtonDebouncer; //!< The debouncer for the programming mode button.
     bool enabled;                  //!< The BCU is enabled. Set by bcu.begin().
@@ -165,12 +170,15 @@ private:
     bool incConnectedSeqNo;        //!< True if the sequence number shall be incremented on ACK.
 };
 
-//#undef appData
-
 
 //
 //  Inline functions
 //
+
+inline void BCU::begin(int manufacturer, int deviceType, int version)
+{
+    void begin_BCU(int manufacturer, int deviceType, int version);
+}
 
 inline bool BCU::programmingMode() const
 {
@@ -197,5 +205,9 @@ inline bool BCU::directConnection() const
 {
     return connectedAddr != 0;
 }
+
+#ifndef INSIDE_BCU_CPP
+#   undef begin_BCU
+#endif
 
 #endif /*sblib_bcu_h*/

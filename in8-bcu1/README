@@ -15,6 +15,6 @@ P2.0 - P2.7  Input pins
 P0.0         Reset
 P0.10        LPC-Link clock
 P1.3         LPC-Link data I/O
-P1.5         Programming mode led and button
+P1.5         EIB programming mode led and button
 P1.8         EIB input
 P1.10        EIB output

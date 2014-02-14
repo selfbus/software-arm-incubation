@@ -39,7 +39,13 @@ BCU::BCU()
     enabled = false;
 }
 
-void BCU::begin(int manufacturer, int deviceType, int version)
+#if BCU_TYPE == 10
+    void BCU::begin_BCU1(int manufacturer, int deviceType, int version)
+#elif BCU_TYPE >= 20
+    void BCU::begin_BCU2(int manufacturer, int deviceType, int version)
+#else
+#   error Unsupported BCU_TYPE
+#endif
 {
     readUserEeprom();
 

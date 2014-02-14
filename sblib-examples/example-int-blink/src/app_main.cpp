@@ -14,14 +14,14 @@
 /*
  * Handler for the timer interrupt.
  */
-extern "C" void TIMER16_1_IRQHandler()
+extern "C" void TIMER32_0_IRQHandler()
 {
     // Toggle the pin PIO0_7
     digitalWrite(PIO0_7, !digitalRead(PIO0_7));
 
     // Clear the timer interrupt flags. Otherwise the interrupt handler is called
     // again immediately after returning.
-    timer16_1.flags();
+    timer32_0.resetFlags();
 }
 
 /*
@@ -32,21 +32,21 @@ void setup()
     pinMode(PIO0_7, OUTPUT);
 
     // Enable the timer interrupt
-    enableInterrupt(TIMER_16_1_IRQn);
+    enableInterrupt(TIMER_32_0_IRQn);
 
     // Begin using the timer
-    timer16_1.begin();
+    timer32_0.begin();
 
-    // Let the timer count microseconds
-    timer16_1.prescaler((SystemCoreClock / 1000) - 1);
+    // Let the timer count milliseconds
+    timer32_0.prescaler((SystemCoreClock / 1000) - 1);
 
     // On match of MAT1, generate an interrupt and reset the timer
-    timer16_1.matchMode(MAT1, RESET | INTERRUPT);
+    timer32_0.matchMode(MAT1, RESET | INTERRUPT);
 
     // Match MAT1 when the timer reaches this value (in milliseconds)
-    timer16_1.match(MAT1, 500);
+    timer32_0.match(MAT1, 500);
 
-    timer16_1.start();
+    timer32_0.start();
 }
 
 /*

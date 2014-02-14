@@ -29,3 +29,17 @@ LPC pin 5 to ARM pin GND
 LPC pin 8 to ARM pin P1.8
 
 Add a 100pF condensator between ARM pin 1.8 and GND
+
+
+BCU type
+--------
+
+Application and library must have the same BCU type. The BCU type is set by
+the compile time constant BCU_TYPE. It has to bei either 10 (for BCU 1) or 20
+(for BCU 2). If in doubt, use BCU 1.
+
+To configure it, navigate in Eclipse into the project properties,
+C/C++ Build > Settings > Tool Settings (tab) > MCU C++ Compiler > Preprocessor
+
+In the top box "Defined symbols (-D)" there shall be a line BCU_TYPE=10  (or =20)
+its there for the library and the same line shall be in the application project
