@@ -177,7 +177,7 @@ private:
 
 inline void BCU::begin(int manufacturer, int deviceType, int version)
 {
-    void begin_BCU(int manufacturer, int deviceType, int version);
+    begin_BCU(manufacturer, deviceType, version);
 }
 
 inline bool BCU::programmingMode() const
