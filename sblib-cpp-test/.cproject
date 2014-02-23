@@ -37,6 +37,7 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1921731778" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-m32 -c -fmessage-length=0" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.707095765" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="FLASH_BASE_ADDRESS=FLASH"/>
 									<listOptionValue builtIn="false" value="IAP_EMULATION"/>
 									<listOptionValue builtIn="false" value="BCU_TYPE=10"/>
 								</option>

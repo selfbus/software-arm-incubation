@@ -13,6 +13,7 @@
  */
 
 #include <sblib/core.h>
+#include <sblib/internal/iap.h>
 
 /*
  * Initialize the application.
@@ -20,6 +21,13 @@
 void setup()
 {
     serial.begin(19200);
+
+    serial.println("Selfbus serial port example");
+
+    serial.print("Target MCU has ");
+    serial.print(iapFlashSize() / 1024);
+    serial.println("k flash");
+    serial.println();
 }
 
 /*

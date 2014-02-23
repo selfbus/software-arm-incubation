@@ -9,6 +9,7 @@
 #ifndef sblib_iap_h
 #define sblib_iap_h
 
+#include <sblib/platform.h>
 #include <sblib/types.h>
 
 
@@ -31,21 +32,6 @@ enum IAP_Status
     IAP_BUSY                                    //!< BUSY
 };
 
-
-#ifndef IAP_EMULATION
-  extern unsigned int __vectors_start__;
-  extern unsigned int __top_MFlash32;
-# define SB_FLASH_BASE_ADDRESS   ((unsigned char*) &__vectors_start__)
-# define SB_FLASH_TOP_ADDRESS    ((unsigned char*) &__top_MFlash32)
-#else
-  /* for the test we simulate a 32k FlASH */
-  extern unsigned char FLASH [];
-# define SB_FLASH_BASE_ADDRESS   ((unsigned char *) FLASH)
-# define SB_FLASH_TOP_ADDRESS    ((unsigned char *) FLASH + 0x1000*8)
-#endif
-
-#define SB_EEPROM_SECTOR_SIZE           0x1000
-#define SB_EEPROM_FLASH_SECTOR_ADDRESS  (SB_FLASH_TOP_ADDRESS - SB_EEPROM_SECTOR_SIZE)
 
 /**
  * Get the index of the FLASH sector for the passed address.
@@ -89,5 +75,14 @@ IAP_Status iapReadUID(byte* uid);
  * @return Status code, see enum IAP_Status above
  */
 IAP_Status iapReadPartID(unsigned int* partId);
+
+/**
+ * Get the size of the flash memory. This is done by probing the flash sectors
+ * until an error is encountered.
+ *
+ * @return the size of the flash memory.
+ */
+int iapFlashSize();
+
 
 #endif /* SB_IAP_H_ */

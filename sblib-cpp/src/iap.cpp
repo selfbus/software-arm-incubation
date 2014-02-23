@@ -11,6 +11,11 @@
 #include <sblib/platform.h>
 #include <string.h>
 
+// The maximum memory that is tested when searching for the flash size, in bytes
+#define MAX_FLASH_SIZE 0x80000
+
+// The increments when searching for the flash size
+#define FLASH_SIZE_SEARCH_INC 0x2000
 
 
 /**
@@ -41,6 +46,9 @@ struct IAP_Parameter
     unsigned int res[4];      //!< Result
 };
 
+// The size of the flash in bytes. Use iapFlashSize() to get the flash size.
+int iapFlashBytes = 0;
+
 
 /** IAP call function */
 typedef void (*IAP_Func)(unsigned int * cmd, unsigned int * stat);
@@ -66,7 +74,7 @@ IAP_Status iapEraseSector(int sector)
     p.cmd = CMD_PREPARE;
     p.par[0] = sector;
     p.par[1] = sector;
-    IAP_Call (&p.cmd, &p.stat);
+    IAP_Call(&p.cmd, &p.stat);
 
     if (p.stat == IAP_SUCCESS)
     {
@@ -74,14 +82,14 @@ IAP_Status iapEraseSector(int sector)
         p.par[0] = sector;
         p.par[1] = sector;
         p.par[2] = SystemCoreClock / 1000;
-        IAP_Call (&p.cmd, &p.stat);
+        IAP_Call(&p.cmd, &p.stat);
 
         if (p.stat == IAP_SUCCESS)
         {
             p.cmd = CMD_BLANK_CHECK;
             p.par[0] = sector;
             p.par[1] = sector;
-            IAP_Call (&p.cmd, &p.stat);
+            IAP_Call(&p.cmd, &p.stat);
         }
     }
     return (IAP_Status) p.stat;
@@ -96,7 +104,7 @@ IAP_Status iapProgram(byte* rom, const byte* ram, unsigned int size)
     p.cmd = CMD_PREPARE;
     p.par[0] = sector;
     p.par[1] = sector;
-    IAP_Call (&p.cmd, &p.stat);
+    IAP_Call(&p.cmd, &p.stat);
 
     if (p.stat == IAP_SUCCESS)
     {
@@ -106,7 +114,7 @@ IAP_Status iapProgram(byte* rom, const byte* ram, unsigned int size)
         p.par[1] = (unsigned int) ram;
         p.par[2] = size;
         p.par[3] = SystemCoreClock / 1000;
-        IAP_Call (&p.cmd, &p.stat);
+        IAP_Call(&p.cmd, &p.stat);
 
         if (p.stat == IAP_SUCCESS)
         {
@@ -114,7 +122,7 @@ IAP_Status iapProgram(byte* rom, const byte* ram, unsigned int size)
             p.par[0] = (unsigned int) rom;
             p.par[1] = (unsigned int) ram;
             p.par[2] = size;
-            IAP_Call (&p.cmd, &p.stat);
+            IAP_Call(&p.cmd, &p.stat);
         }
     }
     return (IAP_Status) p.stat;
@@ -144,5 +152,33 @@ IAP_Status iapReadPartID(unsigned int* partId)
 
 int iapSectorOfAddress(const byte* address)
 {
-    return (address - SB_FLASH_BASE_ADDRESS ) / SB_EEPROM_SECTOR_SIZE;
+    return (address - FLASH_BASE_ADDRESS) / FLASH_SECTOR_SIZE;
+}
+
+int iapFlashSize()
+{
+    if (iapFlashBytes)
+        return iapFlashBytes;
+
+    IAP_Parameter p;
+    p.cmd = CMD_BLANK_CHECK;
+
+    const int sectorInc = FLASH_SIZE_SEARCH_INC / FLASH_SECTOR_SIZE;
+    int sector = sectorInc;
+    const int maxSector = MAX_FLASH_SIZE / FLASH_SECTOR_SIZE;
+
+    while (sector < maxSector)
+    {
+        p.par[0] = sector;
+        p.par[1] = sector;
+        IAP_Call(&p.cmd, &p.stat);
+
+        if (p.stat == IAP_INVALID_SECTOR)
+            break;
+
+        sector += sectorInc;
+    }
+
+    iapFlashBytes = sector * FLASH_SECTOR_SIZE;
+    return iapFlashBytes;
 }

@@ -269,7 +269,7 @@ void Bus::timerInterruptHandler()
 {
     D(static unsigned short tick = 0);
     unsigned short rxTime = LPC_TMR16B1->CR0;
-    unsigned int val;
+//    unsigned int val;
 
     // Debug output
     D(digitalWrite(PIO0_6, ++tick & 1));  // brown: interrupt tick

@@ -23,7 +23,8 @@ void executeTest(Test_Case * tc)
 
     IAP_Init_Flash(0xFF);
     if(tc->eepromSetup) tc->eepromSetup();
-    memcpy(SB_EEPROM_FLASH_SECTOR_ADDRESS, userEepromData, 0x100);
+    memcpy(FLASH_BASE_ADDRESS, userEepromData, 0x100);
+
     bcu.begin(tc->manufacturer, tc->deviceType, tc->version);
     if (tc->setup) tc->setup();
     if (tc->gatherState) tc->gatherState(refState, NULL);
@@ -47,7 +48,7 @@ void executeTest(Test_Case * tc)
         else if (TEL_TX == tel->type)
         {
             int i;
-            int missmatches = 0;
+            int mismatches = 0;
             char msg[1025];
             char numbers[23 * 3 + 1] = { 0 };
             char received[23 * 3 + 1] = { 0 };
@@ -70,7 +71,7 @@ void executeTest(Test_Case * tc)
                 strcat(expected, temp);
                 if (tel->bytes[i] != bus.sendCurTelegram[i])
                 {
-                	missmatches++;
+                	mismatches++;
                     snprintf(temp, 1024, "%d, ", i + 1);
                     strcat(msg, temp);
                 }
@@ -79,7 +80,7 @@ void executeTest(Test_Case * tc)
             snprintf(temp, 1024, "          %s\n expected: %s\n sent:     %s", numbers, expected, received);
             strcat(msg, temp);
             INFO(msg);
-            REQUIRE(missmatches == 0);
+            REQUIRE(mismatches == 0);
 
             bus.currentByte = SB_BUS_ACK;
             bus.nextByteIndex = 1;

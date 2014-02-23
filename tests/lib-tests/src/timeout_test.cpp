@@ -11,7 +11,7 @@
 #include "catch.hpp"
 #include "protocol.h"
 
-#include "sblib/Timeout.h"
+#include "sblib/timeout.h"
 
 Timeout to;
 

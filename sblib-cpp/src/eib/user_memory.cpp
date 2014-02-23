@@ -29,9 +29,9 @@ bool userEepromModified;
 unsigned int writeUserEepromTime;
 
 
-#define NUM_EEPROM_PAGES  (SB_EEPROM_SECTOR_SIZE / USER_EEPROM_SIZE)
-#define EEPROM_PAGE_SIZE  (SB_EEPROM_SECTOR_SIZE / NUM_EEPROM_PAGES)
-#define LAST_EEPROM_PAGE  (SB_EEPROM_FLASH_SECTOR_ADDRESS + EEPROM_PAGE_SIZE * (NUM_EEPROM_PAGES - 1))
+#define NUM_EEPROM_PAGES     (FLASH_SECTOR_SIZE / USER_EEPROM_SIZE)
+#define FLASH_SECTOR_ADDRESS (FLASH_BASE_ADDRESS + iapFlashSize() - FLASH_SECTOR_SIZE)
+#define LAST_EEPROM_PAGE     (FLASH_SECTOR_ADDRESS + USER_EEPROM_SIZE * (NUM_EEPROM_PAGES - 1))
 
 
 /*
@@ -39,14 +39,15 @@ unsigned int writeUserEepromTime;
  */
 byte* findValidPage()
 {
+    byte* firstPage = FLASH_BASE_ADDRESS + iapFlashSize() - FLASH_SECTOR_SIZE;
     byte* page = LAST_EEPROM_PAGE;
 
-    while (page >= SB_EEPROM_FLASH_SECTOR_ADDRESS)
+    while (page >= firstPage)
     {
         if (page[USER_EEPROM_SIZE - 1] != 0xff)
             return page;
 
-        page -= EEPROM_PAGE_SIZE;
+        page -= USER_EEPROM_SIZE;
     }
 
     return 0;
@@ -76,15 +77,15 @@ void writeUserEeprom()
     if (page == LAST_EEPROM_PAGE)
     {
         // Erase the sector
-        int sectorId = iapSectorOfAddress(SB_EEPROM_FLASH_SECTOR_ADDRESS);
+        int sectorId = iapSectorOfAddress(FLASH_SECTOR_ADDRESS);
         IAP_Status rc = iapEraseSector(sectorId);
         if (rc != IAP_SUCCESS) fatalError(); // erasing failed
 
-        page = SB_EEPROM_FLASH_SECTOR_ADDRESS;
+        page = FLASH_SECTOR_ADDRESS;
     }
     else if (page)
-        page += EEPROM_PAGE_SIZE;
-    else page = SB_EEPROM_FLASH_SECTOR_ADDRESS;
+        page += USER_EEPROM_SIZE;
+    else page = FLASH_SECTOR_ADDRESS;
 
     userEepromData[USER_EEPROM_SIZE - 1] = 0; // mark the page as in use
     IAP_Status rc = iapProgram(page, userEepromData, USER_EEPROM_SIZE);

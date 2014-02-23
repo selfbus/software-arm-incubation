@@ -26,10 +26,13 @@ LPC_GPIO_TypeDef   _LPC_GPIO1;
 LPC_GPIO_TypeDef   _LPC_GPIO2;
 LPC_GPIO_TypeDef   _LPC_GPIO3;
 
-#define SECTOR_SIZE   0x1000
-unsigned char FLASH [0x1000 * 8]; /* the flash simulation -> 8 * 4K -> 32k */
 
+// Flash emulation array
+unsigned char* FLASH[FLASH_SIZE];
+
+// System core clock
 uint32_t SystemCoreClock = 48000000;
+
 
 typedef enum
 {
@@ -65,7 +68,7 @@ int iap_calls [5] = {0, 0, 0, 0, 0};
 
 void IAP_Init_Flash(unsigned char value)
 {
-    memset(FLASH, value, sizeof(FLASH));
+    memset(FLASH, value, FLASH_SIZE);
 }
 
 void IAP_Call (unsigned int * cmd, unsigned int * stat)
@@ -96,6 +99,11 @@ void IAP_Call (unsigned int * cmd, unsigned int * stat)
         end  = (* (cmd + 2) + 1) * SECTOR_SIZE;
         for (; i < end; i++)
         {
+        	if (i >= FLASH_SIZE)
+        	{
+        		* stat = INVALID_SECTOR;
+        		break;
+        	}
             if (FLASH [i] != 0xFF)
             {
                 * stat = SECTOR_NOT_BLANK;

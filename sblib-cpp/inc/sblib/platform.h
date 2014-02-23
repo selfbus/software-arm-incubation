@@ -26,4 +26,23 @@ unsigned int* ioconPointer(short pin);
  */
 extern LPC_GPIO_TypeDef (* const gpioPorts[4]);
 
+
+#ifdef IAP_EMULATION
+  extern unsigned char FLASH[];
+# define __vectors_start__ *FLASH
+#else
+  extern unsigned int __vectors_start__;
+#endif
+
+/**
+ * The base address of the flash.
+ */
+#define FLASH_BASE_ADDRESS ((unsigned char*) &__vectors_start__)
+
+/**
+* The size of a flash sector in bytes.
+*/
+#define FLASH_SECTOR_SIZE 0x1000
+
+
 #endif /*sblib_platform_h*/
