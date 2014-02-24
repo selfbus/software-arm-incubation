@@ -122,6 +122,14 @@ class _M_EEPROM_ (M_Object) :
         fields.sort (key     = lambda f : (f.offset, f.shift))
     # end def Update
 
+    @property
+    def Description (cls) :
+        result = [cls.__name__, cls.__doc__]
+        for f in cls._fields :
+            result.append ("  %s" % (f, ))
+        return "\n".join (result)
+    # end def Description
+
 # end class _M_EEPROM_
 
 class EEPROM (_Object_, metaclass = _M_EEPROM_) :

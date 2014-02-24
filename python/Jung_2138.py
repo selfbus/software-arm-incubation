@@ -37,7 +37,7 @@ import   Com_Table as CT
 import   Telegram
 
 class Jung_2138 (EEPROM.BCU1) :
-    """The Junbf 2138 out 8 device"""
+    """The Jung 2138 out 8 device"""
 
     ### default values for fields
     manufacturer     = 0x0004
@@ -70,16 +70,16 @@ class Jung_2138 (EEPROM.BCU1) :
 
             kw ["on_delay_factor_%d"   % no] = F (0x1DA + i, 0xFF)
             kw ["off_delay_factor_%d"  % no] = F (0x1E2 + i, 0xFF)
-            kw ["timed_fct_output_%d"  % no] = F (0x1DA, 1 << i)
+            kw ["timed_fct_output_%d"  % no] = F (0x1EA, 1 << i)
             kw ["lock_polarity_%d"     % no] = F (0x1F1, 1 << i)
             kw ["output_kind_%d"       % no] = F (0x1F2, 1 << i)
             kw ["feeback_polarity_%d"  % no] = F (0x1F3, 1 << i)
             kw ["bus_return_action_%d" % no] = F (0x1F6 + quad_inc, quad_mask)
             kw ["delay_base_%d"        % no] = F (0x1F9 + iduo_inc, iduo_mask)
-
-            kw ["special_%d_output"    % no] = F (0x1D8 + duo_inc,  duo_mask)
-            kw ["special_%d_kind"      % no] = F (0x1ED + quad_inc, quad_mask)
-            kw ["special_%d_operator"  % no] = F (0x1EE + quad_inc, quad_mask)
+            if i < 4 :
+                kw ["special_%d_output"% no] = F (0x1D8 + duo_inc,  duo_mask)
+                kw ["special_%d_kind"  % no] = F (0x1ED + quad_inc, quad_mask)
+                kw ["special_%d_operator"  % no] = F (0x1EE + quad_inc, quad_mask)
     # end def _add_fields
 
     def _create_com_objects (self) :
@@ -117,11 +117,12 @@ if __name__ == "__main__" :
     j.output   [1].add_to_group ("1/0/30")
     j.output   [1].add_to_group ("1/0/31")
     j.feedback [0].group_address = "1/0/20"
-    if 1 :
+    if   0 :
         Telegrams ()
-    elif 1 :
+    elif 0 :
         j.test_code_init (sys.argv [1])
-    else :
+    elif 0 :
         j.bytes
         print (j.address_table.as_c_comment ())
+    print (Jung_2138.Description)
 ### __END__ Jung_2138
