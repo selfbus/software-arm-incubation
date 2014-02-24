@@ -28,7 +28,7 @@ LPC_GPIO_TypeDef   _LPC_GPIO3;
 
 
 // Flash emulation array
-unsigned char* FLASH[FLASH_SIZE];
+unsigned char FLASH[FLASH_SIZE];
 
 // System core clock
 uint32_t SystemCoreClock = 48000000;

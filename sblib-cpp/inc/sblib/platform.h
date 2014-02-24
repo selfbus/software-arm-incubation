@@ -37,9 +37,8 @@ extern LPC_GPIO_TypeDef (* const gpioPorts[4]);
 /**
  * The base address of the flash.
  */
-#ifndef FLASH_BASE_ADDRESS
 #define FLASH_BASE_ADDRESS ((unsigned char*) &__vectors_start__)
-#endif
+
 /**
 * The size of a flash sector in bytes.
 */
