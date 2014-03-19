@@ -101,52 +101,21 @@ void Bus::begin()
     sendCurTelegram = 0;
     sendNextTel = 0;
 
-    //LPC_SYSCON->SYSAHBCLKCTRL |= 1 << 8; // Enable the clock for the timer
     timer.begin();
 
-    //
-    // Init GPIOs for bus access
-    //
 
-    // Configure bus input
-    pinMode(rxPin, INPUT_CAPTURE);
-    //LPC_IOCON->PIO1_8 = 0x21;   // 0x21: Select timer1_16 CAP0, input, no pull-up/down, hysteresis
-                                // 0x29: Select timer1_16 CAP0, input, pull-down, hysteresis
-                                // 0x50: Select timer1_16 CAP0, input, pull-up, hysteresis
-                                // 0x0a: Select timer1_16 CAP0, input, pull-down, no hysteresis
-
-    // Configure bus output
-    pinMode(txPin, OUTPUT_MATCH);
-    //LPC_TMR16B1_MR_OUT = 0;     // Set bus-out match to 0 to have always 1
-//    LPC_TMR16B1->EMR = 0;       // Clear timer match for bus-out
-
-    //    LPC_TMR16B1->EMR = 0x82;  // Set output to 1 on match for bus-out
-//    LPC_IOCON_BUS_OUT = 0x90;   // Set pin to normal output
-//    LPC_GPIO[1]->DIR |= 0x400;  // Set bus-out pin to output
-//    LPC_TMR16B1->PWMC = 2;      // Enable PWM for bus-out
-    timer.pwmEnable(pwmChannel);
-
+    pinMode(rxPin, INPUT_CAPTURE);  // Configure bus input
+    pinMode(txPin, OUTPUT_MATCH);   // Configure bus output
     digitalWrite(txPin, 0);
 
-//    LPC_TMR16B1->CCR = 6;       // Capture CR0 on falling edge, with interrupt
+    timer.pwmEnable(pwmChannel);
     timer.captureMode(captureChannel, FALLING_EDGE | INTERRUPT);
-//    LPC_TMR16B1->MCR = 0;       // Do not handle timer matches
-//    LPC_TMR16B1->TCR = 1;       // Enable the timer
     timer.start();
-//    NVIC_EnableIRQ(TIMER_16_1_IRQn); // Enable the timer interrupt
     timer.interrupts();
-
-    //
-    // Calculate timer ticks
-    //
-
-    //LPC_TMR16B1->PR = SystemCoreClock / 1000000 - 1;
     timer.prescaler(TIMER_PRESCALER);
 
-//    LPC_TMR16B1->MR3 = 0xffff;
     timer.match(timeChannel, 0xfffe);
     timer.matchMode(timeChannel, RESET);
-//    LPC_TMR16B1->MCR = 0;    // Do not interrupt or reset timer on timeout (match of MR3)
     timer.match(pwmChannel, 0xffff);
 
     //
@@ -175,11 +144,8 @@ void Bus::begin()
 
 void Bus::idleState()
 {
-    //    LPC_TMR16B1->CCR = 6;     // Capture CR0 on falling edge, with interrupt
-        timer.captureMode(captureChannel, FALLING_EDGE | INTERRUPT);
+    timer.captureMode(captureChannel, FALLING_EDGE | INTERRUPT);
 
-//    LPC_TMR16B1->MR3 = 0xffff;
-//    LPC_TMR16B1->MCR = 0;     // Do not interrupt or reset timer on timeout (match of MR3)
     timer.matchMode(timeChannel, RESET);
     timer.match(timeChannel, 0xfffe);
     timer.match(pwmChannel, 0xffff);
@@ -188,9 +154,6 @@ void Bus::idleState()
     sendAck = 0;
 
 //    digitalWrite(txPin, 0); // Set bus-out pin to 0
-    //GPIOSetValue(BUS_OUT_PORT_PIN, 0);
-
-//    LPC_IOCON_BUS_OUT &= ~(LPC_IOCON_BUS_OUT | BUS_OUT_IOCON_PWM); // Disable bus-out output
 //    pinMode(txPin, INPUT);
 }
 
@@ -245,7 +208,6 @@ void Bus::handleTelegram(bool valid)
         sendAck = SB_BUS_NACK;
     }
 
-//    LPC_TMR16B1->MCR = 0x600;  // Interrupt and reset timer on timeout (match of MR3)
     timer.matchMode(timeChannel, INTERRUPT | RESET);
     state = Bus::SEND_INIT;    // might be changed by sb_idle() below
     debugLine = __LINE__;
@@ -253,13 +215,11 @@ void Bus::handleTelegram(bool valid)
     if (sendAck)
     {
         // Wait before sending the bus acknowledgement
-//        LPC_TMR16B1->MR3 = BIT_TIME * 11 + (BIT_TIME >> 1);
         timer.match(timeChannel, SEND_ACK_WAIT_TIME);
     }
     else if (sendCurTelegram)
     {
         // Wait at least 50 bit times before sending
-//        LPC_TMR16B1->MR3 = SEND_WAIT_TIME;
         timer.match(timeChannel, SEND_WAIT_TIME);
     }
     else idleState();
@@ -275,10 +235,10 @@ void Bus::timerInterruptHandler()
     D(digitalWrite(PIO0_6, ++tick & 1));  // brown: interrupt tick
     D(digitalWrite(PIO3_0, state==Bus::SEND_BIT_0)); // red
     D(digitalWrite(PIO3_1, 0));           // orange
-    D(digitalWrite(PIO3_2, 0));               // yellow: end of byte
-    D(digitalWrite(PIO3_3, 0));              // purple: end of telegram
-    D(digitalWrite(PIO2_8, 0));              //
-    D(digitalWrite(PIO2_9, 0));              //
+    D(digitalWrite(PIO3_2, 0));           // yellow: end of byte
+    D(digitalWrite(PIO3_3, 0));           // purple: end of telegram
+    D(digitalWrite(PIO2_8, 0));           //
+    D(digitalWrite(PIO2_9, 0));           //
 
 STATE_LOOP:
     switch (state)
@@ -299,15 +259,12 @@ STATE_LOOP:
             handleTelegram(valid && !checksum);
             break;
         }
-//        LPC_TMR16B1->MR3 = BYTE_TIME;
-        timer.match(timeChannel, BYTE_TIME);
-//        LPC_TMR16B1->TCR = 2;       // Reset the timer
-        timer.reset();
 
-//        LPC_TMR16B1->TCR = 1;       // Enable the timer
+        timer.match(timeChannel, BYTE_TIME);
+        timer.reset();
         timer.start();
-//        LPC_TMR16B1->MCR = 0x600;   // Interrupt and reset timer on timeout (match of MR3)
         timer.matchMode(timeChannel, INTERRUPT | RESET);
+
         state = Bus::RECV_BYTE;
         currentByte = 0;
         bitTime = 0;
@@ -336,8 +293,8 @@ STATE_LOOP:
 
         if (timer.flags() & CAPTURE_FLAG)  // Timer timeout: end of byte
         {
-//            D(digitalWrite(PIO3_2, 1));        // yellow: end of byte
-//            D(GPIOSetValue(3, 1, parity)); // orange: parity bit ok
+//            D(digitalWrite(PIO3_2, 1));     // yellow: end of byte
+//            D(digitalWrite(PIO3_1, parity));// orange: parity bit ok
 
             valid &= parity;
             if (nextByteIndex < SB_TELEGRAM_SIZE)
@@ -346,8 +303,7 @@ STATE_LOOP:
                 checksum ^= currentByte;
             }
 
-            state = Bus::RECV_START;            // wait for the next byte's start bit
-//            LPC_TMR16B1->MR3 = BIT_TIME << 2;  // timeout for waiting
+            state = Bus::RECV_START;   // wait for the next byte's start bit
             timer.match(timeChannel, BIT_TIME * 4);
         }
         break;
@@ -385,27 +341,17 @@ STATE_LOOP:
             ++sendTries;
         }
 
-//        LPC_TMR16B1_MR_OUT = BIT_WAIT_TIME;  // Set the output to 1 after the wait time
-//        LPC_TMR16B1->MR3 = BIT_TIME;   // Interrupt after bit time
-//        val = LPC_IOCON_BUS_OUT | BUS_OUT_IOCON_PWM;
-
-//        if (state != Bus::SEND_START) // do nothing if the bus is busy
-        D(digitalWrite(PIO3_2, 1));     // yellow: start of byte
-        if (!digitalRead(rxPin)) // do nothing if the bus is busy
+        D(digitalWrite(PIO3_2, 1)); // yellow: start of byte
+        if (!digitalRead(rxPin))    // do nothing if the bus is busy
         {
             state = IDLE;
             return;
         }
 
-//        LPC_TMR16B1->TC = BIT_WAIT_TIME;// Change the timer to have a 1 almost immediately
-        timer.match(pwmChannel, BIT_WAIT_TIME);
+        timer.match(pwmChannel, BIT_WAIT_TIME); // Change the timer to have a 1 almost immediately
         timer.value(BIT_WAIT_TIME);
-//        LPC_IOCON_BUS_OUT = val;        // Configure bus-out pin as PWM output
-//        pinMode(txPin, OUTPUT_MATCH);
         timer.match(timeChannel, BIT_TIME);
-//        LPC_TMR16B1->MCR = 0x600;       // Interrupt and reset timer on match of MR3
         timer.matchMode(timeChannel, INTERRUPT | RESET);
-//        LPC_TMR16B1->CCR = 2;           // Capture CR0 on falling edge, without interrupt
         timer.captureMode(captureChannel, FALLING_EDGE);
         D(digitalWrite(PIO3_2, 0));     // yellow: start of byte
         state = Bus::SEND_BIT_0;
@@ -428,7 +374,7 @@ STATE_LOOP:
         // no break here
 
     case Bus::SEND_BYTE:
-//        D(digitalWrite(PIO3_2, 1));    // yellow: send next bits
+        D(digitalWrite(PIO3_2, 1));    // yellow: send next bits
         rxTime = BIT_TIME;
         while ((currentByte & bitMask) && bitMask <= 0x100)
         {
@@ -448,14 +394,9 @@ STATE_LOOP:
             else
             {
                 state = Bus::SEND_END;
-//                LPC_IOCON_BUS_OUT &= ~(LPC_IOCON_BUS_OUT | BUS_OUT_IOCON_PWM); // Disable bus-out output
-//                pinMode(txPin, INPUT);
-//                timer.matchMode(timeChannel, INTERRUPT | RESET);
             }
         }
 
-//        LPC_TMR16B1->MR3 = rxTime;   // Reset and interrupt at the next 0 bit
-//        LPC_TMR16B1_MR_OUT = rxTime - (BIT_TIME - BIT_WAIT_TIME);
         timer.match(timeChannel, rxTime);
 
         if (state == Bus::SEND_END)
@@ -466,10 +407,7 @@ STATE_LOOP:
 
     case Bus::SEND_END:
         D(digitalWrite(PIO2_9, 1));
-//        LPC_TMR16B1->MR3 = SEND_WAIT_TIME;
         timer.match(timeChannel, SEND_WAIT_TIME);
-//        LPC_TMR16B1->MCR = 0x600;  // Interrupt and reset timer on timeout (match of MR3)
-//        LPC_TMR16B1->CCR = 6;      // Capture CR0 on falling edge, with interrupt
         timer.captureMode(captureChannel, FALLING_EDGE | INTERRUPT);
 
         sendAck = 0;
@@ -499,7 +437,6 @@ STATE_LOOP:
         break;
     }
 
-//    LPC_TMR16B1->IR = 0xff;
     timer.resetFlags();
 }
 
@@ -552,10 +489,6 @@ void Bus::sendTelegram(unsigned char* telegram, unsigned short length)
         sendTries = 0;
         state = SEND_INIT;
         debugLine = __LINE__;
-
-//        LPC_TMR16B1->MR3 = 100;
-//        LPC_TMR16B1->MCR = 0x600;  // Interrupt and reset timer on match of MR3
-//        LPC_TMR16B1->TC = 99;
 
         timer.match(timeChannel, 1);
         timer.matchMode(timeChannel, INTERRUPT | RESET);
