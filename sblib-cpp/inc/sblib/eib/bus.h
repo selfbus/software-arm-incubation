@@ -91,7 +91,7 @@ public:
      * @param captureChannel - the timer capture channel of rxPin, e.g. CAP0
      * @param matchChannel - the timer match channel of txPin, e.g. MAT0
      */
-    Bus(Timer& timer, int rxPin, int txPin, int captureChannel, int matchChannel);
+    Bus(Timer& timer, int rxPin, int txPin, TimerCapture captureChannel, TimerMatch matchChannel);
 
     /**
      * Begin using the bus.
@@ -157,9 +157,10 @@ public:
         RECV_BYTE,           //!< The lib is receiving a byte.
         RECV_START,          //!< The lib is waiting for the start bit of the next byte.
         SEND_INIT,           //!< Start sending the telegram in sbSendTelegram[].
-        SEND_START,          //!< Start sending the next byte of a telegram
+        SEND_START_BIT,      //!< Send a start bit
         SEND_BIT_0,          //!< Send the first bit of the current byte
-        SEND_BYTE,           //!< Send the bits of the current byte
+        SEND_BIT,            //!< Send the bits of the current byte
+        SEND_BIT_WAIT,       //!< Wait for receiving a 0 bit.
         SEND_WAIT,           //!< Wait between two transmissions
         SEND_END             //!< Finish sending
     };
@@ -206,26 +207,29 @@ private:
 
 protected:
     friend class BCU;
-    Timer& timer;            //!< The timer
-    int rxPin, txPin;        //!< The pins for bus receiving and sending
-    int captureChannel, pwmChannel, timeChannel;
-    int ownAddr;             //!< Our own physical address on the bus
-    int sendAck;             //!< Send an acknowledge or not-acknowledge byte if != 0
+    Timer& timer;                //!< The timer
+    int rxPin, txPin;            //!< The pins for bus receiving and sending
+    TimerCapture captureChannel; //!< The timer channel that captures the timer value on the bus-in pin
+    TimerMatch pwmChannel;       //!< The timer channel for PWM for sending
+    TimerMatch timeChannel;      //!< The timer channel for timeouts
+    int ownAddr;                 //!< Our own physical address on the bus
+    int sendAck;                 //!< Send an acknowledge or not-acknowledge byte if != 0
 
 private:
-    State state;             //!< The state of the lib's telegram sending/receiving
-    int sendTries;           //!< The number of repeats when sending a telegram
-    int nextByteIndex;       //!< The number of the next byte in the telegram
+    State state;                 //!< The state of the lib's telegram sending/receiving
+    int sendTries;               //!< The number of repeats when sending a telegram
+    int nextByteIndex;           //!< The number of the next byte in the telegram
 
-    int currentByte;         //!< The current byte that is received/sent, including the parity bit
-    int sendTelegramLen;     //!< The size of the to be sent telegram in bytes (including the checksum).
-    byte *sendCurTelegram;   //!< The telegram that is currently being sent.
-    byte *sendNextTel;       //!< The telegram to be sent after sbSendTelegram is done.
+    int currentByte;             //!< The current byte that is received/sent, including the parity bit
+    int sendTelegramLen;         //!< The size of the to be sent telegram in bytes (including the checksum).
+    byte *sendCurTelegram;       //!< The telegram that is currently being sent.
+    byte *sendNextTel;           //!< The telegram to be sent after sbSendTelegram is done.
     int bitMask;
-    int bitTime; // the bit-time within a byte when receiving
-    int parity;   // parity bit of the current byte
-    int valid;    // 1 if parity is valid for all bits of the telegram
-    int checksum; // checksum of the telegram: 0 if valid at end of telegram
+    int bitTime;                 // The bit-time within a byte when receiving
+    int parity;                  // Parity bit of the current byte
+    int valid;                   // 1 if parity is valid for all bits of the telegram
+    int checksum;                // Checksum of the telegram: 0 if valid at end of telegram
+    bool collision;              // A collision occurred
 };
 
 

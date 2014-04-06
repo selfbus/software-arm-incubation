@@ -21,11 +21,6 @@ typedef unsigned char byte;
 typedef unsigned short word;
 
 /**
- * A boolean value that only uses 1 byte.
- */
-typedef unsigned char boolean;
-
-/**
  * Bit order
  */
 enum BitOrder
@@ -91,6 +86,105 @@ enum PinConfigMode
      */
     FALLING_EDGE = 0x80
 };
+
+/**
+ * IDs of the timers.
+ */
+enum TimerID
+{
+    /**
+     * ID of the 16 bit timer #0
+     */
+    TIMER16_0,
+
+    /**
+     * ID of the 16 bit timer #1
+     */
+    TIMER16_1,
+
+    /**
+     * ID of the 32 bit timer #0
+     */
+    TIMER32_0,
+
+    /**
+     * ID of the 32 bit timer #1
+     */
+    TIMER32_1
+
+};
+
+
+/**
+ * IDs of the timer match channels.
+ */
+enum TimerMatch
+{
+    /**
+     * ID of the timer match channel #0
+     */
+    MAT0,
+
+    /**
+     * ID of the timer match channel #1
+     */
+    MAT1,
+
+    /**
+     * ID of the timer match channel #2
+     */
+    MAT2,
+
+    /**
+     * ID of the timer match channel #3
+     */
+    MAT3
+};
+
+
+/**
+ * IDs of the timer capture channels.
+ */
+enum TimerCapture
+{
+    /**
+     * ID of the timer capture channel #0
+     */
+    CAP0,
+
+    /**
+     * ID of the timer capture channel #1
+     */
+    CAP1
+};
+
+
+/**
+ * IDs of the timer PWM channels.
+ */
+enum TimerPWM
+{
+    /**
+     * ID of the timer PWM channel #0.
+     */
+    PWM0,
+
+    /**
+     * ID of the timer PWM channel #1.
+     */
+    PWM1,
+
+    /**
+     * ID of the timer PWM channel #2.
+     */
+    PWM2,
+
+    /**
+     * ID of the timer PWM channel #3.
+     */
+    PWM3
+};
+
 
 /**
  * Declare a function as always inline

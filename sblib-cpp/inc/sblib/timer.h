@@ -147,6 +147,12 @@ public:
     void stop();
 
     /**
+     * Restart the timer. This is the same as calling reset() and start().
+     * If the timer was not previously running, it is started.
+     */
+    void restart();
+
+    /**
      * Rest the timer.
      */
     void reset();
@@ -191,6 +197,8 @@ public:
      * 5 - interrupt flag for capture channel CAP1
      *
      * @see resetFlags()
+     * @see flagSet(TimerMatch)
+     * @see flagSet(TimerCapture)
      */
     int flags() const;
 
@@ -198,6 +206,38 @@ public:
      * Reset the interrupt flags of the timer.
      */
     void resetFlags();
+
+    /**
+     * Test if the timer flag of a match channel is set.
+     *
+     * @param match - the match channel: MAT0, MAT1, MAT2, MAT3.
+     * @return True if the flag is set, false if it is not set.
+     */
+    bool flag(TimerMatch match) const;
+
+    /**
+     * Test if the timer flag of a capture channel is set.
+     *
+     * @param cap - the capture channel: CAP0, CAP1.
+     * @return True if the flag is set, false if it is not set.
+     */
+    bool flag(TimerCapture cap) const;
+
+    /**
+     * Get the timer flag mask for flags() for a match channel.
+     *
+     * @param match - the match channel: MAT0, MAT1, MAT2, MAT3.
+     * @return The timer flag mask.
+     */
+    static int flagMask(TimerMatch match);
+
+    /**
+     * Get the timer flag mask for flags() for a capture channel.
+     *
+     * @param cap - the capture channel: CAP0, CAP1.
+     * @return The timer flag mask.
+     */
+    static int flagMask(TimerCapture cap);
 
     /**
      * Configure a match channel.
@@ -341,105 +381,6 @@ protected:
 };
 
 
-/**
- * IDs of the timers.
- */
-enum TimerID
-{
-    /**
-     * ID of the 16 bit timer #0
-     */
-    TIMER16_0,
-
-    /**
-     * ID of the 16 bit timer #1
-     */
-    TIMER16_1,
-
-    /**
-     * ID of the 32 bit timer #0
-     */
-    TIMER32_0,
-
-    /**
-     * ID of the 32 bit timer #1
-     */
-    TIMER32_1
-
-};
-
-
-/**
- * IDs of the timer match channels.
- */
-enum TimerMatch
-{
-    /**
-     * ID of the timer match channel #0
-     */
-    MAT0,
-
-    /**
-     * ID of the timer match channel #1
-     */
-    MAT1,
-
-    /**
-     * ID of the timer match channel #2
-     */
-    MAT2,
-
-    /**
-     * ID of the timer match channel #3
-     */
-    MAT3
-};
-
-
-/**
- * IDs of the timer capture channels.
- */
-enum TimerCapture
-{
-    /**
-     * ID of the timer capture channel #0
-     */
-    CAP0,
-
-    /**
-     * ID of the timer capture channel #1
-     */
-    CAP1
-};
-
-
-/**
- * IDs of the timer PWM channels.
- */
-enum TimerPWM
-{
-    /**
-     * ID of the timer PWM channel #0.
-     */
-    PWM0,
-
-    /**
-     * ID of the timer PWM channel #1.
-     */
-    PWM1,
-
-    /**
-     * ID of the timer PWM channel #2.
-     */
-    PWM2,
-
-    /**
-     * ID of the timer PWM channel #3.
-     */
-    PWM3
-};
-
-
 //
 // Inline functions
 //
@@ -469,18 +410,24 @@ ALWAYS_INLINE unsigned int Timer::prescaler() const
 
 ALWAYS_INLINE void Timer::start()
 {
-    timer->TCR = 1;
+    timer->TCR |= 1;
 }
 
 ALWAYS_INLINE void Timer::stop()
 {
-    timer->TCR = 0;
+    timer->TCR &= ~1;
+}
+
+ALWAYS_INLINE void Timer::restart()
+{
+    timer->TCR = 2;
+    timer->TCR = 1;
 }
 
 ALWAYS_INLINE void Timer::reset()
 {
     timer->TCR |= 2;
-    timer->TCR &= 2;
+    timer->TCR &= ~2;
 }
 
 ALWAYS_INLINE unsigned int Timer::value() const
@@ -503,9 +450,29 @@ ALWAYS_INLINE void Timer::resetFlags()
     timer->IR = 0xff;
 }
 
+ALWAYS_INLINE bool Timer::flag(TimerMatch match) const
+{
+    return timer->IR & (1 << match);
+}
+
+ALWAYS_INLINE bool Timer::flag(TimerCapture capture) const
+{
+    return timer->IR & (16 << capture);
+}
+
+ALWAYS_INLINE int Timer::flagMask(TimerMatch match)
+{
+    return 1 << match;
+}
+
+ALWAYS_INLINE int Timer::flagMask(TimerCapture capture)
+{
+    return 16 << capture;
+}
+
 ALWAYS_INLINE unsigned int Timer::match(int channel) const
 {
-    return *(&(timer->MR0) + channel);
+    return (&timer->MR0)[channel];
 }
 
 ALWAYS_INLINE void Timer::match(int channel, unsigned int value)
@@ -515,7 +482,7 @@ ALWAYS_INLINE void Timer::match(int channel, unsigned int value)
 
 ALWAYS_INLINE unsigned int Timer::capture(int channel) const
 {
-    return *(&(timer->CR0) + channel);
+    return (&timer->CR0)[channel];
 }
 
 ALWAYS_INLINE void Timer::pwmEnable(int channel)
