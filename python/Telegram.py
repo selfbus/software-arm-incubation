@@ -340,17 +340,6 @@ class _Telegram_ (_Object_, metaclass = M_Sub_Type) :
         return result [:size] + bytes ((csum, ))
     # end def bytes
 
-    def test_case_entry (self, variable = 0, stepFunction = "NULL") :
-        bytes  = ["0x%02X" % b for b in self.bytes [:-1]]
-        result = [ "%-15s" % "TEL_RX"
-                 , "%d" % len (bytes)
-                 , "%2d" % (variable, )
-                 , "(StepFunction *) %-17s" % stepFunction
-                 , "{%s}" % (", ".join (bytes))
-                 ]
-        return ", {%s}" % (", ".join (result), )
-    # end def test_case_entry
-
     def __str__ (self) :
         result = []
         for f in self.__class__.sorted_fields :

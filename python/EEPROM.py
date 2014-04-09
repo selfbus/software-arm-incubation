@@ -105,20 +105,23 @@ class _M_EEPROM_ (M_Object) :
     # end def __init__
 
     def Update (cls, kw) :
-        fields   = cls._fields
-        Defaults = cls.Defaults
+        fields     = cls._fields
+        field_dict = dict ((f.name, f) for f in fields)
+        Defaults   = cls.Defaults
         cls._add_fields (kw)
         for n, v in kw.items () :
             if isinstance (v, Field) :
                 fields.append (v)
                 v.set_name    (n)
-                Defaults [n] = v.default
+                field_dict [n] = v
+                Defaults   [n] = v.default
                 setattr (cls, n, v)
             else :
-                f = getattr (cls, n, None)
+                f = field_dict.get (n)
                 if isinstance (f, Field) :
                     ### change the default for this field for this class
                     Defaults [n] = v
+                    delattr (cls, n)
         fields.sort (key     = lambda f : (f.offset, f.shift))
     # end def Update
 
@@ -187,7 +190,7 @@ class EEPROM (_Object_, metaclass = _M_EEPROM_) :
         self.address_table.own = value
     # end def own_address
 
-    def test_code_init (self, file_name = None, limit = None) :
+    def test_code_init (self, file_name = None, limit = None, file = None) :
         result = [ "    // >>> EEPROM INIT"
                  , "    // Date: %s" % (datetime.datetime.now (), )
                  ]
@@ -200,7 +203,11 @@ class EEPROM (_Object_, metaclass = _M_EEPROM_) :
         result.append ("    // <<< EEPROM INIT")
         result = "\n".join (result)
         if not file_name :
-            print (result)
+            if not file :
+                print (result)
+            else :
+                file.write (result)
+                file.write ("\n")
         else :
             with open (file_name, "r") as f :
                 old = f.read ()

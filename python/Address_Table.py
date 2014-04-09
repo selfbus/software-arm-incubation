@@ -116,7 +116,7 @@ class Address_Table (_Table_) :
             result = self.addresses [result]
             result.ref_count -= 1
             if result.ref_count <= 0:
-                del self.address [result]
+                del self.addresses [result]
     # end def remove
 
     @property
