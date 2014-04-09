@@ -87,15 +87,15 @@ static void _output12Clear(Out8TestState * refState)
     refState->outputs &= ~0x03;
 }
 
-#if 0
+#if 1
 // >>> TC:simple
-// Date: 2014-02-24 23:05:44.407257
+// Date: 2014-04-09 15:54:40.349253
 
 /* Code for test case simple */
 static void simple_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-02-24 23:05:44.407257
+    // Date: 2014-04-09 15:54:40.349253
     // Assoc Table (0x15D):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x15E
     //    2 ( 1/0/30) <->  0 (output 1            ) @ 0x160
@@ -433,15 +433,15 @@ TEST_CASE("OUT8 - Test 1","[APP][OUT8][SIMPLE]")
 // <<< TC:simple
 #endif
 
-#if 0
+#if 1
 // >>> TC:simple_timeout
-// Date: 2014-02-24 23:05:44.447257
+// Date: 2014-04-09 15:54:40.371253
 
 /* Code for test case simple_timeout */
 static void simple_timeout_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-02-24 23:05:44.447257
+    // Date: 2014-04-09 15:54:40.371253
     // Assoc Table (0x15F):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x160
     //    2 ( 1/0/21) <-> 13 (feedback 2          ) @ 0x162
@@ -813,15 +813,15 @@ TEST_CASE("OUT8 - Timeout Test 1","[APP][OUT8][DELAY]")
 // <<< TC:simple_timeout
 #endif
 
-#if 0
+#if 1
 // >>> TC:timed_function
-// Date: 2014-02-24 23:05:44.477257
+// Date: 2014-04-09 15:54:40.388253
 
 /* Code for test case timed_function */
 static void timed_function_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-02-24 23:05:44.477257
+    // Date: 2014-04-09 15:54:40.388253
     // Assoc Table (0x15F):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x160
     //    2 ( 1/0/21) <-> 13 (feedback 2          ) @ 0x162
@@ -1213,13 +1213,13 @@ TEST_CASE("OUT8 - Timed Test 1","[APP][OUT8][TIMED]")
 
 #if 1
 // >>> TC:simple_i
-// Date: 2014-02-24 23:05:44.497257
+// Date: 2014-04-09 15:54:40.399253
 
 /* Code for test case simple_i */
 static void simple_i_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-02-24 23:05:44.497257
+    // Date: 2014-04-09 15:54:40.399253
     // Assoc Table (0x15F):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x160
     //    2 ( 1/0/21) <-> 13 (feedback 2          ) @ 0x162

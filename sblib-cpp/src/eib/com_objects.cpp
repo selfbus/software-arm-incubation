@@ -152,15 +152,16 @@ void sendGroupTelegram(int objno, int addr, bool isResponse)
     bus.sendTelegram(bcu.sendTelegram, 8 + sz);
 }
 
+int sndStartIdx = 0;
+
 void sendNextGroupTelegram()
 {
-    static int startIdx = 0;
 
     const ComConfig* configTab = &objectConfig(0);
     byte* flagsTab = objectFlagsTable();
     int flags, objno, numObjs = objectCount();
 
-    for (objno = startIdx; objno < numObjs; ++objno)
+    for (objno = sndStartIdx; objno < numObjs; ++objno)
     {
         flags = flagsTab[objno >> 1];
         if (objno & 1) flags >>= 4;
@@ -176,13 +177,13 @@ void sendNextGroupTelegram()
             if (addr)
             {
                 sendGroupTelegram(objno, addr, flags & COMFLAG_DATAREQ);
-                startIdx = objno + 1;
+                sndStartIdx = objno + 1;
                 return;
             }
         }
     }
 
-    startIdx = 0;
+    sndStartIdx = 0;
 }
 
 int nextUpdatedObject()
