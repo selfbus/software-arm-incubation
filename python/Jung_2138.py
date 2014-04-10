@@ -82,7 +82,7 @@ class Jung_2138 (EEPROM.BCU1) :
             if i < 4 :
                 kw ["special_%d_output"% no] = F (0x1D8 + duo_inc,  duo_mask)
                 kw ["special_%d_kind"  % no] = F (0x1ED + quad_inc, quad_mask)
-                kw ["special_%d_operator"  % no] = F (0x1EE + quad_inc, quad_mask)
+                kw ["special_%d_operator"% no] = F (0x1EE + quad_inc, quad_mask)
     # end def _add_fields
 
     def _create_com_objects (self) :
@@ -572,15 +572,184 @@ def Timed_Functions (file_name) :
     tc.create_code (file_name)
 # end def Timed_Functions
 
+def Special_Function_1 (file_name) :
+    j = Jung_2138 \
+        ( special_1_output    = 1 ## channel 0
+        , special_1_kind      = 0 ## logic
+        , special_1_operator  = 1 ## or
+
+        , special_2_output    = 2 ## channel 1
+        , special_2_kind      = 0 ## logic
+        , special_2_operator  = 2 ## and
+
+        , special_3_output    = 3 ## channel 2
+        , special_3_kind      = 0 ## logic
+        , special_3_operator  = 3 ## and with feedback
+
+        , special_4_output    = 4 ## channel 3
+        , special_4_kind      = 2 ## forced output
+        )
+    j.own_address = "1.1.1"
+    j.output   [0].add_to_group ("1/0/30")
+    j.output   [1].add_to_group ("1/0/31")
+    j.output   [2].add_to_group ("1/0/32")
+    j.output   [3].add_to_group ("1/0/33")
+    j.special  [0].add_to_group ("1/0/40")
+    j.special  [1].add_to_group ("1/0/41")
+    j.special  [2].add_to_group ("1/0/42")
+    j.special  [3].add_to_group ("1/0/43")
+    TCE = Test_Case.Test_Case_Entry
+    tc  = Test_Case.Test_Case \
+        ( "special_1"
+        , description = "OUT8 - Special Function 1"
+        , eeprom      = j
+        , setup       = "initApplication"
+        , state       = "_gatherState"
+        , tags        = ("APP", "OUT8", "SEPCIAL")
+        )
+    SV      = Telegram.Send_Value
+    c0_on   = SV (src = "0.0.1", dst = "1/0/30", value = 1, length = 1)
+    c1_on   = SV (src = "0.0.1", dst = "1/0/31", value = 1, length = 1)
+    c2_on   = SV (src = "0.0.1", dst = "1/0/32", value = 1, length = 1)
+    c3_on   = SV (src = "0.0.1", dst = "1/0/33", value = 1, length = 1)
+    c0_off  = SV (src = "0.0.1", dst = "1/0/30", value = 0, length = 1)
+    c1_off  = SV (src = "0.0.1", dst = "1/0/31", value = 0, length = 1)
+    c2_off  = SV (src = "0.0.1", dst = "1/0/32", value = 0, length = 1)
+    c3_off  = SV (src = "0.0.1", dst = "1/0/33", value = 0, length = 1)
+    s0_on   = SV (src = "0.0.1", dst = "1/0/40", value = 1, length = 1)
+    s1_on   = SV (src = "0.0.1", dst = "1/0/41", value = 1, length = 1)
+    s2_on   = SV (src = "0.0.1", dst = "1/0/42", value = 1, length = 1)
+    s3_on   = SV (src = "0.0.1", dst = "1/0/43", value = 1, length = 1)
+    s0_off  = SV (src = "0.0.1", dst = "1/0/40", value = 0, length = 1)
+    s1_off  = SV (src = "0.0.1", dst = "1/0/41", value = 0, length = 1)
+    s2_off  = SV (src = "0.0.1", dst = "1/0/42", value = 0, length = 1)
+    s3_off  = SV (src = "0.0.1", dst = "1/0/43", value = 0, length = 1)
+    tc.add \
+        ( TCE ("TIMER_TICK", length = 1, step = "_loop")
+        , TCE ( "TIMER_TICK", length = 20, step = "_enablePWM"
+              , comment = "After the power up the PWM will be enabled"
+              )
+        )
+    ### test OR
+    if 0 :
+     tc.add \
+        ( TCE ( "TEL_RX", telegram = c0_on
+              , comment = 'receive a "ON" telegram for output 1'
+              , new_line = True
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_output1Set"
+              , comment = "process the received telegram"
+              )
+        , TCE ( "TEL_RX", telegram = c0_off
+              , comment = 'receive a "OFF" telegram for output 1'
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_output1Clear"
+              , comment = "process the received telegram"
+              )
+
+        , TCE ( "TEL_RX", telegram = s0_on
+              , comment = 'receive a "ON" telegram for special 1'
+              , new_line = True
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_output1Set"
+              , comment = "process the received telegram"
+              )
+        , TCE ( "TEL_RX", telegram = s0_off
+              , comment = 'receive a "FF" telegram for special 1'
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_output1Clear"
+              , comment = "process the received telegram"
+              )
+
+        , TCE ( "TEL_RX", telegram = c0_on
+              , comment = 'receive a "ON" telegram for output 1'
+              , new_line = True
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_output1Set"
+              , comment = "process the received telegram"
+              )
+        , TCE ( "TEL_RX", telegram = s0_on
+              , comment = 'receive a "ON" telegram for special 1'
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_loop"
+              , comment = "process the received telegram"
+              )
+        , TCE ( "TEL_RX", telegram = c0_off
+              , comment = 'receive a "OFF" telegram for output 1'
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_loop"
+              , comment = "process the received telegram"
+              )
+        , TCE ( "TEL_RX", telegram = s0_off
+              , comment = 'receive a "FF" telegram for special 1'
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_output1Clear"
+              , comment = "process the received telegram"
+              )
+        )
+    ### test AND
+    if 0 :
+     tc.add \
+        ( TCE ( "TEL_RX", telegram = c1_on
+              , comment = 'receive a "ON" telegram for output 2'
+              , new_line = True
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_loop"
+              , comment = "process the received telegram"
+              )
+        , TCE ( "TEL_RX", telegram = s1_on
+              , comment = 'receive a "ON" telegram for special 2'
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_output2Set"
+              , comment = "process the received telegram"
+              )
+        , TCE ( "TEL_RX", telegram = s1_off
+              , comment = 'receive a "OFF" telegram for special 2'
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_output2Clear"
+              , comment = "process the received telegram"
+              )
+        , TCE ( "TEL_RX", telegram = s1_on
+              , comment = 'receive a "ON" telegram for special 2'
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_output2Set"
+              , comment = "process the received telegram"
+              )
+        , TCE ( "TEL_RX", telegram = c1_off
+              , comment = 'receive a "OFF" telegram for output 2'
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_output2Clear"
+              , comment = "process the received telegram"
+              )
+        , TCE ( "TEL_RX", telegram = s1_off
+              , comment = 'receive a "OFF" telegram for special 2'
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_loop"
+              , comment = "process the received telegram"
+              )
+        )
+     ### test forced follow
+     tc.add \
+        ( TCE ( "TEL_RX", telegram = c1_on
+              , comment = 'receive a "ON" telegram for output 2'
+              , new_line = True
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_loop"
+              , comment = "process the received telegram"
+              )
+    tc.create_code (file_name)
+# end def Special_Function_1
+
 if __name__ == "__main__" :
     import sys
     file_name = None
     if len (sys.argv) > 1 :
         file_name = sys.argv [1]
-    Simple          (file_name)
-    Simple_Timeouts (file_name)
-    Timed_Functions (file_name)
-    Simple_Inverted (file_name)
+    Simple              (file_name)
+    Simple_Timeouts     (file_name)
+    Timed_Functions     (file_name)
+    Simple_Inverted     (file_name)
+    Special_Function_1  (file_name)
     if 0 :
         j = Jung_2138 ()
         j.own_address = "1.1.1"
