@@ -756,8 +756,17 @@ def Special_Function_1 (file_name) :
         , TCE ("TIMER_TICK", length = 1, step = "_output3Clear"
               , comment = "process the received telegram"
               )
+       , TCE ("TIMER_TICK", length = 1, step = "_loop"
+             , comment = "process the changed object state of output 3"
+             )
         , TCE ( "TEL_RX", telegram = s2_on
               , comment = 'receive a "ON" telegram for special 3'
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_loop"
+              , comment = "process the received telegram"
+              )
+        , TCE ( "TEL_RX", telegram = c2_on
+              , comment = 'receive a "ON" telegram for output 3'
               )
         , TCE ("TIMER_TICK", length = 1, step = "_output3Set"
               , comment = "process the received telegram"

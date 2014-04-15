@@ -79,6 +79,14 @@ void objectWrite(int objno, float value);
 void objectWrite(int objno, byte* value);
 
 /**
+ * XXX
+ *
+ * @param objno - the ID of the communication object.
+ * @param value - the new value of the communication object.
+ */
+void objectUpdate(int objno, unsigned int value);
+
+/**
  * Mark a communication object as written. Use this function if you directly change
  * the value of a communication object without using objectWrite(). Calling this
  * function triggers the sending of a write-group-value telegram.

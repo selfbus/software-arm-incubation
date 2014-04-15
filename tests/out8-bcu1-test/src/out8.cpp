@@ -113,13 +113,13 @@ static void _output12Clear(Out8TestState * refState)
 
 #if 0
 // >>> TC:simple
-// Date: 2014-04-15 18:44:44.841592
+// Date: 2014-04-15 22:00:04.762061
 
 /* Code for test case simple */
 static void simple_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 18:44:44.841592
+    // Date: 2014-04-15 22:00:04.762061
     // Assoc Table (0x15D):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x15E
     //    2 ( 1/0/30) <->  0 (output 1            ) @ 0x160
@@ -459,13 +459,13 @@ TEST_CASE("OUT8 - Test 1","[APP][OUT8][SIMPLE]")
 
 #if 0
 // >>> TC:simple_timeout
-// Date: 2014-04-15 18:44:44.874592
+// Date: 2014-04-15 22:00:04.808861
 
 /* Code for test case simple_timeout */
 static void simple_timeout_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 18:44:44.874592
+    // Date: 2014-04-15 22:00:04.808861
     // Assoc Table (0x15F):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x160
     //    2 ( 1/0/21) <-> 13 (feedback 2          ) @ 0x162
@@ -839,13 +839,13 @@ TEST_CASE("OUT8 - Timeout Test 1","[APP][OUT8][DELAY]")
 
 #if 0
 // >>> TC:timed_function
-// Date: 2014-04-15 18:44:44.897592
+// Date: 2014-04-15 22:00:04.840061
 
 /* Code for test case timed_function */
 static void timed_function_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 18:44:44.898592
+    // Date: 2014-04-15 22:00:04.840061
     // Assoc Table (0x15F):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x160
     //    2 ( 1/0/21) <-> 13 (feedback 2          ) @ 0x162
@@ -1237,13 +1237,13 @@ TEST_CASE("OUT8 - Timed Test 1","[APP][OUT8][TIMED]")
 
 #if 0
 // >>> TC:simple_i
-// Date: 2014-04-15 18:44:44.913592
+// Date: 2014-04-15 22:00:04.871261
 
 /* Code for test case simple_i */
 static void simple_i_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 18:44:44.913592
+    // Date: 2014-04-15 22:00:04.871261
     // Assoc Table (0x15F):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x160
     //    2 ( 1/0/21) <-> 13 (feedback 2          ) @ 0x162
@@ -1598,13 +1598,13 @@ TEST_CASE("OUT8 - Test Inverted","[APP][OUT8][SIMPLE_I]")
 
 #if 1
 // >>> TC:special_1
-// Date: 2014-04-15 18:44:44.925592
+// Date: 2014-04-15 22:00:04.886861
 
 /* Code for test case special_1 */
 static void special_1_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 18:44:44.925592
+    // Date: 2014-04-15 22:00:04.886861
     // Assoc Table (0x167):
     //    1 ( 1/0/30) <->  0 (output 1            ) @ 0x168
     //    2 ( 1/0/31) <->  1 (output 2            ) @ 0x16A
@@ -1923,10 +1923,16 @@ static Telegram tel_special_1[] =
 , {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2A, 0xE1, 0x00, 0x80}} //   7
   // process the received telegram
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _output3Clear       , {}} //   8
+  // process the changed object state of output 3
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //   9
   // receive a "ON" telegram for special 3
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2A, 0xE1, 0x00, 0x81}} //   9
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2A, 0xE1, 0x00, 0x81}} //  10
   // process the received telegram
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _output3Set         , {}} //  10
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  11
+  // receive a "ON" telegram for output 3
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x20, 0xE1, 0x00, 0x81}} //  12
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output3Set         , {}} //  13
 , {END}
 };
 static Test_Case special_1_tc = 
