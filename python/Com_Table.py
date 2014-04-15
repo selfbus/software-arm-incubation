@@ -100,7 +100,7 @@ class Com_Object (_Object_, metaclass = _M_Com_Object_) :
     VARDATA = 15, 15
 
     Defaults = dict \
-       ( transmit     = True
+       ( transmit     = False
        , value_in_eep = False
        , write        = True
        , read         = True
@@ -179,7 +179,7 @@ for code in ( "UINT1", "UINT2", "UINT3", "UINT4"
         , dict (Size = getattr (Com_Object, code))
         )
     setattr (sys.modules [__name__], cls.__name__, cls)
-    for prefix, Defaults in ( ("RO", dict (write = False))
+    for prefix, Defaults in ( ("RO", dict (write = False, transmit = True))
                             , ("WO", dict (read  = False))
                             ) :
         mcls = Com_Object.__class__ \

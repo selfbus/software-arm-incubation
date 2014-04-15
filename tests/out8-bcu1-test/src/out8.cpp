@@ -113,13 +113,13 @@ static void _output12Clear(Out8TestState * refState)
 
 #if 0
 // >>> TC:simple
-// Date: 2014-04-15 17:47:49.713592
+// Date: 2014-04-15 18:44:44.841592
 
 /* Code for test case simple */
 static void simple_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 17:47:49.713592
+    // Date: 2014-04-15 18:44:44.841592
     // Assoc Table (0x15D):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x15E
     //    2 ( 1/0/30) <->  0 (output 1            ) @ 0x160
@@ -131,18 +131,18 @@ static void simple_eepromSetup(void)
     //   ( 2)  1/0/30 @ 0x11B
     //   ( 3)  1/0/31 @ 0x11D
     // Com Object table (0x11F):
-    //   ( 0) output 1             <6B, 57, 00> @ 0x121
-    //   ( 1) output 2             <6C, 57, 00> @ 0x124
-    //   ( 2) output 3             <6D, 57, 00> @ 0x127
-    //   ( 3) output 4             <6E, 57, 00> @ 0x12A
-    //   ( 4) output 5             <6F, 57, 00> @ 0x12D
-    //   ( 5) output 6             <70, 57, 00> @ 0x130
-    //   ( 6) output 7             <71, 57, 00> @ 0x133
-    //   ( 7) output 8             <72, 57, 00> @ 0x136
-    //   ( 8) special 1            <73, 5F, 00> @ 0x139
-    //   ( 9) special 2            <74, 5F, 00> @ 0x13C
-    //   (10) special 3            <75, 5F, 00> @ 0x13F
-    //   (11) special 4            <76, 5F, 00> @ 0x142
+    //   ( 0) output 1             <6B, 17, 00> @ 0x121
+    //   ( 1) output 2             <6C, 17, 00> @ 0x124
+    //   ( 2) output 3             <6D, 17, 00> @ 0x127
+    //   ( 3) output 4             <6E, 17, 00> @ 0x12A
+    //   ( 4) output 5             <6F, 17, 00> @ 0x12D
+    //   ( 5) output 6             <70, 17, 00> @ 0x130
+    //   ( 6) output 7             <71, 17, 00> @ 0x133
+    //   ( 7) output 8             <72, 17, 00> @ 0x136
+    //   ( 8) special 1            <73, 1F, 01> @ 0x139
+    //   ( 9) special 2            <74, 1F, 01> @ 0x13C
+    //   (10) special 3            <75, 1F, 01> @ 0x13F
+    //   (11) special 4            <76, 1F, 01> @ 0x142
     //   (12) feedback 1           <77, 4F, 00> @ 0x145
     //   (13) feedback 2           <78, 4F, 00> @ 0x148
     //   (14) feedback 3           <79, 4F, 00> @ 0x14B
@@ -185,41 +185,41 @@ static void simple_eepromSetup(void)
     userEeprom[0x11F] = 0x14;
     userEeprom[0x120] = 0x61;
     userEeprom[0x121] = 0x6B;
-    userEeprom[0x122] = 0x57;
+    userEeprom[0x122] = 0x17;
     userEeprom[0x123] = 0x00;
     userEeprom[0x124] = 0x6C;
-    userEeprom[0x125] = 0x57;
+    userEeprom[0x125] = 0x17;
     userEeprom[0x126] = 0x00;
     userEeprom[0x127] = 0x6D;
-    userEeprom[0x128] = 0x57;
+    userEeprom[0x128] = 0x17;
     userEeprom[0x129] = 0x00;
     userEeprom[0x12A] = 0x6E;
-    userEeprom[0x12B] = 0x57;
+    userEeprom[0x12B] = 0x17;
     userEeprom[0x12C] = 0x00;
     userEeprom[0x12D] = 0x6F;
-    userEeprom[0x12E] = 0x57;
+    userEeprom[0x12E] = 0x17;
     userEeprom[0x12F] = 0x00;
     userEeprom[0x130] = 0x70;
-    userEeprom[0x131] = 0x57;
+    userEeprom[0x131] = 0x17;
     userEeprom[0x132] = 0x00;
     userEeprom[0x133] = 0x71;
-    userEeprom[0x134] = 0x57;
+    userEeprom[0x134] = 0x17;
     userEeprom[0x135] = 0x00;
     userEeprom[0x136] = 0x72;
-    userEeprom[0x137] = 0x57;
+    userEeprom[0x137] = 0x17;
     userEeprom[0x138] = 0x00;
     userEeprom[0x139] = 0x73;
-    userEeprom[0x13A] = 0x5F;
-    userEeprom[0x13B] = 0x00;
+    userEeprom[0x13A] = 0x1F;
+    userEeprom[0x13B] = 0x01;
     userEeprom[0x13C] = 0x74;
-    userEeprom[0x13D] = 0x5F;
-    userEeprom[0x13E] = 0x00;
+    userEeprom[0x13D] = 0x1F;
+    userEeprom[0x13E] = 0x01;
     userEeprom[0x13F] = 0x75;
-    userEeprom[0x140] = 0x5F;
-    userEeprom[0x141] = 0x00;
+    userEeprom[0x140] = 0x1F;
+    userEeprom[0x141] = 0x01;
     userEeprom[0x142] = 0x76;
-    userEeprom[0x143] = 0x5F;
-    userEeprom[0x144] = 0x00;
+    userEeprom[0x143] = 0x1F;
+    userEeprom[0x144] = 0x01;
     userEeprom[0x145] = 0x77;
     userEeprom[0x146] = 0x4F;
     userEeprom[0x147] = 0x00;
@@ -459,13 +459,13 @@ TEST_CASE("OUT8 - Test 1","[APP][OUT8][SIMPLE]")
 
 #if 0
 // >>> TC:simple_timeout
-// Date: 2014-04-15 17:47:49.738592
+// Date: 2014-04-15 18:44:44.874592
 
 /* Code for test case simple_timeout */
 static void simple_timeout_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 17:47:49.739592
+    // Date: 2014-04-15 18:44:44.874592
     // Assoc Table (0x15F):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x160
     //    2 ( 1/0/21) <-> 13 (feedback 2          ) @ 0x162
@@ -478,18 +478,18 @@ static void simple_timeout_eepromSetup(void)
     //   ( 3)  1/0/30 @ 0x11D
     //   ( 4)  1/0/31 @ 0x11F
     // Com Object table (0x121):
-    //   ( 0) output 1             <6B, 57, 00> @ 0x123
-    //   ( 1) output 2             <6C, 57, 00> @ 0x126
-    //   ( 2) output 3             <6D, 57, 00> @ 0x129
-    //   ( 3) output 4             <6E, 57, 00> @ 0x12C
-    //   ( 4) output 5             <6F, 57, 00> @ 0x12F
-    //   ( 5) output 6             <70, 57, 00> @ 0x132
-    //   ( 6) output 7             <71, 57, 00> @ 0x135
-    //   ( 7) output 8             <72, 57, 00> @ 0x138
-    //   ( 8) special 1            <73, 5F, 00> @ 0x13B
-    //   ( 9) special 2            <74, 5F, 00> @ 0x13E
-    //   (10) special 3            <75, 5F, 00> @ 0x141
-    //   (11) special 4            <76, 5F, 00> @ 0x144
+    //   ( 0) output 1             <6B, 17, 00> @ 0x123
+    //   ( 1) output 2             <6C, 17, 00> @ 0x126
+    //   ( 2) output 3             <6D, 17, 00> @ 0x129
+    //   ( 3) output 4             <6E, 17, 00> @ 0x12C
+    //   ( 4) output 5             <6F, 17, 00> @ 0x12F
+    //   ( 5) output 6             <70, 17, 00> @ 0x132
+    //   ( 6) output 7             <71, 17, 00> @ 0x135
+    //   ( 7) output 8             <72, 17, 00> @ 0x138
+    //   ( 8) special 1            <73, 1F, 01> @ 0x13B
+    //   ( 9) special 2            <74, 1F, 01> @ 0x13E
+    //   (10) special 3            <75, 1F, 01> @ 0x141
+    //   (11) special 4            <76, 1F, 01> @ 0x144
     //   (12) feedback 1           <77, 4F, 00> @ 0x147
     //   (13) feedback 2           <78, 4F, 00> @ 0x14A
     //   (14) feedback 3           <79, 4F, 00> @ 0x14D
@@ -534,41 +534,41 @@ static void simple_timeout_eepromSetup(void)
     userEeprom[0x121] = 0x14;
     userEeprom[0x122] = 0x61;
     userEeprom[0x123] = 0x6B;
-    userEeprom[0x124] = 0x57;
+    userEeprom[0x124] = 0x17;
     userEeprom[0x125] = 0x00;
     userEeprom[0x126] = 0x6C;
-    userEeprom[0x127] = 0x57;
+    userEeprom[0x127] = 0x17;
     userEeprom[0x128] = 0x00;
     userEeprom[0x129] = 0x6D;
-    userEeprom[0x12A] = 0x57;
+    userEeprom[0x12A] = 0x17;
     userEeprom[0x12B] = 0x00;
     userEeprom[0x12C] = 0x6E;
-    userEeprom[0x12D] = 0x57;
+    userEeprom[0x12D] = 0x17;
     userEeprom[0x12E] = 0x00;
     userEeprom[0x12F] = 0x6F;
-    userEeprom[0x130] = 0x57;
+    userEeprom[0x130] = 0x17;
     userEeprom[0x131] = 0x00;
     userEeprom[0x132] = 0x70;
-    userEeprom[0x133] = 0x57;
+    userEeprom[0x133] = 0x17;
     userEeprom[0x134] = 0x00;
     userEeprom[0x135] = 0x71;
-    userEeprom[0x136] = 0x57;
+    userEeprom[0x136] = 0x17;
     userEeprom[0x137] = 0x00;
     userEeprom[0x138] = 0x72;
-    userEeprom[0x139] = 0x57;
+    userEeprom[0x139] = 0x17;
     userEeprom[0x13A] = 0x00;
     userEeprom[0x13B] = 0x73;
-    userEeprom[0x13C] = 0x5F;
-    userEeprom[0x13D] = 0x00;
+    userEeprom[0x13C] = 0x1F;
+    userEeprom[0x13D] = 0x01;
     userEeprom[0x13E] = 0x74;
-    userEeprom[0x13F] = 0x5F;
-    userEeprom[0x140] = 0x00;
+    userEeprom[0x13F] = 0x1F;
+    userEeprom[0x140] = 0x01;
     userEeprom[0x141] = 0x75;
-    userEeprom[0x142] = 0x5F;
-    userEeprom[0x143] = 0x00;
+    userEeprom[0x142] = 0x1F;
+    userEeprom[0x143] = 0x01;
     userEeprom[0x144] = 0x76;
-    userEeprom[0x145] = 0x5F;
-    userEeprom[0x146] = 0x00;
+    userEeprom[0x145] = 0x1F;
+    userEeprom[0x146] = 0x01;
     userEeprom[0x147] = 0x77;
     userEeprom[0x148] = 0x4F;
     userEeprom[0x149] = 0x00;
@@ -839,13 +839,13 @@ TEST_CASE("OUT8 - Timeout Test 1","[APP][OUT8][DELAY]")
 
 #if 0
 // >>> TC:timed_function
-// Date: 2014-04-15 17:47:49.759592
+// Date: 2014-04-15 18:44:44.897592
 
 /* Code for test case timed_function */
 static void timed_function_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 17:47:49.759592
+    // Date: 2014-04-15 18:44:44.898592
     // Assoc Table (0x15F):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x160
     //    2 ( 1/0/21) <-> 13 (feedback 2          ) @ 0x162
@@ -858,18 +858,18 @@ static void timed_function_eepromSetup(void)
     //   ( 3)  1/0/30 @ 0x11D
     //   ( 4)  1/0/31 @ 0x11F
     // Com Object table (0x121):
-    //   ( 0) output 1             <6B, 57, 00> @ 0x123
-    //   ( 1) output 2             <6C, 57, 00> @ 0x126
-    //   ( 2) output 3             <6D, 57, 00> @ 0x129
-    //   ( 3) output 4             <6E, 57, 00> @ 0x12C
-    //   ( 4) output 5             <6F, 57, 00> @ 0x12F
-    //   ( 5) output 6             <70, 57, 00> @ 0x132
-    //   ( 6) output 7             <71, 57, 00> @ 0x135
-    //   ( 7) output 8             <72, 57, 00> @ 0x138
-    //   ( 8) special 1            <73, 5F, 00> @ 0x13B
-    //   ( 9) special 2            <74, 5F, 00> @ 0x13E
-    //   (10) special 3            <75, 5F, 00> @ 0x141
-    //   (11) special 4            <76, 5F, 00> @ 0x144
+    //   ( 0) output 1             <6B, 17, 00> @ 0x123
+    //   ( 1) output 2             <6C, 17, 00> @ 0x126
+    //   ( 2) output 3             <6D, 17, 00> @ 0x129
+    //   ( 3) output 4             <6E, 17, 00> @ 0x12C
+    //   ( 4) output 5             <6F, 17, 00> @ 0x12F
+    //   ( 5) output 6             <70, 17, 00> @ 0x132
+    //   ( 6) output 7             <71, 17, 00> @ 0x135
+    //   ( 7) output 8             <72, 17, 00> @ 0x138
+    //   ( 8) special 1            <73, 1F, 01> @ 0x13B
+    //   ( 9) special 2            <74, 1F, 01> @ 0x13E
+    //   (10) special 3            <75, 1F, 01> @ 0x141
+    //   (11) special 4            <76, 1F, 01> @ 0x144
     //   (12) feedback 1           <77, 4F, 00> @ 0x147
     //   (13) feedback 2           <78, 4F, 00> @ 0x14A
     //   (14) feedback 3           <79, 4F, 00> @ 0x14D
@@ -914,41 +914,41 @@ static void timed_function_eepromSetup(void)
     userEeprom[0x121] = 0x14;
     userEeprom[0x122] = 0x61;
     userEeprom[0x123] = 0x6B;
-    userEeprom[0x124] = 0x57;
+    userEeprom[0x124] = 0x17;
     userEeprom[0x125] = 0x00;
     userEeprom[0x126] = 0x6C;
-    userEeprom[0x127] = 0x57;
+    userEeprom[0x127] = 0x17;
     userEeprom[0x128] = 0x00;
     userEeprom[0x129] = 0x6D;
-    userEeprom[0x12A] = 0x57;
+    userEeprom[0x12A] = 0x17;
     userEeprom[0x12B] = 0x00;
     userEeprom[0x12C] = 0x6E;
-    userEeprom[0x12D] = 0x57;
+    userEeprom[0x12D] = 0x17;
     userEeprom[0x12E] = 0x00;
     userEeprom[0x12F] = 0x6F;
-    userEeprom[0x130] = 0x57;
+    userEeprom[0x130] = 0x17;
     userEeprom[0x131] = 0x00;
     userEeprom[0x132] = 0x70;
-    userEeprom[0x133] = 0x57;
+    userEeprom[0x133] = 0x17;
     userEeprom[0x134] = 0x00;
     userEeprom[0x135] = 0x71;
-    userEeprom[0x136] = 0x57;
+    userEeprom[0x136] = 0x17;
     userEeprom[0x137] = 0x00;
     userEeprom[0x138] = 0x72;
-    userEeprom[0x139] = 0x57;
+    userEeprom[0x139] = 0x17;
     userEeprom[0x13A] = 0x00;
     userEeprom[0x13B] = 0x73;
-    userEeprom[0x13C] = 0x5F;
-    userEeprom[0x13D] = 0x00;
+    userEeprom[0x13C] = 0x1F;
+    userEeprom[0x13D] = 0x01;
     userEeprom[0x13E] = 0x74;
-    userEeprom[0x13F] = 0x5F;
-    userEeprom[0x140] = 0x00;
+    userEeprom[0x13F] = 0x1F;
+    userEeprom[0x140] = 0x01;
     userEeprom[0x141] = 0x75;
-    userEeprom[0x142] = 0x5F;
-    userEeprom[0x143] = 0x00;
+    userEeprom[0x142] = 0x1F;
+    userEeprom[0x143] = 0x01;
     userEeprom[0x144] = 0x76;
-    userEeprom[0x145] = 0x5F;
-    userEeprom[0x146] = 0x00;
+    userEeprom[0x145] = 0x1F;
+    userEeprom[0x146] = 0x01;
     userEeprom[0x147] = 0x77;
     userEeprom[0x148] = 0x4F;
     userEeprom[0x149] = 0x00;
@@ -1237,13 +1237,13 @@ TEST_CASE("OUT8 - Timed Test 1","[APP][OUT8][TIMED]")
 
 #if 0
 // >>> TC:simple_i
-// Date: 2014-04-15 17:47:49.776592
+// Date: 2014-04-15 18:44:44.913592
 
 /* Code for test case simple_i */
 static void simple_i_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 17:47:49.776592
+    // Date: 2014-04-15 18:44:44.913592
     // Assoc Table (0x15F):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x160
     //    2 ( 1/0/21) <-> 13 (feedback 2          ) @ 0x162
@@ -1256,18 +1256,18 @@ static void simple_i_eepromSetup(void)
     //   ( 3)  1/0/30 @ 0x11D
     //   ( 4)  1/0/31 @ 0x11F
     // Com Object table (0x121):
-    //   ( 0) output 1             <6B, 57, 00> @ 0x123
-    //   ( 1) output 2             <6C, 57, 00> @ 0x126
-    //   ( 2) output 3             <6D, 57, 00> @ 0x129
-    //   ( 3) output 4             <6E, 57, 00> @ 0x12C
-    //   ( 4) output 5             <6F, 57, 00> @ 0x12F
-    //   ( 5) output 6             <70, 57, 00> @ 0x132
-    //   ( 6) output 7             <71, 57, 00> @ 0x135
-    //   ( 7) output 8             <72, 57, 00> @ 0x138
-    //   ( 8) special 1            <73, 5F, 00> @ 0x13B
-    //   ( 9) special 2            <74, 5F, 00> @ 0x13E
-    //   (10) special 3            <75, 5F, 00> @ 0x141
-    //   (11) special 4            <76, 5F, 00> @ 0x144
+    //   ( 0) output 1             <6B, 17, 00> @ 0x123
+    //   ( 1) output 2             <6C, 17, 00> @ 0x126
+    //   ( 2) output 3             <6D, 17, 00> @ 0x129
+    //   ( 3) output 4             <6E, 17, 00> @ 0x12C
+    //   ( 4) output 5             <6F, 17, 00> @ 0x12F
+    //   ( 5) output 6             <70, 17, 00> @ 0x132
+    //   ( 6) output 7             <71, 17, 00> @ 0x135
+    //   ( 7) output 8             <72, 17, 00> @ 0x138
+    //   ( 8) special 1            <73, 1F, 01> @ 0x13B
+    //   ( 9) special 2            <74, 1F, 01> @ 0x13E
+    //   (10) special 3            <75, 1F, 01> @ 0x141
+    //   (11) special 4            <76, 1F, 01> @ 0x144
     //   (12) feedback 1           <77, 4F, 00> @ 0x147
     //   (13) feedback 2           <78, 4F, 00> @ 0x14A
     //   (14) feedback 3           <79, 4F, 00> @ 0x14D
@@ -1312,41 +1312,41 @@ static void simple_i_eepromSetup(void)
     userEeprom[0x121] = 0x14;
     userEeprom[0x122] = 0x61;
     userEeprom[0x123] = 0x6B;
-    userEeprom[0x124] = 0x57;
+    userEeprom[0x124] = 0x17;
     userEeprom[0x125] = 0x00;
     userEeprom[0x126] = 0x6C;
-    userEeprom[0x127] = 0x57;
+    userEeprom[0x127] = 0x17;
     userEeprom[0x128] = 0x00;
     userEeprom[0x129] = 0x6D;
-    userEeprom[0x12A] = 0x57;
+    userEeprom[0x12A] = 0x17;
     userEeprom[0x12B] = 0x00;
     userEeprom[0x12C] = 0x6E;
-    userEeprom[0x12D] = 0x57;
+    userEeprom[0x12D] = 0x17;
     userEeprom[0x12E] = 0x00;
     userEeprom[0x12F] = 0x6F;
-    userEeprom[0x130] = 0x57;
+    userEeprom[0x130] = 0x17;
     userEeprom[0x131] = 0x00;
     userEeprom[0x132] = 0x70;
-    userEeprom[0x133] = 0x57;
+    userEeprom[0x133] = 0x17;
     userEeprom[0x134] = 0x00;
     userEeprom[0x135] = 0x71;
-    userEeprom[0x136] = 0x57;
+    userEeprom[0x136] = 0x17;
     userEeprom[0x137] = 0x00;
     userEeprom[0x138] = 0x72;
-    userEeprom[0x139] = 0x57;
+    userEeprom[0x139] = 0x17;
     userEeprom[0x13A] = 0x00;
     userEeprom[0x13B] = 0x73;
-    userEeprom[0x13C] = 0x5F;
-    userEeprom[0x13D] = 0x00;
+    userEeprom[0x13C] = 0x1F;
+    userEeprom[0x13D] = 0x01;
     userEeprom[0x13E] = 0x74;
-    userEeprom[0x13F] = 0x5F;
-    userEeprom[0x140] = 0x00;
+    userEeprom[0x13F] = 0x1F;
+    userEeprom[0x140] = 0x01;
     userEeprom[0x141] = 0x75;
-    userEeprom[0x142] = 0x5F;
-    userEeprom[0x143] = 0x00;
+    userEeprom[0x142] = 0x1F;
+    userEeprom[0x143] = 0x01;
     userEeprom[0x144] = 0x76;
-    userEeprom[0x145] = 0x5F;
-    userEeprom[0x146] = 0x00;
+    userEeprom[0x145] = 0x1F;
+    userEeprom[0x146] = 0x01;
     userEeprom[0x147] = 0x77;
     userEeprom[0x148] = 0x4F;
     userEeprom[0x149] = 0x00;
@@ -1598,13 +1598,13 @@ TEST_CASE("OUT8 - Test Inverted","[APP][OUT8][SIMPLE_I]")
 
 #if 1
 // >>> TC:special_1
-// Date: 2014-04-15 17:47:49.788592
+// Date: 2014-04-15 18:44:44.925592
 
 /* Code for test case special_1 */
 static void special_1_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 17:47:49.788592
+    // Date: 2014-04-15 18:44:44.925592
     // Assoc Table (0x167):
     //    1 ( 1/0/30) <->  0 (output 1            ) @ 0x168
     //    2 ( 1/0/31) <->  1 (output 2            ) @ 0x16A
@@ -1625,18 +1625,18 @@ static void special_1_eepromSetup(void)
     //   ( 7)  1/0/42 @ 0x125
     //   ( 8)  1/0/43 @ 0x127
     // Com Object table (0x129):
-    //   ( 0) output 1             <6B, 57, 00> @ 0x12B
-    //   ( 1) output 2             <6C, 57, 00> @ 0x12E
-    //   ( 2) output 3             <6D, 57, 00> @ 0x131
-    //   ( 3) output 4             <6E, 57, 00> @ 0x134
-    //   ( 4) output 5             <6F, 57, 00> @ 0x137
-    //   ( 5) output 6             <70, 57, 00> @ 0x13A
-    //   ( 6) output 7             <71, 57, 00> @ 0x13D
-    //   ( 7) output 8             <72, 57, 00> @ 0x140
-    //   ( 8) special 1            <73, 5F, 00> @ 0x143
-    //   ( 9) special 2            <74, 5F, 00> @ 0x146
-    //   (10) special 3            <75, 5F, 00> @ 0x149
-    //   (11) special 4            <76, 5F, 00> @ 0x14C
+    //   ( 0) output 1             <6B, 17, 00> @ 0x12B
+    //   ( 1) output 2             <6C, 17, 00> @ 0x12E
+    //   ( 2) output 3             <6D, 17, 00> @ 0x131
+    //   ( 3) output 4             <6E, 17, 00> @ 0x134
+    //   ( 4) output 5             <6F, 17, 00> @ 0x137
+    //   ( 5) output 6             <70, 17, 00> @ 0x13A
+    //   ( 6) output 7             <71, 17, 00> @ 0x13D
+    //   ( 7) output 8             <72, 17, 00> @ 0x140
+    //   ( 8) special 1            <73, 1F, 01> @ 0x143
+    //   ( 9) special 2            <74, 1F, 01> @ 0x146
+    //   (10) special 3            <75, 1F, 01> @ 0x149
+    //   (11) special 4            <76, 1F, 01> @ 0x14C
     //   (12) feedback 1           <77, 4F, 00> @ 0x14F
     //   (13) feedback 2           <78, 4F, 00> @ 0x152
     //   (14) feedback 3           <79, 4F, 00> @ 0x155
@@ -1689,41 +1689,41 @@ static void special_1_eepromSetup(void)
     userEeprom[0x129] = 0x14;
     userEeprom[0x12A] = 0x61;
     userEeprom[0x12B] = 0x6B;
-    userEeprom[0x12C] = 0x57;
+    userEeprom[0x12C] = 0x17;
     userEeprom[0x12D] = 0x00;
     userEeprom[0x12E] = 0x6C;
-    userEeprom[0x12F] = 0x57;
+    userEeprom[0x12F] = 0x17;
     userEeprom[0x130] = 0x00;
     userEeprom[0x131] = 0x6D;
-    userEeprom[0x132] = 0x57;
+    userEeprom[0x132] = 0x17;
     userEeprom[0x133] = 0x00;
     userEeprom[0x134] = 0x6E;
-    userEeprom[0x135] = 0x57;
+    userEeprom[0x135] = 0x17;
     userEeprom[0x136] = 0x00;
     userEeprom[0x137] = 0x6F;
-    userEeprom[0x138] = 0x57;
+    userEeprom[0x138] = 0x17;
     userEeprom[0x139] = 0x00;
     userEeprom[0x13A] = 0x70;
-    userEeprom[0x13B] = 0x57;
+    userEeprom[0x13B] = 0x17;
     userEeprom[0x13C] = 0x00;
     userEeprom[0x13D] = 0x71;
-    userEeprom[0x13E] = 0x57;
+    userEeprom[0x13E] = 0x17;
     userEeprom[0x13F] = 0x00;
     userEeprom[0x140] = 0x72;
-    userEeprom[0x141] = 0x57;
+    userEeprom[0x141] = 0x17;
     userEeprom[0x142] = 0x00;
     userEeprom[0x143] = 0x73;
-    userEeprom[0x144] = 0x5F;
-    userEeprom[0x145] = 0x00;
+    userEeprom[0x144] = 0x1F;
+    userEeprom[0x145] = 0x01;
     userEeprom[0x146] = 0x74;
-    userEeprom[0x147] = 0x5F;
-    userEeprom[0x148] = 0x00;
+    userEeprom[0x147] = 0x1F;
+    userEeprom[0x148] = 0x01;
     userEeprom[0x149] = 0x75;
-    userEeprom[0x14A] = 0x5F;
-    userEeprom[0x14B] = 0x00;
+    userEeprom[0x14A] = 0x1F;
+    userEeprom[0x14B] = 0x01;
     userEeprom[0x14C] = 0x76;
-    userEeprom[0x14D] = 0x5F;
-    userEeprom[0x14E] = 0x00;
+    userEeprom[0x14D] = 0x1F;
+    userEeprom[0x14E] = 0x01;
     userEeprom[0x14F] = 0x77;
     userEeprom[0x150] = 0x4F;
     userEeprom[0x151] = 0x00;
@@ -1910,45 +1910,23 @@ static Telegram tel_special_1[] =
   // After the power up the PWM will be enabled
 , {TIMER_TICK     , 20,  0, (StepFunction *) _enablePWM          , {}} //   2
 
-  // Forced channel 4
-  // receive a "ON" telegram for output 4
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x21, 0xE1, 0x00, 0x81}} //   3
+  // AND with recirculation
+  // receive a "ON" telegram for output 3
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x20, 0xE1, 0x00, 0x81}} //   3
   // process the received telegram
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _output4Set         , {}} //   4
-  // receive a 00 telegram for special 4
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2B, 0xE1, 0x00, 0x80}} //   5
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //   4
+  // receive a "ON" telegram for special 3
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2A, 0xE1, 0x00, 0x81}} //   5
   // process the received telegram
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //   6
-  // receive a 01 telegram for special 4
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2B, 0xE1, 0x00, 0x81}} //   7
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output3Set         , {}} //   6
+  // receive a "OFF" telegram for special 3
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2A, 0xE1, 0x00, 0x80}} //   7
   // process the received telegram
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //   8
-  // receive a OFF telegram for output 4
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x21, 0xE1, 0x00, 0x80}} //   9
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output3Clear       , {}} //   8
+  // receive a "ON" telegram for special 3
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2A, 0xE1, 0x00, 0x81}} //   9
   // process the received telegram
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _output4Clear       , {}} //  10
-  // receive a "ON" telegram for output 4
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x21, 0xE1, 0x00, 0x81}} //  11
-  // process the received telegram
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _output4Set         , {}} //  12
-
-  // receive a 10 telegram for special 4
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2B, 0xE1, 0x00, 0x82}} //  13
-  // process the received telegram
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _output4Clear       , {}} //  14
-  // receive a 11 telegram for special 4
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2B, 0xE1, 0x00, 0x83}} //  15
-  // process the received telegram
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _output4Set         , {}} //  16
-
-  // receive a 10 telegram for special 4
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2B, 0xE1, 0x00, 0x82}} //  17
-  // process the received telegram
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _output4Clear       , {}} //  18
-  // receive a 10 telegram for special 4 to deactivate the forced value
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2B, 0xE1, 0x00, 0x81}} //  19
-  // The output of channel should be high again
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _output4Set         , {}} //  20
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output3Set         , {}} //  10
 , {END}
 };
 static Test_Case special_1_tc = 

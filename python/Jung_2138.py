@@ -90,7 +90,7 @@ class Jung_2138 (EEPROM.BCU1) :
         for i in range (8) : ### 0..7
             add (CT.CO_WO_UINT1 ("output %d"   % (i+1)), Kind = "output")
         for i in range (4) : ### 8..B
-            add (CT.CO_UINT1    ("special %d"  % (i+1)), Kind = "special")
+            add (CT.CO_UINT2    ("special %d"  % (i+1)), Kind = "special")
         for i in range (8) : ### C..13
             add (CT.CO_RO_UINT1 ("feedback %d" % (i+1)), Kind = "feedback")
     # end def _create_com_objects
@@ -732,8 +732,51 @@ def Special_Function_1 (file_name) :
               , comment = "process the received telegram"
               )
         )
-    ### test forced follow
+    ### test AND width recirculation
     if 1 :
+     tc.add \
+        ( TCE ( "TEL_RX", telegram = c2_on
+              , comment = ( 'AND with recirculation'
+                          , 'receive a "ON" telegram for output 3'
+                          )
+              , new_line = True
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_loop"
+              , comment = "process the received telegram"
+              )
+        , TCE ( "TEL_RX", telegram = s2_on
+              , comment = 'receive a "ON" telegram for special 3'
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_output3Set"
+              , comment = "process the received telegram"
+              )
+        , TCE ( "TEL_RX", telegram = s2_off
+              , comment = 'receive a "OFF" telegram for special 3'
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_output3Clear"
+              , comment = "process the received telegram"
+              )
+        , TCE ( "TEL_RX", telegram = s2_on
+              , comment = 'receive a "ON" telegram for special 3'
+              )
+        , TCE ("TIMER_TICK", length = 1, step = "_output3Set"
+              , comment = "process the received telegram"
+              )
+        ## , TCE ( "TEL_RX", telegram = c1_off
+        ##       , comment = 'receive a "OFF" telegram for output 2'
+        ##       )
+        ## , TCE ("TIMER_TICK", length = 1, step = "_output2Clear"
+        ##       , comment = "process the received telegram"
+        ##       )
+        ## , TCE ( "TEL_RX", telegram = s1_off
+        ##       , comment = 'receive a "OFF" telegram for special 2'
+        ##       )
+        ## , TCE ("TIMER_TICK", length = 1, step = "_loop"
+        ##       , comment = "process the received telegram"
+        ##       )
+        )
+    ### test forced follow
+    if 0 :
      tc.add \
        ( TCE ( "TEL_RX", telegram = c3_on
              , comment = ( 'Forced channel 4'
