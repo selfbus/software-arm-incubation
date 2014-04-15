@@ -619,11 +619,15 @@ def Special_Function_1 (file_name) :
     s0_on   = SV (src = "0.0.1", dst = "1/0/40", value = 1, length = 1)
     s1_on   = SV (src = "0.0.1", dst = "1/0/41", value = 1, length = 1)
     s2_on   = SV (src = "0.0.1", dst = "1/0/42", value = 1, length = 1)
-    s3_on   = SV (src = "0.0.1", dst = "1/0/43", value = 1, length = 1)
     s0_off  = SV (src = "0.0.1", dst = "1/0/40", value = 0, length = 1)
     s1_off  = SV (src = "0.0.1", dst = "1/0/41", value = 0, length = 1)
     s2_off  = SV (src = "0.0.1", dst = "1/0/42", value = 0, length = 1)
-    s3_off  = SV (src = "0.0.1", dst = "1/0/43", value = 0, length = 1)
+
+    s3_zi0  = SV (src = "0.0.1", dst = "1/0/43", value = 0b00, length = 1)
+    s3_zi1  = SV (src = "0.0.1", dst = "1/0/43", value = 0b01, length = 1)
+    s3_za0  = SV (src = "0.0.1", dst = "1/0/43", value = 0b10, length = 1)
+    s3_za1  = SV (src = "0.0.1", dst = "1/0/43", value = 0b11, length = 1)
+
     tc.add \
         ( TCE ("TIMER_TICK", length = 1, step = "_loop")
         , TCE ( "TIMER_TICK", length = 20, step = "_enablePWM"
@@ -728,15 +732,70 @@ def Special_Function_1 (file_name) :
               , comment = "process the received telegram"
               )
         )
-     ### test forced follow
+    ### test forced follow
+    if 1 :
      tc.add \
-        ( TCE ( "TEL_RX", telegram = c1_on
-              , comment = 'receive a "ON" telegram for output 2'
-              , new_line = True
-              )
-        , TCE ("TIMER_TICK", length = 1, step = "_loop"
-              , comment = "process the received telegram"
-              )
+       ( TCE ( "TEL_RX", telegram = c3_on
+             , comment = ( 'Forced channel 4'
+                         , 'receive a "ON" telegram for output 4'
+                         )
+             , new_line = True
+             )
+       , TCE ("TIMER_TICK", length = 1, step = "_output4Set"
+             , comment = "process the received telegram"
+             )
+       , TCE ( "TEL_RX", telegram = s3_zi0
+             , comment = 'receive a 00 telegram for special 4'
+             )
+       , TCE ("TIMER_TICK", length = 1, step = "_loop"
+             , comment = "process the received telegram"
+             )
+       , TCE ( "TEL_RX", telegram = s3_zi1
+             , comment = 'receive a 01 telegram for special 4'
+             )
+       , TCE ("TIMER_TICK", length = 1, step = "_loop"
+             , comment = "process the received telegram"
+             )
+       , TCE ( "TEL_RX", telegram = c3_off
+             , comment = 'receive a OFF telegram for output 4'
+             )
+       , TCE ("TIMER_TICK", length = 1, step = "_output4Clear"
+             , comment = "process the received telegram"
+             )
+       , TCE ( "TEL_RX", telegram = c3_on
+             , comment = 'receive a "ON" telegram for output 4'
+             )
+       , TCE ("TIMER_TICK", length = 1, step = "_output4Set"
+             , comment = "process the received telegram"
+             )
+       , TCE ( "TEL_RX", telegram = s3_za0
+             , comment = 'receive a 10 telegram for special 4'
+             , new_line = True
+             )
+       , TCE ("TIMER_TICK", length = 1, step = "_output4Clear"
+             , comment = "process the received telegram"
+             )
+       , TCE ( "TEL_RX", telegram = s3_za1
+             , comment = 'receive a 11 telegram for special 4'
+             )
+       , TCE ("TIMER_TICK", length = 1, step = "_output4Set"
+             , comment = "process the received telegram"
+             )
+       , TCE ( "TEL_RX", telegram = s3_za0
+             , comment = 'receive a 10 telegram for special 4'
+             , new_line = True
+             )
+       , TCE ("TIMER_TICK", length = 1, step = "_output4Clear"
+             , comment = "process the received telegram"
+             )
+       , TCE ( "TEL_RX", telegram = s3_zi1
+             , comment = 'receive a 10 telegram for special 4 to deactivate '
+                         'the forced value'
+             )
+       , TCE ("TIMER_TICK", length = 1, step = "_output4Set"
+             , comment = "The output of channel should be high again"
+             )
+       )
     tc.create_code (file_name)
 # end def Special_Function_1
 
