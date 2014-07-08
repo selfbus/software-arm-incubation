@@ -187,6 +187,11 @@ private:
     void idleState();
 
     /**
+     * Switch to the next telegram for sending.
+     */
+    void sendNextTelegram();
+
+    /**
      * Prepare the telegram for sending. Set the sender address to our own
      * address, and calculate the checksum of the telegram.
      * Stores the checksum at telegram[length].

@@ -88,3 +88,13 @@ void pinMode(int pin, int mode)
 
     *(ioconPointer(pin)) = iocon;
 }
+
+void pinDirection(int pin, int dir)
+{
+    LPC_GPIO_TypeDef* port = gpioPorts[digitalPinToPort(pin)];
+    unsigned short mask = digitalPinToBitMask(pin);
+
+    if (dir == OUTPUT)
+        port->DIR |= mask;
+    else port->DIR &= ~mask;
+}

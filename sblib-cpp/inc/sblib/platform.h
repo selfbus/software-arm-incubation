@@ -19,7 +19,16 @@
  * @param pin - the IO pin to get the configuration for
  * @return a pointer to the IO configuration register.
  */
-unsigned int* ioconPointer(short pin);
+unsigned int* ioconPointer(int pin);
+
+/**
+ * Get a pointer to a low level IO configuration register.
+ *
+ * @param port - the IO port to get the configuration for
+ * @param pinNum - the number of the pin to get the configuration for
+ * @return a pointer to the IO configuration register.
+ */
+unsigned int* ioconPointer(int port, int pinNum);
 
 /**
  * Low level table of the IO ports

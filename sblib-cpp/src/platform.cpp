@@ -74,9 +74,14 @@ static const unsigned short ioconOffsets[4][12] =
     }
 };
 
-
-unsigned int* ioconPointer(short pin)
+unsigned int* ioconPointer(int pin)
 {
     return (unsigned int*) LPC_IOCON_BASE +
         ioconOffsets[digitalPinToPort(pin)][digitalPinToPinNum(pin)];
+}
+
+unsigned int* ioconPointer(int port, int pinNum)
+{
+    return (unsigned int*) LPC_IOCON_BASE +
+        ioconOffsets[port][pinNum];
 }

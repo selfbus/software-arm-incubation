@@ -38,17 +38,6 @@ BUS_TIMER_INTERRUPT_HANDLER(TIMER16_1_IRQHandler, bus);
 #define D(x)
 
 
-#define LPC_TMR16B1_MR_OUT LPC_TMR16B1->MR0    /* Timer match register for bus out */
-#define LPC_IOCON_BUS_OUT LPC_IOCON->PIO1_9   /* IOCON register for bus out */
-#define BUS_OUT_IOCON_PWM 2                    /* IOCON for bus out: PWM channel selection */
-
-#define BUS_OUT_PORT_PIN 1,9                  /* Port and pin for bus out */
-int txPin = PIO1_9;
-
-
-
-
-
 // Telegram repeat flag in byte #0 of the telegram: 1=not repeated, 0=repeated
 #define SB_TEL_REPEAT_FLAG 0x20
 
@@ -200,7 +189,7 @@ void Bus::handleTelegram(bool valid)
         else if (processTel)
         {
             telegramLen = nextByteIndex;
-            sendAck = 0x7c; // SB_BUS_ACK; // FIXME this is test code
+            sendAck = SB_BUS_ACK;
         }
     }
     else if (nextByteIndex == 1)   // Received a spike or a bus acknowledgment
@@ -208,14 +197,7 @@ void Bus::handleTelegram(bool valid)
         currentByte &= 0xff;
 
         if ((currentByte == SB_BUS_ACK || sendTries > 3) && sendCurTelegram)
-        {
-            // Prepare the next telegram for sending
-            sendCurTelegram[0] = 0;
-            sendCurTelegram = sendNextTel;
-            sendNextTel = 0;
-            sendTries = 0;
-            sendTelegramLen = 0;
-        }
+            sendNextTelegram();
     }
     else // Received wrong checksum, or more than one byte but too short for a telegram
     {
@@ -234,6 +216,15 @@ void Bus::handleTelegram(bool valid)
     collision = false;
     state = Bus::SEND_INIT;
     debugLine = __LINE__;
+}
+
+void Bus::sendNextTelegram()
+{
+    sendCurTelegram[0] = 0;
+    sendCurTelegram = sendNextTel;
+    sendNextTel = 0;
+    sendTries = 0;
+    sendTelegramLen = 0;
 }
 
 void Bus::timerInterruptHandler()
@@ -258,11 +249,11 @@ STATE_SWITCH:
     case Bus::IDLE:
         if (!timer.flag(captureChannel)) // Not a bus-in signal: do nothing
             break;
-        sendAck = 0;
         nextByteIndex = 0;
-        checksum = 0xff;
-        valid = 1;
         collision = false;
+        checksum = 0xff;
+        sendAck = 0;
+        valid = 1;
         // no break here
 
     // A start bit is expected to arrive here. If we have a timeout instead, the
@@ -340,26 +331,32 @@ STATE_SWITCH:
             time = PRE_SEND_TIME;
             sendTelegramLen = 0;
         }
-        else if (sendCurTelegram)  // Send a telegram?
+        else
         {
-            time = PRE_SEND_TIME + ((sendCurTelegram[0] >> 2) & 3) * BIT_TIME;
-            sendTelegramLen = telegramSize(sendCurTelegram) + 1;
+            if (sendTries > 3)
+                sendNextTelegram();
 
-            if (sendTries == 1)
+            if (sendCurTelegram)  // Send a telegram?
             {
-                // If it is the first repeat, then mark the telegram as being repeated and correct the checksum
-                sendCurTelegram[0] &= ~SB_TEL_REPEAT_FLAG;
-                sendCurTelegram[sendTelegramLen - 1] ^= SB_TEL_REPEAT_FLAG;
+                time = PRE_SEND_TIME + ((sendCurTelegram[0] >> 2) & 3) * BIT_TIME;
+                sendTelegramLen = telegramSize(sendCurTelegram) + 1;
 
-                // We increase sendTries here to avoid inverting the repeat flag again
-                // if sending fails due to collision.
-                ++sendTries;
+                if (sendTries == 1)
+                {
+                    // If it is the first repeat, then mark the telegram as being repeated and correct the checksum
+                    sendCurTelegram[0] &= ~SB_TEL_REPEAT_FLAG;
+                    sendCurTelegram[sendTelegramLen - 1] ^= SB_TEL_REPEAT_FLAG;
+
+                    // We increase sendTries here to avoid inverting the repeat flag again
+                    // if sending fails due to collision.
+                    ++sendTries;
+                }
             }
-        }
-        else  // Send nothing
-        {
-            idleState();
-            break;
+            else  // Send nothing
+            {
+                idleState();
+                break;
+            }
         }
 
         timer.match(pwmChannel, time);
@@ -487,7 +484,7 @@ STATE_SWITCH:
             // Ignore bits that arrive too early
             break;
         }
-        state = Bus::SEND_INIT;  // Receiving will be started there too
+        state = Bus::SEND_INIT;  // Receiving will be handled there too
         goto STATE_SWITCH;
 
     default:

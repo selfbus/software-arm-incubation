@@ -18,10 +18,45 @@
 /**
  * Configure the mode of an I/O pin.
  *
- * @param pin - the pin to configure: PIO0_0, PIO0_1, ...
- * @param mode - the I/O mode to set. Use a combination of the PinMode values (see digital_pin.h)
+ * @param pin - the pin to configure: PIO0_0, PIO0_1, ...  (see sblib/ioports.h)
+ * @param mode - the I/O mode to set. Use a combination of the PinMode values (see below)
  */
 void pinMode(int pin, int mode);
+
+/**
+ * Configure the direction of an I/O pin. This does not change the other configuration
+ * settings of the pin.
+ *
+ * @param pin - the pin to configure: PIO0_0, PIO0_1, ...  (see sblib/ioports.h)
+ * @param dir - the direction: INPUT or OUTPUT
+ */
+void pinDirection(int pin, int dir);
+
+/**
+ * Configure the mode of the pins of an I/O port.
+ *
+ * This function can only handle a sub-set of the available pin configurations.
+ * The following PinMode values are supported: INPUT, OUTPUT, PULL_UP, PULL_DOWN,
+ * REPEATER_MODE, HYSTERESIS, OPEN_DRAIN.
+ *
+ * @param port - the port to configure: PIO0, PIO1, PIO2, PIO3  (see sblib/ioports.h)
+ * @param pinMask - the bit mask for the port pins that shall be configured.
+ * @param mode - the I/O mode to set. Use a combination of the PinMode values.
+ *
+ * Example: to configure pins 0,1,2 of port 0 to open drain output:
+ *          portMode(PIO0, 7, OUTPUT|OPEN_DRAIN);
+ */
+void portMode(int port, int pinMask, int mode);
+
+/**
+ * Configure the direction of an I/O pin. This does not change the other configuration
+ * settings of the port pins.
+ *
+ * @param port - the port to configure: PIO0, PIO1, PIO2, PIO3  (see sblib/ioports.h)
+ * @param pinMask - the bit mask for the port pins that shall be configured.
+ * @param dir - the direction: INPUT or OUTPUT
+ */
+void portDirection(int port, int pinMask, int dir);
 
 /**
  * Set the value of a digital output pin.
