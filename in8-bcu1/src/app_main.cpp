@@ -13,11 +13,11 @@
 #include <sblib/eib.h>
 
 // Digital pin for LED
-#define PIO_LED PIO0_7
+#define PIO_LED PIO3_3
 
 // Input pins
 static const int inputPins[] =
-    { PIO2_0, PIO2_1, PIO2_2, PIO2_3, PIO2_4, PIO2_5, PIO2_6, PIO2_7 };
+	{ PIO2_2, PIO0_7, PIO2_10, PIO2_9, PIO0_2, PIO0_8, PIO0_9, PIO2_11 };
 
 // Debouncers for inputs
 Debouncer inputDebouncer[NUM_CHANNELS];
@@ -35,7 +35,7 @@ void setup()
     bcu.begin(4, 0x7054, 2); // We are a "Jung 2118" device, version 0.2
 
     pinMode(PIO_LED, OUTPUT);
-    digitalWrite(PIO_LED, 0);
+    digitalWrite(PIO_LED, 1);
 
     // Configure the input pins and initialize the debouncers with the current
     // value of the pin.

@@ -29,7 +29,7 @@ BCU bcu;
 extern unsigned int writeUserEepromTime;
 
 // Default pin of the programming mode button+led
-#define DEFAULT_PROG_PIN  PIO1_5
+#define DEFAULT_PROG_PIN  PIO2_0
 
 
 BCU::BCU()

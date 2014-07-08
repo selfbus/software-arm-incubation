@@ -18,7 +18,7 @@
 
 
 // The EIB bus access object
-Bus bus(timer16_1, PIO1_8, PIO1_10, CAP0, MAT1);
+Bus bus(timer16_1, PIO1_8, PIO1_9, CAP0, MAT0);
 
 // The interrupt handler for the EIB bus access object
 BUS_TIMER_INTERRUPT_HANDLER(TIMER16_1_IRQHandler, bus);
@@ -34,16 +34,16 @@ BUS_TIMER_INTERRUPT_HANDLER(TIMER16_1_IRQHandler, bus);
  */
 
 // Enable debug statements for debugging the bus access in this file
-#define D(x) x
-//#define D(x)
+//#define D(x) x
+#define D(x)
 
 
-#define LPC_TMR16B1_MR_OUT LPC_TMR16B1->MR1    /* Timer match register for bus out */
-#define LPC_IOCON_BUS_OUT LPC_IOCON->PIO1_10   /* IOCON register for bus out */
+#define LPC_TMR16B1_MR_OUT LPC_TMR16B1->MR0    /* Timer match register for bus out */
+#define LPC_IOCON_BUS_OUT LPC_IOCON->PIO1_9   /* IOCON register for bus out */
 #define BUS_OUT_IOCON_PWM 2                    /* IOCON for bus out: PWM channel selection */
 
-#define BUS_OUT_PORT_PIN 1,10                  /* Port and pin for bus out */
-int txPin = PIO1_10;
+#define BUS_OUT_PORT_PIN 1,9                  /* Port and pin for bus out */
+int txPin = PIO1_9;
 
 
 
