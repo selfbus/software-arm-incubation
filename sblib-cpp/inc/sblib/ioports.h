@@ -29,13 +29,26 @@ enum Port
 };
 
 
-// Constants for port pin functions
-enum
+/**
+ * Constants for port pin functions
+ */
+enum PinFunc
 {
     PF_NONE = 0, PF_PIO, PF_AD, PF_RESET, PF_SWDIO, PF_SWCLK, PF_MAT, PF_CAP,
     PF_CLKOUT, PF_SDA, PF_SCL, PF_SSEL, PF_MISO, PF_MOSI, PF_SCK, PF_RXD,
     PF_TXD, PF_RTS, PF_DTR, PF_DSR, PF_CTS, PF_DCD, PF_RI
 };
+
+
+/**
+ * Select a specific port pin function when setting the pin mode.
+ * This macro is intended to be used in combination with pinMode().
+ *
+ * Example: pinMode(PIO1_6, INPUT | PINMODE_FUNC(PF_RXD));
+ * This enables the UART RXD function on pin PIO1_6.
+ */
+#define PINMODE_FUNC(f) ((f) << 18)
+
 
 // Constants for port pin function manipulation
 enum

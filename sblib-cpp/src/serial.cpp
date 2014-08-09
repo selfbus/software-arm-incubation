@@ -44,8 +44,8 @@ Serial serial(PIO1_6, PIO1_7);
 
 Serial::Serial(int rxPin, int txPin)
 {
-    pinMode(rxPin, INPUT | PINMODE_FUNC(PF_RXD));
-    pinMode(txPin, OUTPUT | PINMODE_FUNC(PF_TXD));
+    pinMode(rxPin, SERIAL_RXD);
+    pinMode(txPin, SERIAL_TXD);
 }
 
 void Serial::begin(int baudRate)

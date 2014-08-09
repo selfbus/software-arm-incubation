@@ -20,6 +20,13 @@
  *
  * @param pin - the pin to configure: PIO0_0, PIO0_1, ...  (see sblib/ioports.h)
  * @param mode - the I/O mode to set. Use a combination of the PinMode values (see below)
+ *
+ * Examples:
+ * Configure PIO0_2 to digital input: pinMode(PIO0_2, INPUT);
+ * Configure PIO1_7 to serial data output: pinMode(PIO1_7, OUTPUT | PINMODE_FUNC(PF_TXD));
+ *
+ * @see PinMode in digital_pin.h for the pin modes
+ * @see PinFunc in ioports.h for the pin functions for PINMODE_FUNC()
  */
 void pinMode(int pin, int mode);
 
@@ -45,6 +52,8 @@ void pinDirection(int pin, int dir);
  *
  * Example: to configure pins 0,1,2 of port 0 to open drain output:
  *          portMode(PIO0, 7, OUTPUT|OPEN_DRAIN);
+ *
+ * @see PinMode in digital_pin.h for the pin modes
  */
 void portMode(int port, int pinMask, int mode);
 
@@ -227,6 +236,11 @@ enum PinMode
     OUTPUT_MATCH = 0x7000,
 
     /**
+     * Configure the pin as
+     */
+    OUTPUT_SCK = OUTPUT | PINMODE_FUNC(PF_SCK),
+
+    /**
      * Enable open-drain output mode. If not enabled, the standard output mode is used.
      */
     OPEN_DRAIN = 0x400,
@@ -234,18 +248,42 @@ enum PinMode
     /**
      * Enable the repeater mode.
      */
-    REPEATER_MODE = 0x18
+    REPEATER_MODE = 0x18,
+
+    /**
+     * Configure the pin as serial data input (RxD).
+     */
+    SERIAL_RXD = INPUT | PINMODE_FUNC(PF_RXD),
+
+    /**
+     * Configure the pin as serial data output (TxD).
+     */
+    SERIAL_TXD = OUTPUT | PINMODE_FUNC(PF_TXD),
+
+    /**
+     * Configure the pin as output for SPI clock (SCK) in SPI master mode or input
+     * for SPI clock (SCK) in SPI slave mode. Shall be combined with OUTPUT or INPUT.
+     */
+    SPI_CLOCK = PINMODE_FUNC(PF_SCK),
+
+    /**
+     * Configure the pin for SPI master-in-slave-out (MISO). Combine with INPUT for
+     * SPI master mode or OUTPUT for SPI slave mode.
+     */
+    SPI_MISO = PINMODE_FUNC(PF_MISO),
+
+    /**
+     * Configure the pin for SPI master-out-slave-in (MOSI). Combine with OUTPUT for
+     * SPI master mode or INPUT for SPI slave mode.
+     */
+    SPI_MOSI = PINMODE_FUNC(PF_MOSI),
+
+    /**
+     * Configure the pin for SPI slave select (SSEL). Combine with OUTPUT for
+     * SPI master mode or INPUT for SPI slave mode.
+     */
+    SPI_SSEL = PINMODE_FUNC(PF_SSEL)
 };
-
-
-/**
- * Select a specific port pin function when setting the pin mode.
- * This macro is intended to be used in combination with pinMode().
- *
- * Example: pinMode(PIO1_6, INPUT | PINMODE_FUNC(PF_RXD));
- * This enables the UART RXD function on pin PIO1_6.
- */
-#define PINMODE_FUNC(f) ((f) << 18)
 
 
 //
