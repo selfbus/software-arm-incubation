@@ -9,6 +9,7 @@
  */
 
 #include <sblib/lcd/graphical_eadogs.h>
+#include <sblib/lcd/font.h>
 #include <sblib/digital_pin.h>
 
 // Display width in pixels
@@ -23,10 +24,10 @@
  */
 
 // Set column address bits 0..3: bits 0-3
-#define CMD_SET_COL_ADDR_LSB  0x00
+#define CMD_COL_ADDR_LSB  0x00
 
 // Set column address bits 4..7: bits 0-3
-#define CMD_SET_COL_ADDR_MSB  0x10
+#define CMD_COL_ADDR_MSB  0x10
 
 // Power control: bit0: booster, bit1: regulator, bit2: follower
 #define CMD_POWER_CTRL        0x28
@@ -107,20 +108,32 @@ void LcdGraphicalEADOGS::begin()
     spi.setClockDivider(128);
     spi.begin();
 
-    digitalWrite(pinCD, true);
+    digitalWrite(pinCD, 0);
+    spi.transfer(CMD_RESET);
     spi.transfer(CMD_SCROLL_LINE);
     spi.transfer(CMD_SEG_DIR_MIRROR);
     spi.transfer(CMD_COM_DIR_NORMAL);
     spi.transfer(CMD_PIXELS_NORMAL);
-    spi.transfer(CMD_DISP_INVERSE);
+    spi.transfer(CMD_DISP_NORMAL);
     spi.transfer(CMD_BIAS_RATIO_1_9);
-    spi.transfer(CMD_POWER_CTRL | 3); // booster, regulator, follower on
+    spi.transfer(CMD_POWER_CTRL | 7); // booster, regulator, follower on
+    spi.transfer(CMD_RESISTOR_RATIO | 7);
     spi.transfer(CMD_CONTRAST);
     spi.transfer(0x10); // the contrast value
     spi.transfer(CMD_ADV_CONTROL);
     spi.transfer(0x90);  // temperature compensation -0.11% / °C
     spi.transfer(CMD_ENABLE);
-    digitalWrite(pinCD, false);
+
+    // --- BEGIN TEST CODE
+    digitalWrite(pinCD, 0);
+    spi.transfer(CMD_COL_ADDR_LSB | 0);
+    spi.transfer(CMD_COL_ADDR_MSB | 0);
+    spi.transfer(CMD_PAGE_ADDR | 0);
+
+    digitalWrite(pinCD, 1);
+    for (int i = 0; i < 255; ++i)
+        spi.transfer(i);
+    // --- END TEST CODE
 }
 
 void LcdGraphicalEADOGS::end()
@@ -128,6 +141,45 @@ void LcdGraphicalEADOGS::end()
     spi.end();
 }
 
+void LcdGraphicalEADOGS::inverse(bool enable)
+{
+    digitalWrite(pinCD, 0);
+    spi.transfer(enable ? CMD_DISP_INVERSE : CMD_DISP_NORMAL);
+}
+
 void LcdGraphicalEADOGS::pos(int x, int y)
 {
+    digitalWrite(pinCD, 0);
+    spi.transfer(CMD_COL_ADDR_LSB | (x & 15));
+    spi.transfer(CMD_COL_ADDR_MSB | ((x >> 4) & 15));
+    spi.transfer(CMD_PAGE_ADDR | (y & 7));
+}
+
+int LcdGraphicalEADOGS::write(byte ch)
+{
+    int idx = ch - fnt->firstChar;
+    if (idx < 0 || idx >= fnt->numChars)
+        return 0;
+
+    idx *= fnt->charWidth;
+
+    digitalWrite(pinCD, 1);
+    for (int i = fnt->charWidth; i > 0; --i, ++idx)
+        spi.transfer(fnt->data[idx]);
+}
+
+void LcdGraphicalEADOGS::clear()
+{
+    int x, y;
+
+    for (y = 0; y < DISPLAY_HEIGHT; ++y)
+    {
+        pos(0, y);
+
+        digitalWrite(pinCD, 1);
+        for (x = 0; x < DISPLAY_WIDTH; ++x)
+            spi.transfer(0);
+    }
+
+    pos(0, 0);
 }

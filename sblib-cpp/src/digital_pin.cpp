@@ -76,6 +76,45 @@ void pinMode(int pin, int mode)
         }
     }
 
+    if (func == PF_MISO)
+    {
+        // Configure the location of the MISO pin
+        if (pin == PIO2_2)
+            LPC_IOCON->MISO1_LOC = 0;
+        else if (pin == PIO1_10)
+            LPC_IOCON->MISO1_LOC = 1;
+    }
+    else if (func == PF_MOSI)
+    {
+        // Configure the location of the MOSI pin
+        if (pin == PIO2_3)
+            LPC_IOCON->MOSI1_LOC = 0;
+        else if (pin == PIO1_9)
+            LPC_IOCON->MOSI1_LOC = 1;
+    }
+    else if (func == PF_SCK)
+    {
+        // Configure the location of the SCK pin
+        if (pin == PIO0_10)
+            LPC_IOCON->SCK_LOC = 0;
+        else if (pin == PIO2_11)
+            LPC_IOCON->SCK_LOC = 1;
+        else if (pin == PIO0_6)
+            LPC_IOCON->SCK_LOC = 2;
+        else if (pin == PIO2_1)
+            LPC_IOCON->SCK1_LOC = 0;
+        else if (pin == PIO3_2)
+            LPC_IOCON->SCK1_LOC = 1;
+    }
+    else if (func == PF_SSEL)
+    {
+        // Configure the location of the SSEL pin
+        if (pin == PIO2_2)
+            LPC_IOCON->SSEL1_LOC = 0;
+        else if (pin == PIO2_4)
+            LPC_IOCON->SSEL1_LOC = 1;
+    }
+
     if ((pin & PFL_ADMODE) && func != PF_AD)
         iocon |= 0x80;
 

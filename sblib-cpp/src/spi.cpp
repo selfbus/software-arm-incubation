@@ -49,23 +49,26 @@
 // ICR bit mask
 #define SSP_ICR_BITMASK  0x03
 
+// Convert SPI data size to bit offset
+#define SPI_DATA_SIZE_OFFS(x) ((x - 1)  & 15)
+
 
 // The SPI port registers
 static LPC_SSP_TypeDef* const ports[2] = { LPC_SSP0, LPC_SSP1 };
 
 
-SPI::SPI(int portNum)
+SPI::SPI(int portNum, int mode)
 :port(*ports[portNum])
 ,clockDiv(100)
 {
-    /* Enable AHB clock to the GPIO domain. */
+    // Enable AHB clock to the GPIO domain.
     LPC_SYSCON->SYSAHBCLKCTRL |= (1<<6);
+
+    // Disable reset of the SSP peripheral
+    LPC_SYSCON->PRESETCTRL |= portNum + 1;
 
     if (portNum == 0) // SPI port 0
     {
-        // Reset SSP0 peripheral
-        LPC_SYSCON->PRESETCTRL |= 1;
-
         // Enable the clock for the SPI port
         LPC_SYSCON->SYSAHBCLKCTRL |= 1 << 11;
 
@@ -74,9 +77,6 @@ SPI::SPI(int portNum)
     }
     else // SPI port 1
     {
-        // Reset SSP1 peripheral
-        LPC_SYSCON->PRESETCTRL |= 2;
-
         // Enable the clock for the SPI port
         LPC_SYSCON->SYSAHBCLKCTRL |= 1 << 18;
 
@@ -85,7 +85,7 @@ SPI::SPI(int portNum)
     }
 
     // Use 8 bit data size, SPI frame format, bus clock low between frames, no clock divider.
-    port.CR0 = SSP_CR0_CPHA_SECONDCLOCK | SSP_CR0_CPOL_LOW | (SPI_DATA_8BIT - 1);
+    port.CR0 = mode | SPI_DATA_SIZE_OFFS(SPI_DATA_8BIT);
 
     // Use master mode, SPI disabled (calling begin() enables SPI)
     port.CR1 = SSP_CR1_MASTER;
@@ -101,7 +101,7 @@ void SPI::setClockDivider(int div)
 
 void SPI::setDataSize(SpiDataSize dataSize)
 {
-    port.CR0 = (port.CR0 & ~15) | ((dataSize - 1) & 15);
+    port.CR0 = (port.CR0 & ~15) | SPI_DATA_SIZE_OFFS(dataSize);
 }
 
 void SPI::begin()
@@ -120,7 +120,7 @@ int SPI::transfer(int val, SpiTransferMode transferMode)
 
     // Clear all remaining data in the receive FIFO
     while (port.SR & SSP_SR_RNE)
-        tmpVal = SSP_DR_BITMASK(port.DR);
+        tmpVal = port.DR;
 
     // Clear the interrupt status
     port.ICR = SSP_ICR_BITMASK;
@@ -129,10 +129,8 @@ int SPI::transfer(int val, SpiTransferMode transferMode)
     LPC_SSP0->DR = val;
 
     // Wait for completed transfer
-    int start = millis();
     while (port.SR & SSP_SR_BSY)
         ;
-    int waited = elapsed(start);
 
     // Return read value
     return LPC_SSP0->DR;

@@ -63,6 +63,27 @@ public:
      */
     void end();
 
+    /**
+     * Switch to inverse mode.
+     *
+     * @param enable - true to use inverse mode, false for normal mode.
+     */
+    void inverse(bool enable);
+
+    /**
+     * Write a single character.
+     *
+     * @param ch - the character to write.
+     *
+     * @return 1 if the character was written, 0 if not.
+     */
+    virtual int write(byte ch);
+
+    /**
+     * Clear the display.
+     */
+    virtual void clear();
+
 protected:
     SPI spi;
     const int pinCD, pinCS;

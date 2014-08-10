@@ -42,15 +42,6 @@ public:
      */
     void font(const Font& font);
 
-    /**
-     * Write a single byte.
-     *
-     * @param ch - the byte to write.
-     *
-     * @return 1 if the byte was written, 0 if not.
-     */
-    virtual int write(byte ch);
-
 protected:
     /**
      * Create a graphical LCD display.

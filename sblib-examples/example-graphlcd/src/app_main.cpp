@@ -39,6 +39,13 @@ void setup()
 {
     display.begin();
     pinMode(blinkPin, OUTPUT);
+
+    display.clear();
+    display.println("********************");
+    display.pos(0, 1);
+    display.println("*** Hello World! ***");
+    display.pos(0, 2);
+    display.println("********************");
 }
 
 /*
@@ -47,5 +54,5 @@ void setup()
 void loop()
 {
     digitalWrite(blinkPin, !digitalRead(blinkPin));
-    delay(500);
+    delay(1000);
 }

@@ -61,6 +61,50 @@ enum SpiDataSize
     SPI_DATA_16BIT
 };
 
+/**
+ * The SPI mode settings.
+ */
+enum SpiMode
+{
+    /**
+     * Frame format: SPI (normal mode).
+     */
+    SPI_FORMAT_SPI = 0,
+
+    /**
+     * Frame format: TI
+     */
+    SPI_FORMAT_TI = 0,
+
+    /**
+     * Frame format: Microwire
+     */
+    SPI_FORMAT_MICROWIRE = 0,
+
+    /**
+     * Low clock polarity: the clock pin will be low between transmits.
+     */
+    SPI_CPOL_LOW = 0,
+
+    /**
+     * High clock polarity: the clock pin will be high between transmits.
+     */
+    SPI_CPOL_HIGH = (1<<6),
+
+    /**
+     * Capture data on the rising edge of the SPI clock.
+     */
+    SPI_CPHASE_RAISE = 0,
+
+    /**
+     * Capture data on the falling edge of the SPI clock.
+     */
+    SPI_CPHASE_FALL = (1<<7),
+};
+
+// The default SPI mode settings
+#define SPI_DEFAULT_MODE  (SPI_FORMAT_SPI | SPI_CPOL_LOW | SPI_CPHASE_RAISE)
+
 
 /**
  * Class for accessing the serial peripheral interfaces (SPI).
@@ -79,8 +123,10 @@ public:
      * Create a SPI access object.
      *
      * @param spiPort - the SPI port: SPI_PORT_0, SPI_PORT_1.
+     * @param mode - the SPI port mode. This is a combination of the values of enum SpiMode (see above).
+     *               The default mode is SPI_FORMAT_SPI | SPI_CPOL_LOW | SPI_CPHASE_RAISE.
      */
-    SPI(int spiPort);
+    SPI(int spiPort, int mode = SPI_DEFAULT_MODE);
 
     /**
      * Power on the SPI port. Call this method before starting to use the SPI

@@ -18,7 +18,3 @@ LcdGraphical::LcdGraphical(const Font& fnt, int width, int height)
 ,height(height)
 {
 }
-
-int LcdGraphical::write(byte ch)
-{
-}

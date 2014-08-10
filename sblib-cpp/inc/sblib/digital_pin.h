@@ -236,12 +236,8 @@ enum PinMode
     OUTPUT_MATCH = 0x7000,
 
     /**
-     * Configure the pin as
-     */
-    OUTPUT_SCK = OUTPUT | PINMODE_FUNC(PF_SCK),
-
-    /**
      * Enable open-drain output mode. If not enabled, the standard output mode is used.
+     * In open-drain output mode, a 1 disables the high-drive transistor.
      */
     OPEN_DRAIN = 0x400,
 
