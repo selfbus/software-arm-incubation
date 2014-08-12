@@ -24,6 +24,9 @@ void setup()
 
     serial.begin(19200);
     serial.println("Selfbus Bus Monitor");
+
+    pinMode(PIO2_6, OUTPUT);	// Info LED
+    pinMode(PIO3_3, OUTPUT);	// Run LED
 }
 
 /*
@@ -31,7 +34,9 @@ void setup()
  */
 void loop()
 {
-    if (bus.telegramReceived())
+	digitalWrite(PIO3_3, 1);
+
+	if (bus.telegramReceived())
     {
         for (int i = 0; i < bus.telegramLen; ++i)
         {
@@ -41,6 +46,8 @@ void loop()
         serial.println();
 
         bus.discardReceivedTelegram();
+
+        digitalWrite(PIO2_6, !digitalRead(PIO2_6));
     }
 
     // Sleep until the next 1 msec timer interrupt occurs (or shorter)

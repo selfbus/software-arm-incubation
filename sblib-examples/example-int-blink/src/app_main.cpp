@@ -16,8 +16,8 @@
  */
 extern "C" void TIMER32_0_IRQHandler()
 {
-    // Toggle the pin PIO0_7
-    digitalWrite(PIO0_7, !digitalRead(PIO0_7));
+    // Toggle the Info LED
+    digitalWrite(PIO2_6, !digitalRead(PIO2_6));
 
     // Clear the timer interrupt flags. Otherwise the interrupt handler is called
     // again immediately after returning.
@@ -29,7 +29,8 @@ extern "C" void TIMER32_0_IRQHandler()
  */
 void setup()
 {
-    pinMode(PIO0_7, OUTPUT);
+	pinMode(PIO2_6, OUTPUT);	// Info LED
+	pinMode(PIO3_3, OUTPUT);	// Run LED
 
     // Enable the timer interrupt
     enableInterrupt(TIMER_32_0_IRQn);
