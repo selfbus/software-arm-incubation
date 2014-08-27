@@ -13,7 +13,6 @@
 #include <sblib/core.h>
 #include <sblib/eib.h>
 
-#include <math.h>
 #include <sblib/internal/iap.h>
 #include <sblib/ioports.h>
 #include <sblib/spi.h>
@@ -136,7 +135,7 @@ void setup() {
 
     // ADC Pins
     pinMode(PEEK_DET_SHARP, OUTPUT);
-    digitalWrite(PEEK_DET_SHARP,false);			// Setzt den Pin auf 0, sonst deckelt dieser den Sensor
+	digitalWrite(PEEK_DET_SHARP,false);			// Setzt den Pin auf 0, sonst deckelt dieser den Sensor
     pinMode(ADC_CONF, 		OUTPUT);
     pinMode(PULSE_SHARP, 	OUTPUT);
 
@@ -188,7 +187,6 @@ void loop()
 	unsigned short int messwerte[SAMPLE_RATE] = {0};		// Messwerte die gesampelt wurden, werden hier abgelegt.
     unsigned short int adc_value=0;							// Variable zur Übertragung der Werte, über KNX und bei UART
     volatile unsigned int on=1,off=0;
-    volatile bool unterschritten=false;
 
 	// Diese If-Abfrage sendet den Wert auf das KNX, wenn timer_expired auf true gesetzt wird
     if(timer_expired)
@@ -207,21 +205,7 @@ void loop()
 		serial.print("ADC value: ");
 		serial.print(adc_value, DEC, 5);
 		serial.print("  ADC value: ");
-		serial.print(adc_value, HEX, 4);
-
-
-		// Spannung berechnen und Ausgeben
-		float spannung= ((float)4.096/(float)65000)*adc_value;
-		int vorkomma= (int)spannung;
-		float zwischenrechnung= spannung- (int)(spannung);
-		int nachkomma=zwischenrechnung*1000;
-
-		serial.print("   Spannung [V] : ");
-		serial.print(vorkomma,DEC,1);
-		serial.print(".");
-		serial.println(nachkomma,DEC,3);
-
-
+		serial.println(adc_value, HEX, 4);
 
 		// Sendet an den KNX BUs, ob Grenzwert überschritten ist, oder unterschritten ist!!
     	if( (limit*1.1) < adc_value)		// Schreibt das Grenzwert = 1, wenn Limit um 10% überschritten ist
@@ -236,11 +220,11 @@ void loop()
     	if( (limit*0.9) > adc_value)		// Schreibt das Grenzwert 0 ist, wenn Limit um 10% unterschritten ist
 		{
 			if(Grenzwert) {
-				unterschritten=true;
-				//objectWrite(0, off);
+
+				objectWrite(0, off);
 				Grenzwert=false;
 				serial.print("Grenzwert unterschritten :");
-				serial.println(adc_value);
+				//serial.println(adc_value);
 			}
 		}
 
@@ -250,11 +234,8 @@ void loop()
 		objectWrite(2, (unsigned int) (adc_value));		// OBjekt wird übertragen
 		timer_expired= false;
     }
-// Irgendwie sendet obejctWrite keine null, deswegen wurde das aus der großen If rausgenommen ...
-    if(unterschritten){
-    	objectWrite(0, off);
-    	unterschritten=false;
-    }
+
+
 
     // Sleep up to 1 millisecond if there is nothing to do
     if (bus.idle())
