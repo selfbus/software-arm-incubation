@@ -1,3 +1,2 @@
-ObjectWrite :übersendet in der Loop, keine Null???
 ObjectWrite: Float problem? Kann nicht verwendet werden.
 Setzt ObjectWrite das Flag nicht zurück?

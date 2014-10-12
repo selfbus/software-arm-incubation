@@ -46,7 +46,7 @@
 
 #define ARRAY_SIZE		1000
 #define TRESHHOLD_HIGH  15000			// 0-65535
-#define TRESHHOLD_LOW	10000			// vielleicht nötig ???
+#define TRESHHOLD_LOW	10000			// vielleicht nï¿½tig ???
 #define SAMPLE_RATE		10				// Wieviel
 
 #define PARAMETER_BASE 	0x01F4
@@ -54,9 +54,12 @@
 
 SPI spi(SPI_PORT_0);
 
-volatile bool timer_expired=false;		// Bool für die IF-Abfrage, wenn true wird gesendet
+volatile bool timer_expired=false;		// Bool fï¿½r die IF-Abfrage, wenn true wird gesendet
 const byte* channelParams = userEepromData + (PARAMETER_BASE - USER_EEPROM_START);
 
+unsigned short int limit;
+int min_limit;
+int max_limit;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -81,7 +84,7 @@ void setup_Timer32_0_Interrupt(){
 
 }
 
-// Funktion: Messung wird ausgeführt
+// Funktion: Messung wird ausgefï¿½hrt
 void messung(unsigned short int messwerte[SAMPLE_RATE]){
 
 	digitalWrite(PULSE_SHARP, true);		// Erzeugt den Puls, der LED, in der Rauchkammer (Eigentliche Messung)
@@ -93,7 +96,7 @@ void messung(unsigned short int messwerte[SAMPLE_RATE]){
 		for(int i=0;i<10;i++);				// Abwarten einer gewissen Zeit
 		digitalWrite(ADC_CONF, false);
 
-		messwerte[j]=spi.transfer(0);		// Sendet Wert und empfängt Wert vom Sensor und schreibt ins Messwerte Array[Global]
+		messwerte[j]=spi.transfer(0);		// Sendet Wert und empfï¿½ngt Wert vom Sensor und schreibt ins Messwerte Array[Global]
 	}
 
 	digitalWrite(PULSE_SHARP, false);		// LED aus
@@ -119,9 +122,9 @@ void setup() {
 	// Initialize the application.
 
 	//bcu.begin(4, 0x7054, 2); 	// We are a "Jung 2118" device, version 0.2
-	bcu.begin(76, 0x0442, 3); 	// We are a "EigenDevice" device, version 0.2  // eigengebräu
+	bcu.begin(76, 0x0442, 3); 	// We are a "EigenDevice" device, version 0.2  // eigengebrï¿½u
 
-	// Interruptanweisung für die LED
+	// Interruptanweisung fï¿½r die LED
 	pinMode(INFO_LED, OUTPUT);	// Info LED
 	pinMode(RUN_LED,  OUTPUT);	// Run LED
 
@@ -176,6 +179,10 @@ void setup() {
 	}
 	objectWrite(0,(unsigned int) 0);
 
+	// Grenzwert holen
+	limit=((userEepromData[0xF5])<<8) | userEepromData[0xF6]; // Grenzwert auslesen! aus der Speicherstelle 0xF4 & 0xF5
+	min_limit = limit * 0.9;
+	max_limit = limit * 1.1;
 }
 
 /*
@@ -183,12 +190,12 @@ void setup() {
  */
 void loop()
 {
-	unsigned short int limit=((userEepromData[0xF5])<<8) | userEepromData[0xF6]; // Grenzwert auslesen! aus der Speicherstelle 0xF4 & 0xF5
 	static bool Grenzwert=0;
 	unsigned short int messwerte[SAMPLE_RATE] = {0};		// Messwerte die gesampelt wurden, werden hier abgelegt.
-    unsigned short int adc_value=0;							// Variable zur Übertragung der Werte, über KNX und bei UART
+    volatile unsigned short int adc_value=0;							// Variable zur ï¿½bertragung der Werte, ï¿½ber KNX und bei UART
     volatile unsigned int on=1,off=0;
-    volatile bool unterschritten=false;
+    //volatile bool unterschritten=false;
+
 
 	// Diese If-Abfrage sendet den Wert auf das KNX, wenn timer_expired auf true gesetzt wird
     if(timer_expired)
@@ -223,38 +230,36 @@ void loop()
 
 
 
-		// Sendet an den KNX BUs, ob Grenzwert überschritten ist, oder unterschritten ist!!
-    	if( (limit*1.1) < adc_value)		// Schreibt das Grenzwert = 1, wenn Limit um 10% überschritten ist
+		// Sendet an den KNX BUs, ob Grenzwert ï¿½berschritten ist, oder unterschritten ist!!
+    	if( max_limit < adc_value)		// Schreibt das Grenzwert = 1, wenn Limit um 10% ï¿½berschritten ist
 		{
 			if(!Grenzwert){
 				objectWrite(0,on);
 				Grenzwert=true;
-				serial.print("Grenzwert überschritten :");
+				serial.print("Grenzwert ï¿½berschritten :");
 				serial.println(adc_value);
 			}
 		}
-    	if( (limit*0.9) > adc_value)		// Schreibt das Grenzwert 0 ist, wenn Limit um 10% unterschritten ist
+    	if( min_limit > adc_value)		// Schreibt das Grenzwert 0 ist, wenn Limit um 10% unterschritten ist
 		{
 			if(Grenzwert) {
-				unterschritten=true;
-				//objectWrite(0, off);
+				//unterschritten=true;
+				objectWrite(0, (unsigned int) 0);
 				Grenzwert=false;
 				serial.print("Grenzwert unterschritten :");
 				serial.println(adc_value);
 			}
 		}
 
-    	// Daten drehen, da objectWrite die Bitwerte verdreht ausgibt. ??
-    	adc_value = ((adc_value & 0x00FF)<<8) | (adc_value>>8);	// 20 4E
-
-		objectWrite(2, (unsigned int) (adc_value));		// OBjekt wird übertragen
+		objectWrite(2, (unsigned int) (adc_value));		// OBjekt wird ï¿½bertragen
 		timer_expired= false;
     }
-// Irgendwie sendet obejctWrite keine null, deswegen wurde das aus der großen If rausgenommen ...
-    if(unterschritten){
-    	objectWrite(0, off);
-    	unterschritten=false;
-    }
+
+    // Irgendwie sendet obejctWrite keine null, deswegen wurde das aus der groï¿½en If rausgenommen ...
+//    if(unterschritten){
+//    	objectWrite(0, off);
+//    	unterschritten=false;
+//    }
 
     // Sleep up to 1 millisecond if there is nothing to do
     if (bus.idle())
