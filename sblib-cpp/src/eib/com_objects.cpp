@@ -66,16 +66,15 @@ byte* objectValuePtr(int objno)
 
 unsigned int objectRead(int objno)
 {
-    byte* ptr = objectValuePtr(objno);
-    int sz = objectSize(objno);
-    unsigned int value = *ptr++;
+	int sz = objectSize(objno);
+	byte* ptr = objectValuePtr(objno) + sz;
+	unsigned int value = *--ptr;
 
-    while (--sz > 0)
-    {
-        value <<= 8;
-        value |= *ptr++;
-    }
-
+	while (--sz > 0)
+	{
+		value <<= 8;
+		value |= *--ptr;
+	}
     return value;
 }
 
@@ -84,9 +83,9 @@ static void _objectWrite(int objno, unsigned int value, int flags)
     byte* ptr = objectValuePtr(objno);
     int sz = objectSize(objno);
 
-    for (ptr += sz; sz > 0; --sz)
+    for (; sz > 0; --sz)
     {
-        *--ptr = value;
+    	*ptr++ = value;
         value >>= 8;
     }
 
