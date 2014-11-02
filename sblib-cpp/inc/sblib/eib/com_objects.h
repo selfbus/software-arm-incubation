@@ -12,6 +12,7 @@
 
 #include <sblib/eib/bcu.h>
 #include <sblib/eib/types.h>
+#include <sblib/eib/datapoint_types.h>
 
 
 /**
@@ -25,10 +26,12 @@ unsigned int objectRead(int objno);
 
 /**
  * Get the float value from a communication object. Can be used for
- * communication objects of type FLOAT.
+ * communication objects of type 2 byte float (EIS5 / DPT9). The value is in
+ * 1/100 - a DPT9 value of 21.01 is returned as 2101.
  *
  * @param objno - the ID of the communication object.
- * @return The value of the com-object.
+ * @return The value of the com-object in 1/100. INVALID_DPT_FLOAT is returned
+ *         for the DPT9 "invalid data" value.
  */
 float objectReadFloat(int objno);
 
@@ -62,16 +65,8 @@ void objectWrite(int objno, unsigned int value);
 
 /**
  * Set the value of a communication object. Calling this function triggers the
- * sending of a write-group-value telegram.
- *
- * @param objno - the ID of the communication object.
- * @param value - the new value of the communication object.
- */
-void objectWrite(int objno, float value);
-
-/**
- * Set the value of a communication object. Calling this function triggers the
- * sending of a write-group-value telegram.
+ * sending of a write-group-value telegram. The number of bytes that are copied
+ * depends on the size of the target communication object's field.
  *
  * @param objno - the ID of the communication object.
  * @param value - the new value of the communication object.
@@ -79,12 +74,18 @@ void objectWrite(int objno, float value);
 void objectWrite(int objno, byte* value);
 
 /**
- * XXX
+ * Set the value of a communication object. Calling this function triggers the
+ * sending of a write-group-value telegram.
+ *
+ * The communication object is a 2 byte float (EIS5 / DPT9) object. The value is
+ * in 1/100, so a value of 2101 would set a DPT9 float value of 21.01. The valid
+ * range of the values is -671088.64 to 670760.96.
  *
  * @param objno - the ID of the communication object.
- * @param value - the new value of the communication object.
+ * @param value - the new value of the communication object in 1/100.
+ *                Use INVALID_DPT_FLOAT for the DPT9 "invalid data" value.
  */
-void objectUpdate(int objno, unsigned int value);
+void objectWriteFloat(int objno, int value);
 
 /**
  * Mark a communication object as written. Use this function if you directly change
@@ -94,6 +95,38 @@ void objectUpdate(int objno, unsigned int value);
  * @param objno - the ID of the communication object.
  */
 void objectWritten(int objno);
+
+/**
+ * Set the value of a communication object and mark the communication object
+ * as updated. This does not trigger a write-group-value telegram.
+ *
+ * @param objno - the ID of the communication object.
+ * @param value - the new value of the communication object.
+ */
+void objectUpdate(int objno, unsigned int value);
+
+/**
+ * Set the value of a communication object and mark the communication object
+ * as updated. This does not trigger a write-group-value telegram.
+ *
+ * @param objno - the ID of the communication object.
+ * @param value - the new value of the communication object.
+ */
+void objectUpdate(int objno, byte* value);
+
+/**
+ * Set the value of a communication object and mark the communication object
+ * as updated. This does not trigger a write-group-value telegram.
+ *
+ * The communication object is a 2 byte float (EIS5 / DPT9) object. The value
+ * is in 1/100, so a value of 2101 would set a DPT9 float value of 21.01.
+ * The possible range of the values is -671088.64 to 670760.96.
+ *
+ * @param objno - the ID of the communication object.
+ * @param value - the new value of the communication object in 1/100.
+ *                Use INVALID_DPT_FLOAT for the DPT9 "invalid data" value.
+ */
+void objectUpdateFloat(int objno, int value);
 
 /**
  * Get the ID of the next communication object that was updated
@@ -181,6 +214,47 @@ inline const ComConfig& objectConfig(int objno)
 inline void objectWritten(int objno)
 {
     setObjectFlags(objno, COMFLAG_TRANSREQ);
+}
+
+inline void objectWrite(int objno, unsigned int value)
+{
+    extern void _objectWrite(int objno, unsigned int value, int flags);
+    _objectWrite(objno, value, COMFLAG_TRANSREQ);
+}
+
+inline void objectWrite(int objno, byte* value)
+{
+    extern void _objectWriteBytes(int objno, byte* value, int flags);
+    _objectWriteBytes(objno, value, COMFLAG_TRANSREQ);
+}
+
+inline void objectWriteFloat(int objno, int value)
+{
+    extern void _objectWrite(int objno, unsigned int value, int flags);
+    _objectWrite(objno, dptToFloat(value), COMFLAG_TRANSREQ);
+}
+
+inline void objectUpdate(int objno, unsigned int value)
+{
+    extern void _objectWrite(int objno, unsigned int value, int flags);
+    _objectWrite(objno, value, COMFLAG_UPDATE);
+}
+
+inline void objectUpdate(int objno, byte* value)
+{
+    extern void _objectWriteBytes(int objno, byte* value, int flags);
+    _objectWriteBytes(objno, value, COMFLAG_UPDATE);
+}
+
+inline void objectUpdateFloat(int objno, int value)
+{
+    extern void _objectWrite(int objno, unsigned int value, int flags);
+    _objectWrite(objno, dptToFloat(value), COMFLAG_UPDATE);
+}
+
+inline float objectReadFloat(int objno)
+{
+    return dptFromFloat(objectRead(objno));
 }
 
 #endif /*sblib_com_objects_h*/

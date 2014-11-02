@@ -78,7 +78,7 @@ unsigned int objectRead(int objno)
     return value;
 }
 
-static void _objectWrite(int objno, unsigned int value, int flags)
+void _objectWrite(int objno, unsigned int value, int flags)
 {
     byte* ptr = objectValuePtr(objno);
     int sz = objectSize(objno);
@@ -92,14 +92,15 @@ static void _objectWrite(int objno, unsigned int value, int flags)
     setObjectFlags(objno, flags);
 }
 
-void objectWrite(int objno, unsigned int value)
+void _objectWriteBytes(int objno, byte* value, int flags)
 {
-	_objectWrite(objno, value, COMFLAG_TRANSREQ);
-}
+    byte* ptr = objectValuePtr(objno);
+    int sz = objectSize(objno);
 
-void objectUpdate(int objno, unsigned int value)
-{
-	_objectWrite(objno, value, COMFLAG_UPDATE);
+    for (; sz > 0; --sz)
+        *ptr++ = *value++;
+
+    setObjectFlags(objno, flags);
 }
 
 /*

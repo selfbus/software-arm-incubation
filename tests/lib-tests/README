@@ -1,0 +1,17 @@
+This directory contains the tests for the library.
+The tests are executed on the PC, not on the ARM.
+
+To compile the tests, you need to have a 32bit GCC installed.
+
+For Debian/Ubuntu based systems this can be done with:
+sudo apt-get install libc6-dev-i386 lib32stdc++-4.8-dev
+
+The tests can be either started from within Eclipse, or on
+the commandline with lib-tests/Debug/lib-tests
+
+For a developer introduction to the test framework Catch, please see
+https://github.com/philsquared/Catch/blob/master/docs/tutorial.md
+
+To get colored output in the Eclipse console, install the Eclipse
+plugin "Local Terminal". Linux only. For details see
+http://stackoverflow.com/questions/6286701/an-eclipse-console-view-that-respects-ansi-color-codes
