@@ -247,6 +247,48 @@ bool BCU::processDeviceDescriptorReadTelegram(int id)
     return false; // unknown device descriptor
 }
 
+static void cpyToUserRam(unsigned int address, unsigned char * buffer, unsigned int count)
+{
+	address -= USER_RAM_START;
+	if ((address > 0x60) || ((address + count) < 0x60))
+	{
+		memcpy(userRamData + address, buffer, count);
+	}
+	else
+	{
+		while (count--)
+		{
+			if (address == 0x60)
+				userRam.status = * buffer;
+			else
+				userRamData[address] = * buffer;
+			buffer++;
+			address++;
+		}
+	}
+}
+
+static void cpyFromUserRam(unsigned int address, unsigned char * buffer, unsigned int count)
+{
+	address -= USER_RAM_START;
+	if ((address > 0x60) || ((address + count) < 0x60))
+	{
+		memcpy(buffer, userRamData + address, count);
+	}
+	else
+	{
+		while (count--)
+		{
+			if (address == 0x60)
+				* buffer = userRam.status;
+			else
+				* buffer = userRamData[address];
+			buffer++;
+			address++;
+		}
+	}
+}
+
 void BCU::processDirectTelegram(int apci)
 {
     const int senderAddr = (bus.telegram[1] << 8) | bus.telegram[2];
@@ -292,12 +334,7 @@ void BCU::processDirectTelegram(int apci)
                 userEeprom.modified();
             }
             else if (address >= USER_RAM_START && address < USER_RAM_END)
-            {
-            	if (address == 0x60)
-            		userRam.status = bus.telegram[10];
-            	else
-                    memcpy(userRamData + (address - USER_RAM_START), bus.telegram + 10, count);
-            }
+            	cpyToUserRam(address, bus.telegram + 10, count);
 
             sendAck = T_ACK_PDU;
 #if BCU_TYPE >= 20
@@ -311,12 +348,7 @@ void BCU::processDirectTelegram(int apci)
             if (address >= USER_EEPROM_START && address < USER_EEPROM_END)
                 memcpy(sendTelegram + 10, userEepromData + (address - USER_EEPROM_START), count);
             else if (address >= USER_RAM_START && address < USER_RAM_END)
-            {
-            	if (address == 0x60)
-            		bus.telegram[10] = userRam.status;
-            	else
-                    memcpy(sendTelegram + 10, userRamData + (address - USER_RAM_START), count);
-            }
+            	cpyFromUserRam(address, sendTelegram + 10, count);
             sendTelegram[5] = 0x63 + count;
             sendTelegram[6] = 0x42;
             sendTelegram[7] = 0x40 | count;
