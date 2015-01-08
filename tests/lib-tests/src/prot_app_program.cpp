@@ -292,6 +292,7 @@ static Test_Case testCase =
 {
   "App Prog"
 , 0x0004, 0x2060, 0x01
+, 0
 , tc_eepromSetup
 , tc_setup
 , (StateFunction *) gatherProtocolState

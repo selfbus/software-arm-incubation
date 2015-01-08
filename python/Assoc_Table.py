@@ -41,12 +41,12 @@ class Assoc_Table (_Table_) :
         ( ptr   = 0x111
         )
 
-    def __init__ (self, eeprom) :
-        self.__super.__init__ (eeprom)
-        self._assocs = []
+    def __init__ (self, device) :
+        self.__super.__init__ (device)
     # end def __init__
 
     def _build_assocs (self, com_table, addr_table) :
+        self._assocs = []
         for obj in com_table :
             if obj.group_address :
                 self._assocs.append ((obj.group_address, obj))
@@ -57,8 +57,9 @@ class Assoc_Table (_Table_) :
 
     def update_eeprom (self, offset) :
         offset       = self.__super.update_eeprom (offset)
-        eep          = self.eeprom
-        self._build_assocs (eep.com_table, eep.address_table)
+        device       = self.device
+        eep          = device._eeprom
+        self._build_assocs (device.com_table, device.address_table)
         eep [offset] = len (self._assocs)
         offset      += 1
         for grp, com in self._assocs :
@@ -74,8 +75,8 @@ class Assoc_Table (_Table_) :
 
     def _as_string (self, bytes = None, head = "", sep = "\n") :
         if bytes is None :
-            bytes = self.eeprom.bytes
-        start  = bytes [self.spec ["ptr"] - 0x100]
+            bytes = self.device._eeprom
+        start  = bytes [self.spec ["ptr"]]
         result = \
             [ "Assoc Table (0x1%02X):" % (start, )
             ]

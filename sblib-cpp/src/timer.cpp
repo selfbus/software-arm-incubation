@@ -14,7 +14,7 @@
 
 
 // The number of milliseconds since processor start/reset
-unsigned int systemTime;
+volatile unsigned int systemTime;
 
 // The timers
 static LPC_TMR_TypeDef* const timers[4] = { LPC_TMR16B0, LPC_TMR16B1, LPC_TMR32B0, LPC_TMR32B1 };

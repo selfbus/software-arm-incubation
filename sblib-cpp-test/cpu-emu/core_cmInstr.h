@@ -332,8 +332,12 @@ __attribute__( ( always_inline ) ) __STATIC_INLINE void __NOP(void)
     Wait For Interrupt is a hint instruction that suspends execution
     until one of a number of events occurs.
  */
+
+extern void _test_wfi(void);
+
 __attribute__( ( always_inline ) ) __STATIC_INLINE void __WFI(void)
 {
+	_test_wfi();
 }
 
 

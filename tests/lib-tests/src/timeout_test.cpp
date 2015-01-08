@@ -41,12 +41,12 @@ static void _check_time_wrap(void * refState)
 
 static Telegram testCaseTelegrams[] =
 { {TIMER_TICK,  6,  0, _start_to_20,       {}}
-, {TIMER_TICK,  19, 0, _check_expired_no,  {}}
+, {TIMER_TICK,  18, 0, _check_expired_no,  {}}
 , {TIMER_TICK,   1, 0, _check_expired_no,  {}}
 , {TIMER_TICK,   1, 0, _check_expired_yes, {}}
 // force a wrap-around of the systemTime
 , {TIMER_TICK, (unsigned int) -38, 0, _start_to_20,       {}}
-, {TIMER_TICK,  19, 0, _check_expired_no,  {}}
+, {TIMER_TICK,  18, 0, _check_expired_no,  {}}
 , {TIMER_TICK,   1, 0, _check_time_wrap,   {}}
 , {TIMER_TICK,   1, 0, _check_expired_yes, {}}
 , {END}
@@ -61,6 +61,7 @@ static Test_Case testCase =
 {
   "Timeout Test"
 , 0x0004, 0x2060, 0x01
+, 0
 , NULL
 , tc_setup
 , NULL

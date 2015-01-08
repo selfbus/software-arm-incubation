@@ -57,6 +57,7 @@ typedef struct
           int               manufacturer;
           int               deviceType;
           int               version;
+          unsigned int      powerOnDelay;
           TestCaseSetup   * eepromSetup;
           TestCaseSetup   * setup;
           StateFunction   * gatherState;

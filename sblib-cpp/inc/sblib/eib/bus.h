@@ -13,6 +13,9 @@
 #include <sblib/core.h>
 #include <sblib/eib/bcu_type.h>
 
+// dump all received and sent telegrams out on the serial interface
+#define DUMP_TELEGRAMS
+
 class Bus;
 
 /**

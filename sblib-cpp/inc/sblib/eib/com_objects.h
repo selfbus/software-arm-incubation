@@ -55,6 +55,15 @@ byte* objectValuePtr(int objno);
 int objectSize(int objno);
 
 /**
+ * Set the value of a communication object without triggering the
+ * sending of a write-group-value telegram.
+ *
+ * @param objno - the ID of the communication object.
+ * @param value - the new value of the communication object.
+ */
+void objectSetValue(int objno, unsigned int value);
+
+/**
  * Set the value of a communication object. Calling this function triggers the
  * sending of a write-group-value telegram.
  *
@@ -214,6 +223,12 @@ inline const ComConfig& objectConfig(int objno)
 inline void objectWritten(int objno)
 {
     setObjectFlags(objno, COMFLAG_TRANSREQ);
+}
+
+inline void objectSetValue(int objno, unsigned int value)
+{
+    extern void _objectWrite(int objno, unsigned int value, int flags);
+    _objectWrite(objno, value, 0);
 }
 
 inline void objectWrite(int objno, unsigned int value)

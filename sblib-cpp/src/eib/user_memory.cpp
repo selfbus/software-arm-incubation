@@ -19,13 +19,13 @@
 // move userRamData to a nice address (ok it's stupid but it helps debugging)
 byte __attribute__ ((aligned (4))) userRamPadding[20];
 
-byte  __attribute__ ((aligned (4))) userRamData[USER_RAM_SIZE];
+byte  __attribute__ ((aligned (4))) userRamData[USER_RAM_SIZE+USER_RAM_SHADOW_SIZE];
 UserRam& userRam = *(UserRam*) userRamData;
 
 byte  __attribute__ ((aligned (4))) userEepromData[USER_EEPROM_SIZE];
 UserEeprom& userEeprom = *(UserEeprom*) userEepromData;
 
-bool userEepromModified;
+byte userEepromModified;
 unsigned int writeUserEepromTime;
 
 

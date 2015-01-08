@@ -37,13 +37,13 @@ from    _Object_  import _Object_
 class _Table_ (_Object_) :
     """Base class for all table objects"""
 
-    def __init__ (self, eeprom) :
-        self.eeprom = eeprom
-        self.spec   = getattr (self, eeprom.Kind)
+    def __init__ (self, device) :
+        self.device = device
+        self.spec   = getattr (self, device.Kind)
     # end def __init__
 
     def update_eeprom (self, offset) :
-        eep = self.eeprom
+        eep = self.device._eeprom
         eep [self.spec ["ptr"]] = offset & 0xFF
         return offset
     # end def update_eeprom

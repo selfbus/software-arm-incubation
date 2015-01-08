@@ -8,3 +8,12 @@
 
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
+
+/* the test framework expects that the application provides a setup function
+ * since the lib tests don't have an application we need to provide an
+ * empty setup function
+ */
+void setup(void)
+{
+
+}

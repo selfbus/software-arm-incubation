@@ -32,6 +32,7 @@ unsigned char FLASH[FLASH_SIZE];
 
 // System core clock
 uint32_t SystemCoreClock = 48000000;
+unsigned int wfiSystemTimeInc = 0;
 
 
 typedef enum
@@ -131,4 +132,11 @@ void IAP_Call (unsigned int * cmd, unsigned int * stat)
     default:
         * stat = INVALID_COMMAND;
     }
+}
+
+extern unsigned int systemTime;
+extern unsigned int wfiSystemTimeInc;
+void _test_wfi(void)
+{
+	systemTime +=  wfiSystemTimeInc;
 }

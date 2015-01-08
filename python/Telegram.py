@@ -100,7 +100,7 @@ class Int_Field (_Field_) :
         self.size     = struct.calcsize (self.code)
     # end def __init__
 
-    def as_bytes (self, result, value) :
+    def as_bytes (self, result, value, telegram) :
         off = self.offset
         raw = struct.pack (self.code, (value & self.mask) << self.shift)
         new = []
@@ -123,6 +123,28 @@ class Int_Field (_Field_) :
     # end def from_string
 
 # end class Int_Field
+
+class Value_Field (Int_Field) :
+    """Special handling of values"""
+
+    struct_code = \
+        { 7 : "B"
+        , 8 : "B"
+        }
+
+    def as_bytes (self, result, value, telegram) :
+        tc = telegram.type_code
+        if tc < 7 :
+            return self.__super.as_bytes (result, value, telegram)
+        off = self.offset + 1
+        if isinstance (value, bytes) :
+            new = value
+        else :
+            new = struct.pack (self.struct_code [tc], value)
+        return result [:off] + new + result [off + self.size:]
+    # end def as_bytes
+
+# end class Value_Field
 
 class Mapping_Field (Int_Field) :
     """Convert the value into a string"""
@@ -199,7 +221,7 @@ class _Address_ (_Field_) :
         self.__super.__init__ (name, offset, 0, 0xFFFF, important = True)
     # end def __init__
 
-    def as_bytes (self, result, value) :
+    def as_bytes (self, result, value, telegram) :
         off = self.offset
         raw = struct.pack ("!H", (value._value & self.mask) << self.shift)
         new = []
@@ -317,7 +339,7 @@ class _Telegram_ (_Object_, metaclass = M_Sub_Type) :
             if isinstance (v, str) :
                 v = f.from_string (self, v)
             setattr (self, n, v)
-        assert not kw
+        assert not kw, kw
     # end def __init__
 
     @property
@@ -332,13 +354,19 @@ class _Telegram_ (_Object_, metaclass = M_Sub_Type) :
     def bytes (self) :
         result = bytes ([0x00] * 23)
         for f in self.__class__.sorted_fields :
-            result = f.as_bytes (result, getattr (self, f.name))
+            result = f.as_bytes (result, getattr (self, f.name), self)
         size = 7 + self.length
         csum = 0xFF
         for b in result [:size] :
             csum ^= b
         return result [:size] + bytes ((csum, ))
     # end def bytes
+
+    def __call__ (self, value) :
+        self.value = value
+        return self
+    # end def __call__
+
 
     def __str__ (self) :
         result = []
@@ -456,9 +484,15 @@ class Get_Value_Response (Unnumbered_Data_Packet) :
 # end class Get_Value_Response
 
 class Send_Value (Unnumbered_Data_Packet) :
+
+    def __init__ (self, * args, ** kw) :
+        self.type_code = kw.pop ("type_code", 1)
+        self.__super.__init__   (* args, ** kw)
+    # end def __init__
+
     Sub_Type_Id = 0b0010
     Fields      = \
-        ( Int_Field ("value", 7, 0, 0x3F, important = True)
+        ( Value_Field ("value", 7, 0, 0x3F, important = True)
         ,
         )
     Defaults = dict (group_address = 1)

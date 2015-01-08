@@ -25,7 +25,7 @@ extern UserRam& userRam;
 /**
  * The user RAM as plain array.
  */
-extern byte userRamData[USER_RAM_SIZE];
+extern byte userRamData[USER_RAM_SIZE+USER_RAM_SHADOW_SIZE];
 
 /**
  * The user EEPROM.
@@ -63,8 +63,11 @@ public:
 
     /**
      * 0x0060: BCU1 system status. See enum BcuStatus below.
+     *         In some modes (BCU2 as BCU1) this part of the RAM
+     *         is sued for com objects as well. Therefor the real
+     *         status is at the end of the user ram.
      */
-    byte status;
+    byte _status;
 
     /**
      * 0x0061: BCU2 application run state.
@@ -73,8 +76,12 @@ public:
      * 1 = the program is running
      * 2 = the program is ready but not running
      * 3 = the program is terminated
+     *
+     *         In some modes (BCU2 as BCU1) this part of the RAM
+     *         is sued for com objects as well. Therefor the real
+     *         runState is at the end of the user ram.
      */
-    byte runState;
+    byte _runState;
 
     /**
      * 0x0062: BCU2 Device control, see enum DeviceControl below.
@@ -94,12 +101,15 @@ public:
     /**
      * 0x0064: Reserved for system software.
      */
-    byte reserved[64];
+    byte reserved[0x64];
 
     /**
      * 0x00C8: Application program data.
      */
     byte user2[USER_RAM_SIZE - 0xc8];
+
+    byte status; // real status
+    byte runState;
 
     /**
      * Access the user RAM like an ordinary array. The start address is subtracted

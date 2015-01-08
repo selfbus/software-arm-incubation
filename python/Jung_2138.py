@@ -35,7 +35,7 @@ from   __future__ import absolute_import, unicode_literals
 import   EEPROM
 import   Com_Table as CT
 import   Telegram
-import   Test_Case
+import   Test_Case_Old as Test_Case
 import   math
 
 class Jung_2138 (EEPROM.BCU1) :
@@ -100,10 +100,10 @@ class Jung_2138 (EEPROM.BCU1) :
 def Simple (file_name) :
     j = Jung_2138 ()
     j.own_address = "1.1.1"
-    j.output   [0].add_to_group ("1/0/30")
     j.output   [1].add_to_group ("1/0/30")
-    j.output   [1].add_to_group ("1/0/31")
-    j.feedback [0].group_address = "1/0/20"
+    j.output   [2].add_to_group ("1/0/30")
+    j.output   [2].add_to_group ("1/0/31")
+    j.feedback [1].group_address = "1/0/20"
     TCE = Test_Case.Test_Case_Entry
     tc  = Test_Case.Test_Case \
         ( "simple"
@@ -176,10 +176,10 @@ def Simple_Inverted (file_name) :
         , output_kind_2 = 1
         )
     j.own_address = "1.1.1"
-    j.output   [0].add_to_group ("1/0/30")
-    j.output   [1].add_to_group ("1/0/31")
-    j.feedback [0].group_address = "1/0/20"
-    j.feedback [1].group_address = "1/0/21"
+    j.output   [1].add_to_group ("1/0/30")
+    j.output   [2].add_to_group ("1/0/31")
+    j.feedback [1].group_address = "1/0/20"
+    j.feedback [2].group_address = "1/0/21"
     TCE = Test_Case.Test_Case_Entry
     tc  = Test_Case.Test_Case \
         ( "simple_i"
@@ -281,10 +281,10 @@ def Simple_Timeouts (file_name) :
         , delay_base_2       = int (math.log(260/130, 2))
         )
     j.own_address = "1.1.1"
-    j.output   [0].add_to_group ("1/0/30")
-    j.output   [1].add_to_group ("1/0/31")
-    j.feedback [0].group_address = "1/0/20"
-    j.feedback [1].group_address = "1/0/21"
+    j.output   [1].add_to_group ("1/0/30")
+    j.output   [2].add_to_group ("1/0/31")
+    j.feedback [1].group_address = "1/0/20"
+    j.feedback [2].group_address = "1/0/21"
     TCE = Test_Case.Test_Case_Entry
     tc  = Test_Case.Test_Case \
         ( "simple_timeout"
@@ -418,10 +418,10 @@ def Timed_Functions (file_name) :
         , reaction_to_off_2  = False
         )
     j.own_address = "1.1.1"
-    j.output   [0].add_to_group ("1/0/30")
-    j.output   [1].add_to_group ("1/0/31")
-    j.feedback [0].group_address = "1/0/20"
-    j.feedback [1].group_address = "1/0/21"
+    j.output   [1].add_to_group ("1/0/30")
+    j.output   [2].add_to_group ("1/0/31")
+    j.feedback [1].group_address = "1/0/20"
+    j.feedback [2].group_address = "1/0/21"
     TCE = Test_Case.Test_Case_Entry
     tc  = Test_Case.Test_Case \
         ( "timed_function"
@@ -590,14 +590,14 @@ def Special_Function_1 (file_name) :
         , special_4_kind      = 2 ## forced output
         )
     j.own_address = "1.1.1"
-    j.output   [0].add_to_group ("1/0/30")
-    j.output   [1].add_to_group ("1/0/31")
-    j.output   [2].add_to_group ("1/0/32")
-    j.output   [3].add_to_group ("1/0/33")
-    j.special  [0].add_to_group ("1/0/40")
-    j.special  [1].add_to_group ("1/0/41")
-    j.special  [2].add_to_group ("1/0/42")
-    j.special  [3].add_to_group ("1/0/43")
+    j.output   [1].add_to_group ("1/0/30")
+    j.output   [2].add_to_group ("1/0/31")
+    j.output   [3].add_to_group ("1/0/32")
+    j.output   [4].add_to_group ("1/0/33")
+    j.special  [1].add_to_group ("1/0/40")
+    j.special  [2].add_to_group ("1/0/41")
+    j.special  [3].add_to_group ("1/0/42")
+    j.special  [4].add_to_group ("1/0/43")
     TCE = Test_Case.Test_Case_Entry
     tc  = Test_Case.Test_Case \
         ( "special_1"
@@ -635,7 +635,7 @@ def Special_Function_1 (file_name) :
               )
         )
     ### test OR
-    if 0 :
+    if 1 :
      tc.add \
         ( TCE ( "TEL_RX", telegram = c0_on
               , comment = 'receive a "ON" telegram for output 1'
@@ -692,7 +692,7 @@ def Special_Function_1 (file_name) :
               )
         )
     ### test AND
-    if 0 :
+    if 1 :
      tc.add \
         ( TCE ( "TEL_RX", telegram = c1_on
               , comment = 'receive a "ON" telegram for output 2'
@@ -785,7 +785,7 @@ def Special_Function_1 (file_name) :
         ##       )
         )
     ### test forced follow
-    if 0 :
+    if 1 :
      tc.add \
        ( TCE ( "TEL_RX", telegram = c3_on
              , comment = ( 'Forced channel 4'
@@ -864,10 +864,10 @@ if __name__ == "__main__" :
     if 0 :
         j = Jung_2138 ()
         j.own_address = "1.1.1"
-        j.output   [0].add_to_group ("1/0/30")
         j.output   [1].add_to_group ("1/0/30")
-        j.output   [1].add_to_group ("1/0/31")
-        j.feedback [0].group_address = "1/0/20"
+        j.output   [2].add_to_group ("1/0/30")
+        j.output   [2].add_to_group ("1/0/31")
+        j.feedback [1].group_address = "1/0/20"
         if   1 :
             Telegrams ()
         elif 0 :

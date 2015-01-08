@@ -388,13 +388,13 @@ protected:
 
 ALWAYS_INLINE unsigned int millis()
 {
-    extern unsigned int systemTime;
+    extern volatile unsigned int systemTime;
     return systemTime;
 }
 
 ALWAYS_INLINE unsigned int elapsed(unsigned int ref)
 {
-    extern unsigned int systemTime;
+    extern volatile unsigned int systemTime;
     return systemTime - ref;
 }
 

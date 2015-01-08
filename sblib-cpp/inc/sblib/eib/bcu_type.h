@@ -22,6 +22,8 @@
 
     /** The size of the user RAM in bytes. */
 #   define USER_RAM_SIZE (0x100 - USER_RAM_START)
+    /** how many bytes are shadowed at the end of the user ram */
+#   define USER_RAM_SHADOW_SIZE 2
 
     /** Start address of the user EEPROM when ETS talks with us. */
 #   define USER_EEPROM_START 0x100

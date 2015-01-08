@@ -95,8 +95,8 @@ class Address_Table (_Table_) :
         )
     _own = None
 
-    def __init__ (self, eeprom) :
-        self.__super.__init__ (eeprom)
+    def __init__ (self, device) :
+        self.__super.__init__ (device)
         self.addresses = Address_Table_Dict ()
     # end def __init__
 
@@ -130,7 +130,7 @@ class Address_Table (_Table_) :
     # end def own
 
     def update_eeprom (self, offset) :
-        eep                      = self.eeprom
+        eep                      = self.device._eeprom
         offset                   = self.spec ["table"]
         eep [self.spec ["size"]] = len (self.addresses)
         offset                   = self.own.add_address (eep, offset)
@@ -149,7 +149,7 @@ class Address_Table (_Table_) :
 
     def _as_string (self, bytes = None, head = "", sep = "\n") :
         if bytes is None :
-            bytes = self.eeprom.bytes
+            bytes = self.device.eeprom
         start  = self.spec ["size"] - 0x100
         result = \
             [ "Address Table (0x1%02X):" % (start, )

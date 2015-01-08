@@ -49,6 +49,11 @@ BCU::BCU()
 {
     readUserEeprom();
 
+#ifdef DUMP_TELEGRAMS
+    serial.begin(115200);
+    serial.println("Telegram dump enabled");
+#endif
+
     sendTelegram[0] = 0;
     sendCtrlTelegram[0] = 0;
 
@@ -108,6 +113,23 @@ void BCU::loop()
 {
     if (!enabled)
         return;
+
+#ifdef DUMP_TELEGRAMS
+	{
+    	extern unsigned char telBuffer[];
+    	extern unsigned int telLength ;
+    	if (telLength > 0)
+    	{
+            for (int i = 0; i < telLength; ++i)
+            {
+                if (i) serial.print(" ");
+                serial.print(telBuffer[i], HEX, 2);
+            }
+            serial.println();
+            telLength = 0;
+    	}
+	}
+#endif
 
     if (bus.telegramReceived() && !bus.sendingTelegram() && (userRam.status & BCU_STATUS_TL))
         bcu.processTelegram();
@@ -271,7 +293,10 @@ void BCU::processDirectTelegram(int apci)
             }
             else if (address >= USER_RAM_START && address < USER_RAM_END)
             {
-                memcpy(userRamData + (address - USER_RAM_START), bus.telegram + 10, count);
+            	if (address == 0x60)
+            		userRam.status = bus.telegram[10];
+            	else
+                    memcpy(userRamData + (address - USER_RAM_START), bus.telegram + 10, count);
             }
 
             sendAck = T_ACK_PDU;
@@ -286,7 +311,12 @@ void BCU::processDirectTelegram(int apci)
             if (address >= USER_EEPROM_START && address < USER_EEPROM_END)
                 memcpy(sendTelegram + 10, userEepromData + (address - USER_EEPROM_START), count);
             else if (address >= USER_RAM_START && address < USER_RAM_END)
-                memcpy(sendTelegram + 10, userRamData + (address - USER_RAM_START), count);
+            {
+            	if (address == 0x60)
+            		bus.telegram[10] = userRam.status;
+            	else
+                    memcpy(sendTelegram + 10, userRamData + (address - USER_RAM_START), count);
+            }
             sendTelegram[5] = 0x63 + count;
             sendTelegram[6] = 0x42;
             sendTelegram[7] = 0x40 | count;

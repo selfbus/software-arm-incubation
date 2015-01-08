@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2014 Martin Glueck All rights reserved
+# Copyright (C) 2014-2015 Martin Glueck All rights reserved
 # Langstrasse 4, A--2244 Spannberg, Austria. martin@mangari.org
 # #*** <License> ************************************************************#
 # This module is part of the library selfbus.
@@ -32,6 +32,7 @@
 
 from   __future__ import division, print_function
 from   __future__ import absolute_import, unicode_literals
+import   serial
 
 from Telegram import _Object_, _Telegram_
 
@@ -51,6 +52,65 @@ class Trace_File (_Object_) :
 
 # end class Trace_File
 
+class Bus_Monitor (_Object_) :
+    """Listen for telegrams received by the embedded node and sent over the
+       serial connection.
+    """
+
+    def __init__ (self, port) :
+        self.port = serial.Serial (port, 115200)
+    # end def __init__
+
+    def run (self, file = None) :
+        try :
+            telegram  = b""
+            data      = b""
+            skip_line = False
+            while True :
+                byte = self.port.read ()
+                #print (byte, data, skip_line)
+                if byte == b" " :
+                    if not skip_line :
+                        try :
+                            telegram += bytes ((int (data, 16), ))
+                            data = b""
+                        except :
+                            skip_line = True
+                    if skip_line :
+                        data += byte
+                elif byte == b"\n" or byte == b"\r" :
+                    if data and not skip_line :
+                        telegram += bytes ((int (data, 16), ))
+                        data      = b""
+                    elif data :
+                        telegram  = b""
+                        skip_line = False
+                        print (data.decode ("latin1"))
+                        data = b""
+                    if telegram :
+                        if len (telegram) == 1 and telegram [0] == 0xCC :
+                            continue ### ignore this type of telegram for now
+                        #print (telegram)
+                        try :
+                            t = _Telegram_.From_Raw (telegram)
+                        except :
+                            t = ""
+                        print (t or telegram)
+                        if file :
+                            for b in telegram :
+                                file.write ("%02X " % (b, ))
+                            file.write ("\n    %s\n" % str (t))
+                    telegram = b""
+                else :
+                    data += byte
+                ##print (byte, data, telegram)
+        finally :
+            if file :
+                file.close ()
+    # end def run
+
+# end class Bus_Monitor
+
 if __name__ == "__main__" :
     import sys
 
@@ -66,7 +126,12 @@ if __name__ == "__main__" :
           print
           # ...then start the debugger in post-mortem mode.
           pdb.pm()
-    sys.excepthook = info
+    #sys.excepthook = info
 
-    Trace_File (sys.argv [1])
+    #Trace_File (sys.argv [1])
+    bm = Bus_Monitor (sys.argv [1])
+    file = None
+    if len (sys.argv) > 2 :
+        file = open (sys.argv [2], "w")
+    bm.run           (file)
 ### __END__ Bus_Monitor

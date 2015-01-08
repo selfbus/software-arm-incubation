@@ -157,6 +157,10 @@ void Bus::idleState()
 //    pinMode(txPin, INPUT);
 }
 
+#ifdef DUMP_TELEGRAMS
+unsigned char telBuffer[32];
+unsigned int telLength = 0;
+#endif
 void Bus::handleTelegram(bool valid)
 {
 //    D(digitalWrite(PIO3_3, 1));         // purple: end of telegram
@@ -167,6 +171,10 @@ void Bus::handleTelegram(bool valid)
     }
     else if (nextByteIndex >= 8 && valid) // Received a valid telegram with correct checksum
     {
+#ifdef DUMP_TELEGRAMS
+    	memcpy(telBuffer, bus.telegram, nextByteIndex);
+    	telLength = nextByteIndex;
+#endif
         int destAddr = (telegram[3] << 8) | telegram[4];
         bool processTel = false;
 
@@ -529,6 +537,16 @@ void Bus::sendTelegram(unsigned char* telegram, unsigned short length)
 {
     prepareTelegram(telegram, length);
 
+#ifdef DUMP_TELEGRAMS
+	{
+        for (int i = 0; i <= length; ++i)
+        {
+            if (i) serial.print(" ");
+            serial.print(telegram[i], HEX, 2);
+        }
+        serial.println();
+	}
+#endif
     // Wait until there is space in the sending queue
     while (sendNextTel)
     {

@@ -14,10 +14,10 @@
 #include <sblib/eib/user_memory.h>
 
 // System time in milliseconds (from timer.cpp)
-extern unsigned int systemTime;
+extern volatile unsigned int systemTime;
 
 // user_memory.cpp
-extern byte userRamData[USER_RAM_SIZE];
+extern byte userRamData[USER_RAM_SIZE+USER_RAM_SHADOW_SIZE];
 
 // user_memory.cpp
 extern byte userEepromData[USER_EEPROM_SIZE];
