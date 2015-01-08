@@ -15,11 +15,12 @@
 #include <sblib/eib.h>
 
 // Digital pin for LED
-#define PIO_LED PIO0_7
+#define PIO_YELLOW PIO2_6
+#define PIO_GREEN  PIO3_3
 
 // Output pins
 const int outputPins[NO_OF_CHANNELS] =
-    { PIO2_0, PIO2_1, PIO2_2, PIO2_3, PIO2_4, PIO2_5, PIO2_6, PIO2_7 };
+    { PIO2_2, PIO0_7, PIO2_10, PIO2_9, PIO0_2, PIO0_8, PIO0_9, PIO2_11 };
 
 ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
 
@@ -30,8 +31,10 @@ void setup()
 {
     bcu.begin(4, 0x2060, 1); // We are a "Jung 2138.10" device, version 0.1
 
-    pinMode(PIO_LED, OUTPUT);
-    digitalWrite(PIO_LED, 0);
+    pinMode(PIO_YELLOW, OUTPUT);
+    pinMode(PIO_GREEN,  OUTPUT);
+    digitalWrite(PIO_YELLOW, 0);
+    digitalWrite(PIO_GREEN,  1);
 
     // Configure the output pins
     for (int channel = 0; channel < NUM_CHANNELS; ++channel)

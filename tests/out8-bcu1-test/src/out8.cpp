@@ -105,21 +105,24 @@ static void _output4Clear(Out8TestState * refState)
     _loop(refState);
     refState->outputs &= ~0x08;
 }
+
+#ifdef CLEAR12
 static void _output12Clear(Out8TestState * refState)
 {
     _loop(refState);
     refState->outputs &= ~0x03;
 }
+#endif
 
-#if 0
+#if 1
 // >>> TC:simple
-// Date: 2014-04-15 22:00:04.762061
+// Date: 2014-06-27 13:13:34.767017
 
 /* Code for test case simple */
 static void simple_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 22:00:04.762061
+    // Date: 2014-06-27 13:13:34.767017
     // Assoc Table (0x15D):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x15E
     //    2 ( 1/0/30) <->  0 (output 1            ) @ 0x160
@@ -438,34 +441,35 @@ static Telegram tel_simple[] =
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _output2Clear       , {}} //  12
 , {END}
 };
-static Test_Case simple_tc = 
+static Test_Case simple_tc =
 {
   "OUT8 - Test 1"
 , 0x0004, 0x2060, 01
+, 0 // power-on delay
 , simple_eepromSetup
-, initApplication
+, NULL
 , (StateFunction *) _gatherState
 , (TestCaseState *) &_refState
 , (TestCaseState *) &_stepState
 , tel_simple
 };
 
-TEST_CASE("OUT8 - Test 1","[APP][OUT8][SIMPLE]")
+TEST_CASE("OUT8 - Test 1","[SIMPLE]")
 {
   executeTest(& simple_tc);
 }
 // <<< TC:simple
 #endif
 
-#if 0
+#if 1
 // >>> TC:simple_timeout
-// Date: 2014-04-15 22:00:04.808861
+// Date: 2014-06-27 13:13:34.822020
 
 /* Code for test case simple_timeout */
 static void simple_timeout_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 22:00:04.808861
+    // Date: 2014-06-27 13:13:34.822020
     // Assoc Table (0x15F):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x160
     //    2 ( 1/0/21) <-> 13 (feedback 2          ) @ 0x162
@@ -783,7 +787,7 @@ static Telegram tel_simple_timeout[] =
   // process the received telegram inside the app
   // we have a (130*2)*3 on delay -> the output should be switch on in 780ms
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  12
-, {TIMER_TICK     , 69,  0, (StepFunction *) _loop               , {}} //  13
+, {TIMER_TICK     , 68,  0, (StepFunction *) _loop               , {}} //  13
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _output1Set         , {}} //  14
   // another loop is required for the feedback telegram creation
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  15
@@ -807,7 +811,7 @@ static Telegram tel_simple_timeout[] =
   // process the received telegram inside the app
   // we have a (130*1)*2 on delay -> the output should be switch off in 260ms
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  26
-, {TIMER_TICK     , 260,  0, (StepFunction *) _loop               , {}} //  27
+, {TIMER_TICK     , 259,  0, (StepFunction *) _loop               , {}} //  27
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _output1Clear       , {}} //  28
   // another loop is required for the feedback telegram creation
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  29
@@ -818,34 +822,35 @@ static Telegram tel_simple_timeout[] =
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  32
 , {END}
 };
-static Test_Case simple_timeout_tc = 
+static Test_Case simple_timeout_tc =
 {
   "OUT8 - Timeout Test 1"
 , 0x0004, 0x2060, 01
+, 0 // power-on delay
 , simple_timeout_eepromSetup
-, initApplication
+, NULL
 , (StateFunction *) _gatherState
 , (TestCaseState *) &_refState
 , (TestCaseState *) &_stepState
 , tel_simple_timeout
 };
 
-TEST_CASE("OUT8 - Timeout Test 1","[APP][OUT8][DELAY]")
+TEST_CASE("OUT8 - Timeout Test 1","[DELAY]")
 {
   executeTest(& simple_timeout_tc);
 }
 // <<< TC:simple_timeout
 #endif
 
-#if 0
+#if 1
 // >>> TC:timed_function
-// Date: 2014-04-15 22:00:04.840061
+// Date: 2014-06-27 13:13:34.881024
 
 /* Code for test case timed_function */
 static void timed_function_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 22:00:04.840061
+    // Date: 2014-06-27 13:13:34.881024
     // Assoc Table (0x15F):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x160
     //    2 ( 1/0/21) <-> 13 (feedback 2          ) @ 0x162
@@ -1161,7 +1166,7 @@ static Telegram tel_timed_function[] =
   // as a reaction to the change a feedback telegram should be sent
 , {TEL_TX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x11, 0x01, 0x08, 0x14, 0xE1, 0x00, 0x81}} //  11
 , {TIMER_TICK     , 10,  0, (StepFunction *) _enablePWM          , {}} //  12
-, {TIMER_TICK     , 119,  0, (StepFunction *) _loop               , {}} //  13
+, {TIMER_TICK     , 118,  0, (StepFunction *) _loop               , {}} //  13
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _output1Clear       , {}} //  14
   // another app loop is required for the the feedback telegram creation
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  15
@@ -1174,7 +1179,7 @@ static Telegram tel_timed_function[] =
   // we have a (130*2)*2 on delay -> the output should be switch on in 520ms
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  18
   // wait for 520ms before the output will be switched on
-, {TIMER_TICK     , 520,  0, (StepFunction *) _loop               , {}} //  19
+, {TIMER_TICK     , 519,  0, (StepFunction *) _loop               , {}} //  19
   // 520ms have gone by -> output will be switched on
   // and a off delay off (130*2)*3=780ms will be started
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _output2Set         , {}} //  20
@@ -1187,7 +1192,7 @@ static Telegram tel_timed_function[] =
   // receive a "ON" telegram for output 1
 , {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x11, 0x01, 0x08, 0x1E, 0xE1, 0x00, 0x81}} //  24
   // process the received telegram inside the app
-  // we have a (130*1)*1 on delay -> the output should be switch on in 130ms
+  // we have a (130*2)*2 on delay -> the output should be switch on in 520ms
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _output1Set         , {}} //  25
   // another app loop is required for the the feedback telegram creation
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  26
@@ -1208,7 +1213,7 @@ static Telegram tel_timed_function[] =
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  33
   // as a reaction to the change a feedback telegram should be sent
 , {TEL_TX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x11, 0x01, 0x08, 0x15, 0xE1, 0x00, 0x80}} //  34
-, {TIMER_TICK     , 116,  0, (StepFunction *) _loop               , {}} //  35
+, {TIMER_TICK     , 115,  0, (StepFunction *) _loop               , {}} //  35
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _output1Clear       , {}} //  36
   // another app loop is required for the the feedback telegram creation
 , {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  37
@@ -1216,34 +1221,35 @@ static Telegram tel_timed_function[] =
 , {TEL_TX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x11, 0x01, 0x08, 0x14, 0xE1, 0x00, 0x80}} //  38
 , {END}
 };
-static Test_Case timed_function_tc = 
+static Test_Case timed_function_tc =
 {
   "OUT8 - Timed Test 1"
 , 0x0004, 0x2060, 01
+, 0 // power-on delay
 , timed_function_eepromSetup
-, initApplication
+, NULL
 , (StateFunction *) _gatherState
 , (TestCaseState *) &_refState
 , (TestCaseState *) &_stepState
 , tel_timed_function
 };
 
-TEST_CASE("OUT8 - Timed Test 1","[APP][OUT8][TIMED]")
+TEST_CASE("OUT8 - Timed Test 1","[TIMED]")
 {
   executeTest(& timed_function_tc);
 }
 // <<< TC:timed_function
 #endif
 
-#if 0
+#if 1
 // >>> TC:simple_i
-// Date: 2014-04-15 22:00:04.871261
+// Date: 2014-06-27 13:13:34.920026
 
 /* Code for test case simple_i */
 static void simple_i_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 22:00:04.871261
+    // Date: 2014-06-27 13:13:34.921026
     // Assoc Table (0x15F):
     //    1 ( 1/0/20) <-> 12 (feedback 1          ) @ 0x160
     //    2 ( 1/0/21) <-> 13 (feedback 2          ) @ 0x162
@@ -1577,19 +1583,20 @@ static Telegram tel_simple_i[] =
 , {TIMER_TICK     , 10,  0, (StepFunction *) _enablePWM          , {}} //  19
 , {END}
 };
-static Test_Case simple_i_tc = 
+static Test_Case simple_i_tc =
 {
   "OUT8 - Test Inverted"
 , 0x0004, 0x2060, 01
+, 0 // power-on delay
 , simple_i_eepromSetup
-, initApplication
+, NULL
 , (StateFunction *) _gatherState
 , (TestCaseState *) &_refState
 , (TestCaseState *) &_stepState
 , tel_simple_i
 };
 
-TEST_CASE("OUT8 - Test Inverted","[APP][OUT8][SIMPLE_I]")
+TEST_CASE("OUT8 - Test Inverted","[SIMPLE_I]")
 {
   executeTest(& simple_i_tc);
 }
@@ -1598,13 +1605,13 @@ TEST_CASE("OUT8 - Test Inverted","[APP][OUT8][SIMPLE_I]")
 
 #if 1
 // >>> TC:special_1
-// Date: 2014-04-15 22:00:04.886861
+// Date: 2014-06-27 13:13:34.958028
 
 /* Code for test case special_1 */
 static void special_1_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2014-04-15 22:00:04.886861
+    // Date: 2014-06-27 13:13:34.958028
     // Assoc Table (0x167):
     //    1 ( 1/0/30) <->  0 (output 1            ) @ 0x168
     //    2 ( 1/0/31) <->  1 (output 2            ) @ 0x16A
@@ -1910,44 +1917,145 @@ static Telegram tel_special_1[] =
   // After the power up the PWM will be enabled
 , {TIMER_TICK     , 20,  0, (StepFunction *) _enablePWM          , {}} //   2
 
+  // receive a "ON" telegram for output 1
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x1E, 0xE1, 0x00, 0x81}} //   3
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output1Set         , {}} //   4
+  // receive a "OFF" telegram for output 1
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x1E, 0xE1, 0x00, 0x80}} //   5
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output1Clear       , {}} //   6
+
+  // receive a "ON" telegram for special 1
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x28, 0xE1, 0x00, 0x81}} //   7
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output1Set         , {}} //   8
+  // receive a "FF" telegram for special 1
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x28, 0xE1, 0x00, 0x80}} //   9
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output1Clear       , {}} //  10
+
+  // receive a "ON" telegram for output 1
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x1E, 0xE1, 0x00, 0x81}} //  11
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output1Set         , {}} //  12
+  // receive a "ON" telegram for special 1
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x28, 0xE1, 0x00, 0x81}} //  13
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  14
+  // receive a "OFF" telegram for output 1
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x1E, 0xE1, 0x00, 0x80}} //  15
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  16
+  // receive a "FF" telegram for special 1
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x28, 0xE1, 0x00, 0x80}} //  17
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output1Clear       , {}} //  18
+
+  // receive a "ON" telegram for output 2
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x1F, 0xE1, 0x00, 0x81}} //  19
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  20
+  // receive a "ON" telegram for special 2
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x29, 0xE1, 0x00, 0x81}} //  21
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output2Set         , {}} //  22
+  // receive a "OFF" telegram for special 2
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x29, 0xE1, 0x00, 0x80}} //  23
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output2Clear       , {}} //  24
+  // receive a "ON" telegram for special 2
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x29, 0xE1, 0x00, 0x81}} //  25
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output2Set         , {}} //  26
+  // receive a "OFF" telegram for output 2
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x1F, 0xE1, 0x00, 0x80}} //  27
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output2Clear       , {}} //  28
+  // receive a "OFF" telegram for special 2
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x29, 0xE1, 0x00, 0x80}} //  29
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  30
+
   // AND with recirculation
   // receive a "ON" telegram for output 3
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x20, 0xE1, 0x00, 0x81}} //   3
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x20, 0xE1, 0x00, 0x81}} //  31
   // process the received telegram
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //   4
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  32
   // receive a "ON" telegram for special 3
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2A, 0xE1, 0x00, 0x81}} //   5
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2A, 0xE1, 0x00, 0x81}} //  33
   // process the received telegram
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _output3Set         , {}} //   6
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output3Set         , {}} //  34
   // receive a "OFF" telegram for special 3
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2A, 0xE1, 0x00, 0x80}} //   7
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2A, 0xE1, 0x00, 0x80}} //  35
   // process the received telegram
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _output3Clear       , {}} //   8
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output3Clear       , {}} //  36
   // process the changed object state of output 3
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //   9
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  37
   // receive a "ON" telegram for special 3
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2A, 0xE1, 0x00, 0x81}} //  10
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2A, 0xE1, 0x00, 0x81}} //  38
   // process the received telegram
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  11
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  39
   // receive a "ON" telegram for output 3
-, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x20, 0xE1, 0x00, 0x81}} //  12
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x20, 0xE1, 0x00, 0x81}} //  40
   // process the received telegram
-, {TIMER_TICK     ,  1,  0, (StepFunction *) _output3Set         , {}} //  13
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output3Set         , {}} //  41
+
+  // Forced channel 4
+  // receive a "ON" telegram for output 4
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x21, 0xE1, 0x00, 0x81}} //  42
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output4Set         , {}} //  43
+  // receive a 00 telegram for special 4
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2B, 0xE1, 0x00, 0x80}} //  44
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  45
+  // receive a 01 telegram for special 4
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2B, 0xE1, 0x00, 0x81}} //  46
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _loop               , {}} //  47
+  // receive a OFF telegram for output 4
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x21, 0xE1, 0x00, 0x80}} //  48
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output4Clear       , {}} //  49
+  // receive a "ON" telegram for output 4
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x21, 0xE1, 0x00, 0x81}} //  50
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output4Set         , {}} //  51
+
+  // receive a 10 telegram for special 4
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2B, 0xE1, 0x00, 0x82}} //  52
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output4Clear       , {}} //  53
+  // receive a 11 telegram for special 4
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2B, 0xE1, 0x00, 0x83}} //  54
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output4Set         , {}} //  55
+
+  // receive a 10 telegram for special 4
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2B, 0xE1, 0x00, 0x82}} //  56
+  // process the received telegram
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output4Clear       , {}} //  57
+  // receive a 10 telegram for special 4 to deactivate the forced value
+, {TEL_RX         ,  8,  0, (StepFunction *) NULL                , {0xBC, 0x00, 0x01, 0x08, 0x2B, 0xE1, 0x00, 0x81}} //  58
+  // The output of channel should be high again
+, {TIMER_TICK     ,  1,  0, (StepFunction *) _output4Set         , {}} //  59
 , {END}
 };
-static Test_Case special_1_tc = 
+static Test_Case special_1_tc =
 {
   "OUT8 - Special Function 1"
 , 0x0004, 0x2060, 01
+, 0 // power-on delay
 , special_1_eepromSetup
-, initApplication
+, NULL
 , (StateFunction *) _gatherState
 , (TestCaseState *) &_refState
 , (TestCaseState *) &_stepState
 , tel_special_1
 };
 
-TEST_CASE("OUT8 - Special Function 1","[APP][OUT8][SEPCIAL]")
+TEST_CASE("OUT8 - Special Function 1","[SEPCIAL]")
 {
   executeTest(& special_1_tc);
 }
