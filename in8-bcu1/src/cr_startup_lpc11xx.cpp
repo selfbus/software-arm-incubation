@@ -313,13 +313,6 @@ void PendSV_Handler(void)
     {
     }
 }
-__attribute__ ((section(".after_vectors")))
-void SysTick_Handler(void)
-{
-    while(1)
-    {
-    }
-}
 
 //*****************************************************************************
 //

@@ -11,13 +11,14 @@
 #include "params.h"
 
 #include <sblib/eib.h>
+#include <sblib/timeout.h>
 
 // Digital pin for LED
 #define PIO_LED PIO3_3
 
 // Input pins
-static const int inputPins[] =
-	{ PIO2_2, PIO0_7, PIO2_10, PIO2_9, PIO0_2, PIO0_8, PIO0_9, PIO2_11 };
+const int inputPins[] =
+    { PIO2_2, PIO0_7, PIO2_10, PIO2_9, PIO0_2, PIO0_8, PIO0_9, PIO2_11 };
 
 // Debouncers for inputs
 Debouncer inputDebouncer[NUM_CHANNELS];
@@ -44,6 +45,25 @@ void setup()
         pinMode(inputPins[channel], INPUT | HYSTERESIS | PULL_UP);
         inputDebouncer[channel].init(digitalRead(inputPins[channel]));
     }
+
+    // Handle configured power-up delay
+    unsigned int startupTimeout = calculateTime
+            ( userEeprom[EE_BUS_RETURN_DELAY_BASE] >> 4
+            , userEeprom[EE_BUS_RETURN_DELAY_FACT] &  0x7F
+            );
+    Timeout delay;
+    int debounceTime = userEeprom[EE_INPUT_DEBOUNCE_TIME] >> 1;
+    delay.start(startupTimeout);
+    while (delay.started() && !delay.expired())
+    {   // while we wait for the power on delay to expire we debounce the input channels
+        for (int channel = 0; channel < NUM_CHANNELS; ++channel)
+        {
+            inputDebouncer[channel].debounce(digitalRead(inputPins[channel]), debounceTime);
+        }
+        waitForInterrupt();
+    }
+
+    initApplication();
 }
 
 /**
@@ -57,7 +77,7 @@ void loop()
     // Handle the input pins
     for (channel = 0; channel < NUM_CHANNELS; ++channel)
     {
-        lastValue = inputDebouncer[channel].lastValue();
+        lastValue = inputDebouncer[channel].value();
         value = inputDebouncer[channel].debounce(digitalRead(inputPins[channel]), debounceTime);
 
         if (lastValue != value)
@@ -69,6 +89,9 @@ void loop()
     {
         objectUpdated(objno);
     }
+
+    // Handle timed functions (e.g. periodic update)
+    handlePeriodic();
 
     // Sleep up to 1 millisecond if there is nothing to do
     if (bus.idle())

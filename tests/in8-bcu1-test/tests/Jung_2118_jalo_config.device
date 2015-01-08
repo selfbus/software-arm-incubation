@@ -1,0 +1,105 @@
+[Device=Jung_2118]
+own_address                          = 1.1.1
+debounce_time                        =    20
+
+[Channel 1]
+type                                 = Jalo
+method                               = Short_Long_Short
+command_on_raising_edge              = Up
+bus_return_action                    = Up
+blade_change_time_base               = 130ms
+blade_change_time_factor             = 5
+time_between_short_and_long_base     = 130ms
+time_between_short_and_long_factor   = 4
+
+locking_polarity                     = lock=1
+locking_action_at_start              = Up
+locking_action_at_end                = No reaction
+
+[Channel 2]
+type                                 = Jalo
+method                               = Short_Long_Short
+command_on_raising_edge              = Down
+bus_return_action                    = Down
+blade_change_time_base               = 130ms
+blade_change_time_factor             = 10
+time_between_short_and_long_base     = 130ms
+time_between_short_and_long_factor   = 8
+
+locking_polarity                     = lock=0
+locking_action_at_start              = Down
+locking_action_at_end                = Toggle
+
+[Channel 3]
+type                                 = Jalo
+method                               = Short_Long_Short
+command_on_raising_edge              = Toggle
+bus_return_action                    = no reaction
+blade_change_time_base               = 130ms
+blade_change_time_factor             = 4
+time_between_short_and_long_base     = 130ms
+time_between_short_and_long_factor   = 4
+
+locking_polarity                     = lock=1
+locking_action_at_start              = Toggle
+locking_action_at_end                = Down
+
+[Channel 4]
+type                                 = Jalo
+method                               = Long_Short
+command_on_raising_edge              = Up
+bus_return_action                    = no reaction
+blade_change_time_base               = 130ms
+blade_change_time_factor             = 4
+
+locking_polarity                     = lock=1
+locking_action_at_start              = No reaction
+locking_action_at_end                = Up
+
+[Channel 5]
+type                                 = Jalo
+method                               = Long_Short
+command_on_raising_edge              = Down
+bus_return_action                    = no reaction
+blade_change_time_base               = 130ms
+blade_change_time_factor             = 4
+
+[Channel 6]
+type                                 = Jalo
+method                               = Long_Short
+command_on_raising_edge              = Toggle
+bus_return_action                    = no reaction
+blade_change_time_base               = 130ms
+blade_change_time_factor             = 11
+
+[Channel 7]
+type                                 = disabled
+
+[Channel 8]
+type                                 = disabled
+
+[Group Addresses]
+ 0 = 1/0/30
+ 1 = 1/0/31
+ 2 = 1/0/32
+ 3 = 1/0/33 
+ 4 = 1/0/34
+ 5 = 1/0/35
+ 6 = 1/0/36
+ 7 = 1/0/37
+ 8 = 1/0/38
+ 9 = 1/0/39
+10 = 1/0/40
+11 = 1/0/41
+12 = 1/0/42
+13 = 1/0/43
+14 = 1/0/44
+15 = 1/0/45
+16 = 1/0/50
+17 = 1/0/51
+18 = 1/0/52
+19 = 1/0/53
+20 = 1/0/54
+21 = 1/0/55
+22 = 1/0/56
+23 = 1/0/57

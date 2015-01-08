@@ -1,0 +1,68 @@
+[Device=Jung_2118]
+own_address                          = 1.1.1
+debounce_time                        =    10
+
+[Channel 1]
+type                                 = switch
+command_raising_edge_obj_1           = ON
+command_falling_edge_obj_1           = OFF
+command_raising_edge_obj_2           = OFF
+command_falling_edge_obj_2           = ON
+bus_return_action                    = No Reaction
+cyclic_send                          = repeat on ON and OFF
+cyclic_send_time_base_obj_1          = 1s
+cyclic_send_time_base_obj_2          = 2,1s
+cyclic_send_time_factor              = 3
+
+locking_polarity                     = lock=1
+locking_action_at_start              = send On
+locking_action_at_end                = send Off
+
+[Channel 2]
+type                                 = switch
+command_raising_edge_obj_1           = ON
+command_falling_edge_obj_1           = OFF
+command_raising_edge_obj_2           = OFF
+command_falling_edge_obj_2           = ON
+bus_return_action                    = send current state
+cyclic_send                          = No
+
+locking_polarity                     = lock=0
+locking_action_at_start              = send Off
+locking_action_at_end                = send On
+
+[Channel 3]
+type                                 = switch
+command_raising_edge_obj_1           = ON
+command_falling_edge_obj_1           = OFF
+command_raising_edge_obj_2           = No Reaction
+command_falling_edge_obj_2           = Toggle
+bus_return_action                    = Send On
+cyclic_send                          = No
+
+locking_polarity                     = lock=1
+locking_action_at_start              = send toggle
+locking_action_at_end                = send current state
+
+[Channel 4]
+type                                 = switch
+command_raising_edge_obj_1           = ON
+command_falling_edge_obj_1           = OFF
+command_raising_edge_obj_2           = OFF
+command_falling_edge_obj_2           = ON
+bus_return_action                    = send off
+cyclic_send                          = No
+
+[Group Addresses]
+ 0 = 1/0/30
+ 1 = 1/0/31
+ 2 = 1/0/32
+ 3 = 1/0/33 
+ 8 = 1/0/38
+ 9 = 1/0/39
+10 = 1/0/40
+11 = 1/0/41
+16 = 1/0/50
+17 = 1/0/51
+18 = 1/0/52
+19 = 1/0/53

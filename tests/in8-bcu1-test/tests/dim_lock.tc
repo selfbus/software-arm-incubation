@@ -1,0 +1,52 @@
+name           = "input_as_dimmer_locking"
+description    = "IN8 - Dimmer locking"
+device_spec    = "Jung_2118_dim_config.device"
+power_on_delay = device.ms ("bus_return_delay_base")
+tags           = "APP", "IN8", "DIM","LOCKING"
+
+### the actual test function starts here
+Section          ("check bus return telegram")
+App_Loop         ()
+Send_Telegram    (device.com_object [ 0], 0, comment = "Bus return action for channel 1")
+Send_Telegram    (device.com_object [ 1], 1, comment = "Bus return action for channel 2")
+
+Section ("Test channel 2")
+channel        = 2
+obj_no         = channel - 1
+for i in (1, 2) :
+    Receive_Telegram (device.com_object [ obj_no + 16], 1)
+    App_Loop         ()
+    Send_Telegram    (device.com_object [ obj_no], 1, comment = "After lock ON -> send ON")
+
+    Receive_Telegram (device.com_object [ obj_no + 16], 0)
+    App_Loop         ()
+    Send_Telegram    (device.com_object [ obj_no], 0, comment = "After lock OFF -> send OFF")
+
+
+Section ("Test channel 3")
+channel        = 3
+obj_no         = channel - 1
+for i in (1, 2) :
+    Receive_Telegram (device.com_object [ obj_no + 16], 0, comment = "Inverted -> 0 lock on, 1 -> lock off")
+    App_Loop         ()
+    Send_Telegram    (device.com_object [ obj_no], 0, comment = "After lock ON -> send OFF")
+
+    Receive_Telegram (device.com_object [ obj_no + 16], 1)
+    App_Loop         ()
+    App_Loop         (comment = "After lock off -> no reaction")
+
+Section ("Test channel 4")
+channel        = 4
+obj_no         = channel - 1
+value          = 1
+for i in (1, 2) :
+    Receive_Telegram (device.com_object [ obj_no + 16], 1)
+    App_Loop         ()
+    Send_Telegram    (device.com_object [ obj_no], value, comment = "After lock ON -> toggle value")
+
+    Receive_Telegram (device.com_object [ obj_no + 16], 0)
+    App_Loop         ()
+    App_Loop         (comment = "After lock off -> no reaction")
+    value = not value
+
+

@@ -1,0 +1,64 @@
+name           = "input_as_jalo_locking"
+description    = "IN8 - Jalo Locking"
+device_spec    = "Jung_2118_jalo_config.device"
+power_on_delay = device.ms ("bus_return_delay_base")
+tags           = "JALO", "JLOCK"
+
+### the actual test function starts here
+Section          ("check bus return telegram")
+App_Loop         ()
+Send_Telegram    (device.com_object [ 8+0], 1, comment = "Bus return action for channel 1")
+Send_Telegram    (device.com_object [ 8+1], 0, comment = "Bus return action for channel 2")
+
+### channel 1 : polarity 1=lock, Up, No
+channel        = 1
+long_obj       = device.com_object [ 8 + channel - 1]
+lock_obj       = device.com_object [16 + channel - 1]
+for i in 1, 2 : 
+    Receive_Telegram (lock_obj, 1, comment = "Start locking")
+    App_Loop         ()
+    Send_Telegram    (long_obj, 1, comment = "After lock ON -> send Up")
+
+    Receive_Telegram (lock_obj, 0, comment = "End locking")
+    App_Loop         ()
+    App_Loop         (comment = "No reaction at end of locking")
+
+### channel 2 : polarity 0=lock, Down, Toggle
+channel        = 2
+long_obj       = device.com_object [ 8 + channel - 1]
+lock_obj       = device.com_object [16 + channel - 1]
+for i in 1, 2 : 
+    Receive_Telegram (lock_obj, 0, comment = "Start locking")
+    App_Loop         ()
+    Send_Telegram    (long_obj, 0, comment = "After lock ON -> send Down")
+
+    Receive_Telegram (lock_obj, 1, comment = "End locking")
+    App_Loop         ()
+    Send_Telegram    (long_obj, 1, comment = "End of locking, toggle direction")
+
+### channel 3 : polarity 1=lock, Toggle, Down
+channel        = 3
+long_obj       = device.com_object [ 8 + channel - 1]
+lock_obj       = device.com_object [16 + channel - 1]
+for i in 1, 2 : 
+    Receive_Telegram (lock_obj, 1, comment = "Start locking")
+    App_Loop         ()
+    Send_Telegram    (long_obj, 1, comment = "After lock ON -> toggle Direction")
+
+    Receive_Telegram (lock_obj, 0, comment = "End locking")
+    App_Loop         ()
+    Send_Telegram    (long_obj, 0, comment = "End of locking, send down")
+
+### channel 4 : polarity 1=lock, No, Up
+channel        = 4
+long_obj       = device.com_object [ 8 + channel - 1]
+lock_obj       = device.com_object [16 + channel - 1]
+for i in 1, 2 : 
+    Receive_Telegram (lock_obj, 1, comment = "Start locking")
+    App_Loop         ()
+    App_Loop         (comment = "No reaction at start of locking")
+
+    Receive_Telegram (lock_obj, 0, comment = "End locking")
+    App_Loop         ()
+    Send_Telegram    (long_obj, 1, comment = "End of locking, send up")
+

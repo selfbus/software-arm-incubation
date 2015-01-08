@@ -1,0 +1,75 @@
+[Device=Jung_2118]
+own_address                          = 1.1.1
+debounce_time                        =    10
+
+[Channel 1]
+type                                 = DimEnc
+send_at	                             = Rising
+value_rising_edge                    = 142
+bus_return_action                    = same as rising edge
+locking_polarity                     = lock=1
+locking_action_at_start              = same as rising edge
+locking_action_at_end                = no reaction
+
+[Channel 2]
+type                                 = DimEnc
+send_at	                             = Falling
+value_falling_edge                   = 141
+bus_return_action                    = same as falling edge
+locking_polarity                     = lock=1
+locking_action_at_start              = no reaction
+locking_action_at_end                = same as falling edge
+
+[Channel 3]
+type                                 = DimEnc
+send_at	                             = Both
+value_rising_edge                    = 144
+value_falling_edge                   = 140
+bus_return_action                    = current state
+locking_polarity                     = lock=0
+locking_action_at_start              = same as rising edge
+locking_action_at_end                = current state
+
+[Channel 4]
+type                                 = DimEnc
+send_at	                             = Rising
+value_rising_edge                    = 33
+change_via_long_press                = Yes
+time_between_two_telegrams_base      = 520ms
+time_between_two_telegrams_factor    = 20
+change_step                          = 15
+
+[Channel 5]
+type                                 = DimEnc
+send_at	                             = Falling
+value_falling_edge                   = 12
+change_via_long_press                = Yes
+time_between_two_telegrams_base      = 520ms
+time_between_two_telegrams_factor    = 21
+change_step                          = 14
+
+[Group Addresses]
+  0 = 1/0/30
+  1 = 1/0/31
+  2 = 1/0/32
+  3 = 1/0/33 
+  4 = 1/0/34
+  5 = 1/0/35
+  6 = 1/0/36
+  7 = 1/0/37
+  8 = 1/0/38
+  9 = 1/0/39
+ 10 = 1/0/40
+ 11 = 1/0/41
+ 12 = 1/0/42
+ 13 = 1/0/43
+ 14 = 1/0/44
+ 15 = 1/0/45
+ 16 = 1/0/50
+ 17 = 1/0/51
+ 18 = 1/0/52
+ 19 = 1/0/53
+ 20 = 1/0/54
+ 21 = 1/0/55
+ 22 = 1/0/56
+ 23 = 1/0/57

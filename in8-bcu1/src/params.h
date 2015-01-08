@@ -80,4 +80,30 @@ extern const byte* channelTimingParams;
 // Eeprom address: start of channel timing parameters
 #define EE_CHANNEL_TIMING_PARAMS_BASE  0x01f6
 
+#define EE_SWITCH_BUS_RETURN_NO_ACTION     0
+#define EE_SWITCH_BUS_RETURN_CURRENT_STATE 1
+#define EE_SWITCH_BUS_RETURN_SEND_ON       2
+#define EE_SWITCH_BUS_RETURN_SEND_OFF      3
+
+#define EE_INPUT_SWITCH_LOCK_NO_REACTION 0
+#define EE_INPUT_SWITCH_LOCK_SET_ON      1
+#define EE_INPUT_SWITCH_LOCK_SET_OFF     2
+#define EE_INPUT_SWITCH_LOCK_TOGGLE      3
+#define EE_INPUT_SWITCH_LOCK_SET_CURRENT 3
+
+#define EE_INPUT_DIM_LOCK_NO_REACTION    0
+#define EE_INPUT_DIM_LOCK_ON_SET_ON      1
+#define EE_INPUT_DIM_LOCK_ON_SET_OFF     2
+#define EE_INPUT_DIM_LOCK_ON_TOGGLE      3
+#define EE_INPUT_DIM_LOCK_OFF_SET_OFF    1
+
+#define EE_JALO_BUS_RETURN_NO_ACTION     0
+#define EE_JALO_BUS_RETURN_DOWN			 1
+#define EE_JALO_BUS_RETURN_UP			 2
+#define EE_JALO_LOCK_NO_REACTION 		 0
+#define EE_JALO_LOCK_SET_DOWN      		 1
+#define EE_JALO_LOCK_SET_UP     		 2
+#define EE_JALO_LOCK_TOGGLE      		 3
+
+#define EE_DIMENC_TIME_LONG              5000
 #endif /*params_h*/

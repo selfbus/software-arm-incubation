@@ -1,0 +1,79 @@
+name           = "input_as_jalo_sl"
+description    = "IN8 - Jalo LongShort"
+device_spec    = "Jung_2118_jalo_config.device"
+power_on_delay = device.ms ("bus_return_delay_base")
+tags           = "JALO","LS"
+
+### the actual test function starts here
+Section          ("check bus return telegram")
+App_Loop         ()
+Send_Telegram    (device.com_object [ 8+0], 1, comment = "Bus return action for channel 1")
+Send_Telegram    (device.com_object [ 8+1], 0, comment = "Bus return action for channel 2")
+
+
+### channel 4 has long-short concept, UP
+### channel 5 has long-short concept, DOWN
+for channel, value in (4, 1), (5, 0) :
+    obj_short         = device.com_object [channel - 1]
+    obj_long          = device.com_object [channel - 1 + 8]
+    cha_cfg           = device.channel [channel]
+    blade_change_time = cha_cfg.ms ("blade_change_time_base")
+
+    Section          ("Hit and release channel %d within T1 (blade changing time)" % (channel, ))
+    App_Loop         ("_input%dSet" % (channel, ), comment = "Rising edge on channel %d" % (channel, ))
+    Progress_Time    (10)
+    App_Loop         (comment = "One additional loop to put the telegram into the queue")
+    Send_Telegram    (obj_long, value, comment = "After debounce set UP or DOWN on long obj")
+    ### falling edge within blade changing time -> no further action
+    Progress_Time    (blade_change_time - 20)
+    App_Loop         ("_input%dClear" % (channel, ), comment = "Falling edge on channel %d" % (channel, ))
+    Progress_Time    (10)
+    App_Loop         (comment = "One additional loop to put the telegram into the queue")
+    Send_Telegram    (obj_short, value, comment = "After debounce send other UP or DOWN on short obj")
+    App_Loop         ()
+
+    Section          ("Hit and release channel %d after T1 (blade changing time)" % (channel, ))
+    App_Loop         ("_input%dSet" % (channel, ), comment = "Rising edge on channel %d" % (channel, ))
+    Progress_Time    (10)
+    App_Loop         (comment = "One additional loop to put the telegram into the queue")
+    Send_Telegram    (obj_long, value, comment = "After debounce set UP or DOWN on short obj")
+    Progress_Time    (blade_change_time)
+    App_Loop         ("_input%dClear" % (channel, ), comment = "Falling edge on channel %d" % (channel, ))
+    Progress_Time    (10)
+    App_Loop         (comment = "One additional loop to put the telegram into the queue")
+    App_Loop         (comment = "No telegram should be sent")
+
+### channel 6 is long-short, toggle
+channel = 6
+value   = 0
+obj_short         = device.com_object [channel - 1]
+obj_long          = device.com_object [channel - 1 + 8]
+cha_cfg           = device.channel    [channel]
+blade_change_time = cha_cfg.ms ("blade_change_time_base")
+
+for i in range (3) :
+    value             = not value
+    Section          ("Hit and release channel %d within T1 (blade changing time) value %d" % (channel, value))
+    App_Loop         ("_input%dSet" % (channel, ), comment = "Rising edge on channel %d" % (channel, ))
+    Progress_Time    (10)
+    App_Loop         (comment = "One additional loop to put the telegram into the queue")
+    Send_Telegram    (obj_long, value, comment = "After debounce set UP or DOWN on short obj")
+    Progress_Time    (blade_change_time - 20)
+    App_Loop         ("_input%dClear" % (channel, ), comment = "Falling edge on channel %d" % (channel, ))
+    Progress_Time    (10)
+    App_Loop         (comment = "One additional loop to put the telegram into the queue")
+    Send_Telegram    (obj_short, value, comment = "After debounce send other UP or DOWN on short obj")
+    App_Loop         ()
+
+    value             = not value
+    Section          ("Hit and release channel %d after T1 (blade changing time) value %d" % (channel, value))
+    App_Loop         ("_input%dSet" % (channel, ), comment = "Rising edge on channel %d" % (channel, ))
+    Progress_Time    (10)
+    App_Loop         (comment = "One additional loop to put the telegram into the queue")
+    Send_Telegram    (obj_long, value, comment = "After debounce set UP or DOWN on short obj")
+    Progress_Time    (blade_change_time)
+    App_Loop         ("_input%dClear" % (channel, ), comment = "Falling edge on channel %d" % (channel, ))
+    Progress_Time    (10)
+    App_Loop         (comment = "One additional loop to put the telegram into the queue")
+    App_Loop         (comment = "No telegram should be sent")
+

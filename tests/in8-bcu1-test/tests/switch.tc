@@ -1,0 +1,94 @@
+name           = "input_as_switch"
+description    = "IN8 - Normal Switch New"
+device_spec    = "Jung_2118_switch_config.device"
+power_on_delay = device.ms ("bus_return_delay_base")
+tags           = "SWITCH",
+
+obj1_time      = device.channel [1].ms ("cyclic_send_time_base_obj_1")
+obj2_time      = device.channel [1].ms ("cyclic_send_time_base_obj_2")
+
+### the actual test function starts here
+Section          ("Bus Return Telegrams")
+App_Loop         ()
+Send_Telegram    (device.com_object [ 1], 0)
+Send_Telegram    (device.com_object [ 2], 1)
+Send_Telegram    (device.com_object [ 3], 0)
+Send_Telegram    (device.com_object [ 9], 1)
+Send_Telegram    (device.com_object [10], 1)
+Send_Telegram    (device.com_object [11], 0)
+
+Section          ("Set input 1")
+App_Loop         ("_input1Set")
+App_Loop         (comment = "No direct action, only after debounce is complete")
+Progress_Time    (5, comment = "After debounce set ON for OBJ 0 and OFF for OBJ 8")
+App_Loop         ()
+Send_Telegram    (device.com_object [0], 1)
+Send_Telegram    (device.com_object [8], 0)
+
+Section          ("check the cyclic sending")
+Progress_Time    (obj1_time - 5 - 1, comment = "Cyclic timer not yet expired")
+Progress_Time    (1, comment = "Cyclic timeout for primary 1 expired")
+App_Loop         (comment = "Put the cyclic telegram into the send queue")
+Send_Telegram    (device.com_object [0], 1)
+Progress_Time    (obj2_time - obj1_time)
+App_Loop         (comment = "Cyclic timeout for secondary 1 expired")
+Send_Telegram    (device.com_object [0], 1)
+Send_Telegram    (device.com_object [8], 0)
+   
+Section          ("Clear input 1")
+App_Loop         ("_input1Clear")
+Progress_Time    (5, comment = "After debounce set OFF for OBJ 0 and ON for OBJ 8")
+App_Loop         (comment = "Need another tick for sending the obj")
+Send_Telegram    (device.com_object [0], 0)
+Send_Telegram    (device.com_object [8], 1)
+  
+Section          ("check the cyclic sending")
+Progress_Time    (obj1_time - 5, comment = "Cyclic timeout for primary 1 expired")
+App_Loop         (comment = "Put the cyclic telegram into the send queue")
+Send_Telegram    (device.com_object [0], 0)
+Progress_Time    (obj2_time - obj1_time, comment = "Cyclic timeout for secondary 1 expired")
+App_Loop         (comment = "Put the cyclic telegram into the send queue")
+Send_Telegram    (device.com_object [0], 0)
+Send_Telegram    (device.com_object [8], 1)
+
+Section          ("Test locking function: channel 1", "lock the channel")
+Receive_Telegram (device.com_object [16], 1, comment = "Receive a LOCK for channel 1")
+App_Loop         ()
+Send_Telegram    (device.com_object [0], 1)
+Send_Telegram    (device.com_object [8], 1)
+
+Section          ("Try to change the input", "XXX still missing")
+
+Section          ("unlock the channel")
+Receive_Telegram (device.com_object [16], 0, comment = "Receive an UNLOCK for channel 1")
+App_Loop         ()
+Send_Telegram    (device.com_object [0], 0)
+Send_Telegram    (device.com_object [8], 0)
+
+Section          ("Test locking function: channel 2", "lock the channel (inverted)")
+Receive_Telegram (device.com_object [17], 0, comment = "Receive a LOCK for channel 1")
+App_Loop         ()
+Send_Telegram    (device.com_object [1], 0)
+Send_Telegram    (device.com_object [9], 0)
+
+Section          ("Try to change the input", "XXX still missing")
+
+Section          ("unlock the channel (inverted)")
+Receive_Telegram (device.com_object [17], 1, comment = "Receive an UNLOCK for channel 1")
+App_Loop         ()
+Send_Telegram    (device.com_object [1], 1)
+Send_Telegram    (device.com_object [9], 1)
+
+Section          ("Test locking function: channel 3", "lock the channel")
+Receive_Telegram (device.com_object [18], 1, comment = "Receive a LOCK for channel 3")
+App_Loop         ()
+Send_Telegram    (device.com_object [ 2], 0)
+Send_Telegram    (device.com_object [10], 0)
+
+Section          ("Try to change the input", "XXX still missing")
+
+Section          ("unlock the channel (inverted)")
+Receive_Telegram (device.com_object [18], 0, comment = "Receive an UNLOCK for channel 3")
+App_Loop         ()
+Send_Telegram    (device.com_object [ 2], 0)
+Send_Telegram    (device.com_object [10], 1)

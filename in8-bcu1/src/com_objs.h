@@ -63,13 +63,21 @@ enum ChannelType
     /** Channel type: luminosity encoder / value sender */
     CHANNEL_TYPE_LUM_ENCODER = 8,
 
-    /** Channel type: impulse counter on input 1+3 */
+    /** Channel type: impulse counter on input 1/2 with synchronization on inputs 3/4 */
     CHANNEL_TYPE_COUNT_IMPULSE_1 = 9,
 
-    /** Channel type: switch counter on input 1+4 */
+    /** Channel type: switch counter on input 1/2 */
     CHANNEL_TYPE_COUNT_IMPULSE_2 = 10
 };
 
+enum DimmerType
+{
+	DIMMER_TYPE_ONE_HAND                = 0,
+	DIMMER_TYPE_TWO_HAND_LIGHTER_ON     = 1,
+	DIMMER_TYPE_TWO_HAND_DARKER_OFF     = 2,
+	DIMMER_TYPE_TWO_HAND_LIGHTER_TOGGLE = 3,
+	DIMMER_TYPE_TWO_HAND_DARKER_TOGGLE  = 4
+};
 /*
  * Com objects
  */

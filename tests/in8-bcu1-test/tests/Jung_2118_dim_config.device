@@ -1,0 +1,126 @@
+[Device=Jung_2118]
+own_address                          = 1.1.1
+debounce_time                        =    20
+
+[Channel 1]
+type                                 = dimm
+method                               = One
+time_between_dim_switch_base         = 130ms
+time_between_dim_switch_factor       = 8
+bus_return_send_on                   = 0
+bus_return_send_off                  = 1
+send_stop_telegram                   = yes
+telegram_repitition                  = no
+repitition_time_base                 = 130ms
+repitition_time_factor               = 5
+lighten_by                           = 50%
+darker_by                            = 25%
+
+[Channel 2]
+type                                 = dimm
+method                               = Two Light On
+time_between_dim_switch_base         = 130ms
+time_between_dim_switch_factor       = 8
+bus_return_send_on                   = 1
+bus_return_send_off                  = 0
+send_stop_telegram                   = yes
+telegram_repitition                  = no
+repitition_time_base                 = 130ms
+repitition_time_factor               = 5
+lighten_by                           = 25%
+
+locking_polarity                     = lock=1
+locking_action_at_start              = send On
+locking_action_at_end                = send Off
+
+[Channel 3]
+type                                 = dimm
+method                               = Two Dark Off
+time_between_dim_switch_base         = 130ms
+time_between_dim_switch_factor       = 8
+bus_return_send_on                   = 0
+bus_return_send_off                  = 0
+send_stop_telegram                   = yes
+telegram_repitition                  = no
+repitition_time_base                 = 130ms
+repitition_time_factor               = 5
+darken_by                            = 50%
+
+locking_polarity                     = lock=0
+locking_action_at_start              = send Off
+locking_action_at_end                = no reaction
+
+[Channel 4]
+type                                 = dimm
+method                               = Two Light Toggle
+time_between_dim_switch_base         = 130ms
+time_between_dim_switch_factor       = 8
+bus_return_send_on                   = 0
+bus_return_send_off                  = 0
+send_stop_telegram                   = yes
+telegram_repitition                  = no
+repitition_time_base                 = 130ms
+repitition_time_factor               = 5
+lighten_by                           = 100%
+
+locking_polarity                     = lock=1
+locking_action_at_start              = send Toggle
+locking_action_at_end                = no reaction
+
+[Channel 5]
+type                                 = dimm
+method                               = Two Dark Toggle
+time_between_dim_switch_base         = 130ms
+time_between_dim_switch_factor       = 8
+bus_return_send_on                   = 0
+bus_return_send_off                  = 0
+send_stop_telegram                   = yes
+telegram_repitition                  = no
+repitition_time_base                 = 130ms
+repitition_time_factor               = 5
+darken_by                            = 25%
+
+[Channel 6]
+type                                 = dimm
+method                               = Two Light On
+time_between_dim_switch_base         = 130ms
+time_between_dim_switch_factor       = 8
+bus_return_send_on                   = 0
+bus_return_send_off                  = 0
+send_stop_telegram                   = yes
+telegram_repitition                  = yes
+repitition_time_base                 = 260ms
+repitition_time_factor               = 10
+lighten_by                           = 25%
+
+[Channel 7]
+type                                 = disabled
+
+[Channel 8]
+type                                 = disabled
+
+[Group Addresses]
+ 0 = 1/0/30
+ 1 = 1/0/31
+ 2 = 1/0/32
+ 3 = 1/0/33 
+ 4 = 1/0/34
+ 5 = 1/0/35
+ 6 = 1/0/36
+ 7 = 1/0/37
+ 8 = 1/0/38
+ 9 = 1/0/39
+10 = 1/0/40
+11 = 1/0/41
+12 = 1/0/42
+13 = 1/0/43
+14 = 1/0/44
+15 = 1/0/45
+16 = 1/0/50
+17 = 1/0/51
+18 = 1/0/52
+19 = 1/0/53
+20 = 1/0/54
+21 = 1/0/55
+22 = 1/0/56
+23 = 1/0/57
