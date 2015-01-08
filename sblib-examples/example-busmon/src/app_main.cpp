@@ -30,10 +30,32 @@ void setup()
 }
 
 /*
+ * Convert a character from the serial line into a number
+ */
+static unsigned char _byteToNumber(unsigned char data)
+{
+	unsigned char result;
+	result = data - 48;
+	if (result > 9)
+	{
+		result -= 7;
+		if (result > 15)
+			result -= 32;
+	}
+	return result;
+}
+
+/*
  * The main processing loop.
  */
 void loop()
 {
+	static int receiveCount = -1;
+	static int telLength = 0;
+	static int  byteCount = 0;
+	static unsigned char telegram[32];
+	static unsigned char data;
+
 	digitalWrite(PIO3_3, 1);
 
 	if (bus.telegramReceived())
@@ -50,6 +72,34 @@ void loop()
         digitalWrite(PIO2_6, !digitalRead(PIO2_6));
     }
 
+	// handle the incomming data form the serial line
+	if (serial.available())
+	{
+		int byte = serial.read();
+		byteCount++;
+		data = (data << 4) + _byteToNumber(byte);
+		if (byteCount == 2)
+		{   // a new data byte has been received
+			byteCount = 0;
+			serial.print(data, HEX, 2);
+			serial.print(" ");
+			if (receiveCount < 0)
+			{   // the first byte is the number of bytes
+				receiveCount = data;
+			}
+			else
+			{
+				telegram[telLength++] = data;
+				if (telLength == receiveCount)
+				{
+					bus.sendTelegram(telegram, telLength);
+					telLength = 0;
+					receiveCount = -1;
+					serial.println();
+				}
+			}
+		}
+	}
     // Sleep until the next 1 msec timer interrupt occurs (or shorter)
     __WFI();
 }
