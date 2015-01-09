@@ -167,6 +167,7 @@ private:
     byte sendCtrlTelegram[8];      //!< A short buffer for connection control telegrams.
     int  connectedAddr;            //!< Remote address of the connected partner.
     int  connectedSeqNo;           //!< Sequence number for connected data telegrams.
+    unsigned int connectedTime;    //!< System time of the last connected telegram.
     bool incConnectedSeqNo;        //!< True if the sequence number shall be incremented on ACK.
 };
 

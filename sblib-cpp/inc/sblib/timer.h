@@ -24,7 +24,17 @@ class Timer;
 void delay(unsigned int msec);
 
 /**
+ * Delay the program execution a number of microseconds. You should use delay() when
+ * possible, as this function does a busy wait which consumes more power than delay().
+ * The minimum delay is roughly 3 usec. Everything below will result in a 3 usec delay.
+ *
+ * @param usec - the number of microseconds to wait.
+ */
+void delayMicroseconds(unsigned int usec);
+
+/**
  * Get the number of milliseconds that elapsed since the last reset or processor start.
+ * Please note that the system time overflows and restarts at zero after 49,7 days.
  *
  * @return The number of milliseconds.
  */

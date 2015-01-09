@@ -2,7 +2,8 @@ Debug/
 Release/
 *~
 *.o
-.metadata
+.metadata/
+.settings/
 CMSIS_CORE_LPC11xx
 sblib/src/html
 sblib-tests/sblib-Listing.xml

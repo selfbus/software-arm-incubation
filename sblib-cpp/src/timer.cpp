@@ -38,6 +38,28 @@ void delay(unsigned int msec)
     }
 }
 
+void delayMicroseconds(unsigned int usec)
+{
+    unsigned int val, lastVal = SysTick->VAL;
+    int ticksToWait = (usec - 2) * (SystemCoreClock / 1000000);
+    int elapsed;
+
+    // SysTick is counting down and is reset to SysTick->LOAD when
+    // it reaches zero.
+
+    while (ticksToWait > 0)
+    {
+        val = SysTick->VAL;
+
+        elapsed = lastVal - val;
+        if (elapsed < 0)
+            elapsed += SysTick->LOAD;
+
+        ticksToWait -= elapsed;
+        lastVal = val;
+    }
+}
+
 
 //----- Class Timer -----------------------------------------------------------
 

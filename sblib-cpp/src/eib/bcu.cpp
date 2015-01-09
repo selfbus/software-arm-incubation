@@ -27,6 +27,8 @@
 BCU bcu;
 
 extern unsigned int writeUserEepromTime;
+extern volatile unsigned int systemTime;
+
 
 // Default pin of the programming mode button+led
 #define DEFAULT_PROG_PIN  PIO2_0
@@ -137,6 +139,10 @@ void BCU::loop()
     if (!bus.sendingTelegram())
         sendNextGroupTelegram();
 
+    // Send a disconnect after 6.5 seconds inactivity
+    if (connectedAddr && elapsed(connectedTime) > 6500)
+        sendConControlTelegram(T_DISCONNECT_PDU, 0);
+
     if (bcu.progPin)
     {
         // Detect the falling edge of pressing the prog button
@@ -149,7 +155,7 @@ void BCU::loop()
         digitalWrite(bcu.progPin, !(userRam.status & BCU_STATUS_PROG));
     }
 
-    if (userEeprom.isModified() && bus.idle() && bus.telegramLen == 0 && !bcu.directConnection())
+    if (userEeprom.isModified() && bus.idle() && bus.telegramLen == 0 && connectedAddr == 0)
     {
         if (writeUserEepromTime)
         {
@@ -304,6 +310,7 @@ void BCU::processDirectTelegram(int apci)
     if (connectedAddr != senderAddr) // ensure that the sender is correct
         return;
 
+    connectedTime = systemTime;
     sendTelegram[6] = 0;
 
     int apciCmd = apci & APCI_GROUP_MASK;
