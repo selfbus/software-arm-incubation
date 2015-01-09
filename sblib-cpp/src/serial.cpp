@@ -75,12 +75,13 @@ void Serial::begin(int baudRate, SerialConfig config)
     // Ensure a clean start, no data in either TX or RX FIFO
     flush();
     peeked = -1;
+    rxBuffer = 0;
 
     // Drop data from the RX FIFO
     while (LPC_UART->LSR & LSR_RDR)
         val = LPC_UART->RBR;
 
-    NVIC_EnableIRQ(UART_IRQn);    // Enable UART interrupt
+    NVIC_DisableIRQ(UART_IRQn);    // Disable UART interrupt
 }
 
 void Serial::end()
@@ -107,7 +108,26 @@ void Serial::flush()
 
 int Serial::available()
 {
-    return (LPC_UART->LSR & LSR_THRE) ? 1 : 0;
+    if (! rxBuffer)
+        return LPC_UART->LSR & LSR_RDR ? 1 : 0;
+    return rxBuffer->count;
+}
+
+ALWAYS_INLINE int Serial::_getByte(void)
+{
+    int result = -1;
+    if (! rxBuffer)
+    {
+        if (LPC_UART->LSR & LSR_RDR)
+            result = LPC_UART->RBR;
+    }
+    else if (rxBuffer->count)
+    {
+        result = rxBuffer->buffer[rxBuffer->tail++];
+        rxBuffer->count--;
+        rxBuffer->tail &= rxBuffer->size;
+    }
+    return result;
 }
 
 int Serial::read()
@@ -119,20 +139,40 @@ int Serial::read()
         return ch;
     }
 
-    if (LPC_UART->LSR & LSR_RDR)
-        return LPC_UART->RBR;
-
-    return -1;
+    return _getByte();
 }
 
 int Serial::peek()
 {
     if (peeked < 0 && (LPC_UART->LSR & LSR_RDR))
-        peeked = LPC_UART->RBR;
+        peeked = _getByte();
 
     return peeked;
 }
 
+void Serial::setupReceiveRingBuffer(RingBuffer * buffer, SerialTriggerLevelConfig rxThreshold)
+{
+    rxBuffer = buffer;
+    rxBuffer->head = rxBuffer->tail = rxBuffer->count = 0;
+    LPC_UART->IER |= (1 << 0); // XXX
+    NVIC_EnableIRQ(UART_IRQn);
+}
+
+void Serial::emptyRxFifo(void)
+{
+    while (LPC_UART->LSR & LSR_RDR)
+    {
+        rxBuffer->buffer[rxBuffer->head] = LPC_UART->RBR;
+        if (rxBuffer->count <= rxBuffer->size)
+        {
+            rxBuffer->head++;
+            rxBuffer->count++;
+            rxBuffer->head &= rxBuffer->size;
+        }
+    }
+}
+
 extern "C" void UART_IRQHandler()
 {
+    serial.emptyRxFifo();
 }

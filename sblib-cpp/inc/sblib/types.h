@@ -189,6 +189,10 @@ enum TimerPWM
 /**
  * Declare a function as always inline
  */
+#if defined ( __GNUC__ )
 #define ALWAYS_INLINE __attribute__((always_inline)) inline
+#else
+#define ALWAYS_INLINE inline
+#endif
 
 #endif /*sblib_types_h*/

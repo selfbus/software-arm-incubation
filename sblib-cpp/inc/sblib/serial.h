@@ -11,6 +11,8 @@
 #define sblib_serial_h
 
 #include <sblib/stream.h>
+#include <sblib/platform.h>
+
 
 class Serial;
 
@@ -52,6 +54,21 @@ enum SerialConfig
     SERIAL_8E2 = 0x1f   //!< 8 data bits, even parity, 2 stop bits
 };
 
+enum SerialTriggerLevelConfig
+{
+    SERIAL_TRIGGER_LEVEL_1  = (0x0 << 6),
+    SERIAL_TRIGGER_LEVEL_4  = (0x1 << 6),
+    SERIAL_TRIGGER_LEVEL_8  = (0x2 << 6),
+    SERIAL_TRIGGER_LEVEL_14 = (0x3 << 6)
+};
+typedef struct
+{
+    uint8_t * buffer;
+    uint8_t   size;
+    uint8_t   head;
+    uint8_t   tail;
+    uint8_t   count;
+} RingBuffer;
 
 /**
  * Serial port access. All ARM processors have a serial port, also known as UART.
@@ -127,6 +144,24 @@ public:
      * @return Always true.
      */
     operator bool();
+
+    /**
+     * Setup a ring buffer used for asynchronous data reception
+     *
+     * @param buffer - pointer to a ring buffer used for storing the received bytes
+     * @param rxThreshold - used to configure when the interrupt should be triggered
+     */
+    void setupReceiveRingBuffer(RingBuffer * buffer, SerialTriggerLevelConfig rxThreshold = SERIAL_TRIGGER_LEVEL_8);
+
+    /**
+     * Internal function which will be called from the interrupt service routine. Should not be used by the user.
+     */
+    void emptyRxFifo(void);
+
+protected:
+    RingBuffer * rxBuffer;
+
+    int _getByte(void);
 };
 
 

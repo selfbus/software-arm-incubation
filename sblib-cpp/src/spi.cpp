@@ -20,6 +20,8 @@
 #define SSP_CR0_CPOL_LOW     0
 #define SSP_CR0_CPOL_HIGH    (1<<6)
 
+// SPI loopback mode
+#define SSP_CR1_LOOPBACK     (1<<0)
 // SPI controller enabled
 #define SSP_CR1_ENABLED      (1<<1)
 
@@ -135,3 +137,107 @@ int SPI::transfer(int val, SpiTransferMode transferMode)
     // Return read value
     return LPC_SSP0->DR;
 }
+
+#ifdef SPI_BLOCK_TRANSFER
+
+static SPI * instances[2];
+
+void SPI::transferBlock(uint16_t * sndData, int bytes, uint16_t * recData, bool asynchron)
+{
+    int tmpVal;
+
+    // Clear all remaining data in the receive FIFO
+    while (port.SR & SSP_SR_RNE)
+        tmpVal = port.DR;
+
+    this->sndData = sndData;
+    this->recData = recData;
+    this->sndCount = this->recCount = bytes;
+    this->errors   = 0;
+    this->finished = false;
+    // Clear the interrupt status
+    port.ICR = SSP_ICR_BITMASK;
+
+    continueBlockTransfer();
+    if (! asynchron)
+    {
+        finalizeBlockTransfer();
+    }
+    else
+    {
+        int no = & port == LPC_SSP0 ? 0 : 1;
+        instances[no] = this;
+        port.IMSC    |= (1 << 3); // XXX
+        if (! no)
+        {
+            NVIC_EnableIRQ(SSP0_IRQn);
+        }
+        else
+        {
+            NVIC_EnableIRQ(SSP1_IRQn);
+        }
+    }
+}
+
+void SPI::continueBlockTransfer(void)
+{
+    int tmpVal;
+    int maxCount = 8;
+    while (sndCount && (port.SR & SSP_SR_TNF) && maxCount)
+    {
+        sndCount--;
+        maxCount--;
+        if (port.SR & SSP_SR_RNE)
+        {
+            recCount--;
+            tmpVal = port.DR;
+            if (recData) *recData++ = tmpVal;
+        }
+        LPC_SSP0->DR = *sndData++;
+        errors |= port.RIS;
+       }
+    while (recCount && (port.SR & SSP_SR_RNE))
+    {
+        recCount--;
+        tmpVal = port.DR;
+        if (recData) *recData++ = tmpVal;
+        errors |= port.RIS;
+    }
+    if (!sndCount)
+    {
+        int no        = & port == LPC_SSP0 ? 0 : 1;
+        if (! no)
+        {
+            NVIC_DisableIRQ(SSP0_IRQn);
+        }
+        else
+        {
+            NVIC_DisableIRQ(SSP1_IRQn);
+        }
+        instances[no] = 0;
+        port.IMSC    &= ~(1 << 3); // XXX
+        finished      = true;
+    }
+}
+
+void SPI::finalizeBlockTransfer(void)
+{
+    while (recCount)
+        continueBlockTransfer();
+}
+
+extern "C" {
+volatile uint32_t int_ssp_0 = 0;
+
+void SSP0_IRQHandler (void)
+{
+    int_ssp_0++;
+    instances[0]->continueBlockTransfer();
+}
+void SSP1_IRQHandler (void)
+{
+    instances[1]->continueBlockTransfer();
+}
+
+}
+#endif

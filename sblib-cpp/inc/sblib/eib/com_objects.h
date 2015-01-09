@@ -138,6 +138,14 @@ void objectUpdate(int objno, byte* value);
 void objectUpdateFloat(int objno, int value);
 
 /**
+ * Update the value of the communication object without changing the flags
+ *
+ * @param objno - the ID of the communication object.
+ * @param value - the new value of the communication object.
+ */
+void setObjectValue(int objno, unsigned int value);
+
+/**
  * Get the ID of the next communication object that was updated
  * over the bus by a write-value-request telegram.
  *

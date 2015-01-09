@@ -184,9 +184,51 @@ public:
      */
     int transfer(int val, SpiTransferMode transferMode);
 
+#ifdef SPI_BLOCK_TRANSFER
+    /**
+     * Transfer a bloc of data SPI bus.
+     * If a receive buffer is specified, the received data will be copied into this buffer.
+     * If an asynchrone transfer is requested, the transmit FIFo will be filled in the interrupt
+     * service routine of the SPI controller.
+     * The number of bits per frame depends on the configured data size - @see setDataSize() above.
+     *
+     * Before the transfer starts, the specified slave select pin is pulled
+     * to low. After the transfer, the slave select pin is deactivated (pulled high).
+     *
+     * @param sndData   - pointer to the send data.
+     * @param bytes     - number of bytes to send.
+     * @param recData   - pointer to the buffer where the received bytes should be copied to. this can be null
+     * @param asynchron - if true, the buffer will be transfered using an interrupt service routine
+     */
+    void transferBlock(uint16_t * sndData, int bytes, uint16_t * recData = 0, bool asynchron = false);
+
+    /**
+     * Continue a started block transfer. This function should not be called from the user. It will be called by
+     * the interrupt service routine.
+     */
+    void continueBlockTransfer(void);
+
+    /**
+     * After the finish flag has be set the user has to call the finalize function to copy all received byes
+     * into the receive buffer.
+     */
+    void finalizeBlockTransfer(void);
+
+#endif
+
 protected:
     LPC_SSP_TypeDef& port;
     int clockDiv;
+
+#ifdef SPI_BLOCK_TRANSFER
+    uint16_t * sndData;
+    uint16_t * recData;
+    int        sndCount;
+    int        recCount;
+    int        errors;
+public:
+    bool       finished;
+#endif
 };
 
 

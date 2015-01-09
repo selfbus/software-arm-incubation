@@ -1,5 +1,7 @@
 /*
- *  Copyright (c) 2013-2014 Stefan Taferner <stefan.taferner@gmx.at>
+ *  app_main.cpp - The application's main.
+ *
+ *  Copyright (c) 2014 Stefan Taferner <stefan.taferner@gmx.at>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -8,7 +10,6 @@
 
 #include "app_out8.h"
 #include "com_objs.h"
-//#include "params.h"
 
 #define NUM_CHANNELS 8
 
@@ -24,18 +25,17 @@ const int outputPins[NO_OF_CHANNELS] =
 
 ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
 
-/**
- * Application setup
+
+
+/*
+ * Initialize the application.
  */
 void setup()
 {
     bcu.begin(4, 0x2060, 1); // We are a "Jung 2138.10" device, version 0.1
 
-    pinMode(PIO_YELLOW, OUTPUT);
-    pinMode(PIO_GREEN,  OUTPUT);
-    digitalWrite(PIO_YELLOW, 0);
-    digitalWrite(PIO_GREEN,  1);
-
+    pinMode(PIO2_6, OUTPUT);	// Info LED
+    pinMode(PIO3_3, OUTPUT);	// Run LED
     // Configure the output pins
     for (int channel = 0; channel < NUM_CHANNELS; ++channel)
     {
@@ -44,9 +44,10 @@ void setup()
     initApplication();
 }
 
-/**
- * The application's main.
+/*
+ * The main processing loop.
  */
+
 void loop()
 {
     int objno;

@@ -123,23 +123,23 @@ void Bus::begin()
     //
     D(pinMode(PIO3_0, OUTPUT));
     D(pinMode(PIO3_1, OUTPUT));
-    D(pinMode(PIO3_2, OUTPUT));
-    D(pinMode(PIO3_3, OUTPUT));
+    D(pinMode(PIO1_5, OUTPUT));
+    D(pinMode(PIO1_4, OUTPUT));
     D(pinMode(PIO0_6, OUTPUT));
     D(pinMode(PIO0_7, OUTPUT));
-    D(pinMode(PIO2_8, OUTPUT));
-    D(pinMode(PIO2_9, OUTPUT));
-    D(pinMode(PIO2_10, OUTPUT));
+    //D(pinMode(PIO2_8, OUTPUT));
+    //D(pinMode(PIO2_9, OUTPUT));
+    //D(pinMode(PIO2_10, OUTPUT));
 
     D(digitalWrite(PIO3_0, 0));
     D(digitalWrite(PIO3_1, 0));
-    D(digitalWrite(PIO3_2, 0));
-    D(digitalWrite(PIO3_3, 0));
+    D(digitalWrite(PIO1_5, 0));
+    D(digitalWrite(PIO1_4, 0));
     D(digitalWrite(PIO0_6, 0));
     D(digitalWrite(PIO0_7, 0));
-    D(digitalWrite(PIO2_8, 0));
-    D(digitalWrite(PIO2_9, 0));
-    D(digitalWrite(PIO2_10, 0));
+    //D(digitalWrite(PIO2_8, 0));
+    //D(digitalWrite(PIO2_9, 0));
+    //D(digitalWrite(PIO2_10, 0));
 }
 
 void Bus::idleState()
@@ -163,7 +163,7 @@ unsigned int telLength = 0;
 #endif
 void Bus::handleTelegram(bool valid)
 {
-//    D(digitalWrite(PIO3_3, 1));         // purple: end of telegram
+//    D(digitalWrite(PIO1_4, 1));         // purple: end of telegram
     sendAck = 0;
 
     if (collision) // A collision occurred. Ignore the received bytes
@@ -245,9 +245,9 @@ void Bus::timerInterruptHandler()
     D(digitalWrite(PIO0_6, ++tick & 1));  // brown: interrupt tick
     D(digitalWrite(PIO3_0, state==Bus::SEND_BIT_0)); // red
     D(digitalWrite(PIO3_1, 0));           // orange
-    D(digitalWrite(PIO3_2, 0));           // yellow
-    D(digitalWrite(PIO3_3, 0));           // purple
-    D(digitalWrite(PIO2_8, 0));           // blue
+    D(digitalWrite(PIO1_5, 0));           // yellow
+    D(digitalWrite(PIO1_4, 0));           // purple
+    //D(digitalWrite(PIO2_8, 0));           // blue
 //    D(digitalWrite(PIO2_9, 0));           //
 
 STATE_SWITCH:
@@ -308,7 +308,7 @@ STATE_SWITCH:
 
         if (timeout)  // Timer timeout: end of byte
         {
-            D(digitalWrite(PIO3_2, 1));     // yellow: end of byte
+            D(digitalWrite(PIO1_5, 1));     // yellow: end of byte
             D(digitalWrite(PIO3_1, parity));// orange: parity bit ok
 
             valid &= parity;
@@ -326,7 +326,7 @@ STATE_SWITCH:
     // SEND_INIT is entered some usec before sending the start bit of the first byte. It
     // is always entered after receiving or sending is done, even if nothing is to be sent.
     case Bus::SEND_INIT:
-        D(digitalWrite(PIO3_2, 1)); // yellow: prepare transmission
+        D(digitalWrite(PIO1_5, 1)); // yellow: prepare transmission
 
         if (timer.flag(captureChannel))  // Bus input, enter receive mode
         {
@@ -399,7 +399,7 @@ STATE_SWITCH:
         {
             // Timeout: we have a hardware problem as receiving our sent signal does not work.
             // for now we will just continue
-            D(digitalWrite(PIO2_8, 1));  // blue: sending bits does not work
+            //D(digitalWrite(PIO2_8, 1));  // blue: sending bits does not work
         }
         // No break here
 
@@ -419,7 +419,7 @@ STATE_SWITCH:
         // no break here
 
     case Bus::SEND_BIT:
-        D(digitalWrite(PIO3_2, 1));    // yellow: send next bits
+        D(digitalWrite(PIO1_5, 1));    // yellow: send next bits
 
         // Search for the next zero bit and count the one bits for the wait time
         time = BIT_TIME;
@@ -465,7 +465,7 @@ STATE_SWITCH:
         if (timer.capture(captureChannel) < timer.match(pwmChannel) - BIT_WAIT_TIME)
         {
             // A collision. Stop sending and ignore the current transmission.
-            D(digitalWrite(PIO3_3, 1));  // purple
+            D(digitalWrite(PIO1_4, 1));  // purple
             timer.match(pwmChannel, 0xffff);
             state = Bus::RECV_BYTE;
             collision = true;
@@ -475,7 +475,7 @@ STATE_SWITCH:
         break;
 
     case Bus::SEND_END:
-        D(digitalWrite(PIO2_9, 1));
+        //D(digitalWrite(PIO2_9, 1));
         timer.match(timeChannel, SEND_WAIT_TIME);
         timer.captureMode(captureChannel, FALLING_EDGE | INTERRUPT);
 

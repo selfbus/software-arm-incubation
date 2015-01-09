@@ -19,7 +19,7 @@ struct ObjectValues
 };
 
 // User ram address: value of com-object #0
-#define UR_COM_OBJ_VALUE0              0x0053
+#define UR_COM_OBJ_VALUE0              0x0020
 
 /*
  * Com objects
