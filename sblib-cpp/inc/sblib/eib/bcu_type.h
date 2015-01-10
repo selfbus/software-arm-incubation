@@ -22,6 +22,9 @@
 
     /** The size of the user RAM in bytes. */
 #   define USER_RAM_SIZE (0x100 - USER_RAM_START)
+	/** How many bytes have to be allocated at the end of the RAM
+		for shadowed values
+	*/
 #   define USER_RAM_SHADOW_SIZE 3
 
     /** Start address of the user EEPROM when ETS talks with us. */
@@ -36,6 +39,10 @@
 
     /** The size of the user RAM in bytes. */
 #   define USER_RAM_SIZE (0x100 - USER_RAM_START)
+	/** How many bytes have to be allocated at the end of the RAM
+		for shadowed values
+	*/
+#   define USER_RAM_SHADOW_SIZE 0
 
     /** Start address of the user EEPROM when ETS talks with us. */
 #   define USER_EEPROM_START 0x100
