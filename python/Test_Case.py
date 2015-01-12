@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2014 Martin Glueck All rights reserved
+# Copyright (C) 2014-2015 Martin Glueck All rights reserved
 # Langstrasse 4, A--2244 Spannberg, Austria. martin@mangari.org
 # #*** <License> ************************************************************#
 # This module is part of the library selfbus.
@@ -64,9 +64,24 @@ class Section :
 
 # end class Section
 
+class Include :
+    """Include a set of test steps from an external file"""
+
+    def __init__ (self, file_name) :
+        tc        = Test_Case_Store.Test_Case
+        file_name = os.path.join (tc.directory, file_name)
+        with open (file_name) as f :
+            code      = compile (f.read (), file_name, "exec")
+            exec (code, globals (), tc.vars)
+    # end def __init__
+    
+# end class Include
+
 class Test_Step :
     """Base class for all kinds fo test steps."""
 
+    tick_length = 0
+    
     def __init__ ( self
                  , kind
                  , step     = "NULL"
@@ -90,6 +105,8 @@ class Test_Step :
         self.telegram = telegram
         self.comment  = comment
         Test_Case_Store.Test_Case.steps.append (self)
+        self.Tick     = self.Ticks
+        Test_Step.Ticks += self.tick_length
     # end def __init__
 
     def init_code (self, head, number) :
@@ -110,12 +127,17 @@ class Test_Step :
         return number + 1, result
     # end def as_init
 
+    def __add__ (self, rhs) :
+        return self.Tick + rhs - self.Ticks
+    # end def __add__
+    
 # end class Test_Step
 
 class App_Loop (Test_Step) :
     """Run the application loop and simulate time passing"""
 
     def __init__ (self, step = "_loop", ticks = 0, ** kw) :
+        self.tick_length = ticks
         super (App_Loop, self).__init__ \
             ( kind   = "TIMER_TICK"
             , step   = step
@@ -183,8 +205,10 @@ class Test_Case :
     # end def __init__
 
     def _parse (self, file_name) :
-        self.steps = []
-        vars       = dict ()
+        self.steps     = []
+        self.file_name = os.path.abspath (file_name)
+        self.directory = os.path.dirname (file_name)
+        self.vars      = vars = dict ()
         with open (file_name) as f :
             content = f.read                      ()
             match   = self.device_spec_pat.search (content)
@@ -195,6 +219,7 @@ class Test_Case :
                     (match.group (1))
                 os.chdir         (pwd)
                 Test_Case_Store.Test_Case = self
+                Test_Step.Ticks           = 0
                 code                      = compile (content, file_name, "exec")
                 exec (code, globals (), vars)
             else :
@@ -202,7 +227,7 @@ class Test_Case :
         self.name           = vars.pop ("name")
         self.description    = vars.pop ("description", None)
         self.setup          = vars.pop ("setup", "NULL")
-        self.state          = vars.pop ("state", "NULL")
+        self.state          = vars.pop ("state", "_gatherState")
         self.power_on_delay = vars.pop ("power_on_delay", 0)
         self.device         = vars ["device"]
         self.tags           = vars.pop ("tags", ())
@@ -272,6 +297,8 @@ class Test_Case :
         if not file_name :
             sys.stdout.write (file.getvalue ())
         else :
+            if not os.path.exists (file_name) :
+                self._create_file (file_name)
             with open (file_name) as f :
                 content = f.read ()
             with open (file_name, "w") as f :
@@ -285,6 +312,24 @@ class Test_Case :
                 print ("%s updated" % (file_name, ))
     # end def create_code
 
+    def _create_file (self, file_name) :
+        code = """/*
+ *  %s -
+ *
+ *  Copyright (c) 2014 Martin Glueck <martin@mangari.org>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3 as
+ *  published by the Free Software Foundation.
+ */
+#include "protocol.h"
+#include "catch.hpp"
+#include "sblib/timer.h"
+"""
+        with open (file_name, "w") as file :
+            file.write (code % os.path.basename (file_name))
+    # end def _create_file
+    
 # end class Test_Case
 
 if __name__ == "__main__" :

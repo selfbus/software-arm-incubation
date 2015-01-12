@@ -1,7 +1,7 @@
 /*
  *  protocol.cpp - protocol tests
  *
- *  Copyright (c) 2014 Martin Glueck <martin@mangari.org>
+ *  Copyright (C) 2014-2015 Martin Glueck <martin@mangari.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -55,7 +55,7 @@ static void _handleTx(Test_Case * tc, Telegram * tel, unsigned int tn)
         strcat(expected, temp);
         if (tel->bytes[i] != bus.sendCurTelegram[i])
         {
-        	mismatches++;
+                mismatches++;
             snprintf(temp, 1024, "%d, ", i + 1);
             strcat(msg, temp);
         }
@@ -111,6 +111,13 @@ static void _handleTime(Test_Case * tc, Telegram * tel, unsigned int tn)
     systemTime += tel->length;
 }
 
+static unsigned int _handleBreak (Test_Case * tc, Telegram * tel, unsigned int tn)
+{
+    if (tel->variable)
+        return tn;
+    return tn - 1;
+}
+
 void executeTest(Test_Case * tc)
 {
     Telegram * tel = tc->telegram;
@@ -129,7 +136,7 @@ void executeTest(Test_Case * tc)
     wfiSystemTimeInc = 0;
     if (tc->powerOnDelay)
     {
-    	REQUIRE(tc->powerOnDelay == systemTime);
+        REQUIRE(tc->powerOnDelay == systemTime);
     }
     if (tc->setup) tc->setup();
     if (tc->gatherState) tc->gatherState(refState, NULL);
@@ -139,14 +146,16 @@ void executeTest(Test_Case * tc)
         LPC_TMR16B1->IR = 0x00;
         userEepromModified = 0;
         INFO("Step " << tn << " of test case " << tc->name);
-        if (TEL_RX == tel->type)
-        	_handleRx(tc, tel, tn);
+        if (BREAK == tel->type)
+                tn = _handleBreak (tc, tel, tn);
+        else         if (TEL_RX == tel->type)
+                _handleRx(tc, tel, tn);
         else if (TEL_TX == tel->type)
-        	_handleTx(tc, tel, tn);
+                _handleTx(tc, tel, tn);
         else if (CHECK_TX_BUFFER == tel->type)
-        	_handleCheckTx(tc, tel, tn);
+                _handleCheckTx(tc, tel, tn);
         else if (TIMER_TICK == tel->type)
-        	_handleTime(tc, tel, tn);
+                _handleTime(tc, tel, tn);
 
         if (tel->stepFunction) tel->stepFunction(refState);
         if (tc->gatherState) tc->gatherState(stepState, refState);

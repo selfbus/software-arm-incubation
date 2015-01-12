@@ -1,0 +1,39 @@
+name           = "out8_simple_i"
+description    = "OUT8 - Simple Inverted"
+device_spec    = "Jung_2138_Simple.device"
+power_on_delay = 0
+tags           = "SIMPLE_I",
+
+### output 1 normally open,   feedback inverted
+### output 2 normally closed, feedback normal
+PWM_Timeout = 50
+
+Include          ("simple_init.steps")
+
+Section          ("Send 1 for output 1 -> should set the output")
+Receive_Telegram (device.com_object [    0], 1, step = "_output1Set")
+App_Loop         ()
+Send_Telegram    (device.com_object [ 12+0], 0)
+App_Loop         (ticks = PWM_Timeout - 1)
+App_Loop         ("_enablePWM", ticks = 1)
+
+Section          ("Send 0 for output 1 -> should clear the output")
+Receive_Telegram (device.com_object [    0], 0, step = "_output1Clear")
+App_Loop         ()
+Send_Telegram    (device.com_object [ 12+0], 1)
+App_Loop         (ticks = PWM_Timeout - 1)
+App_Loop         (ticks = 1, comment = "No PWM should be enabled")
+
+Section          ("Send 1 for output 2 -> should clear the output")
+Receive_Telegram (device.com_object [    1], 1, step = "_output2Clear")
+App_Loop         ()
+Send_Telegram    (device.com_object [ 12+1], 1)
+App_Loop         (ticks = PWM_Timeout - 1)
+App_Loop         (ticks = 1, comment = "No PWM should be enabled")
+
+Section          ("Send 0 for output 2 -> should set the output")
+Receive_Telegram (device.com_object [    1], 0, step = "_output2Set")
+App_Loop         ()
+Send_Telegram    (device.com_object [ 12+1], 0)
+App_Loop         (ticks = PWM_Timeout - 1)
+App_Loop         ("_enablePWM", ticks = 1)

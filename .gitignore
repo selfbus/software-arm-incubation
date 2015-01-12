@@ -9,3 +9,5 @@ sblib/src/html
 sblib-tests/sblib-Listing.xml
 sblib-tests/sblib-results-Results.xml
 __pycache__
+.DS_Store
+._.DS_Store

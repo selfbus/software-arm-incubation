@@ -1,0 +1,48 @@
+name           = "out8_simple_timed"
+description    = "OUT8 - Simple Timed"
+device_spec    = "Jung_2138_Simple.device"
+power_on_delay = 0
+tags           = "TIMED",
+
+### output 7 normally open,   feedback normal
+###                only staircase
+### output 8 normally open,   feedback normal
+###                staircase with on delay
+
+c7_off_delay = device.channel [7].ms ("off_delay_factor")
+c8_on_delay  = device.channel [8].ms ("on_delay_factor")
+c8_off_delay = device.channel [8].ms ("off_delay_factor")
+
+print (c7_off_delay, c8_on_delay, c8_off_delay)
+Include          ("simple_init.steps")
+
+Section          ("Tests")
+on7 = Receive_Telegram (device.com_object [    6], 1, step = "_output7Set", comment = "set output 7")
+App_Loop         (comment = "let the library process the feedback telegram")
+Send_Telegram    (device.com_object [ 12+6], 1, comment = "Feedback for output 7")
+App_Loop         (comment = "Only one telegram should be sent")
+
+App_Loop         ("_enablePWM", ticks = PWM_Timeout)
+
+App_Loop         ("_loop", 60)
+on8 = Receive_Telegram (device.com_object [    7], 1, comment = "set output 8")
+
+App_Loop         ("_loop", on7 + c7_off_delay - 1)
+App_Loop         ("_output7Clear", 1)
+App_Loop         (comment = "let the library process the feedback telegram")
+Send_Telegram    (device.com_object [ 12+6], 0, comment = "Feedback for output 7")
+App_Loop         (comment = "Only one telegram should be sent")
+
+App_Loop         ("_loop", on8 + c8_on_delay - 1)
+App_Loop         ("_output8Set", 1)
+App_Loop         (comment = "let the library process the feedback telegram")
+Send_Telegram    (device.com_object [ 12+7], 1, comment = "Feedback for output 8")
+App_Loop         (comment = "Only one telegram should be sent")
+App_Loop         ("_enablePWM", ticks = PWM_Timeout)
+
+App_Loop         ("_loop", on8 + c8_on_delay + c8_off_delay - 1)
+App_Loop         ("_output8Clear", 1)
+App_Loop         (comment = "let the library process the feedback telegram")
+Send_Telegram    (device.com_object [ 12+7], 0, comment = "Feedback for output 8")
+App_Loop         (comment = "Only one telegram should be sent")
+

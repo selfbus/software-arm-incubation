@@ -1,0 +1,28 @@
+name           = "out8_lock"
+description    = "OUT8 - Locking"
+device_spec    = "Jung_2138_Lock_Config.device"
+power_on_delay = 0
+tags           = "LOCK",
+
+### outout 1 lock normal
+###          begin: close
+###          end:   no reaction
+### outout 2 lock normal
+###          begin: open
+###          end:   close
+### outout 2 lock invert
+###          begin: close
+###          end:   no reaction
+
+Section          ( "Set output 1")
+#Receive_Telegram (device.com_object [ 0], 1, step = "_output1Set")
+App_Loop         ()
+
+Section          ( "Enable lock for output 1")
+#Receive_Telegram (device.com_object [8+0], 1, step = "_output1Clear")
+#App_Loop         ()
+
+Section          ( "With the lock enabled, the writes to the channel "
+                   "should be ignored"
+                 )
+#Receive_Telegram (device.com_object [ 0], 1)

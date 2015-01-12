@@ -1,7 +1,7 @@
 /*
  *  com_objects.cpp - EIB Communication objects.
  *
- *  Copyright (c) 2014 Stefan Taferner <stefan.taferner@gmx.at>
+ *  Copyright (C) 2014-2015 Stefan Taferner <stefan.taferner@gmx.at>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -85,7 +85,7 @@ void _objectWrite(int objno, unsigned int value, int flags)
 
     for (; sz > 0; --sz)
     {
-    	*ptr++ = value;
+        *ptr++ = value;
         value >>= 8;
     }
 
@@ -178,7 +178,8 @@ void sendNextGroupTelegram()
 
         if ((flags & COMFLAG_TRANS_MASK) == COMFLAG_TRANSREQ)
         {
-            flagsTab[objno >> 1] &= (objno & 1) ? 0x0f : 0xf0;
+            unsigned int mask = COMFLAG_TRANS_MASK << (objno & 1 ? 4 :  0);
+            flagsTab[objno >> 1] &= ~mask;
 
             if ((configTab[objno].config & COMCONF_TRANS_COMM) != COMCONF_TRANS_COMM)
                 continue;

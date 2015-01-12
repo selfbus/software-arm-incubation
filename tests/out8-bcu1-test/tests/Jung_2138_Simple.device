@@ -1,0 +1,142 @@
+[Device=Jung_2138]
+own_address                          = 1.1.1
+
+[Channel 1]
+delay_base        = 130ms
+on_delay_factor   = 0
+off_delay_factor  = 0
+timed_fct_active  = 0
+output_polarity   = normally open
+reaction_to_off   = ignore
+lock_polarity     = lock=1
+feedback_polarity = inverted
+bus_return_action = no reaction
+
+[Channel 2]
+delay_base        = 130ms
+on_delay_factor   = 0
+off_delay_factor  = 0
+timed_fct_active  = 0
+output_polarity   = normally closed
+reaction_to_off   = ignore
+lock_polarity     = lock=1
+feedback_polarity = normal
+bus_return_action = no reaction
+
+[Channel 3]
+delay_base        = 130ms
+on_delay_factor   = 0
+off_delay_factor  = 0
+timed_fct_active  = 0
+output_polarity   = normally open
+reaction_to_off   = ignore
+lock_polarity     = lock=0
+feedback_polarity = normal
+bus_return_action = no reaction
+
+[Channel 4]
+delay_base        = 130ms
+on_delay_factor   = 0
+off_delay_factor  = 0
+timed_fct_active  = 0
+output_polarity   = normally open
+reaction_to_off   = ignore
+lock_polarity     = lock=1
+feedback_polarity = normal
+bus_return_action = no reaction
+
+[Channel 5]
+delay_base        = 130ms
+on_delay_factor   = 1
+off_delay_factor  = 2
+timed_fct_active  = 0
+output_polarity   = normally open
+reaction_to_off   = ignore
+lock_polarity     = lock=1
+feedback_polarity = normal
+bus_return_action = no reaction
+
+[Channel 6]
+delay_base        = 260ms
+on_delay_factor   = 3
+off_delay_factor  = 4
+timed_fct_active  = 0
+output_polarity   = normally open
+reaction_to_off   = ignore
+lock_polarity     = lock=1
+feedback_polarity = normal
+bus_return_action = no reaction
+
+[Channel 7]
+delay_base        = 130ms
+on_delay_factor   = 0
+off_delay_factor  = 1
+timed_fct_active  = True
+output_polarity   = normally open
+reaction_to_off   = ignore
+lock_polarity     = lock=1
+feedback_polarity = normal
+bus_return_action = no reaction
+
+[Channel 8]
+delay_base        = 260ms
+on_delay_factor   = 2
+off_delay_factor  = 3
+timed_fct_active  = True
+output_polarity   = normally open
+reaction_to_off   = ignore
+lock_polarity     = lock=1
+feedback_polarity = normal
+bus_return_action = no reaction
+
+[Special 1]
+lock_on_action    = close
+lock_off_action   = no action
+output            = disabled
+kind              = lock
+operator          = undefined
+
+[Special 2]
+lock_on_action    = open
+lock_off_action   = close
+output            = disabled
+kind              = lock
+operator          = undefined
+
+[Special 3]
+lock_on_action    = close
+lock_off_action   = no action
+output            = disabled
+kind              = lock
+operator          = undefined
+
+[Special 4]
+lock_on_action    = no action
+lock_off_action   = no action
+output            = disabled
+kind              = logic
+operator          = undefined
+
+[Group Addresses]
+ 0 = 1/0/1
+ 1 = 1/0/2
+ 2 = 1/0/3
+ 3 = 1/0/4, 1/0/3
+ 4 = 1/0/5
+ 5 = 1/0/6
+ 6 = 1/0/7
+ 7 = 1/0/8
+
+ 8 = 1/0/10
+ 9 = 1/0/11
+10 = 1/0/12
+11 = 1/0/13
+
+12 = 1/0/21
+13 = 1/0/22
+14 = 1/0/23
+#15 = 1/0/24
+16 = 1/0/25
+17 = 1/0/26
+18 = 1/0/27
+19 = 1/0/28

@@ -1,0 +1,34 @@
+name           = "out8_simple"
+description    = "OUT8 - Simple"
+device_spec    = "Jung_2138_Simple.device"
+power_on_delay = 0
+tags           = "SIMPLE",
+
+### output 3 normally open,   feedback normal 
+### output 4 normally open,   feedback none
+PWM_Timeout = 50
+
+Include          ("simple_init.steps")
+
+Section          ("Send 1 for output 1/0/3 -> should set the output 3 and 4")
+Receive_Telegram (device.com_object [    2], 1, step = "_output34Set")
+App_Loop         ()
+Send_Telegram    (device.com_object [ 12+2], 1)
+App_Loop         (comment = "no further feedback telegram")
+App_Loop         (ticks = PWM_Timeout - 1)
+App_Loop         ("_enablePWM", ticks = 1)
+
+Section          ("Send 0 to 1/0/4 -> only out4 should trun off")
+Receive_Telegram (device.com_object [    3], 0, step = "_output4Clear")
+App_Loop         ()
+App_Loop         (comment = "no feedback telegram")
+App_Loop         (ticks = PWM_Timeout - 1)
+App_Loop         (ticks = 1, comment = "no change inthe PWM state")
+
+Section          ("Send 0 to 1/0/3 -> out3 should turn off")
+Receive_Telegram (device.com_object [    2], 0, step = "_output3Clear")
+App_Loop         ()
+Send_Telegram    (device.com_object [ 12+2], 0)
+App_Loop         (comment = "no further feedback telegram")
+App_Loop         (ticks = PWM_Timeout - 1)
+App_Loop         (ticks = 1, comment = "no change inthe PWM state")

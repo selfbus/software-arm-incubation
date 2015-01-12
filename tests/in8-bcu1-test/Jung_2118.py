@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2014 Martin Glueck All rights reserved
+# Copyright (C) 2014-2015 Martin Glueck All rights reserved
 # Langstrasse 4, A--2244 Spannberg, Austria. martin@mangari.org
 # #*** <License> ************************************************************#
 # This module is part of the library selfbus.
@@ -458,7 +458,7 @@ class Device (D.BCU1) :
 
     # end class Dim_Encoder_Config
 
-    channel = D.Channels_Definition \
+    channel = D.Channels_Type_Definition \
         ( "type", 8
         , address = 0x1CE, bit_field_kind = "duo", default = 1
         , Disabled = Disabled

@@ -301,11 +301,11 @@ class Com_Object (_Object_, metaclass = _M_Com_Object_) :
     # end def update_eeprom
 
     ### Flags
-    transmit     = Bit_Mask_Flag (0b01000000)
-    value_in_eep = Bit_Mask_Flag (0b00100000)
-    write        = Bit_Mask_Flag (0b00010000)
-    read         = Bit_Mask_Flag (0b00001000)
-    comm         = Bit_Mask_Flag (0b00000100)
+    transmit     = Bit_Mask_Flag (0b01000000) # 0x40
+    value_in_eep = Bit_Mask_Flag (0b00100000) # 0x20
+    write        = Bit_Mask_Flag (0b00010000) # 0x10
+    read         = Bit_Mask_Flag (0b00001000) # 0x08
+    comm         = Bit_Mask_Flag (0b00000100) # 0x04
 
     @property
     def priority (self) :

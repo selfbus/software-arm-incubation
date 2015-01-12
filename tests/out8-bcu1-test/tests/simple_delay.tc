@@ -1,0 +1,55 @@
+name           = "out8_simple_delay"
+description    = "OUT8 - Simple Delay"
+device_spec    = "Jung_2138_Simple.device"
+power_on_delay = 0
+tags           = "DELAY",
+
+### output 5 normally open,   feedback normal
+###            on  delay   130ms
+###            off dellay  260ms
+### output 6 normally open,   feedback normal
+###            on  delay   780ms
+###            off dellay 1040ms
+PWM_Timeout  = 50
+c5_on_delay  = device.channel [5].ms ("on_delay_factor")
+c5_off_delay = device.channel [5].ms ("off_delay_factor")
+c6_on_delay  = device.channel [6].ms ("on_delay_factor")
+c6_off_delay = device.channel [6].ms ("off_delay_factor")
+
+Include          ("simple_init.steps")
+
+Section          ("Check on delays")
+on5 = Receive_Telegram (device.com_object [    4], 1, comment = "start on delay for output 5")
+App_Loop         ("_loop", 60)
+on6 = Receive_Telegram (device.com_object [    5], 1, comment = "start on delay for output 6")
+App_Loop         ("_loop", on5 + c5_on_delay - 1)
+App_Loop         ("_output5Set", 1)
+App_Loop         (comment = "let the library process the feedback telegram")
+Send_Telegram    (device.com_object [ 12+4], 1, comment = "Feedback for output 5")
+App_Loop         (comment = "Only one telegram should be sent")
+
+App_Loop         ("_enablePWM", ticks = PWM_Timeout)
+
+App_Loop         ("_loop", on6 + c6_on_delay - 1)
+App_Loop         ("_output6Set", 1)
+App_Loop         (comment = "let the library process the feedback telegram")
+Send_Telegram    (device.com_object [ 12+5], 1, comment = "Feedback for output 5")
+App_Loop         (comment = "Only one telegram should be sent")
+
+App_Loop         ("_enablePWM", ticks = PWM_Timeout)
+
+Section          ("Check off delays")
+of5 = Receive_Telegram (device.com_object [    4], 0, comment = "start off delay for output 5")
+App_Loop         ("_loop", 120)
+of6 = Receive_Telegram (device.com_object [    5], 0, comment = "start off delay for output 6")
+App_Loop         ("_loop", of5 + c5_off_delay - 1)
+App_Loop         ("_output5Clear", 1)
+App_Loop         (comment = "let the library process the feedback telegram")
+Send_Telegram    (device.com_object [ 12+4], 0, comment = "Feedback for output 5")
+App_Loop         (comment = "Only one telegram should be sent")
+
+App_Loop         ("_loop", of6 + c6_off_delay - 1)
+App_Loop         ("_output6Clear", 1)
+App_Loop         (comment = "let the library process the feedback telegram")
+Send_Telegram    (device.com_object [ 12+5], 0, comment = "Feedback for output 5")
+App_Loop         (comment = "Only one telegram should be sent")

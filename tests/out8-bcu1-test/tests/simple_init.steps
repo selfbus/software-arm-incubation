@@ -1,0 +1,13 @@
+PWM_Timeout  = 50
+
+Section          ("Collect the feedback telegrams from the powerup")
+App_Loop         ()
+Send_Telegram    (device.com_object [ 12+0], 0)
+Send_Telegram    (device.com_object [ 12+1], 0)
+Send_Telegram    (device.com_object [ 12+2], 0)
+Send_Telegram    (device.com_object [ 12+4], 0)
+Send_Telegram    (device.com_object [ 12+5], 0)
+Send_Telegram    (device.com_object [ 12+6], 0)
+Send_Telegram    (device.com_object [ 12+7], 0)
+App_Loop         (comment = "no further feedback telegram")
+App_Loop         ("_enablePWM", ticks = PWM_Timeout)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2014 Martin Glueck All rights reserved
+# Copyright (C) 2014-2015 Martin Glueck All rights reserved
 # Langstrasse 4, A--2244 Spannberg, Austria. martin@mangari.org
 # This module is part of the library selfbus.
 #
@@ -150,6 +150,12 @@ class Field (_Object_) :
         elif kind == "quad" :
             self.inc    = i // 4
             self.mask   = 0x03 << (2 * (i % 4))
+        elif kind == "duo_quad_l" :
+            self.inc    = i // 2
+            self.mask   = 0x03 << (4 * (i % 2))
+        elif kind == "duo_quad_h" :
+            self.inc    = i // 2
+            self.mask   = 0x0C << (4 * (i % 2))
     # end def _setup_mask_and_offset
 
 # end class Field
@@ -220,6 +226,14 @@ class Time_Base_Field (Choice_Field) :
 
 # end class Time_Base_Field
 
+class Time_Factor_Field (Int_Field) :
+    """Specify the factor to calculate ta time in conjuncation with a factor"""
+
+    limits  = (0, 127)
+    default = 10
+
+# end class Time_Factor_Field
+
 class Channel_Select_Field (Choice_Field) :
     """Special field which changes the config instance"""
 
@@ -257,7 +271,7 @@ class M_Setup_Fields (_Object_.__class__) :
         field_dict = dict ((f.name, f) for f in fields)
         Defaults   = dict ()
         for n, v in list (dct.items ()) :
-            if   isinstance (v, Channels_Definition) :
+            if   isinstance (v, (Channels_Type_Definition, Channels_Definition)) :
                 v.name = n
                 cc.append (dct [n])
             elif isinstance (v, Alternative_Definition) :
@@ -325,6 +339,22 @@ class Alternative_Definition (_Object_) :
 # end class Alternative_Definition
 
 class Channels_Definition (_Object_) :
+    """Define a set of channels sharing the same config fields"""
+
+    def __init__ (self, field_class, no_of_channels) :
+        self.no_of_channels = no_of_channels
+        self.field_class    = field_class
+    # end def __init__
+
+    def initialize (self, parent, device = None) :
+        result = Channels (self, parent, device or parent)
+        setattr           (parent, self.name, result)
+        return result
+    # end def initialize
+
+# end class Channels_Definition
+
+class Channels_Type_Definition (_Object_) :
     """Object for configuring the channel types"""
 
     def __init__ ( self, field_name, no_of_channels
@@ -363,15 +393,15 @@ class Channels_Definition (_Object_) :
     # end def __init__
 
     def initialize (self, parent, device = None) :
-        result = Channels (self, parent, device or parent)
-        setattr           (parent, self.name, result)
+        result = Channel_Types (self, parent, device or parent)
+        setattr                (parent, self.name, result)
         return result
     # end def initialize
 
-# end class Channels_Definition
+# end class Channels_Type_Definition
 
-class Channels (_Object_) :
-    """Channel object"""
+class Channel_Types (_Object_) :
+    """Channel type object"""
 
     def __init__ (self, definition, parent, device) :
         self.parent           = parent
@@ -399,18 +429,83 @@ class Channels (_Object_) :
             co.update_eeprom (eep)
     # end def update_eeprom
 
+# end class Channel_Types
+
+class Channels (_Object_) :
+    """Channel object"""
+
+    def __init__ (self, definition, parent, device) :
+        self.parent           = parent
+        self.device           = device
+        self.definition       = definition
+        self.name             = definition.name
+        self._channel_objects = []
+        for i in range (definition.no_of_channels) :
+            ck = definition.field_class.New \
+                     (self.name, i) (definition, parent, device, i)
+            self._channel_objects.append (ck)
+    # end def __init__
+
+    def __getitem__ (self, key) :
+        if key == 0 :
+            raise ValueError ("0 not allowed")
+        elif key > 0 :
+            key -= 1
+        return self._channel_objects [key]
+    # end def __getitem__
+
+    def update_eeprom (self, value, eep) :
+        for co in self._channel_objects :
+            co.update_eeprom (eep)
+    # end def update_eeprom
+
 # end class Channels
 
 class _Has_Field_Mixin_ (_Object_) :
 
     def ms (self, time_base_field_name) :
-        field = getattr (self.__class__, time_base_field_name)
-        tb    = getattr (self,           time_base_field_name)
-        tf    = getattr (self,           field.factor)
-        return 132 * (2 ** tb) * tf
+        cls  = self.__class__
+        base = getattr (cls, time_base_field_name)
+        if isinstance (base, Time_Factor_Field) :
+            factor = base
+            base   = getattr (cls, factor.base)
+        else :
+            factor = getattr (cls, base.factor)
+        tb    = getattr (self,           base.name)
+        tf    = getattr (self,           factor.name)
+        return 130 * (2 ** tb) * tf
     # end def ms
 
 # end class _Has_Field_Mixin_
+
+class Channel (_Has_Field_Mixin_, metaclass = M_Setup_Fields) :
+    """Base class for the different kind of a channel"""
+
+    def __init__ (self, definition, parent, device, i, ** kw) :
+        self.i          = i
+        self.definition = definition
+        self.parent     = parent
+        self.device     = device
+        self.Channels   = \
+            [cc.initialize (self, device) for cc in self.Channel_Configs]
+    # end def __init__
+
+    @classmethod
+    def New (cls, name, idx) :
+        return type (cls) \
+            ("%s_%s_%s" % (cls.__name__, name, idx), (cls, ), dict (i = idx))
+    # end def New
+
+    def update_eeprom (self, eep) :
+        for f in self.fields :
+            value = getattr (self, f.name)
+            f.update_eeprom (value, eep, self.i)
+        for cc in self.Channels :
+            value = getattr  (self, cc.name)
+            cc.update_eeprom (value, eep)
+    # end def update_eeprom
+
+# end class Channel
 
 class Channel_Kind (_Has_Field_Mixin_, metaclass = M_Setup_Fields) :
     """Base class for the different kind of a channel"""

@@ -34,6 +34,7 @@ typedef enum
 , TEL_TX
 , TIMER_TICK
 , CHECK_TX_BUFFER
+, BREAK
 , END
 } TelegramType;
 
