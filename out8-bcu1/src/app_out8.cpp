@@ -310,7 +310,7 @@ static void _sendFeedbackObjects(void)
         {
             if(changed & mask)
             {   // update feedback object
-            	unsigned int value = objectRead(i);
+            	unsigned int value = relays.channel(i);
             	if (invert & mask)
             		value ^= 0x01;
                 objectWrite(COMOBJ_FEEDBACK1 + i, value);

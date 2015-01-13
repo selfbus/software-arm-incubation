@@ -1,0 +1,74 @@
+name           = "out8_logic"
+description    = "OUT8 - Logic"
+device_spec    = "Jung_2138_special_01.device"
+power_on_delay = 0
+tags           = "LOGIC",
+
+Include          ("special_init.steps")
+
+def _feedback(no, value, device = device, PWM_Timeout = PWM_Timeout) :
+    App_Loop         (comment = "give lib one cycle for creating the feedback")
+    Send_Telegram    (device.com_object [12+no], value)
+    App_Loop         (comment = "no further feedback telegram")
+    if value :
+        App_Loop     ("_enablePWM", PWM_Timeout)
+
+if 1 :
+    Section          ("Test the OR logic for output 1")
+    Receive_Telegram (device.com_object [   0], 1, step = "_output1Set")
+    _feedback(0, 1)
+    Receive_Telegram (device.com_object [   0], 0, step = "_output1Clear")
+    _feedback(0, 0)
+    Receive_Telegram (device.com_object [ 8+0], 1, step = "_output1Set")
+    _feedback(0, 1)
+    Receive_Telegram (device.com_object [ 8+0], 0, step = "_output1Clear")
+    _feedback(0, 0)
+
+    Receive_Telegram (device.com_object [   0], 1, step = "_output1Set")
+    _feedback(0, 1)
+    Receive_Telegram (device.com_object [ 8+0], 1)
+    Receive_Telegram (device.com_object [   0], 0)
+    Receive_Telegram (device.com_object [ 8+0], 0, step = "_output1Clear")
+    _feedback(0, 0)
+
+if 1 :
+    Section          ("Test the AND logic for output 2")
+    Receive_Telegram (device.com_object [   1], 1)
+    Receive_Telegram (device.com_object [ 8+1], 1, step = "_output2Set")
+    _feedback        (1, 1)
+    Receive_Telegram (device.com_object [ 8+1], 0, step = "_output2Clear")
+    _feedback        (1, 0)
+
+    Receive_Telegram (device.com_object [ 8+1], 1, step = "_output2Set"
+                     , comment = "Try setting the special com object again"
+                     )
+    _feedback        (1, 1)
+
+    Receive_Telegram (device.com_object [ 8+1], 0, step = "_output2Clear")
+    _feedback        (1, 0)
+
+    Receive_Telegram (device.com_object [   1], 0)
+    App_Loop         ()
+    App_Loop         ()
+
+if 1 :
+    Section          ("Test the AND with recirculation logic for output 3")
+    Receive_Telegram (device.com_object [   2], 1)
+    Receive_Telegram (device.com_object [ 8+2], 1, step = "_output3Set")
+    _feedback        (2, 1)
+    Receive_Telegram (device.com_object [ 8+2], 0, step = "_output3Clear")
+    _feedback        (2, 0)
+
+    Receive_Telegram (device.com_object [ 8+2], 1
+                     , comment = "Try setting the special com object again"
+                     )
+    Receive_Telegram (device.com_object [   2], 1, step = "_output3Set")
+    _feedback        (2, 1)
+
+    Receive_Telegram (device.com_object [ 8+2], 0, step = "_output3Clear"
+                     , comment = "Clear special 3"
+                     )
+    _feedback        (2, 0)
+    Receive_Telegram (device.com_object [   2], 0)
+    App_Loop         ()
+    App_Loop         ()

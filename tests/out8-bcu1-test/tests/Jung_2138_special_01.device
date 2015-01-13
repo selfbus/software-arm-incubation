@@ -90,25 +90,25 @@ feedback_polarity = normal
 bus_return_action = no reaction
 
 [Special 1]
-lock_on_action    = close
+lock_on_action    = no action
 lock_off_action   = no action
 output            = channel 1
-kind              = lock
-operator          = undefined
+kind              = logic
+operator          = or
 
 [Special 2]
-lock_on_action    = open
-lock_off_action   = close
+lock_on_action    = no action
+lock_off_action   = no action
 output            = channel 2
-kind              = lock
-operator          = undefined
+kind              = logic
+operator          = and
 
 [Special 3]
-lock_on_action    = close
+lock_on_action    = no action
 lock_off_action   = no action
 output            = channel 3
-kind              = lock
-operator          = undefined
+kind              = logic
+operator          = and with recirculation
 
 [Special 4]
 lock_on_action    = no action
@@ -132,10 +132,10 @@ operator          = undefined
 10 = 1/0/12
 11 = 1/0/13
 
-#12 = 1/0/21
-#13 = 1/0/22
-#14 = 1/0/23
-#15 = 1/0/24
+12 = 1/0/21
+13 = 1/0/22
+14 = 1/0/23
+15 = 1/0/24
 #16 = 1/0/25
 #17 = 1/0/26
 #18 = 1/0/27

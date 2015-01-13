@@ -91,12 +91,16 @@ void Outputs::updateChannel(unsigned int channel, unsigned int value)
 
 void Outputs::setChannel(unsigned int channel)
 {
-    _relayState |=  (1 << channel);
+    unsigned int mask = 1 << channel;
+    //if (! _blocked & mask)
+       _relayState |=  mask;
 }
 
 void Outputs::clearChannel(unsigned int channel)
 {
-    _relayState &= ~(1 << channel);
+    unsigned int mask = 1 << channel;
+    //if (! _blocked & mask)
+        _relayState &= ~mask;
 }
 
 unsigned int Outputs::toggleChannel(unsigned int channel)
@@ -139,7 +143,6 @@ void Outputs::checkPWM(void)
         timer16_0.match(MAT2, PWM_DUTY_33);
         //digitalWrite(PIO1_4, 0);
     }
-
 }
 
 void Outputs::updateOutputs(void)
@@ -160,4 +163,5 @@ void Outputs::updateOutputs(void)
     }
     _prevRelayState = _relayState;
 }
+
 #endif
