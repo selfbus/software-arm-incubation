@@ -115,9 +115,9 @@ static void _handle_logic_function(int objno, unsigned int value)
                 break; // logicFuncTyp
 
             case 1: /* blocking function */
-                if ((objectRead(specialFunc) ^ (lockPolarity >> objno)) & 0x01)
+                if ((objectRead(COMOBJ_SPECIAL1 + specialFunc) ^ (lockPolarity >> objno)) & 0x01)
                 {   /* start blocking */
-                    if (relays.setBlocked(objno))
+                    if (! relays.blocked (objno))
                     {
                         value = (userEeprom[APP_SPECIAL_FUNCTION1 + (specialFunc>>1)])>>((specialFunc&1)*4)&0x03;
                         switch (value)
@@ -133,11 +133,13 @@ static void _handle_logic_function(int objno, unsigned int value)
                         default:
                             break;
                         }
+                        relays.setBlocked(objno);
                     }
                 } else {
                     /* end blocking */
-                    if (relays.clearBlocked(objno))
+                    if (relays.blocked(objno))
                     {   // we have to unblock
+                        relays.clearBlocked(objno);
                         /* action at end of blocking, 0: nothing, 1: off, 2: on */
                         value = (userEeprom[APP_SPECIAL_FUNCTION1 + (specialFunc>>1)])>>((specialFunc&1)*4+2)&0x03;
                         switch (value)
@@ -334,7 +336,7 @@ void initApplication(void)
     relays.begin(userEeprom[APP_PIN_STATE_MEMORY], userEeprom[APP_CLOSER_MODE]);
     lockPolarity         = userEeprom[APP_SPECIAL_POLARITY];
     initialChannelAction = userEeprom[APP_RESTORE_AFTER_PL_HI] << 8
-                                   | userEeprom[APP_RESTORE_AFTER_PL_LO];
+                         | userEeprom[APP_RESTORE_AFTER_PL_LO];
     for (i=0; i < 8; i++) {
         unsigned int temp = (initialChannelAction >> (i * 2)) & 0x03;
         if      (temp == 0x01)

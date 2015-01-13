@@ -38,8 +38,8 @@ public:
     void clearChannel(unsigned int channel);
     unsigned int toggleChannel(unsigned int channel);
     unsigned int blocked(unsigned int channel);
-    unsigned int  setBlocked(unsigned int channel);
-    unsigned int clearBlocked(unsigned int channel);
+    void setBlocked(unsigned int channel);
+    void clearBlocked(unsigned int channel);
     void checkPWM(void);
     void updateOutputs(void);
 protected:
@@ -92,14 +92,14 @@ void Outputs::updateChannel(unsigned int channel, unsigned int value)
 void Outputs::setChannel(unsigned int channel)
 {
     unsigned int mask = 1 << channel;
-    //if (! _blocked & mask)
+    if (! (_blocked & mask))
        _relayState |=  mask;
 }
 
 void Outputs::clearChannel(unsigned int channel)
 {
     unsigned int mask = 1 << channel;
-    //if (! _blocked & mask)
+    if (! (_blocked & mask))
         _relayState &= ~mask;
 }
 
@@ -122,18 +122,14 @@ unsigned int Outputs::blocked(unsigned int channel)
     return _blocked & (1 << channel);
 }
 
-unsigned int  Outputs::setBlocked(unsigned int channel)
+void Outputs::setBlocked(unsigned int channel)
 {
-    unsigned int old = _blocked;
     _blocked |= (1 << channel);
-    return _blocked ^ old;
 }
 
-unsigned int Outputs::clearBlocked(unsigned int channel)
+void Outputs::clearBlocked(unsigned int channel)
 {
-    unsigned int old = _blocked;
     _blocked &= ~(1 << channel);
-    return _blocked ^ old;
 }
 
 void Outputs::checkPWM(void)

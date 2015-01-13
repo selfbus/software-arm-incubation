@@ -64,6 +64,17 @@ class Section :
 
 # end class Section
 
+class Comment (Section) :
+    """Add a comment line to the source file"""
+
+    def __init__ (self, * args, ** kw) :
+        if "new_line" not in kw :
+            kw ["new_line"] = 0
+        super (Comment, self).__init__ (* args, ** kw)
+    # end def __init__
+
+# end class Comment
+
 class Include :
     """Include a set of test steps from an external file"""
 
@@ -74,14 +85,14 @@ class Include :
             code      = compile (f.read (), file_name, "exec")
             exec (code, globals (), tc.vars)
     # end def __init__
-    
+
 # end class Include
 
 class Test_Step :
     """Base class for all kinds fo test steps."""
 
     tick_length = 0
-    
+
     def __init__ ( self
                  , kind
                  , step     = "NULL"
@@ -130,7 +141,7 @@ class Test_Step :
     def __add__ (self, rhs) :
         return self.Tick + rhs - self.Ticks
     # end def __add__
-    
+
 # end class Test_Step
 
 class App_Loop (Test_Step) :
@@ -316,7 +327,7 @@ class Test_Case :
         code = """/*
  *  %s -
  *
- *  Copyright (c) 2014 Martin Glueck <martin@mangari.org>
+ *  Copyright (C) 2014-2015 Martin Glueck <martin@mangari.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -329,7 +340,7 @@ class Test_Case :
         with open (file_name, "w") as file :
             file.write (code % os.path.basename (file_name))
     # end def _create_file
-    
+
 # end class Test_Case
 
 if __name__ == "__main__" :

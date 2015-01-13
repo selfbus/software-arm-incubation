@@ -41,7 +41,7 @@ off_delay_factor  = 0
 timed_fct_output  = 0
 output_polarity   = normally open
 reaction_to_off   = ignore
-lock_polarity     = lock=1
+lock_polarity     = lock=0
 feedback_polarity = normal
 bus_return_action = no reaction
 
@@ -93,28 +93,28 @@ bus_return_action = no reaction
 lock_on_action    = no action
 lock_off_action   = no action
 output            = channel 1
-kind              = logic
-operator          = or
+kind              = lock
+operator          = undefined
 
 [Special 2]
-lock_on_action    = no action
-lock_off_action   = no action
+lock_on_action    = close
+lock_off_action   = open
 output            = channel 2
-kind              = logic
-operator          = and
+kind              = lock
+operator          = undefined
 
 [Special 3]
-lock_on_action    = no action
-lock_off_action   = no action
+lock_on_action    = open
+lock_off_action   = close
 output            = channel 3
-kind              = logic
-operator          = and with recirculation
+kind              = lock
+operator          = undefined
 
 [Special 4]
-lock_on_action    = no action
-lock_off_action   = no action
+lock_on_action    = open
+lock_off_action   = close
 output            = channel 4
-kind              = force
+kind              = lock
 operator          = undefined
 
 [Group Addresses]

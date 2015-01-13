@@ -5,6 +5,7 @@ power_on_delay = 0
 tags           = "LOGIC",
 
 Include          ("special_init.steps")
+tests = 0b1000
 
 def _feedback(no, value, device = device, PWM_Timeout = PWM_Timeout) :
     App_Loop         (comment = "give lib one cycle for creating the feedback")
@@ -13,8 +14,9 @@ def _feedback(no, value, device = device, PWM_Timeout = PWM_Timeout) :
     if value :
         App_Loop     ("_enablePWM", PWM_Timeout)
 
-if 1 :
+if tests & 0xb0001 :
     Section          ("Test the OR logic for output 1")
+    Receive_Telegram (device.com_object [ 8+0], 0)
     Receive_Telegram (device.com_object [   0], 1, step = "_output1Set")
     _feedback(0, 1)
     Receive_Telegram (device.com_object [   0], 0, step = "_output1Clear")
@@ -31,8 +33,9 @@ if 1 :
     Receive_Telegram (device.com_object [ 8+0], 0, step = "_output1Clear")
     _feedback(0, 0)
 
-if 1 :
+if tests & 0xb0010 :
     Section          ("Test the AND logic for output 2")
+    Receive_Telegram (device.com_object [ 8+1], 0)
     Receive_Telegram (device.com_object [   1], 1)
     Receive_Telegram (device.com_object [ 8+1], 1, step = "_output2Set")
     _feedback        (1, 1)
@@ -51,8 +54,9 @@ if 1 :
     App_Loop         ()
     App_Loop         ()
 
-if 1 :
+if tests & 0xb0100 :
     Section          ("Test the AND with recirculation logic for output 3")
+    Receive_Telegram (device.com_object [ 8+2], 0)
     Receive_Telegram (device.com_object [   2], 1)
     Receive_Telegram (device.com_object [ 8+2], 1, step = "_output3Set")
     _feedback        (2, 1)
@@ -72,3 +76,14 @@ if 1 :
     Receive_Telegram (device.com_object [   2], 0)
     App_Loop         ()
     App_Loop         ()
+
+if tests & 0xb1000 :
+    Section          ("Test contrained lead")
+    Receive_Telegram (device.com_object [ 8+3], 0b00)
+    Receive_Telegram (device.com_object [   3], 1, step = "_output4Set")
+    _feedback        (3, 1)
+    Receive_Telegram (device.com_object [ 8+3], 0b00)
+    Receive_Telegram (device.com_object [ 8+3], 0b10, step = "_output4Clear")
+    _feedback        (3, 0)
+    Receive_Telegram (device.com_object [ 8+3], 0b00, step = "_output4Set")
+    _feedback        (3, 1)
