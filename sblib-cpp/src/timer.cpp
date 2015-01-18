@@ -107,7 +107,7 @@ void Timer::matchMode(int channel, int mode)
 
     offset = channel * 3;
     timer->MCR &= ~(7 << offset);
-    timer->MCR |= (mode & 3) << offset;
+    timer->MCR |= (mode & 7) << offset;
 
     // Configure the external match channel
 
