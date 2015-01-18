@@ -16,10 +16,16 @@
 #include <sblib/timer.h>
 #include <sblib/digital_pin.h>
 
+#define ZERO_DETECT
+#define HAND_ACTUATION
+
+#ifdef HAND_ACTUATION
+extern const int handPins[NO_OF_CHANNELS];
+#endif
+
 #define PWM_TIMEOUT 50
 #define PWM_PERIOD     857
 #define PWM_DUTY_33    (588)
-
 
 class Outputs
 {
@@ -42,6 +48,17 @@ public:
     void clearBlocked(unsigned int channel);
     void checkPWM(void);
     void updateOutputs(void);
+	void setOutputs(void);
+	void clrOutputs(void);
+
+#ifdef ZERO_DETECT
+	void zeroDetectHandler(void);
+#endif
+
+#ifdef HAND_ACTUATION
+	void checkHandActution(void);
+#endif
+
 protected:
     unsigned int _relayState;
     unsigned int _prevRelayState;
@@ -49,61 +66,56 @@ protected:
     unsigned int _modified;
     unsigned int _blocked;
     Timeout      _pwm_timeout;
+    unsigned int _port_0_set;
+    unsigned int _port_2_set;
+    unsigned int _port_0_clr;
+    unsigned int _port_2_clr;
+
+#ifdef ZERO_DETECT
+    unsigned int _state;
+#endif
+
+#ifdef HAND_ACTUATION
+    unsigned int _handCount;
+    unsigned int _stateOne;
+    Timeout      _handDelay;
+    Timeout      _handToggleDelay;
+#endif
 };
 
-inline void Outputs::begin (unsigned int initial, unsigned int inverted)
-{
-    pinMode(PIO3_2, OUTPUT_MATCH);  // configure digital pin PIO3_2(PWM) to match MAT2 of timer16 #0
-    //pinMode(PIO1_4, OUTPUT);
-    timer16_0.begin();
+extern Outputs relays;
 
-    timer16_0.prescaler((SystemCoreClock / 10000000) - 1);
-    timer16_0.matchMode(MAT2, SET);  // set the output of PIO3_2 to 1 when the timer matches MAT1
-    timer16_0.match(MAT2, 0);        // match MAT1 when the timer reaches this value
-    timer16_0.pwmEnable(MAT2);       // enable PWM for match channel MAT1
-
-    // Reset the timer when the timer matches MAT3
-    timer16_0.matchMode(MAT3, RESET);
-    timer16_0.match(MAT3, PWM_PERIOD);     // match MAT3 ato create 14lHz
-    timer16_0.start();
-    _pwm_timeout.start(PWM_TIMEOUT); // start the timer to switch back to a PWM operation
-    //digitalWrite(PIO1_4, 1);
-    _relayState     = initial;
-    _prevRelayState = ~initial;
-    _inverted       = inverted;
-}
-
-unsigned int Outputs::pendingChanges(void)
+ALWAYS_INLINE unsigned int Outputs::pendingChanges(void)
 {
     return _relayState ^ _prevRelayState;
 }
 
-unsigned int Outputs::channel(unsigned int channel)
+ALWAYS_INLINE unsigned int Outputs::channel(unsigned int channel)
 {
     return _relayState & (1 << channel) ? 1 : 0;
 }
 
-void Outputs::updateChannel(unsigned int channel, unsigned int value)
+ALWAYS_INLINE void Outputs::updateChannel(unsigned int channel, unsigned int value)
 {
     if (value) setChannel(channel);
     else       clearChannel(channel);
 }
 
-void Outputs::setChannel(unsigned int channel)
+ALWAYS_INLINE void Outputs::setChannel(unsigned int channel)
 {
     unsigned int mask = 1 << channel;
     if (! (_blocked & mask))
        _relayState |=  mask;
 }
 
-void Outputs::clearChannel(unsigned int channel)
+ALWAYS_INLINE void Outputs::clearChannel(unsigned int channel)
 {
     unsigned int mask = 1 << channel;
     if (! (_blocked & mask))
         _relayState &= ~mask;
 }
 
-unsigned int Outputs::toggleChannel(unsigned int channel)
+ALWAYS_INLINE unsigned int Outputs::toggleChannel(unsigned int channel)
 {
     if (this->channel(channel))
     {
@@ -117,22 +129,22 @@ unsigned int Outputs::toggleChannel(unsigned int channel)
     }
 }
 
-unsigned int Outputs::blocked(unsigned int channel)
+ALWAYS_INLINE unsigned int Outputs::blocked(unsigned int channel)
 {
     return _blocked & (1 << channel);
 }
 
-void Outputs::setBlocked(unsigned int channel)
+ALWAYS_INLINE void Outputs::setBlocked(unsigned int channel)
 {
     _blocked |= (1 << channel);
 }
 
-void Outputs::clearBlocked(unsigned int channel)
+ALWAYS_INLINE void Outputs::clearBlocked(unsigned int channel)
 {
     _blocked &= ~(1 << channel);
 }
 
-void Outputs::checkPWM(void)
+ALWAYS_INLINE void Outputs::checkPWM(void)
 {
     if(_pwm_timeout.expired())
     {
@@ -141,23 +153,35 @@ void Outputs::checkPWM(void)
     }
 }
 
-void Outputs::updateOutputs(void)
+#ifdef ZERO_DETECT
+ALWAYS_INLINE void Outputs::zeroDetectHandler(void)
 {
-    unsigned int mask = 0x01;
-    unsigned int i;
-    unsigned int state = _relayState ^ _inverted;
-    unsigned int prevState = _prevRelayState ^  _inverted;
-    if ((state ^ prevState) & state)
-    {   // at least one outputs needs to be switched ON -> disable
-        // the PWM
-        timer16_0.match(MAT2, 0);// disable the PWM
+	if (_state = 1)
+	{
+	    digitalWrite(PIO2_6, ! digitalRead(PIO2_6));	// Info LED
+		timer32_0.start();
+		_state = 0;
+	}
+}
+#endif /* define ZERO_DETECT */
+
+ALWAYS_INLINE void Outputs::setOutputs(void)
+{
+	if (_port_0_set || _port_2_set)
+	{   // at least one port will be switched on
+        timer16_0.match(MAT2, PWM_PERIOD);// disable the PWM
         _pwm_timeout.start(PWM_TIMEOUT);
-    }
-    for(i = 0; i < NO_OF_CHANNELS; i++, mask <<= 1)
-    {
-        digitalWrite(outputPins[i], state & mask);
-    }
-    _prevRelayState = _relayState;
+	}
+   	gpioPorts[0]->MASKED_ACCESS[_port_0_set] = 0xFFFF;
+   	gpioPorts[2]->MASKED_ACCESS[_port_2_set] = 0xFFFF;
+    _port_0_set = _port_2_set = 0;
+}
+
+ALWAYS_INLINE void Outputs::clrOutputs(void)
+{
+   	gpioPorts[0]->MASKED_ACCESS[_port_0_clr] = 0x0000;
+   	gpioPorts[2]->MASKED_ACCESS[_port_2_clr] = 0x0000;
+    _port_0_clr = _port_2_clr = 0;
 }
 
 #endif

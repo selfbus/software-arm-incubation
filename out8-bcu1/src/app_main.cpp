@@ -14,6 +14,7 @@
 #define NUM_CHANNELS 8
 
 #include <sblib/eib.h>
+#include "outputs.h"
 
 // Digital pin for LED
 #define PIO_YELLOW PIO2_6
@@ -22,6 +23,10 @@
 // Output pins
 const int outputPins[NO_OF_CHANNELS] =
     { PIO2_2, PIO0_7, PIO2_10, PIO2_9, PIO0_2, PIO0_8, PIO0_9, PIO2_11 };
+#ifdef HAND_ACTUATION
+const int handPins[NO_OF_CHANNELS] =
+    { PIO2_1, PIO0_3, PIO2_4, PIO2_5, PIO3_5, PIO3_4, PIO1_10, PIO0_11 };
+#endif
 
 ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
 
@@ -40,8 +45,18 @@ void setup()
     for (int channel = 0; channel < NUM_CHANNELS; ++channel)
     {
         pinMode(outputPins[channel], OUTPUT);
+#ifdef HAND_ACTUATION
+        pinMode(handPins[channel], OUTPUT);
+#endif
     }
+#ifdef HAND_ACTUATION
+    pinMode(PIO2_3, INPUT | PULL_UP | HYSTERESIS);
+#endif
+    pinMode(PIO1_2, OUTPUT);
+    digitalWrite(PIO1_2, 1);
+    pinInterruptMode(PIO0_5, INTERRUPT_EDGE_FALLING | INTERRUPT_ENABLED);
     initApplication();
+    enableInterrupt(EINT0_IRQn);
 }
 
 /*

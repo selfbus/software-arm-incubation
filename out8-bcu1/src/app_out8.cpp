@@ -17,7 +17,6 @@
 #include <sblib/eib/user_memory.h>
 
 // state of the application
-static Outputs relays;
 static unsigned int lockPolarity;
 static Timeout channel_timeout[8];
 
@@ -273,14 +272,8 @@ void checkTimeouts(void)
 {
     unsigned int objno;
 
-#ifdef HAND
-    // manual Operation is enabled
-    // check one button every app_loop() passing through
-    if (handActuationCounter <= OBJ_OUT7  &&  checkHandActuation(handActuationCounter))
-    {
-        needToSwitch=1;
-    }
-    handActuationCounter++;     //count to 255 for debounce buttons, ca. 30ms
+#ifdef HAND_ACTUATION
+    relays.checkHandActution();
 #endif
 
     // check if we can enable PWM
@@ -333,7 +326,8 @@ void initApplication(void)
     unsigned int i;
     unsigned int initialChannelAction;
 
-    relays.begin(userEeprom[APP_PIN_STATE_MEMORY], userEeprom[APP_CLOSER_MODE]);
+    //relays.begin(userEeprom[APP_PIN_STATE_MEMORY], userEeprom[APP_CLOSER_MODE]);
+    relays.begin(0x00, userEeprom[APP_CLOSER_MODE]);
     lockPolarity         = userEeprom[APP_SPECIAL_POLARITY];
     initialChannelAction = userEeprom[APP_RESTORE_AFTER_PL_HI] << 8
                          | userEeprom[APP_RESTORE_AFTER_PL_LO];
