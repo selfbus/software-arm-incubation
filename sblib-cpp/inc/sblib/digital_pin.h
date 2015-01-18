@@ -40,6 +40,24 @@ void pinMode(int pin, int mode);
 void pinDirection(int pin, int dir);
 
 /**
+ * Configure the interrupt for the I/O port
+ *
+ * @param pin - the pin to configure: PIO0_0, PIO0_1, ... (see sblib/ioports.h)
+ * @param mode - the interrupt mode. Use a combination of PinInterruptMode values (see below)
+ */
+void pinInterruptMode(int pin, int mode);
+
+/**
+ * Enable the interrupt for this I/O pin
+ */
+void pinEnableInterrupt(int pin);
+
+/**
+ * Disable the interrupt for this I/O pin
+ */
+void pinDisableInterrupt(int pin);
+
+/**
  * Configure the mode of the pins of an I/O port.
  *
  * This function can only handle a sub-set of the available pin configurations.
@@ -281,6 +299,38 @@ enum PinMode
     SPI_SSEL = PINMODE_FUNC(PF_SSEL)
 };
 
+enum PinInterruptMode
+{
+	/**
+	 * Configure the interrupt to be level triggered activated by a LOW level.
+	 */
+	INTERRUPT_LEVEL_LOW    = 0x0100,
+
+	/**
+	 * Configure the interrupt to be level triggered activated by a HIGH level.
+	 */
+	INTERRUPT_LEVEL_HIGH   = 0x0101,
+
+	/**
+	 * Configure the interrupt to be triggered by a falling edge on the I/O pin.
+	 */
+	INTERRUPT_EDGE_FALLING = 0x0000,
+
+	/**
+	 * Configure the interrupt to be triggered by a rising edge on the I/O pin.
+	 */
+	INTERRUPT_EDGE_RISING  = 0x0001,
+
+	/**
+	 * Configure the interrupt to be triggered by a both edges on the I/O pin.
+	 */
+	INTERRUPT_EDGE_BOTH    = 0x0010,
+
+	/**
+	 * After the configuration enable the interrupt.
+	 */
+	INTERRUPT_ENABLED      = 0x1000,
+};
 
 //
 //  Inline functions
@@ -297,4 +347,20 @@ ALWAYS_INLINE bool digitalRead(int pin)
     return gpioPorts[digitalPinToPort(pin)]->MASKED_ACCESS[digitalPinToBitMask(pin)] != 0;
 }
 
+ALWAYS_INLINE void pinEnableInterrupt(int pin)
+{
+    LPC_GPIO_TypeDef* port = gpioPorts[digitalPinToPort(pin)];
+    unsigned short mask = digitalPinToBitMask(pin);
+
+    port->IE  |=  mask;
+}
+
+ALWAYS_INLINE void pinDisableInterrupt(int pin)
+{
+    LPC_GPIO_TypeDef* port = gpioPorts[digitalPinToPort(pin)];
+    unsigned short mask = digitalPinToBitMask(pin);
+
+    port->IE  &= ~mask;
+
+}
 #endif /*sblib_digital_pin_h*/

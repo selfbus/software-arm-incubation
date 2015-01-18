@@ -137,3 +137,28 @@ void pinDirection(int pin, int dir)
         port->DIR |= mask;
     else port->DIR &= ~mask;
 }
+
+void pinInterruptMode(int pin, int mode)
+{
+    LPC_GPIO_TypeDef* port = gpioPorts[digitalPinToPort(pin)];
+    unsigned short mask = digitalPinToBitMask(pin);
+
+    /* Configure the pin as input */
+    pinMode(pin, INPUT);
+
+    /* Set the level/edge configuration */
+    if (mode & 0x100) port->IS  |=  mask;
+    else              port->IS  &= ~mask;
+
+    /* Set the both edge configuration */
+    if (mode & 0x010) port->IBE |=  mask;
+    else              port->IBE &= ~mask;
+
+    /* Set the edge/level type configuration */
+    if (mode & 0x100) port->IEV |=  mask;
+    else              port->IEV &= ~mask;
+
+    /* Enable the ionterrupt for this pin */
+    if (mode & 0x100) port->IE  |=  mask;
+    else              port->IE  &= ~mask;
+}
