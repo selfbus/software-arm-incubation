@@ -29,7 +29,7 @@ void _gatherState (Out8TestState * state, Out8TestState * refState)
 {
     int i;
     state->outputs = 0;
-    state->pwm_on  = timer16_0.match(MAT2) != 0;
+    state->pwm_on  = timer16_0.match(MAT2) != 857;
     for (i=0; i < 8; i++)
     {
         state->outputs |= (digitalRead(outputPins[i]) << i);
