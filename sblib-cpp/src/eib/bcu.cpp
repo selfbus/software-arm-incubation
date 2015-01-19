@@ -141,7 +141,10 @@ void BCU::loop()
 
     // Send a disconnect after 6.5 seconds inactivity
     if (connectedAddr && elapsed(connectedTime) > 6500)
+    {
         sendConControlTelegram(T_DISCONNECT_PDU, 0);
+        connectedAddr = 0;
+    }
 
     if (bcu.progPin)
     {
