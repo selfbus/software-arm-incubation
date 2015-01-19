@@ -211,7 +211,7 @@ public:
 enum BcuStatus
 {
     BCU_STATUS_PROG= 0x01,    //!< BCU status: programming mode: 0=normal mode, 1=programming mode
-    BCU_STATUS_LL  = 0x02,    //!< BCU status: link layer mode
+    BCU_STATUS_LL  = 0x02,    //!< BCU status: link layer mode (1), or bus monitor mode (0)
     BCU_STATUS_TL  = 0x04,    //!< BCU status; transport layer enabled
     BCU_STATUS_AL  = 0x08,    //!< BCU status: application layer enabled
     BCU_STATUS_SER = 0x10,    //!< BCU status: serial PEI enabled

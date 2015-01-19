@@ -99,6 +99,7 @@ void Bus::begin()
     sendAck = 0;
     sendCurTelegram = 0;
     sendNextTel = 0;
+    sendTriesMax = 3;
     collision = false;
 
     timer.begin();
@@ -193,6 +194,9 @@ void Bus::handleTelegram(bool valid)
         if (!(userRam.status & BCU_STATUS_TL))
         {
             telegramLen = nextByteIndex;
+
+            if (userRam.status & BCU_STATUS_LL)
+                sendAck = SB_BUS_ACK;
         }
         else if (processTel)
         {
@@ -204,7 +208,7 @@ void Bus::handleTelegram(bool valid)
     {
         currentByte &= 0xff;
 
-        if ((currentByte == SB_BUS_ACK || sendTries > 3) && sendCurTelegram)
+        if ((currentByte == SB_BUS_ACK || sendTries > sendTriesMax) && sendCurTelegram)
             sendNextTelegram();
     }
     else // Received wrong checksum, or more than one byte but too short for a telegram
@@ -341,7 +345,7 @@ STATE_SWITCH:
         }
         else
         {
-            if (sendTries > 3)
+            if (sendTries > sendTriesMax)
                 sendNextTelegram();
 
             if (sendCurTelegram)  // Send a telegram?

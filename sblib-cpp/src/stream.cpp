@@ -88,9 +88,7 @@ bool Stream::findUntil(const char* target, int targetLen, const char* terminator
 int Stream::timedRead()
 {
     int start = millis();
-
-    int ch = peeked;
-    peeked = -1;
+    int ch = -1;
 
     while (ch < 0 && elapsed(start) < timeout)
     {
@@ -103,28 +101,29 @@ int Stream::timedRead()
 int Stream::timedPeek()
 {
     int start = millis();
+    int ch = -1;
 
-    while (peeked < 0 && elapsed(start) < timeout)
+    while (ch < 0 && elapsed(start) < timeout)
     {
-        peek();
+        ch = peek();
     }
 
-    return peeked;
+    return ch;
 }
 
 int Stream::peekNextDigit()
 {
-    int c;
+    int ch;
     while (true)
     {
-        c = timedPeek();
-        if (c < 0) break; // timeout
+        ch = timedPeek();
+        if (ch < 0) break; // timeout
 
-        if (c == '-') break;
-        if (c >= '0' && c <= '9') break;
+        if (ch == '-') break;
+        if (ch >= '0' && ch <= '9') break;
 
-        read(); // discard non-numeric
+        read(); // discard non-numeric characters
     }
 
-    return c;
+    return ch;
 }

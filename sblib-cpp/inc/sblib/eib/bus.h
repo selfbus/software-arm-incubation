@@ -153,6 +153,18 @@ public:
      */
     void discardReceivedTelegram();
 
+    /**
+     * Get our own physical address.
+     */
+    int ownAddress() const;
+
+    /**
+     * Set the number of tries that we do sent a telegram when it is not ACKed.
+     *
+     * @param tries - the number of tries. Default: 3.
+     */
+    void maxSendTries(int tries);
+
     /** The state of the telegram sending/receiving */
     enum State
     {
@@ -226,6 +238,7 @@ protected:
 private:
     State state;                 //!< The state of the lib's telegram sending/receiving
     int sendTries;               //!< The number of repeats when sending a telegram
+    int sendTriesMax;            //!< The maximum number of repeats when sending a telegram. Default: 3
     int nextByteIndex;           //!< The number of the next byte in the telegram
 
     int currentByte;             //!< The current byte that is received/sent, including the parity bit
@@ -271,6 +284,16 @@ private:
 inline bool Bus::idle() const
 {
     return state == IDLE && sendCurTelegram == 0;
+}
+
+inline int Bus::ownAddress() const
+{
+    return bus.ownAddr;
+}
+
+inline void Bus::maxSendTries(int tries)
+{
+    sendTriesMax = tries;
 }
 
 inline bool Bus::sendingTelegram() const

@@ -70,6 +70,11 @@ public:
     void setOwnAddress(int addr);
 
     /**
+     * Get our own physical address.
+     */
+    int ownAddress() const;
+
+    /**
      * Test if the programming mode is active. This is also indicated
      * by the programming mode LED.
      *
@@ -184,6 +189,11 @@ inline void BCU::begin(int manufacturer, int deviceType, int version)
 inline bool BCU::programmingMode() const
 {
     return (userRam.status & BCU_STATUS_PROG) == BCU_STATUS_PROG;
+}
+
+inline int BCU::ownAddress() const
+{
+    return bus.ownAddr;
 }
 
 inline bool BCU::applicationRunning() const

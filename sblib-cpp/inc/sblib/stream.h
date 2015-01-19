@@ -16,6 +16,7 @@
 
 /**
  * Base class for character-based streams.
+ * Streams can be read from and written to.
  */
 class Stream: public Print
 {
@@ -31,14 +32,14 @@ public:
     /**
      * Read a single byte.
      *
-     * @return the read byte (0..255) or -1 if no byte was received.
+     * @return The read byte (0..255) or -1 if no byte was received.
      */
     virtual int read() = 0;
 
     /**
      * Query the next byte to be read, without reading it.
      *
-     * @return the next byte (0..255) or -1 if no byte is available
+     * @return The next byte (0..255) or -1 if no byte is available
      *         for reading.
      */
     virtual int peek() = 0;
@@ -214,7 +215,6 @@ public:
 
 protected:
     unsigned int timeout; //!< timeout for timed reads in milliseconds
-    int peeked;           //!< peeked character, or -1 if none
 
     /**
      * Create a stream with the default timeout of 1 second.
@@ -267,7 +267,6 @@ private:
 inline Stream::Stream()
 {
     timeout = 1000;
-    peeked = -1;
 }
 
 inline void Stream::setTimeout(unsigned int tmout)
