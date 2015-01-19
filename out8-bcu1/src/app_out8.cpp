@@ -10,7 +10,13 @@
 
 #include "app_out8.h"
 #include "com_objs.h"
+//#define BI_STABLE
+
+#ifndef BI_STABLE
 #include "outputs.h"
+#else
+#include "outputsBiStable.h"
+#endif
 
 #include <sblib/timeout.h>
 #include <sblib/eib/com_objects.h>
@@ -341,6 +347,7 @@ void initApplication(void)
             temp = relays.channel(i) ? 1 : 0;
         objectWrite(i, temp);
         objectWrite(COMOBJ_FEEDBACK1 + i, temp);
+        relays.updateChannel(i, temp);
     }
     relays.updateOutputs();
 }

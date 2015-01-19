@@ -1,5 +1,6 @@
 /*
- *  app_out8.cpp - The application for the 8 channel output acting as a Jung 2118
+ *  outputs.cpp - Handle the update of the port pins in accordance to the
+ *                need of the application
  *
  *  Copyright (C) 2014-2015 Martin Glueck <martin@mangari.org>
  *
@@ -16,7 +17,7 @@
 #include <sblib/timer.h>
 #include <sblib/digital_pin.h>
 
-#define ZERO_DETECT
+//#define ZERO_DETECT
 #define HAND_ACTUATION
 
 #ifdef HAND_ACTUATION
@@ -47,7 +48,7 @@ public:
     void setBlocked(unsigned int channel);
     void clearBlocked(unsigned int channel);
     void checkPWM(void);
-    void updateOutputs(void);
+    virtual void updateOutputs(void);
 	void setOutputs(void);
 	void clrOutputs(void);
 
@@ -83,7 +84,9 @@ protected:
 #endif
 };
 
+#ifndef BI_STABLE
 extern Outputs relays;
+#endif
 
 ALWAYS_INLINE unsigned int Outputs::pendingChanges(void)
 {

@@ -1,5 +1,6 @@
 /*
- *  app_out8.cpp - The application for the 8 channel output acting as a Jung 2118
+ *  outputs.cpp - Handle the update of the port pins in accordance to the
+ *                need of the application
  *
  *  Copyright (C) 2014-2015 Martin Glueck <martin@mangari.org>
  *
@@ -10,7 +11,9 @@
 
 #include "outputs.h"
 
+#ifndef BI_STABLE
 Outputs relays;
+#endif
 
 const unsigned int zeroDetectSetDelay = 0x4000;
 const unsigned int zeroDetectClrDelay = 0x8000;
