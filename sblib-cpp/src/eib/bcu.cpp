@@ -238,18 +238,13 @@ bool BCU::processDeviceDescriptorReadTelegram(int id)
 {
     if (id == 0)
     {
+        int version = maskVersion();
+
         sendTelegram[5] = 0x63;
         sendTelegram[6] = 0x43;
         sendTelegram[7] = 0x40;
-#if BCU_TYPE == 10
-        sendTelegram[8] = 0x00;  // mask version (high byte)
-        sendTelegram[9] = 0x12;  // mask version (low byte)
-#elif BCU_TYPE == 20
-        sendTelegram[8] = 0x00;  // mask version (high byte)
-        sendTelegram[9] = 0x20;  // mask version (low byte)
-#else
-#   error Unsupported BCU_TYPE
-#endif
+        sendTelegram[8] = version >> 8;
+        sendTelegram[9] = version;
         return true;
     }
 

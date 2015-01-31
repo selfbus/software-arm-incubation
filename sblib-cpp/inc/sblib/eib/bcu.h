@@ -105,6 +105,12 @@ public:
     void processTelegram();
 
     /**
+     * Get the mask version.
+     * Usually 0x0012 for BCU1, 0x0020 for BCU2.
+     */
+    int maskVersion() const;
+
+    /**
      * The BCU's main processing loop. This is like the application's loop() function,
      * and is called automatically by main() when the BCU is activated with bcu.begin().
      */
@@ -207,6 +213,17 @@ inline bool BCU::applicationRunning() const
 #elif BCU_TYPE >= 20
     return !(userRam.status & BCU_STATUS_PROG) &&
         userRam.runState == 1 && userEeprom.loadState[OT_APPLICATION];
+#else
+#   error Unsupported BCU_TYPE
+#endif
+}
+
+inline int BCU::maskVersion() const
+{
+#if BCU_TYPE == 10
+    return 0x0012;
+#elif BCU_TYPE == 20
+    return 0x0020;
 #else
 #   error Unsupported BCU_TYPE
 #endif
