@@ -15,17 +15,12 @@
 #include <sblib/eib/bcu_type.h>
 #include <sblib/eib/properties.h>
 #include <sblib/eib/user_memory.h>
+#include <sblib/utils.h>
+
 
 // Rename the method begin_BCU() of the class BCU to indicate the BCU type. If you get a
 // link error then the library's BCU_TYPE is different from the application's BCU_TYPE.
-#if BCU_TYPE == 10
-# define begin_BCU begin_BCU1
-#elif BCU_TYPE >= 20
-# define begin_BCU begin_BCU2
-#else
-# error Unsupported BCU_TYPE
-#endif
-
+#define begin_BCU  CPP_CONCAT_EXPAND(begin_,BCU_NAME)
 
 class BCU;
 
@@ -167,9 +162,8 @@ protected:
      */
     bool processDeviceDescriptorReadTelegram(int id);
 
-    /*
-     * See begin()
-     */
+    // The method begin_BCU() is renamed during compilation to indicate the BCU type.
+    // If you get a link error then the library's BCU_TYPE is different from your application's BCU_TYPE.
     void begin_BCU(int manufacturer, int deviceType, int version);
 
 private:
@@ -207,26 +201,18 @@ inline bool BCU::applicationRunning() const
     if (!enabled)
         return true;
 
-#if BCU_TYPE == 10
+#if BCU_TYPE == BCU1_TYPE
     return (userRam.status & (BCU_STATUS_PROG|BCU_STATUS_AL)) == BCU_STATUS_AL &&
         userRam.runState == 1 && userEeprom.runError == 0xff; // ETS sets the run error to 0 when programming
-#elif BCU_TYPE >= 20
+#else
     return !(userRam.status & BCU_STATUS_PROG) &&
         userRam.runState == 1 && userEeprom.loadState[OT_APPLICATION];
-#else
-#   error Unsupported BCU_TYPE
 #endif
 }
 
 inline int BCU::maskVersion() const
 {
-#if BCU_TYPE == 10
-    return 0x0012;
-#elif BCU_TYPE == 20
-    return 0x0020;
-#else
-#   error Unsupported BCU_TYPE
-#endif
+    return MASK_VERSION;
 }
 
 inline bool BCU::directConnection() const

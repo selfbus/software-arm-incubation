@@ -17,7 +17,6 @@
 #include <sblib/interrupt.h>
 #include <sblib/main.h>
 #include <sblib/math.h>
-#include <sblib/serial.h>
 #include <sblib/timer.h>
 #include <sblib/utils.h>
 #include <sblib/version.h>

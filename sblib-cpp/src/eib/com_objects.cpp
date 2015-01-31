@@ -51,16 +51,14 @@ byte* objectValuePtr(int objno)
     // The object configuration
     const ComConfig& cfg = objectConfig(objno);
 
-#if BCU_TYPE == 10
+#if BCU_TYPE == BCU1_TYPE
     if (cfg.config & COMCONF_VALUE_TYPE) // 0 if user RAM, >0 if user EEPROM
         return userEepromData + cfg.dataPtr;
     return userRamData + cfg.dataPtr;
-#elif BCU_TYPE >= 20
+#else
     // TODO Should handle userRam.segment0addr and userRam.segment1addr here
     // if (cfg.config & COMCONF_VALUE_TYPE) // 0 if segment 0, !=0 if segment 1
     return userRamData + cfg.dataPtr;
-#else
-#   error Unsupported BCU_TYPE
 #endif
 }
 
@@ -288,23 +286,19 @@ void processGroupTelegram(int addr, int apci)
 
 byte* objectConfigTable()
 {
-#if BCU_TYPE == 10
+#if BCU_TYPE == BCU1_TYPE
     return userEepromData + userEeprom.commsTabPtr;
-#elif BCU_TYPE == 20
-    return userMemoryPtr(userEeprom.commsTabAddr);
 #else
-#   error Unsupported BCU_TYPE
+    return userMemoryPtr(userEeprom.commsTabAddr);
 #endif
 }
 
 byte* objectFlagsTable()
 {
-#if BCU_TYPE == 10
+#if BCU_TYPE == BCU1_TYPE
     return userRamData + userEepromData[userEeprom.commsTabPtr + 1];
-#elif BCU_TYPE == 20
+#else
     const byte* configTable = objectConfigTable();
     return userMemoryPtr(configTable[1]);
-#else
-#   error Unsupported BCU_TYPE
 #endif
 }

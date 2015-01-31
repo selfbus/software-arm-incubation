@@ -88,7 +88,16 @@ void writeUserEeprom()
     else page = FLASH_SECTOR_ADDRESS;
 
     userEepromData[USER_EEPROM_SIZE - 1] = 0; // mark the page as in use
-    IAP_Status rc = iapProgram(page, userEepromData, USER_EEPROM_SIZE);
+
+    IAP_Status rc;
+
+#if USER_EEPROM_SIZE == 2048
+    rc = iapProgram(page, userEepromData, 1024);
+    if (rc == IAP_SUCCESS)
+        rc = iapProgram(page + 1024, userEepromData + 1024, 1024);
+#else
+    rc = iapProgram(page, userEepromData, USER_EEPROM_SIZE);
+#endif
     if (rc != IAP_SUCCESS) fatalError(); // flashing failed
 
     interrupts();

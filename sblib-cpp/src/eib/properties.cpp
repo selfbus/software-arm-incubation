@@ -1,5 +1,5 @@
 /*
- *  properties.cpp - BCU 2 properties of EIB objects.
+ *  properties.cpp - properties of EIB objects for all BCUs except BCU 1
  *
  *  Copyright (c) 2014 Stefan Taferner <stefan.taferner@gmx.at>
  *
@@ -8,9 +8,10 @@
  *  published by the Free Software Foundation.
  */
 
-#if BCU_TYPE >= 20
-
 #include <sblib/eib/properties.h>
+#include <sblib/eib/bcu_type.h>
+
+#if BCU_TYPE != BCU1_TYPE
 
 #include <sblib/core.h>
 #include <sblib/eib/user_memory.h>
@@ -19,7 +20,6 @@
 #include <sblib/internal/variables.h>
 
 #include <string.h>
-
 
 // Documentation:
 // see KNX 6/6 Profiles, p. 94+
@@ -65,7 +65,7 @@ const PropertyDef* propertyDef(int objectIdx, PropertyID propertyId)
 int loadProperty(int objectIdx, const byte* data, int len)
 {
     int segmentType, addr, length;
-    int loadState = data[0];
+    int loadState = data[0] & 7;
 
     // See KNX 3/5/2, 3.27 DM_LoadStateMachineWrite
     // See KNX 6/6 Profiles, p. 101 for load states
@@ -246,4 +246,4 @@ bool propertyDescReadTelegram(int objectIdx, PropertyID propertyId, int index)
     return true;
 }
 
-#endif /*BCU_TYPE >= 20*/
+#endif /* BCU_TYPE != BCU1_TYPE */

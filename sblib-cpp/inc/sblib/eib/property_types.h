@@ -12,6 +12,7 @@
 
 #include <sblib/types.h>
 #include <sblib/utils.h>
+#include <sblib/eib/bcu_type.h>
 
 // See BCU2 help:
 // System Architecture > Interface Objects > User Interface Objects > Attributes of Properties
@@ -154,6 +155,9 @@ enum PropertyID
 
     /** Device object property: port configuration. */
     PID_PORT_CONFIGURATION = 17,
+
+    /** Device object property: hardware type. */
+    PID_HARDWARE_TYPE = 78,
 };
 
 

@@ -6,13 +6,11 @@
  *  published by the Free Software Foundation.
  */
 
-#include "app_in4.h"
-
+#include "app_in.h"
 #include "com_objs.h"
 #include "params.h"
 
 #include <sblib/eib.h>
-#include <sblib/serial.h>
 
 // The parameters of the current channel (4 bytes)
 const byte* params;
@@ -91,11 +89,6 @@ void switchChannelChanged(int channel, int pinValue)
 void inputChanged(int channel, int val)
 {
     params = channelParams + (channel << 2);
-
-    serial.print("input ");
-    serial.print(channel);
-    serial.print(" value ");
-    serial.println(val);
 
     if (objectValues.lock[channel])
         return;

@@ -84,12 +84,12 @@ inline void BufferedStream::clearBuffers()
 
 ALWAYS_INLINE bool BufferedStream::readBufferFull()
 {
-    return (readTail + 1) & BufferedStream::BUFFER_SIZE_MASK == readHead;
+    return ((readTail + 1) & BufferedStream::BUFFER_SIZE_MASK) == readHead;
 }
 
 ALWAYS_INLINE bool BufferedStream::writeBufferFull()
 {
-    return (writeTail + 1) & BufferedStream::BUFFER_SIZE_MASK == writeHead;
+    return ((writeTail + 1) & BufferedStream::BUFFER_SIZE_MASK) == writeHead;
 }
 
 #endif //sblib_buffered_stream_h

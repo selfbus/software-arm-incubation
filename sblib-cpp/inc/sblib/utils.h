@@ -61,4 +61,47 @@ void fatalError();
 #  define IF_DEBUG(code)
 #endif
 
+
+/**
+ * Concatenate two strings.
+ * C preprocessor macros are not expanded.
+ *
+ * @param str1 - the first string
+ * @param str2 - the second string
+ *
+ * @brief Example:  CPP_CONCAT(begin_,BCU_NAME) results in begin_BCU_NAME
+ */
+#define CPP_CONCAT(str1,str2)  str1 ## str2
+
+/**
+ * Concatenate two strings.
+ * C preprocessor macros are expanded before concatenation.
+ *
+ * @param str1 - the first string
+ * @param str2 - the second string
+ *
+ * @brief Example:  CPP_QUOTE_EXPAND(begin_,BCU_NAME) results in begin_BCU2  (if BCU_NAME is defined as BCU2)
+ */
+#define CPP_CONCAT_EXPAND(str1,str2) CPP_CONCAT(str1,str2)
+
+/**
+ * Quote a string.
+ * C preprocessor macros are not expanded.
+ *
+ * @param str - the string to quote
+ *
+ * @brief Example:  CPP_QUOTE(BCU_TYPE) results in "BCU_TYPE"
+ */
+#define CPP_QUOTE(str) #str
+
+/**
+ * Quote a string.
+ * C preprocessor macros are expanded before quoting.
+ *
+ * @param str - the string to quote
+ *
+ * @brief Example:  CPP_QUOTE_EXPAND(BCU_NAME) results in "BCU2"  (if BCU_NAME is defined as BCU2)
+ */
+#define CPP_QUOTE_EXPAND(str) CPP_QUOTE(str)
+
 #endif /*sblib_utils_h*/

@@ -153,13 +153,13 @@ public:
     byte commsTabPtr;    //!< 0x0112: Low byte of the pointer to communication objects table (BCU1 only)
     byte usrInitPtr;     //!< 0x0113: Low byte of the pointer to user initialization function (BCU1 only)
     byte usrProgPtr;     //!< 0x0114: Low byte of the pointer to user program function (BCU1 only)
-#if BCU_TYPE == 10
+#if BCU_TYPE == BCU1_TYPE
     byte usrSavePtr;     //!< 0x0115: Low byte of the pointer to user save function (BCU1 only)
     byte addrTabSize;    //!< 0x0116: Size of the address table
     byte addrTab[2];     //!< 0x0117+: Address table, 2 bytes per entry. Real array size is addrTabSize*2
     byte user[220];      //!< 0x0116: User EEPROM: 220 bytes (BCU1)
     byte checksum;       //!< 0x01ff: EEPROM checksum (BCU1 only)
-#elif BCU_TYPE >= 20
+#else
     byte appType;        //!< 0x0115: Application program type: 0=BCU2, else BCU1
     byte addrTabSize;    //!< 0x0116: Size of the address table
     byte addrTab[2];     //!< 0x0117+:Address table, 2 bytes per entry. Real array size is addrTabSize*2
@@ -178,8 +178,6 @@ public:
     word padding2;       //!< 0x0482: Padding
     byte serial[6];      //!< 0x0484: Hardware serial number (4 byte aligned)
     byte order[10];      //!< 0x048a: Ordering information
-#else
-#   error "Unsupported BCU type"
 #endif /*BCU_TYPE*/
 
     /**

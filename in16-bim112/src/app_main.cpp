@@ -6,12 +6,15 @@
  *  published by the Free Software Foundation.
  */
 
-#include "app_in4.h"
+#include "app_in.h"
+
 #include "com_objs.h"
 #include "params.h"
 
 #include <sblib/eib.h>
-#include <sblib/serial.h>
+#include <sblib/eib/user_memory.h>
+#include <string.h> /* for memcpy() */
+
 
 // Digital pin for LED
 #define PIO_LED PIO0_7
@@ -26,13 +29,17 @@ ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
 const byte* channelParams = userEepromData + (EE_CHANNEL_PARAMS_BASE - USER_EEPROM_START);
 const byte* channelTimingParams = userEepromData + (EE_CHANNEL_TIMING_PARAMS_BASE - USER_EEPROM_START);
 
+// Hardware version. Must match the product_serial_number in the VD's table hw_product
+const byte hardwareVersion[] = { 0, 0, 0, 0, 0, 30 };
 
 /**
  * Application setup
  */
 void setup()
 {
-    bcu.begin(2, 0x9009, 0x01);  // we are a ABB TSU/4.2 version 0.1
+    bcu.begin(131, 0x0030, 0x20);  // we are a MDT binary input, version 2.0
+
+    memcpy(userEeprom.order, hardwareVersion, 6);
 
     pinMode(PIO_LED, OUTPUT);
     digitalWrite(PIO_LED, 0);
@@ -44,9 +51,6 @@ void setup()
         pinMode(inputPins[channel], INPUT | HYSTERESIS | PULL_UP);
         inputDebouncer[channel].init(digitalRead(inputPins[channel]));
     }
-
-    serial.begin(115200);
-    serial.println("Selfbus TSU/4.2");
 }
 
 /**
@@ -54,24 +58,7 @@ void setup()
  */
 void loop()
 {
-    int debounceTime = userEeprom[EE_INPUT_DEBOUNCE_TIME] >> 1;
-    int objno, channel, value, lastValue;
 
-    // Handle the input pins
-    for (channel = 0; channel < NUM_CHANNELS; ++channel)
-    {
-        lastValue = inputDebouncer[channel].value();
-        value = inputDebouncer[channel].debounce(digitalRead(inputPins[channel]), debounceTime);
-
-        if (lastValue != value)
-            inputChanged(channel, value);
-    }
-
-    // Handle updated communication objects
-    while ((objno = nextUpdatedObject()) >= 0)
-    {
-        objectUpdated(objno);
-    }
 
     // Sleep up to 1 millisecond if there is nothing to do
     if (bus.idle())

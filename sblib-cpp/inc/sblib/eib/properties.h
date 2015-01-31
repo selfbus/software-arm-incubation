@@ -9,9 +9,21 @@
  */
 #ifndef sblib_properties_h
 #define sblib_properties_h
-#if BCU_TYPE >= 20
 
 #include <sblib/eib/property_types.h>
+
+#if BCU_TYPE != BCU1_TYPE
+
+/*
+ * Load / configure a property. Called when a "load control" property-write telegram
+ * is received.
+ *
+ * @param objectIdx - the ID of the interface object.
+ * @param data - the data bytes
+ * @param len - the length of the data.
+ * @return The load state.
+ */
+int loadProperty(int objectIdx, const byte* data, int len);
 
 /**
  * Find a property definition in a properties table.
@@ -41,5 +53,6 @@ enum ObjectType
     OT_APPLICATION = 3
 };
 
-#endif /*BCU_TYPE >= 20*/
+#endif /*BCU_TYPE != BCU1_TYPE*/
+
 #endif /*sblib_properties_h*/

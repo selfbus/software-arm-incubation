@@ -10,13 +10,54 @@
 #ifndef sblib_bcu_type_h
 #define sblib_bcu_type_h
 
-// Fallback to BCU1 if BCU_TYPE is not defined
-#ifndef BCU_TYPE
-# define BCU_TYPE 10
+
+//
+// Set the BCU_TYPE from compiler defines
+//
+
+#if defined(BCU2) || BCU_TYPE == 0x20 || BCU_TYPE == 20
+//  BCU 2, mask version 2.0
+#   undef BCU_TYPE
+#   define BCU_TYPE 0x20
+#   define BCU_NAME BCU2
+#   define MASK_VERSION 0x20
+
+#elif defined(BIM112) || defined(BIM112_71) || BCU_TYPE == 0x701
+//  BIM 112, mask version 7.1
+#   undef BCU_TYPE
+#   define BCU_TYPE 0x701
+#   define BCU_NAME BIM112
+#   define MASK_VERSION 0x701
+
+    /** Address for load control */
+#   define LOAD_CONTROL_ADDR 0x104
+
+    /** Address for load state */
+#   define LOAD_STATE_ADDR 0xb6e9
+
+#elif defined(BCU1) || defined(BCU1_12) || BCU_TYPE == 0x10 || BCU_TYPE == 10 || !defined(BCU_TYPE)
+//  BCU 1, mask version 1.2
+//  Also use BCU 1 if no BCU type is set
+#   undef BCU_TYPE
+#   define BCU_TYPE 0x10
+#   define BCU_NAME BCU1
+#   define MASK_VERSION 0x12
+
+#else
+//  Unknown BCU type
+#   error "Unknown BCU type. Please add a compiler define: either BCU_TYPE with the correct value or one of the predefined BCU types - see sblib/eib/bcu_type.h for valid types"
 #endif
 
+// The BCU 1 type, for comparison
+#define BCU1_TYPE 0x10
 
-#if BCU_TYPE == 10
+// The BIM-112 type, for comparison
+#define BIM112_TYPE 0x701
+
+
+
+#if BCU_TYPE == 0x10  /* BCU 1 */
+
     /** Start address of the user RAM when ETS talks with us. */
 #   define USER_RAM_START 0
 
@@ -33,7 +74,8 @@
     /** The size of the user EEPROM in bytes. */
 #   define USER_EEPROM_SIZE 256
 
-#elif BCU_TYPE == 20
+#elif BCU_TYPE == 0x20  /* BCU 2 */
+
     /** Start address of the user RAM when ETS talks with us. */
 #   define USER_RAM_START 0
 
@@ -50,11 +92,27 @@
     /** The size of the user EEPROM in bytes. */
 #   define USER_EEPROM_SIZE 1024
 
+#elif BCU_TYPE == 0x701  /* BIM 112, v7.1 */
 
-#else /* BCU_TYPE contains an unknown value. */
+    /** Start address of the user RAM when ETS talks with us. */
+#   define USER_RAM_START 0
 
+    /** The size of the user RAM in bytes. */
+#   define USER_RAM_SIZE 0x100
+
+    /** How many bytes have to be allocated at the end of the RAM for shadowed values */
+#   define USER_RAM_SHADOW_SIZE 0
+
+    /** Start address of the user EEPROM when ETS talks with us. */
+#   define USER_EEPROM_START 0x3f00
+
+    /** The size of the user EEPROM in bytes. */
+#   define USER_EEPROM_SIZE 4096
+
+
+#else
+    // BCU_TYPE contains an invalid value and no other BCU type define is set
 #   error "Unsupported BCU type"
-
 #endif
 
 

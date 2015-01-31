@@ -7,11 +7,11 @@
  *  it under the terms of the GNU General Public License version 3 as
  *  published by the Free Software Foundation.
  */
-#if BCU_TYPE >= 20
 
 #include <sblib/eib/property_types.h>
-
 #include <sblib/eib/user_memory.h>
+
+#if BCU_TYPE != BCU1_TYPE
 
 
 // The property sizes in bytes
@@ -48,4 +48,4 @@ byte* PropertyDef::valuePointer() const
     return (byte*) &valAddr;
 }
 
-#endif /*BCU_TYPE > 20*/
+#endif /*BCU_TYPE != BCU1_TYPE*/

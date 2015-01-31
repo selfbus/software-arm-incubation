@@ -1,5 +1,5 @@
 /*
- *  property_defs.cpp - definitions of BCU 2 properties of EIB objects.
+ *  property_defs.cpp - definitions of BCU 2 (or newer) properties of EIB objects.
  *
  *  Copyright (c) 2014 Stefan Taferner <stefan.taferner@gmx.at>
  *
@@ -8,11 +8,11 @@
  *  published by the Free Software Foundation.
  */
 
-#if BCU_TYPE >= 20
-
 #include <sblib/version.h>
 #include <sblib/eib/user_memory.h>
 #include <sblib/internal/variables.h>
+
+#if BCU_TYPE != BCU1_TYPE
 
 
 //
@@ -52,6 +52,9 @@ static const PropertyDef deviceObjectProps[] =
 
     // Port A configuration: 1 byte, stored in userEeprom.portADDR
     { PID_PORT_CONFIGURATION, PDT_UNSIGNED_CHAR|PC_POINTER, PD_USER_EEPROM_OFFSET(portADDR) },
+
+    // Hardware type: 6 byte data
+    { PID_HARDWARE_TYPE, PDT_GENERIC_06|PC_WRITABLE|PC_POINTER, PD_USER_EEPROM_OFFSET(order) },
 
     // End of table
     PROPERTY_DEF_TABLE_END
@@ -129,4 +132,4 @@ const PropertyDef* const propertiesTab[NUM_PROP_OBJECTS] =
     appObjectProps        // Object 3
 };
 
-#endif /*BCU_TYPE >= 20*/
+#endif /*BCU_TYPE != BCU1_TYPE*/

@@ -8,6 +8,7 @@
  *  published by the Free Software Foundation.
  */
 
+#define INSIDE_BCU_CPP
 #include <sblib/eib/bcu.h>
 
 #include <sblib/eib/apci.h>
@@ -41,13 +42,9 @@ BCU::BCU()
     enabled = false;
 }
 
-#if BCU_TYPE == 10
-    void BCU::begin_BCU1(int manufacturer, int deviceType, int version)
-#elif BCU_TYPE >= 20
-    void BCU::begin_BCU2(int manufacturer, int deviceType, int version)
-#else
-#   error Unsupported BCU_TYPE
-#endif
+// The method begin_BCU() is renamed during compilation to indicate the BCU type.
+// If you get a link error then the library's BCU_TYPE is different from your application's BCU_TYPE.
+void BCU::begin_BCU(int manufacturer, int deviceType, int version)
 {
     readUserEeprom();
 
@@ -78,7 +75,7 @@ BCU::BCU()
 
     userEeprom.version = version;
 
-#if BCU_TYPE >= 20
+#if BCU_TYPE != BCU1_TYPE
     iapReadPartID((unsigned int*) userEeprom.serial);
     userEeprom.serial[4] = SBLIB_VERSION >> 8;
     userEeprom.serial[5] = SBLIB_VERSION;
@@ -298,7 +295,7 @@ void BCU::processDirectTelegram(int apci)
     const int senderAddr = (bus.telegram[1] << 8) | bus.telegram[2];
     const int senderSeqNo = bus.telegram[6] & 0x3c;
     int count, address, index;
-#if BCU_TYPE >= 20
+#if BCU_TYPE != BCU1_TYPE
     bool found;
     int id;
 #endif
@@ -342,7 +339,17 @@ void BCU::processDirectTelegram(int apci)
             	cpyToUserRam(address, bus.telegram + 10, count);
 
             sendAck = T_ACK_PDU;
-#if BCU_TYPE >= 20
+
+#ifdef LOAD_CONTROL_ADDR
+            if (address == LOAD_CONTROL_ADDR)
+            {
+                int objectIdx = bus.telegram[10] >> 4;
+                userEeprom.loadState[objectIdx] = loadProperty(objectIdx, bus.telegram + 10, count);
+                break;
+            }
+#endif
+
+#if BCU_TYPE != BCU1_TYPE
             if (userRam.deviceControl & DEVCTRL_MEM_AUTO_RESPONSE)
                 apciCmd = APCI_MEMORY_READ_PDU;
 #endif
@@ -354,6 +361,10 @@ void BCU::processDirectTelegram(int apci)
                 memcpy(sendTelegram + 10, userEepromData + (address - USER_EEPROM_START), count);
             else if (address >= USER_RAM_START && address < USER_RAM_END)
             	cpyFromUserRam(address, sendTelegram + 10, count);
+#ifdef LOAD_STATE_ADDR
+            else if (address >= LOAD_STATE_ADDR && address < LOAD_STATE_ADDR + 8)
+                memcpy(sendTelegram + 10, userEeprom.loadState + (address - LOAD_STATE_ADDR), count);
+#endif
             sendTelegram[5] = 0x63 + count;
             sendTelegram[6] = 0x42;
             sendTelegram[7] = 0x40 | count;
@@ -385,7 +396,7 @@ void BCU::processDirectTelegram(int apci)
             sendTel = true;
             break;
 
-#if BCU_TYPE >= 20
+#if BCU_TYPE != BCU1_TYPE
         case APCI_PROPERTY_VALUE_READ_PDU:
         case APCI_PROPERTY_VALUE_WRITE_PDU:
             sendTelegram[5] = 0x65;
@@ -413,7 +424,7 @@ void BCU::processDirectTelegram(int apci)
             propertyDescReadTelegram(index, (PropertyID) id, address);
             sendTel = true;
             break;
-#endif
+#endif /*BCU_TYPE != BCU1_TYPE*/
 
         default:
             sendAck = T_NACK_PDU;  // Command not supported
