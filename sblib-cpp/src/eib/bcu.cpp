@@ -481,6 +481,7 @@ void BCU::processConControlTelegram(int tpci)
         {
             if (connectedAddr == 0)
             {
+                connectedTime = systemTime;
                 connectedAddr = senderAddr;
                 connectedSeqNo = 0;
                 incConnectedSeqNo = false;
