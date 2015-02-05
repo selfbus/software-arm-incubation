@@ -9,23 +9,7 @@
 #ifndef app_in8_h
 #define app_in8_h
 
-#include "com_objs.h"
-#include <sblib/debounce.h>
-
-/**
- * Number of input channels. Default: 8.
- * Can be set at compile time.
- */
-#ifndef NUM_CHANNELS
-#  define NUM_CHANNELS 8
-#endif
-
-extern const int inputPins[];
-extern Debouncer inputDebouncer[NUM_CHANNELS];
-/**
- * Calculate the time in ms based on a time base and a factor
- */
-unsigned int calculateTime(int base, int factor);
+#include "params.h"
 
 /**
  * A communication object was updated from somebody via the EIB bus.
@@ -51,10 +35,5 @@ void initApplication(void);
  * Handle the periodic function which are not triggered by a change of an input
  */
 void handlePeriodic(void);
-
-/**
- * The values of the communication objects
- */
-extern ObjectValues& objectValues;
 
 #endif /*app_in8_h*/

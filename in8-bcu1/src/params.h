@@ -8,6 +8,40 @@
 #ifndef params_h
 #define params_h
 
+#include <sblib/timeout.h>
+#include <sblib/debounce.h>
+
+/**
+ * Number of input channels. Default: 8.
+ * Can be set at compile time.
+ */
+#ifndef NUM_CHANNELS
+#  define NUM_CHANNELS 8
+#endif
+
+typedef union
+{
+    struct
+    {
+        unsigned char started;
+    } dim;
+    struct
+    {
+        bool        first;
+        signed char step;
+        signed int  value;
+    } dimenc;
+} ChannelData;
+
+extern const int inputPins[];
+extern Debouncer inputDebouncer[NUM_CHANNELS];
+extern ChannelData channelData[NUM_CHANNELS];
+
+/**
+ * Calculate the time in ms based on a time base and a factor
+ */
+unsigned int calculateTime(int base, int factor);
+
 /**
  * The channel parameters. 4 bytes per channel.
  * In userEeprom at address 0x01d5
@@ -20,40 +54,14 @@ extern const byte* channelParams;
  */
 extern const byte* channelTimingParams;
 
+/**
+ * pointer to the configuration of the currently evaluated channel
+ */
+extern const byte* params;
 
-/** Command category: input pin changed. */
-#define CMD_CAT_PINCHANGE 0x100
-
-/** Command category: lock a channel. */
-#define CMD_CAT_LOCK      0x200
-
-/** Command category: unlock a channel. */
-#define CMD_CAT_UNLOCK    0x300
-
-/** Command category: bus power on. */
-#define CMD_CAT_POWERON   0x400
-
-/** Command: do nothing. */
-#define CMD_NONE          0
-
-/** Command: on. */
-#define CMD_ON            1
-
-/** Command: off. */
-#define CMD_OFF           2
-
-/** Command: toggle. */
-#define CMD_TOGGLE        3
-
-/** Command: like rising edge. */
-#define CMD_LIKE_RISING   1
-
-/** Command: like falling edge. */
-#define CMD_LIKE_FALLING  2
-
-/** Command: current value. */
-#define CMD_CURRENT       3
-
+extern Timeout timeout[NUM_CHANNELS * 2];
+extern unsigned int delayTime[NUM_CHANNELS * 2];
+//extern int lastLock[NUM_CHANNELS];
 
 
 // Eeprom address: telegram rate limit active (bit 2)
@@ -79,11 +87,6 @@ extern const byte* channelTimingParams;
 
 // Eeprom address: start of channel timing parameters
 #define EE_CHANNEL_TIMING_PARAMS_BASE  0x01f6
-
-#define EE_SWITCH_BUS_RETURN_NO_ACTION     0
-#define EE_SWITCH_BUS_RETURN_CURRENT_STATE 1
-#define EE_SWITCH_BUS_RETURN_SEND_ON       2
-#define EE_SWITCH_BUS_RETURN_SEND_OFF      3
 
 #define EE_INPUT_SWITCH_LOCK_NO_REACTION 0
 #define EE_INPUT_SWITCH_LOCK_SET_ON      1
