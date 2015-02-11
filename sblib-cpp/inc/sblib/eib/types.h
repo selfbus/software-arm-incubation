@@ -12,7 +12,6 @@
 
 #include <sblib/types.h>
 
-
 /**
  * The type of a communication object.
  */
@@ -123,6 +122,15 @@ enum ComConfigFlag
 };
 
 /**
+ * Depending on the BCU type define the size of the pointer to the RAM
+ * location of the value for a com object
+ */
+#if BCU_TYPE != BCU1_TYPE
+typedef word DataPtrType;
+#else
+typedef byte DataPtrType;
+#endif
+/**
  * A communication object configuration.
  */
 struct ComConfig
@@ -130,7 +138,7 @@ struct ComConfig
     /** Data pointer, low byte. Depending on the COMCONF_VALUE_TYPE flag in the
      * config byte, this pointer points to userRam or userEeprom.
      */
-    byte dataPtr;
+    DataPtrType dataPtr;
 
     /** Configuration flags. See enum ComConfigFlag. */
     byte config;

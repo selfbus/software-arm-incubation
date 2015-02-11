@@ -223,9 +223,23 @@ inline ComType objectType(int objno)
     return (ComType) objectConfig(objno).type;
 }
 
+/**
+ * Returns the config of the specified communication object.
+ *
+ * @param objno The communication object
+ * @return communication object config
+ *
+ * Remark:
+ * The first byte of the com table is the number of entries, followed
+ * by the address of the RAM area used by the com objects. After that,
+ * the configuration for each com object follows.
+ * The sizes of the RAM pointer and the com object varies between different
+ * BCU types. Therefore the sizeof operator is used instead of hard-coded
+ * values.
+ */
 inline const ComConfig& objectConfig(int objno)
 {
-    return *(const ComConfig*) (objectConfigTable() + objno * 3 + 2);
+    return *(const ComConfig*) (objectConfigTable() + 1 + sizeof(DataPtrType) + objno * sizeof(ComConfig) );
 }
 
 inline void objectWritten(int objno)

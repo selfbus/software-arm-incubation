@@ -93,7 +93,7 @@ int loadProperty(int objectIdx, const byte* data, int len)
     // Load data (loadState == 3)
     //
     segmentType = data[1];
-    addr = makeWord(data[2], data[3]);
+    addr = makeWord(data[2 + PROP_LOAD_OFFSET], data[3 + PROP_LOAD_OFFSET]);
 
     switch (segmentType)
     {
@@ -117,12 +117,15 @@ int loadProperty(int objectIdx, const byte* data, int len)
             userEeprom.assocTabAddr = addr;
         else if (objectIdx == OT_APPLICATION)
         {
-            userEeprom.appPeiType = data[4];
-            userEeprom.manufacturerH = data[5];
-            userEeprom.manufacturerL = data[6];
-            userEeprom.deviceTypeH = data[7];
-            userEeprom.deviceTypeL = data[8];
-            userEeprom.version = data[9];
+#if BCU_TYPE == BIM112_TYPE
+            userEeprom.commsTabAddr = addr;
+#endif
+            userEeprom.appPeiType = data[4 + PROP_LOAD_OFFSET];
+            userEeprom.manufacturerH = data[5 + PROP_LOAD_OFFSET];
+            userEeprom.manufacturerL = data[6 + PROP_LOAD_OFFSET];
+            userEeprom.deviceTypeH = data[7 + PROP_LOAD_OFFSET];
+            userEeprom.deviceTypeL = data[8 + PROP_LOAD_OFFSET];
+            userEeprom.version = data[9 + PROP_LOAD_OFFSET];
         }
         userEeprom.modified();
         break;

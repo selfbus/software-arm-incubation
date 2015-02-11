@@ -336,7 +336,7 @@ void BCU::processDirectTelegram(int apci)
                 userEeprom.modified();
             }
             else if (address >= USER_RAM_START && address < USER_RAM_END)
-            	cpyToUserRam(address, bus.telegram + 10, count);
+            	cpyToUserRam(address - USER_RAM_START, bus.telegram + 10, count);
 
             sendAck = T_ACK_PDU;
 
@@ -360,7 +360,7 @@ void BCU::processDirectTelegram(int apci)
             if (address >= USER_EEPROM_START && address < USER_EEPROM_END)
                 memcpy(sendTelegram + 10, userEepromData + (address - USER_EEPROM_START), count);
             else if (address >= USER_RAM_START && address < USER_RAM_END)
-            	cpyFromUserRam(address, sendTelegram + 10, count);
+            	cpyFromUserRam(address - USER_RAM_START, sendTelegram + 10, count);
 #ifdef LOAD_STATE_ADDR
             else if (address >= LOAD_STATE_ADDR && address < LOAD_STATE_ADDR + 8)
                 memcpy(sendTelegram + 10, userEeprom.loadState + (address - LOAD_STATE_ADDR), count);

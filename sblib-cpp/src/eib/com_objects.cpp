@@ -58,7 +58,8 @@ byte* objectValuePtr(int objno)
 #else
     // TODO Should handle userRam.segment0addr and userRam.segment1addr here
     // if (cfg.config & COMCONF_VALUE_TYPE) // 0 if segment 0, !=0 if segment 1
-    return userRamData + cfg.dataPtr;
+    const byte * addr = (const byte *) &cfg.dataPtr;
+    return userMemoryPtr(makeWord(addr[0], addr[1]));
 #endif
 }
 
@@ -126,7 +127,7 @@ int objectSendAddr(int objno)
     {
         if (assocTab[1] == objno)
         {
-            byte* addr = userEeprom.addrTab + (assocTab[0] << 1);
+            byte* addr = addrTable() + 1 + (assocTab[0] << 1);
             return (addr[0] << 8) | addr[1];
         }
     }
@@ -299,6 +300,7 @@ byte* objectFlagsTable()
     return userRamData + userEepromData[userEeprom.commsTabPtr + 1];
 #else
     const byte* configTable = objectConfigTable();
-    return userMemoryPtr(configTable[1]);
+    const int addr = makeWord(configTable[1], configTable[2]);
+    return userMemoryPtr(addr);
 #endif
 }
