@@ -136,19 +136,38 @@ int objectSendAddr(int objno)
 }
 
 /*
- * Create and send a group telegram.
+ * Create and send a group read request telegram.
+ *
+ * @param objno - the ID of the communication object
+ * @param addr - the group address to read
+ */
+void sendGroupReadTelegram(int objno, int addr)
+{
+    bcu.sendTelegram[0] = 0xbc; // Control byte
+    // 1+2 contain the sender address, which is set by bus.sendTelegram()
+    bcu.sendTelegram[3] = addr >> 8;
+    bcu.sendTelegram[4] = addr;
+    bcu.sendTelegram[5] = 0xe0;
+    bcu.sendTelegram[6] = 0;
+    bcu.sendTelegram[7] = 0x00;
+
+    bus.sendTelegram(bcu.sendTelegram, 8);
+}
+
+/*
+ * Create and send a group write or group response telegram.
  *
  * @param objno - the ID of the communication object
  * @param addr - the destination group address
  * @param isResponse - true if response telegram, false if write telegram
  */
-void sendGroupTelegram(int objno, int addr, bool isResponse)
+void sendGroupWriteTelegram(int objno, int addr, bool isResponse)
 {
     byte* valuePtr = objectValuePtr(objno);
     int sz = telegramObjectSize(objno);
 
     bcu.sendTelegram[0] = 0xbc; // Control byte
-    // 1+2 contain the sender address, which is set by sb_send_tel()
+    // 1+2 contain the sender address, which is set by bus.sendTelegram()
     bcu.sendTelegram[3] = addr >> 8;
     bcu.sendTelegram[4] = addr;
     bcu.sendTelegram[5] = 0xe0 | ((sz + 1) & 15);
@@ -186,7 +205,7 @@ void sendNextGroupTelegram()
             int addr = objectSendAddr(objno);
             if (addr)
             {
-                sendGroupTelegram(objno, addr, flags & COMFLAG_DATAREQ);
+                sendGroupWriteTelegram(objno, addr, flags & COMFLAG_DATAREQ);
                 sndStartIdx = objno + 1;
                 return;
             }
