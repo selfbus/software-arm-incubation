@@ -9,16 +9,16 @@
 #ifndef app_in4_h
 #define app_in4_h
 
-#include "com_objs.h"
+#include <sblib/types.h>
 
+typedef struct
+{
+    unsigned int noOfChannels;  //!> how many channels are supported with this hardware
+    unsigned short baseAddress; //!> Base address of the config parameters
+    byte hardwareVersion[6];    //!> The hardware identification number
+} HardwareVersion;
 
-/**
- * Number of input channels. Default: 4.
- * Can be set at compile time.
- */
-#ifndef NUM_CHANNELS
-#  define NUM_CHANNELS 4
-#endif
+extern const HardwareVersion * currentVersion;
 
 /**
  * A communication object was updated from somebody via the EIB bus.
@@ -36,8 +36,13 @@ void objectUpdated(int objno);
 void inputChanged(int channel, int value);
 
 /**
- * The values of the communication objects
+ * Handle the periodic functions.
  */
-extern ObjectValues& objectValues;
+void checkPeriodic(void);
+
+/**
+ * Initialization of the application
+ */
+void initApplication(void);
 
 #endif /*app_in4_h*/

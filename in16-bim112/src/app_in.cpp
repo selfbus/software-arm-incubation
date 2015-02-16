@@ -6,121 +6,80 @@
  *  published by the Free Software Foundation.
  */
 
-#include "app_in.h"
-#include "com_objs.h"
-#include "params.h"
-
 #include <sblib/eib.h>
+#include <string.h>
 
-// The parameters of the current channel (4 bytes)
-const byte* params;
+#include "app_in.h"
+#include "params.h"
+#include "channel.h"
+#include "switch.h"
+#include "jalo.h"
+#include "input.h"
+
+Input inputs;
 
 
-/*
- * Get the type of an input channel.
- * See INPUT_TYPE_xx defines in com_objs.h
- *
- * @param channel - the input channel (0..)
- * @return The type of the input channel.
- */
-inline int channelType(int channel)
-{
-    unsigned char type = userEeprom[EE_INPUT1_TYPE + (channel >> 1)];
+#define MAX_CHANNELS 16
 
-    if (channel & 1) type >>= 1;
-    else type &= 15;
+Channel * channelConfig[MAX_CHANNELS];
 
-    return type;
-}
-
-/*
- * Get the channel value for a switch command.
- *
- * @param objno - the ID of the communication object
- * @param cmd - the command
- */
-void switchCommand(int objno, int cmd)
-{
-    unsigned int value;
-
-    switch (cmd)
-    {
-    case CMD_CAT_PINCHANGE|CMD_ON:
-        value = 1;
-        break;
-
-    case CMD_CAT_PINCHANGE|CMD_OFF:
-        value = 0;
-        break;
-
-    case CMD_CAT_PINCHANGE|CMD_TOGGLE:
-        value = !objectRead(objno);
-        break;
-    }
-
-    objectWrite(objno, value);
-}
-
-/*
- * The value of an input channel of type "switch" changed.
- *
- * @param channel - the input channel (0..7)
- * @param pinValue - the current value of the input pin (0 or 1)
- */
-void switchChannelChanged(int channel, int pinValue)
-{
-    int cmd, objVal, cmdBitOffset;
-
-    if (pinValue)  // rising edge
-        cmdBitOffset = 2;
-    else  // falling edge
-        cmdBitOffset = 0;
-
-    // Primary object (1.1, 2.1, ...)
-    cmd = (params[2] >> cmdBitOffset) & 3;
-    switchCommand(COMOBJ_PRIMARY1 + channel, CMD_CAT_PINCHANGE | cmd);
-
-    // Secondary object (1.2, 2.2, ...)
-    cmdBitOffset += 4;
-    cmd = (params[2] >> cmdBitOffset) & 3;
-    switchCommand(COMOBJ_SECONDARY1 + channel, CMD_CAT_PINCHANGE | cmd);
-}
-
-void inputChanged(int channel, int val)
-{
-    params = channelParams + (channel << 2);
-
-    if (objectValues.lock[channel])
-        return;
-
-    const int type = channelType(channel);
-    switch (type)
-    {
-    case CHANNEL_TYPE_SWITCH:
-        switchChannelChanged(channel, val);
-        break;
-
-    default:
-        break;
-    }
-}
-
-void channelLockChanged(int channel, bool locked)
-{
-    // TODO
-}
 
 void objectUpdated(int objno)
 {
-    if (objno >= COMOBJ_LOCK1 && objno < COMOBJ_LOCK1 + NUM_CHANNELS)
-    {
-        int channel = objno - COMOBJ_LOCK1;
-        int locked = objectRead(objno);
+    int channel = objno / 5;
+    int channelObjno = objno - (channel * 5);
+    if (channelObjno == 4) // change of the lock object
+        channelConfig[channel]->setLock(objectRead(objno));
+}
 
-        if (locked != objectValues.lastLock[channel])
+void checkPeriodic(void)
+{
+
+    for (int i = 0; i < currentVersion->noOfChannels; i++)
+    {
+        unsigned int value;
+        bool longPressed;
+        if (inputs.checkInput(i, &value, &longPressed))
         {
-            objectValues.lastLock[channel] = locked;
-            channelLockChanged(channel, locked);
+            Channel * channel = channelConfig[i];
+            if (! channel->locked)
+                channel->inputChanged(value, longPressed);
         }
+    }
+
+    for (int i = 0; i < currentVersion->noOfChannels; i++)
+    {
+        channelConfig[i]->checkPeriodic();
+    }
+}
+
+void initApplication(void)
+{
+    memset (channelConfig, 0, sizeof (channelConfig));
+    inputs.begin(currentVersion->noOfChannels, currentVersion->baseAddress);
+
+    for (int i = 0; i < currentVersion->noOfChannels; i++)
+    {
+        byte    * configBase = & userEeprom [currentVersion->baseAddress + 4 + i * 46];
+        word      channelType = * (word *) configBase;
+        Channel * channel;
+
+        switch (channelType)
+        {
+        case 0   : // channel is configured as switch
+        case 256 : // channel is configured as switch short/long
+            channel = new Switch(i, channelType, configBase); break;
+        case 1 : // channel is configured as dimmer
+            channel = 0; break;
+        case 2 : // channel is configured as jalo
+            channel = new Jalo(i); break;
+        case 3 : // channel is configured as scene
+            channel = 0; break;
+        case 4 : // channel is configured as counter
+            channel = 0; break;
+        default:
+            channel = 0;
+        }
+        channelConfig[i] = channel;
     }
 }

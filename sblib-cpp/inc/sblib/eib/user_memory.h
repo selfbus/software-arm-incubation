@@ -190,6 +190,15 @@ public:
     byte& operator[](int idx) const;
 
     /**
+     * Access the user EEPROM like an ordinary array. The start address is subtracted
+     * when accessing the EEPROM. So use userEeprom[0x107] to access userEeprom.version.
+     *
+     * @param idx - the index of the 16 bit data to access.
+     * @return The 16bit as unsigned int.
+     */
+    unsigned short & getUIn16(int idx) const;
+
+    /**
      * Mark the user EEPROM as modified. The EEPROM will be written to flash when the
      * bus is idle, all telegrams are processed, and no direct data connection is open.
      */
@@ -242,6 +251,11 @@ inline byte& UserRam::operator[](int idx) const
 inline byte& UserEeprom::operator[](int idx) const
 {
     return *(((byte*) this) + idx - USER_EEPROM_START);
+}
+
+inline unsigned short& UserEeprom::getUIn16(int idx) const
+{
+    return *(((unsigned short*) this) + idx - USER_EEPROM_START);
 }
 
 inline void UserEeprom::modified()
