@@ -149,31 +149,46 @@ struct ComConfig
 
 /**
  * The flags for the communication object status.
+ * 4 bits are used:
+ * bit 0+1 are the transmission status: COMFLAG_OK, COMFLAG_ERROR, COMFLAG_TRANS, COMFLAG_TRANSREQ
+ * bit 2 is the data request flag - set it to request an update
+ * bit 3 is the update flag - it's set when the communication object was updated by the lib
  */
 enum ComFlag
 {
-    /** Communication status flag: transmission status: idle/ok */
+    /** Communication transmission status flag: idle/ok */
     COMFLAG_OK = 0x0,
 
-    /** Communication status flag: transmission status: idle/error */
+    /** Communication transmission status flag: idle/error */
     COMFLAG_ERROR = 0x1,
 
-    /** Communication status flag: transmission status: transmitting */
+    /** Communication transmission status flag: transmitting */
     COMFLAG_TRANS = 0x2,
 
-    /** Communication status flag: transmission status: transmission request */
+    /**
+     * Communication transmission status flag: transmission request
+     *
+     * This status is set by the application to request a transmission of the communication object.
+     */
     COMFLAG_TRANSREQ = 0x3,
 
-    /** Communication status flag: transmission status mask */
+    /** Communication transmission status mask */
     COMFLAG_TRANS_MASK = 0x3,
 
-    /** Communication status flag: data request: 0=idle/response, 1=data request */
+    /**
+     * Communication status flag: data request: 0=idle/response, 1=data request
+     */
     COMFLAG_DATAREQ = 0x4,
 
-    /** Communication status flag: update: 0=not updated, 1=updated */
+    /**
+     * Communication status flag: update: 0=not updated, 1=updated.
+     *
+     * This flag is set by the lib to inform the application that the value of a communication
+     * object was updated by a telegram.
+     */
     COMFLAG_UPDATE = 0x8,
 
-    /** Mask for the communication status flags */
+    /** Mask for all communication flags */
     COMFLAG_MASK = 0x15
 };
 

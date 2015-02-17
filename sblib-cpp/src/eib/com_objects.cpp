@@ -46,6 +46,52 @@ int telegramObjectSize(int objno)
     return objectTypeSizes[type - BIT_7];
 }
 
+/*
+ * Add one or more flags to the flags of a communication object.
+ * This does not clear any flag of the communication object.
+ *
+ * @param objno - the ID of the communication object
+ * @param flags - the flags to add
+ *
+ * @see objectWritten(int)
+ * @see requestObjectRead(int)
+ */
+void addObjectFlags(int objno, int flags)
+{
+    byte* flagsTab = objectFlagsTable();
+
+    if (objno & 1)
+        flags <<= 4;
+
+    flagsTab[objno >> 1] |= flags;
+}
+
+/*
+ * Set the flags of a communication object.
+ *
+ * @param objno - the ID of the communication object
+ * @param flags - the new communication object flags
+ *
+ * @see objectWritten(int)
+ * @see requestObjectRead(int)
+ */
+void setObjectFlags(int objno, int flags)
+{
+    byte* flagsPtr = objectFlagsTable();
+    flagsPtr += objno >> 1;
+
+    if (objno & 1)
+    {
+        *flagsPtr &= 0x0f;
+        *flagsPtr |= flags << 4;
+    }
+    else
+    {
+        *flagsPtr &= 0xf0;
+        *flagsPtr |= flags;
+    }
+}
+
 byte* objectValuePtr(int objno)
 {
     // The object configuration
@@ -88,7 +134,7 @@ void _objectWrite(int objno, unsigned int value, int flags)
         value >>= 8;
     }
 
-    setObjectFlags(objno, flags);
+    addObjectFlags(objno, flags);
 }
 
 void _objectWriteBytes(int objno, byte* value, int flags)
@@ -99,7 +145,7 @@ void _objectWriteBytes(int objno, byte* value, int flags)
     for (; sz > 0; --sz)
         *ptr++ = *value++;
 
-    setObjectFlags(objno, flags);
+    addObjectFlags(objno, flags);
 }
 
 /*
@@ -113,12 +159,12 @@ inline int objectCount()
 
 /*
  * Find the first group address for the communication object. This is the
- * address that is used when sending the communication object.
+ * address that is used when sending a read-value or a write-value telegram.
  *
  * @param objno - the ID of the communication object
  * @return The group address, or 0 if none found.
  */
-int objectSendAddr(int objno)
+int firstObjectAddr(int objno)
 {
     byte* assocTab = assocTable();
     byte* assocTabEnd = assocTab + (*assocTab << 1);
@@ -187,28 +233,32 @@ void sendNextGroupTelegram()
 
     const ComConfig* configTab = &objectConfig(0);
     byte* flagsTab = objectFlagsTable();
-    int flags, objno, numObjs = objectCount();
+    int addr, flags, objno, config, numObjs = objectCount();
 
     for (objno = sndStartIdx; objno < numObjs; ++objno)
     {
         flags = flagsTab[objno >> 1];
         if (objno & 1) flags >>= 4;
 
-        if ((flags & COMFLAG_TRANS_MASK) == COMFLAG_TRANSREQ)
+        if ((flags & COMFLAG_TRANSREQ) == COMFLAG_TRANSREQ)
         {
             unsigned int mask = COMFLAG_TRANS_MASK << (objno & 1 ? 4 :  0);
             flagsTab[objno >> 1] &= ~mask;
 
-            if ((configTab[objno].config & COMCONF_TRANS_COMM) != COMCONF_TRANS_COMM)
+            config = configTab[objno].config;
+            addr = firstObjectAddr(objno);
+
+            if (addr == 0 || !(config & COMCONF_COMM))
                 continue;
 
-            int addr = objectSendAddr(objno);
-            if (addr)
-            {
-                sendGroupWriteTelegram(objno, addr, flags & COMFLAG_DATAREQ);
-                sndStartIdx = objno + 1;
-                return;
-            }
+            if (flags & COMFLAG_DATAREQ)
+                sendGroupReadTelegram(objno, addr);
+            else if (config & COMCONF_TRANS)
+                sendGroupWriteTelegram(objno, addr, false);
+            else continue;
+
+            sndStartIdx = objno + 1;
+            return;
         }
     }
 
@@ -241,21 +291,6 @@ int nextUpdatedObject()
     return -1;
 }
 
-void setObjectFlags(int objno, int flags)
-{
-    byte* flagsTab = objectFlagsTable();
-
-    if (objno & 1)
-        flags <<= 4;
-
-    flagsTab[objno >> 1] |= flags;
-}
-
-void processGroupReadTelegram(int objno)
-{
-    setObjectFlags(objno, COMFLAG_TRANSREQ | COMFLAG_DATAREQ);
-}
-
 void processGroupWriteTelegram(int objno)
 {
     byte* valuePtr = objectValuePtr(objno);
@@ -264,7 +299,7 @@ void processGroupWriteTelegram(int objno)
     if (count > 0) reverseCopy(valuePtr, bus.telegram + 8, count);
     else *valuePtr = bus.telegram[7] & 0x3f;
 
-    setObjectFlags(objno, COMFLAG_UPDATE);
+    addObjectFlags(objno, COMFLAG_UPDATE);
 }
 
 void processGroupTelegram(int addr, int apci)
@@ -298,7 +333,7 @@ void processGroupTelegram(int addr, int apci)
             {
                 // Check if communication and read are enabled
                 if ((objConf & COMCONF_READ_COMM) == COMCONF_READ_COMM)
-                    processGroupReadTelegram(objno);
+                    sendGroupWriteTelegram(objno, addr, true);
             }
         }
     }

@@ -109,9 +109,9 @@ void switchPeriodic (int channel)
         int cyclicCfg = (params [0] & 0x0C) >> 2; // get the cyclic configuration
         int value     = objectRead(channel);
         if ( value && (cyclicCfg & 0x01)) // send cyclic telegram if value is ON
-            setObjectFlags(channel, COMFLAG_TRANSREQ);
+            objectWritten(channel);
         if (!value && (cyclicCfg & 0x02)) // send cyclic telegram if value is OFF
-            setObjectFlags(channel, COMFLAG_TRANSREQ);
+            objectWritten(channel);
         timeout[channel].start(delayTime[channel]);
     }
 }

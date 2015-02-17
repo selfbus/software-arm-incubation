@@ -36,6 +36,20 @@ unsigned int objectRead(int objno);
 float objectReadFloat(int objno);
 
 /**
+ * Request the read of a communication object. Calling this function triggers the
+ * sending of a read-group-value telegram, to read the value of the communication
+ * object from the bus.
+ *
+ * When the answer is received, the communication object's value will be updated.
+ * You can cycle through all updated communication objects with nextUpdatedObject().
+ *
+ * @param objno - the ID of the communication object to mark for reading.
+ *
+ * @see objectWritten(int)
+ */
+void requestObjectRead(int objno);
+
+/**
  * Get a pointer to the value bytes of the communication object. Can be used for
  * any communication object. The minimum that is used for a communication object
  * is 1 byte. Use objectSize(objno) to get the size of the communication object's
@@ -102,6 +116,8 @@ void objectWriteFloat(int objno, int value);
  * function triggers the sending of a write-group-value telegram.
  *
  * @param objno - the ID of the communication object.
+ *
+ * @see requestObjectRead(int)
  */
 void objectWritten(int objno);
 
@@ -162,21 +178,20 @@ int nextUpdatedObject();
 ComType objectType(int objno);
 
 /**
- * Get the communication object configuration.
+ * Returns the config of the specified communication object.
  *
- * @param objno - the ID of the communication object
- * @return The communication object configuration.
+ * @param objno The ID of the communication object
+ * @return The communication object's configuration.
+ *
+ * Remark:
+ * The first byte of the com table is the number of entries, followed
+ * by the address of the RAM area used by the com objects. After that,
+ * the configuration for each com object follows.
+ * The sizes of the RAM pointer and the com object varies between different
+ * BCU types. Therefore the sizeof operator is used instead of hard-coded
+ * values.
  */
 const ComConfig& objectConfig(int objno);
-
-/**
- * Set one or more flags of a communication object.
- * This does not change the other flags.
- *
- * @param objno - the ID of the communication object
- * @param flags - the flags to set
- */
-void setObjectFlags(int objno, int flags);
 
 /**
  * Process a multicast group telegram.
@@ -223,28 +238,21 @@ inline ComType objectType(int objno)
     return (ComType) objectConfig(objno).type;
 }
 
-/**
- * Returns the config of the specified communication object.
- *
- * @param objno The communication object
- * @return communication object config
- *
- * Remark:
- * The first byte of the com table is the number of entries, followed
- * by the address of the RAM area used by the com objects. After that,
- * the configuration for each com object follows.
- * The sizes of the RAM pointer and the com object varies between different
- * BCU types. Therefore the sizeof operator is used instead of hard-coded
- * values.
- */
 inline const ComConfig& objectConfig(int objno)
 {
     return *(const ComConfig*) (objectConfigTable() + 1 + sizeof(DataPtrType) + objno * sizeof(ComConfig) );
 }
 
+inline void requestObjectRead(int objno)
+{
+    extern void setObjectFlags(int objno, int flags);
+    setObjectFlags(objno, COMFLAG_TRANSREQ | COMFLAG_DATAREQ);
+}
+
 inline void objectWritten(int objno)
 {
-    setObjectFlags(objno, COMFLAG_TRANSREQ);
+    extern void addObjectFlags(int objno, int flags);
+    addObjectFlags(objno, COMFLAG_TRANSREQ);
 }
 
 inline void objectSetValue(int objno, unsigned int value)
