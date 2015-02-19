@@ -64,7 +64,7 @@ const PropertyDef* propertyDef(int objectIdx, PropertyID propertyId)
  */
 int loadProperty(int objectIdx, const byte* data, int len)
 {
-    int segmentType, addr, length;
+    int segmentType, addr;
     int loadState = data[0] & 7;
 
     // See KNX 3/5/2, 3.27 DM_LoadStateMachineWrite
