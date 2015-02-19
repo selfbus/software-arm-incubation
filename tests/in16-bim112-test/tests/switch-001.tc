@@ -1,0 +1,29 @@
+name           = "switch_001"
+description    = "IN16 - Switch 001"
+ets_project    = "in16-tests.knxproj"
+device_address = "1.0.1"
+power_on_delay = 1000 ### 1 ms
+tags           = "APP", "IN8", "DIM","LOCKING"
+
+Section          ("check bus return telegram")
+Receive_Telegram (device, 11, 0)
+App_Loop         ()
+Receive_Telegram (device, 16, 1)
+App_Loop         ()
+
+Section          ("check grouped channels A/B")
+App_Loop         ("_input1Set")
+App_Loop         (comment = "No direct action, only after debounce is complete")
+Progress_Time    (30, comment = "After debounce send ON on object 0")
+App_Loop         ("_input1Clear", comment = "Afer one loop a object should be sent")
+Send_Telegram    (device, 0, 1)
+Progress_Time    (30, comment = "no reaction on falling edge")
+Progress_Time    (30)
+
+App_Loop         ("_input2Set")
+App_Loop         (comment = "No direct action, only after debounce is complete")
+Progress_Time    (30, comment = "After debounce send OFF on object 0")
+App_Loop         ("_input2Clear", comment = "Afer one loop a object should be sent")
+Send_Telegram    (device, 0, 0)
+Progress_Time    (30, comment = "no reaction on falling edge")
+Progress_Time    (30)

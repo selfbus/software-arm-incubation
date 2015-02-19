@@ -127,7 +127,7 @@ void executeTest(Test_Case * tc)
 
     IAP_Init_Flash(0xFF);
     if(tc->eepromSetup) tc->eepromSetup();
-    memcpy(FLASH_BASE_ADDRESS + iapFlashSize() - FLASH_SECTOR_SIZE, userEepromData, 0x100);
+    memcpy(FLASH_BASE_ADDRESS + iapFlashSize() - FLASH_SECTOR_SIZE, userEepromData, USER_EEPROM_SIZE);
     bcu.begin(tc->manufacturer, tc->deviceType, tc->version);
     sndStartIdx = 0;
     systemTime  = 0;
