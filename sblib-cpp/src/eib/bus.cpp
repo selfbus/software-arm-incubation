@@ -91,8 +91,12 @@ Bus::Bus(Timer& aTimer, int aRxPin, int aTxPin, TimerCapture aCaptureChannel, Ti
 
 void Bus::begin()
 {
+#if BCU_TYPE == BCU1_TYPE
     ownAddr = (userEeprom.addrTab[0] << 8) | userEeprom.addrTab[1];
-
+#else
+    byte * addrTab = addrTable() + 1;
+    ownAddr = (*(addrTab) << 8) | *(addrTab + 1);
+#endif
     telegramLen = 0;
 
     state = Bus::IDLE;

@@ -304,7 +304,7 @@ void processGroupWriteTelegram(int objno)
 
 void processGroupTelegram(int addr, int apci)
 {
-    const ComConfig* configTab = (const ComConfig*) (objectConfigTable() + 2);
+    const ComConfig* configTab = &objectConfig(0);
     const byte* assocTab = assocTable();
     const int endAssoc = 1 + (*assocTab) * 2;
     int objno, objConf;
@@ -344,7 +344,8 @@ byte* objectConfigTable()
 #if BCU_TYPE == BCU1_TYPE
     return userEepromData + userEeprom.commsTabPtr;
 #else
-    return userMemoryPtr(userEeprom.commsTabAddr);
+    byte * addr = (byte* ) & userEeprom.commsTabAddr;
+    return userMemoryPtr (makeWord (* addr, *(addr + 1)));
 #endif
 }
 

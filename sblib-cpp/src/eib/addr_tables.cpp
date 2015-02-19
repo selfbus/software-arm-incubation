@@ -13,7 +13,7 @@
 #include <sblib/eib/property_types.h>
 #include <sblib/eib/user_memory.h>
 #include <sblib/internal/functions.h>
-
+#include <sblib/bits.h>
 
 int indexOfAddr(int addr)
 {
@@ -59,7 +59,8 @@ byte* addrTable()
 #if BCU_TYPE == BCU1_TYPE
     return (byte*) &userEeprom.addrTabSize;
 #else
-    return userMemoryPtr(userEeprom.addrTabAddr);
+    byte * addr = (byte* ) & userEeprom.addrTabAddr;
+    return userMemoryPtr (makeWord (* addr, *(addr + 1)));
 #endif
 }
 
@@ -68,6 +69,7 @@ byte* assocTable()
 #if BCU_TYPE == BCU1_TYPE
     return userEepromData + userEeprom.assocTabPtr;
 #else
-    return userMemoryPtr(userEeprom.assocTabAddr);
+    byte * addr = (byte* ) & userEeprom.assocTabAddr;
+    return userMemoryPtr (makeWord (* addr, *(addr + 1)));
 #endif
 }

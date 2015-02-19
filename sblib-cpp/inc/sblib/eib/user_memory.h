@@ -163,7 +163,7 @@ public:
     byte appType;        //!< 0x0115: Application program type: 0=BCU2, else BCU1
     byte addrTabSize;    //!< 0x0116: Size of the address table
     byte addrTab[2];     //!< 0x0117+:Address table, 2 bytes per entry. Real array size is addrTabSize*2
-    byte user[856];      //!< 0x0119+:User EEPROM: 856 bytes (BCU2)
+    byte user[855];      //!< 0x0119+:User EEPROM: 856 bytes (BCU2)
                          //!< ------  System EEPROM below (BCU2)
     byte loadState[8];   //!< 0x0470: Load state of the system interface objects
     word addrTabAddr;    //!< 0x0478: Address of the address table
@@ -196,7 +196,7 @@ public:
      * @param idx - the index of the 16 bit data to access.
      * @return The 16bit as unsigned int.
      */
-    unsigned short & getUIn16(int idx) const;
+    unsigned short getUIn16(int idx) const;
 
     /**
      * Mark the user EEPROM as modified. The EEPROM will be written to flash when the
@@ -253,9 +253,10 @@ inline byte& UserEeprom::operator[](int idx) const
     return *(((byte*) this) + idx - USER_EEPROM_START);
 }
 
-inline unsigned short& UserEeprom::getUIn16(int idx) const
+inline unsigned short UserEeprom::getUIn16(int idx) const
 {
-    return *(((unsigned short*) this) + idx - USER_EEPROM_START);
+    byte * addr = (((byte*) this) + idx - USER_EEPROM_START);
+    return (*addr << 8) | *(addr + 1);
 }
 
 inline void UserEeprom::modified()
