@@ -7,6 +7,7 @@
  */
 
 #include <sblib/eib.h>
+#include <sblib/timeout.h>
 #include <string.h>
 
 #include "app_in.h"
@@ -35,7 +36,8 @@ void objectUpdated(int objno)
 void checkPeriodic(void)
 {
 
-    for (int i = 0; i < currentVersion->noOfChannels; i++)
+    inputs.scan();
+    for (unsigned int i = 0; i < currentVersion->noOfChannels; i++)
     {
         unsigned int value;
         bool longPressed;
@@ -47,7 +49,7 @@ void checkPeriodic(void)
         }
     }
 
-    for (int i = 0; i < currentVersion->noOfChannels; i++)
+    for (unsigned int i = 0; i < currentVersion->noOfChannels; i++)
     {
         channelConfig[i]->checkPeriodic();
     }
@@ -55,13 +57,14 @@ void checkPeriodic(void)
 
 void initApplication(void)
 {
+    unsigned int channels = currentVersion->noOfChannels;
     memset (channelConfig, 0, sizeof (channelConfig));
-    inputs.begin(currentVersion->noOfChannels, currentVersion->baseAddress);
+    inputs.begin(channels, currentVersion->baseAddress);
 
-    for (int i = 0; i < currentVersion->noOfChannels; i++)
+    for (unsigned int i = 0; i < channels; i++)
     {
-        byte    * configBase = & userEeprom [currentVersion->baseAddress + 4 + i * 46];
-        word      channelType = * (word *) configBase;
+        int       configBase = currentVersion->baseAddress + 4 + i * 46;
+        word      channelType = userEeprom.getUIn16(configBase);
         Channel * channel;
 
         switch (channelType)
@@ -82,4 +85,26 @@ void initApplication(void)
         }
         channelConfig[i] = channel;
     }
+
+    Timeout startupDelay;
+    unsigned int address = currentVersion->baseAddress
+                         + 4 // debouce, longTime
+                         + channels * 46
+                         + channels
+                         + (11 + channels) * 4 // logic config
+                         + 10;
+    // delay in config is in seconds
+    unsigned int delay = userEeprom.getUIn16(address) * 1000;
+    startupDelay.start(delay);
+    while (!startupDelay.expired())
+    {
+        for (int unsigned i = 0; i < currentVersion->noOfChannels; i++)
+        {
+            unsigned int value;
+            bool longPressed;
+            inputs.checkInput(i, &value, &longPressed);
+        }
+        waitForInterrupt();
+    }
+
 }

@@ -37,22 +37,22 @@
 #define LS_SEND_VALUE               0x03
 #define LS_DO_NOTHING               0xFF
 
-#define EE_WORD(base, offset) (* (word *) (base + offset))
 #define EE_BYTE(base, offset) (* (byte *) (base + offset))
+#define EE_WORD(base, offset) ((EE_BYTE(base, offset) << 8) | EE_BYTE(base, offset + 1))
 
-Switch::Switch(unsigned int no, word config, byte * params) : Channel (no)
+Switch::Switch(unsigned int no, word config, unsigned int  channelConfig) : Channel (no)
 {
     shortLongOperation  = 0;
-    action              = EE_WORD(params, 2);
-    usage_falling       = EE_WORD(params, 4);
-    usage_rising        = EE_WORD(params, 8);
-    delay               = EE_WORD(params, 0x1E) * 1000;
+    action              = userEeprom.getUIn16(channelConfig + 2);
+    usage_falling       = userEeprom.getUIn16(channelConfig + 4);
+    usage_rising        = userEeprom.getUIn16(channelConfig + 8);
+    delay               = userEeprom.getUIn16(channelConfig + 0x1E) * 1000;
     if (config == 0x100)
     {   // setup channel for short/long press operation
-        unsigned int shortAction = EE_BYTE(params, 0x1e);
-        unsigned int longAction  = EE_BYTE(params, 0x17);
+        unsigned int shortAction = userEeprom [channelConfig + 0x1E];
+        unsigned int longAction  = userEeprom [channelConfig + 0x17];
         shortLongOperation       = shortAction | (longAction << 8);
-        usage_rising             = EE_WORD(params, 0x10);
+        usage_rising             = userEeprom.getUIn16(channelConfig + 0x10);
         action                   = 0xFF;
     }
 }

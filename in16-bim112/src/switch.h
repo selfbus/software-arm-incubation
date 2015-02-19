@@ -19,7 +19,7 @@
 class Switch: public Channel
 {
 public:
-    Switch(unsigned int no, word config, byte * params);
+    Switch(unsigned int no, word config, unsigned int  channelConfig);
     virtual void inputChanged(int value, int longPress);
     virtual void checkPeriodic(void);
     virtual void setLock(unsigned int value);

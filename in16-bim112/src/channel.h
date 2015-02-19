@@ -23,7 +23,7 @@
 class Channel
 {
 public:
-    Channel (unsigned int no) : number(no), locked(0) { };
+    Channel (unsigned int no) : locked(0), number(no) { };
     virtual void inputChanged(int value, int longPress);
     virtual void checkPeriodic(void);
     virtual void setLock(unsigned int value);
