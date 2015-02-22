@@ -37,24 +37,18 @@
 #define LS_SEND_VALUE               0x03
 #define LS_DO_NOTHING               0xFF
 
-#define EE_BYTE(base, offset) (* (byte *) (base + offset))
-#define EE_WORD(base, offset) ((EE_BYTE(base, offset) << 8) | EE_BYTE(base, offset + 1))
-
-Switch::Switch(unsigned int no, word config, unsigned int  channelConfig) : Channel (no)
+void _Switch_::setLock(unsigned int value)
 {
-    shortLongOperation  = 0;
-    action              = userEeprom.getUIn16(channelConfig + 2);
-    usage_falling       = userEeprom.getUIn16(channelConfig + 4);
-    usage_rising        = userEeprom.getUIn16(channelConfig + 8);
-    delay               = userEeprom.getUIn16(channelConfig + 0x1E) * 1000;
-    if (config == 0x100)
-    {   // setup channel for short/long press operation
-        unsigned int shortAction = userEeprom [channelConfig + 0x1E];
-        unsigned int longAction  = userEeprom [channelConfig + 0x17];
-        shortLongOperation       = shortAction | (longAction << 8);
-        usage_rising             = userEeprom.getUIn16(channelConfig + 0x10);
-        action                   = 0xFF;
-    }
+    Channel::setLock(value);
+    timeout.stop();
+}
+
+Switch::Switch(unsigned int no, unsigned int  channelConfig) : _Switch_ (no)
+{
+    action        = userEeprom.getUInt16(channelConfig + 2);
+    usage_falling = userEeprom.getUInt16(channelConfig + 4);
+    usage_rising  = userEeprom.getUInt16(channelConfig + 8);
+    delay         = userEeprom.getUInt16(channelConfig + 0x1E) * 1000;
 }
 
 void Switch::inputChanged(int value, int longPress)
@@ -62,125 +56,75 @@ void Switch::inputChanged(int value, int longPress)
     int objNo = number * 5;
     unsigned int objValue;
 
+    if (longPress) // ignore the long press
+    	return;
     if (value)
     {   // this change is a rising edge
-        if (shortLongOperation and longPress)
-        {   // set mask to 0 to ignore the next short press falling edge
-            action = 0;
-            objNo += 2;
-            switch (shortLongOperation >> 8)
-            {
-            case LS_SEND_OFF:
-                objValue = 0;
-                break;
-            case LS_SEND_ON:
-                objValue = 1;
-                break;
-            case LS_TOGGLE:
-                objValue = !objectRead(number);
-                break;
-            case LS_SEND_VALUE:
-                objValue = usage_rising & 0xFF;
-                break;
-            case LS_DO_NOTHING:
-            default:
-                objNo = -1;
-            }
-        }
-        else
-        {
-            switch (action)
-            {
-            case SEND_ON_RISING_EDGE:
-                objValue = usage_rising & 0xFF;
-                break;
-            case TOGGLE_RISING_EDGE:
-                objValue = !objectRead(number);
-                break;
-            case GROUP_SEND_ON:
-                objNo = (number / 2) * 10;
-                objValue = 1;
-                break;
-            case GROUP_SEND_OFF:
-                objNo = (number / 2) * 10;
-                objValue = 0;
-                break;
-            case SEND_STATE:
-                objValue = usage_rising;
-                if (delay)
-                    timeout.start(delay);
-                break;
-            case SEND_STATE_ON_DELAY:
-                objNo = -1; // don't send a object now
-                timeout.start(delay);
-                break;
-            case SEND_STATE_OFF_DELAY:
-                objValue = 1;
-                break;
-            case SEND_VALUE_RISING_EDGE:
-            case SEND_VALUE_ANY_EDGE:
-                objValue = usage_rising & 0xFF;
-                break;
-            default:
-                objNo = -1;
-            }
-        }
+		switch (action)
+		{
+		case SEND_ON_RISING_EDGE:
+			objValue = usage_rising != 0;
+			break;
+		case TOGGLE_RISING_EDGE:
+			objValue = !objectRead(objNo);
+			break;
+		case GROUP_SEND_ON:
+			objNo = (number / 2) * 10;
+			objValue = 1;
+			break;
+		case GROUP_SEND_OFF:
+			objNo = (number / 2) * 10;
+			objValue = 0;
+			break;
+		case SEND_STATE:
+			objValue = usage_rising;
+			if (delay)
+				timeout.start(delay);
+			break;
+		case SEND_STATE_ON_DELAY:
+			objNo = -1; // don't send a object now
+			timeout.start(delay);
+			break;
+		case SEND_STATE_OFF_DELAY:
+			objValue = 1;
+			break;
+		case SEND_VALUE_RISING_EDGE:
+		case SEND_VALUE_ANY_EDGE:
+			objValue = usage_rising & 0xFF;
+			break;
+		default:
+			objNo = -1;
+		}
     }
     else
     {   // this change is a falling edge
-        if (shortLongOperation and !longPress)
-        {   // handle the short press on the falling edge
-            // mask the configured action with `action` which will be set to 0
-            // if a long press has already be handled
-            switch (shortLongOperation & action)
-            {
-            case LS_SEND_OFF:
-                objValue = 0;
-                break;
-            case LS_SEND_ON:
-                objValue = 1;
-                break;
-            case LS_TOGGLE:
-                objValue = !objectRead(number);
-                break;
-            case LS_SEND_VALUE:
-                objValue = usage_falling & 0xFF;
-                break;
-            case LS_DO_NOTHING:
-            default:
-                objNo = -1;
-            }
-            // reset the mask to allow the next short press to be handled
-            action = 0xFF;
-        }
-        else
-        {
-            switch (action)
-            {
-            case SEND_ON_FALLING_EDGE:
-                objValue = usage_falling & 0xFF;
-            case TOGGLE_FALLING_EDGE:
-                objValue = !objectRead(number);
-                break;
-            case SEND_STATE:
-                objValue = usage_falling;
-                if (delay)
-                    timeout.start(delay);
-                break;
-            case SEND_STATE_ON_DELAY:
-                objValue = 0;
-            case SEND_STATE_OFF_DELAY:
-                objNo = -1; // don't send a object now
-                timeout.start(delay);
-                break;
-            case SEND_VALUE_ANY_EDGE:
-            case SEND_VALUE_FALLING_EDGE:
-                objValue = usage_falling & 0xFF;
-                break;
-            default:
-                objNo = -1;
-            }
-        }
+		switch (action)
+		{
+		case SEND_ON_FALLING_EDGE:
+			objValue = usage_falling != 0;
+			break;
+		case TOGGLE_FALLING_EDGE:
+			objValue = !objectRead(objNo);
+			break;
+		case SEND_STATE:
+			objValue = usage_falling;
+			if (delay)
+				timeout.start(delay);
+			break;
+		case SEND_STATE_ON_DELAY:
+			objValue = 0;
+			break;
+		case SEND_STATE_OFF_DELAY:
+			objNo = -1; // don't send a object now
+			timeout.start(delay);
+			break;
+		case SEND_VALUE_ANY_EDGE:
+		case SEND_VALUE_FALLING_EDGE:
+			objValue = usage_falling & 0xFF;
+			break;
+		default:
+			objNo = -1;
+		}
     }
     if (objNo >= 0)
     {
@@ -193,7 +137,7 @@ void Switch::checkPeriodic(void)
     if(timeout.started() && timeout.expired())
     {
         unsigned int objValue;
-        unsigned int objNo = number;
+        int objNo = number * 5;
         switch (action)
         {
         case SEND_STATE_ON_DELAY:
@@ -206,6 +150,8 @@ void Switch::checkPeriodic(void)
             objValue = objectRead(number);
             timeout.start(delay);
             break;
+        default:
+            objNo = -1;
         }
         if (objNo >= 0)
         {
@@ -214,8 +160,76 @@ void Switch::checkPeriodic(void)
     }
 }
 
-void Switch::setLock(unsigned int value)
+Switch2Level::Switch2Level(unsigned int no, unsigned int  channelConfig) : _Switch_ (no)
 {
-    Channel::setLock(value);
-    timeout.stop();
+	shortAction   = userEeprom [channelConfig + 0x14];
+	longAction    = userEeprom [channelConfig + 0x17];
+    usage_falling = userEeprom [channelConfig + 4];
+    usage_rising  = userEeprom [channelConfig + 0x10];
+}
+
+void Switch2Level::inputChanged(int value, int longPress)
+{
+	int objNo = number * 5;
+	unsigned int objValue;
+
+	if (value)
+	{   // this change is a rising edge, only for a long press
+		// we handle this event here. The event for the short
+		// press will be handled by the falling edge
+		if (longPress)
+		{
+			lastWasLong = true;
+			objNo += 2;
+			switch (longAction)
+			{
+			case LS_SEND_OFF:
+				objValue = 0;
+				break;
+			case LS_SEND_ON:
+				objValue = 1;
+				break;
+			case LS_TOGGLE:
+				objValue = !objectRead(number);
+				break;
+			case LS_SEND_VALUE:
+				objValue = usage_rising & 0xFF;
+				break;
+			case LS_DO_NOTHING:
+			default:
+				objNo = -1;
+			}
+		}
+	}
+	else
+	{   // this change is a falling edge
+		// only handle the falling edge if we don't had a long pressed
+		// for the last rising edge
+		if (!lastWasLong)
+		{
+			switch (shortAction)
+			{
+			case LS_SEND_OFF:
+				objValue = 0;
+				break;
+			case LS_SEND_ON:
+				objValue = 1;
+				break;
+			case LS_TOGGLE:
+				objValue = !objectRead(number);
+				break;
+			case LS_SEND_VALUE:
+				objValue = usage_falling & 0xFF;
+				break;
+			case LS_DO_NOTHING:
+			default:
+				objNo = -1;
+			}
+		}
+		lastWasLong = false;
+	}
+	if (objNo >= 0)
+	{
+		objectWrite(objNo, objValue);
+	}
 }

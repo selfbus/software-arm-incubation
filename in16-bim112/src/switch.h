@@ -16,19 +16,38 @@
 /*
  *
  */
-class Switch: public Channel
+class _Switch_: public Channel
+{
+protected:
+	_Switch_(unsigned int no) : Channel(no) {};
+public:
+    virtual void setLock(unsigned int value);
+};
+
+class Switch: public _Switch_
 {
 public:
-    Switch(unsigned int no, word config, unsigned int  channelConfig);
+    Switch(unsigned int no, unsigned int  channelConfig);
     virtual void inputChanged(int value, int longPress);
     virtual void checkPeriodic(void);
-    virtual void setLock(unsigned int value);
 private:
-    unsigned int shortLongOperation;
     unsigned int action;
     unsigned int usage_rising;
     unsigned int usage_falling;
     unsigned int delay;
+};
+
+class Switch2Level : public _Switch_
+{
+public:
+	Switch2Level(unsigned int no, unsigned int  channelConfig);
+    virtual void inputChanged(int value, int longPress);
+private:
+    bool lastWasLong;
+    unsigned int shortAction;
+    unsigned int longAction;
+    unsigned int usage_rising;
+    unsigned int usage_falling;
 };
 
 #endif /* SWITCH_H_ */

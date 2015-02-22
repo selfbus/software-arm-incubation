@@ -15,7 +15,7 @@
 #include <sblib/platform.h>
 #include <sblib/eib/addr_tables.h>
 #include <sblib/eib/user_memory.h>
-
+#include <sblib/eib/properties.h>
 
 // The EIB bus access object
 Bus bus(timer16_1, PIO1_8, PIO1_9, CAP0, MAT0);
@@ -91,11 +91,13 @@ Bus::Bus(Timer& aTimer, int aRxPin, int aTxPin, TimerCapture aCaptureChannel, Ti
 
 void Bus::begin()
 {
-#if BCU_TYPE == BCU1_TYPE
     ownAddr = (userEeprom.addrTab[0] << 8) | userEeprom.addrTab[1];
-#else
-    byte * addrTab = addrTable() + 1;
-    ownAddr = (*(addrTab) << 8) | *(addrTab + 1);
+#if BCU_TYPE != BCU1_TYPE
+    if (userEeprom.loadState[OT_ADDR_TABLE] == 2)
+    {
+        byte * addrTab = addrTable() + 1;
+        ownAddr = (*(addrTab) << 8) | *(addrTab + 1);
+    }
 #endif
     telegramLen = 0;
 

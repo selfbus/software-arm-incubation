@@ -60,7 +60,7 @@ byte* addrTable()
     return (byte*) &userEeprom.addrTabSize;
 #else
     byte * addr = (byte* ) & userEeprom.addrTabAddr;
-    return userMemoryPtr (makeWord (* addr, *(addr + 1)));
+    return userMemoryPtr (makeWord (*(addr + 1), * addr));
 #endif
 }
 
@@ -70,6 +70,6 @@ byte* assocTable()
     return userEepromData + userEeprom.assocTabPtr;
 #else
     byte * addr = (byte* ) & userEeprom.assocTabAddr;
-    return userMemoryPtr (makeWord (* addr, *(addr + 1)));
+    return userMemoryPtr (makeWord (*(addr + 1), * addr));
 #endif
 }

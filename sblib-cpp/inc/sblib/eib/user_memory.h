@@ -196,7 +196,7 @@ public:
      * @param idx - the index of the 16 bit data to access.
      * @return The 16bit as unsigned int.
      */
-    unsigned short getUIn16(int idx) const;
+    unsigned short getUInt16(int idx) const;
 
     /**
      * Mark the user EEPROM as modified. The EEPROM will be written to flash when the
@@ -253,7 +253,7 @@ inline byte& UserEeprom::operator[](int idx) const
     return *(((byte*) this) + idx - USER_EEPROM_START);
 }
 
-inline unsigned short UserEeprom::getUIn16(int idx) const
+inline unsigned short UserEeprom::getUInt16(int idx) const
 {
     byte * addr = (((byte*) this) + idx - USER_EEPROM_START);
     return (*addr << 8) | *(addr + 1);

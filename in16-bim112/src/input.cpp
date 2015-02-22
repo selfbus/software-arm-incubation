@@ -12,8 +12,8 @@
 void Input::begin(int noOfChannels, int baseAddress)
 {
     this->noOfChannels = noOfChannels;
-    this->debounceTime = userEeprom.getUIn16(baseAddress);
-    this->longKeyTime = userEeprom.getUIn16(baseAddress + 2);
+    this->debounceTime = userEeprom.getUInt16(baseAddress);
+    this->longKeyTime = userEeprom.getUInt16(baseAddress + 2);
     inputState = 0;
     for(int i = 0; i < noOfChannels; i++)
     {
@@ -34,8 +34,8 @@ bool Input::checkInput(unsigned int channel, unsigned int * value, bool * longPr
     * value = inputDebouncer[channel].debounce(inputState & mask, debounceTime);
     bool changed = lastValue != * value;
     * longPressed = false;
-    if (changed)
-    {
+    if (changed and *value)
+    {   // only start the long press timeout for a rising edge
         longPress[channel].start(longKeyTime);
     }
     else if (longPress[channel].expired ())

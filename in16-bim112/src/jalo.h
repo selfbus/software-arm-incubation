@@ -20,7 +20,7 @@ class Jalo: public Channel
 {
 public:
     Jalo(unsigned int no);
-    void inputChanged(int value);
+    virtual void inputChanged(int value);
 };
 
 #endif /* JALO_H_ */

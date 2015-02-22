@@ -1,29 +1,76 @@
 name           = "switch_001"
 description    = "IN16 - Switch 001"
 ets_project    = "in16-tests.knxproj"
-device_address = "1.0.1"
+device_address = "1.1.2"
 power_on_delay = 1000 ### 1 ms
-tags           = "APP", "IN8", "DIM","LOCKING"
+tags           = "SWITCH", "A", "B", "C", "D"
 
-Section          ("check bus return telegram")
-Receive_Telegram (device, 11, 0)
-App_Loop         ()
-Receive_Telegram (device, 16, 1)
-App_Loop         ()
+lpt            = 800 ### 800ms
+dbt            = 30  ###  30ms
+Section           ("check bus return telegram")
+Receive_Telegram  (device, 11, 0)
+App_Loop          ()
+Receive_Telegram  (device, 16, 1)
+App_Loop          ()
 
-Section          ("check grouped channels A/B")
-App_Loop         ("_input1Set")
-App_Loop         (comment = "No direct action, only after debounce is complete")
-Progress_Time    (30, comment = "After debounce send ON on object 0")
-App_Loop         ("_input1Clear", comment = "Afer one loop a object should be sent")
-Send_Telegram    (device, 0, 1)
-Progress_Time    (30, comment = "no reaction on falling edge")
-Progress_Time    (30)
+Section           ("check grouped channels A/B")
+Section           ("  rection for channel A")
+App_Loop          ("_input1Set")
+App_Loop          (comment = "No direct action, only after debounce is complete")
+Progress_Time     (dbt, comment = "After debounce send ON on object 0")
+App_Loop          ()
+Send_Telegram     (device, 0, 1)
+Progress_Time     (lpt, comment = "see if a reation happens after long time")
+App_Loop          ()
 
-App_Loop         ("_input2Set")
-App_Loop         (comment = "No direct action, only after debounce is complete")
-Progress_Time    (30, comment = "After debounce send OFF on object 0")
-App_Loop         ("_input2Clear", comment = "Afer one loop a object should be sent")
-Send_Telegram    (device, 0, 0)
-Progress_Time    (30, comment = "no reaction on falling edge")
-Progress_Time    (30)
+App_Loop          ("_input1Clear")
+Progress_Time     (dbt, comment = "no reaction on falling edge")
+App_Loop          ()
+Progress_Time     (lpt, comment = "see if a reation happens after long time")
+App_Loop          ()
+
+Section           ("  reaction for channel B")
+App_Loop          ("_input2Set")
+Progress_Time     (dbt, comment = "After debounce send OFF on object 0")
+App_Loop          ()
+Send_Telegram     (device, 0, 0)
+Progress_Time     (lpt, comment = "see if a reation happens after long time")
+App_Loop          ()
+
+App_Loop          ("_input2Clear")
+Progress_Time     (dbt, comment = "no reaction on falling edge")
+App_Loop          ()
+Progress_Time     (lpt)
+App_Loop          ()
+
+Section           ("Channel C: toggle on rising edge")
+v = 1
+for n in range (3) :
+    App_Loop      ("_input3Set", comment = "set channel C")
+    Progress_Time (dbt)
+    App_Loop      ()
+    Send_Telegram (device, 10, v)
+    Progress_Time (lpt)
+    App_Loop      (comment = "no reaction after a long press")
+    App_Loop      ("_input3Clear")
+    Progress_Time (dbt)
+    App_Loop      ()
+    Progress_Time (lpt)
+    App_Loop      (comment = "no reaction after a long release")
+    v = not v
+
+Section           ("Channel D: toggle on falling edge")
+v = 1
+for n in range (3) :
+    App_Loop      ("_input4Set", comment = "set channel C")
+    Progress_Time (dbt)
+    App_Loop      (comment = "no reaction on rising edge")
+    Progress_Time (lpt)
+    App_Loop      (comment = "no reaction after a long press")
+    App_Loop      ("_input4Clear")
+    Progress_Time (dbt)
+    App_Loop      ()
+    Send_Telegram (device, 15, v)
+    Progress_Time (lpt)
+    App_Loop      (comment = "no reaction after a long release")
+    v = not v

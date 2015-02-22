@@ -44,14 +44,15 @@ void checkPeriodic(void)
         if (inputs.checkInput(i, &value, &longPressed))
         {
             Channel * channel = channelConfig[i];
-            if (! channel->locked)
+            if (channel && ! channel->locked)
                 channel->inputChanged(value, longPressed);
         }
     }
 
     for (unsigned int i = 0; i < currentVersion->noOfChannels; i++)
     {
-        channelConfig[i]->checkPeriodic();
+        if (channelConfig[i])
+            channelConfig[i]->checkPeriodic();
     }
 }
 
@@ -64,14 +65,15 @@ void initApplication(void)
     for (unsigned int i = 0; i < channels; i++)
     {
         int       configBase = currentVersion->baseAddress + 4 + i * 46;
-        word      channelType = userEeprom.getUIn16(configBase);
+        word      channelType = userEeprom.getUInt16(configBase);
         Channel * channel;
 
         switch (channelType)
         {
         case 0   : // channel is configured as switch
+            channel = new Switch(i, configBase); break;
         case 256 : // channel is configured as switch short/long
-            channel = new Switch(i, channelType, configBase); break;
+            channel = new Switch2Level(i, configBase); break;
         case 1 : // channel is configured as dimmer
             channel = 0; break;
         case 2 : // channel is configured as jalo
@@ -94,17 +96,19 @@ void initApplication(void)
                          + (11 + channels) * 4 // logic config
                          + 10;
     // delay in config is in seconds
-    unsigned int delay = userEeprom.getUIn16(address) * 1000;
+    unsigned int delay = userEeprom.getUInt16(address) * 1000;
     startupDelay.start(delay);
-    while (!startupDelay.expired())
+    if (delay)
     {
-        for (int unsigned i = 0; i < currentVersion->noOfChannels; i++)
+        while (!startupDelay.expired())
         {
-            unsigned int value;
-            bool longPressed;
-            inputs.checkInput(i, &value, &longPressed);
+            for (int unsigned i = 0; i < currentVersion->noOfChannels; i++)
+            {
+                unsigned int value;
+                bool longPressed;
+                inputs.checkInput(i, &value, &longPressed);
+            }
+            waitForInterrupt();
         }
-        waitForInterrupt();
     }
-
 }

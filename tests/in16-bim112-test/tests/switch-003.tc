@@ -1,0 +1,49 @@
+name           = "switch_003"
+description    = "IN16 - Switch 003"
+ets_project    = "in16-tests.knxproj"
+device_address = "1.1.2"
+power_on_delay = 1000 ### 1 ms
+tags           = "SWITCH", "G", "H"
+
+lpt            = 800   ### 800ms
+dbt            = 30    ###  30ms
+delay_on       = 10000 ### 10s
+delay_off      = 60000 ### 60s
+
+Section           ("Channel G: send status with ON delay")
+for n in range (3) :
+    App_Loop      ("_input7Set", comment = "set channel G")
+    Progress_Time (dbt)
+    App_Loop      ()
+    App_Loop      (comment = "the on telegram is delayed")
+    Progress_Time (lpt)
+    App_Loop      (comment = "no reaction after a long press")
+    Progress_Time (delay_on - lpt)
+    App_Loop      ()
+    Send_Telegram (device, 30, 1)
+    App_Loop      ("_input7Clear")
+    Progress_Time (dbt)
+    App_Loop      ()
+    Send_Telegram (device, 30, 0)
+    Progress_Time (delay_on + lpt)
+    App_Loop      (comment = "no reaction after a long release(delay time)")
+
+Section           ("Channel F: send status with OFF delay")
+for n in range (3) :
+    App_Loop      ("_input8Set", comment = "set channel H")
+    Progress_Time (dbt)
+    App_Loop      ()
+    Send_Telegram (device, 35, 1)
+    Progress_Time (lpt)
+    App_Loop      (comment = "no reaction after a long press")
+    Progress_Time (delay_off)
+    App_Loop      (comment = "no reaction after delay")
+    App_Loop      ("_input8Clear")
+    Progress_Time (dbt)
+    App_Loop      ()
+    App_Loop      (comment = "OFF telegram is delayed")
+    Progress_Time (lpt)
+    App_Loop      (comment = "no reaction after a long release")
+    Progress_Time (delay_off - lpt)
+    App_Loop      ()
+    Send_Telegram (device, 35, 0)

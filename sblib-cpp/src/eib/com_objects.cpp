@@ -345,7 +345,7 @@ byte* objectConfigTable()
     return userEepromData + userEeprom.commsTabPtr;
 #else
     byte * addr = (byte* ) & userEeprom.commsTabAddr;
-    return userMemoryPtr (makeWord (* addr, *(addr + 1)));
+    return userMemoryPtr (makeWord (*(addr + 1), * addr));
 #endif
 }
 

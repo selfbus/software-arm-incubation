@@ -19,10 +19,10 @@ public:
     virtual void scan(void);
     bool checkInput(unsigned int channel, unsigned int * value, bool * longPressed);
 protected:
-    int noOfChannels;
-    int debounceTime;
-    int longKeyTime;
-    int inputState;
+    unsigned int noOfChannels;
+    unsigned int debounceTime;
+    unsigned int longKeyTime;
+    unsigned int inputState;
     Debouncer inputDebouncer[16];
     Timeout longPress[16];
 };

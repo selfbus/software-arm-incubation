@@ -1,0 +1,37 @@
+name           = "switch_002"
+description    = "IN16 - Switch 002"
+ets_project    = "in16-tests.knxproj"
+device_address = "1.1.2"
+power_on_delay = 1000 ### 1 ms
+tags           = "SWITCH", "E", "F"
+
+lpt            = 800 ### 800ms
+dbt            = 30  ###  30ms
+
+Section           ("Channel E: send ON on rising edge")
+for n in range (3) :
+    App_Loop      ("_input5Set", comment = "set channel C")
+    Progress_Time (dbt)
+    App_Loop      ()
+    Send_Telegram (device, 20, 1)
+    Progress_Time (lpt)
+    App_Loop      (comment = "no reaction after a long press")
+    App_Loop      ("_input5Clear")
+    Progress_Time (dbt)
+    App_Loop      ()
+    Progress_Time (lpt)
+    App_Loop      (comment = "no reaction after a long release")
+
+Section           ("Channel F: send OFF on falling edge")
+for n in range (3) :
+    App_Loop      ("_input6Set", comment = "set channel C")
+    Progress_Time (dbt)
+    App_Loop      ()
+    Progress_Time (lpt)
+    App_Loop      (comment = "no reaction after a long press")
+    App_Loop      ("_input6Clear")
+    Progress_Time (dbt)
+    App_Loop      ()
+    Send_Telegram (device, 25, 0)
+    Progress_Time (lpt)
+    App_Loop      (comment = "no reaction after a long release")

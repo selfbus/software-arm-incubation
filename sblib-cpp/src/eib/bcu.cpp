@@ -13,6 +13,7 @@
 
 #include <sblib/eib/apci.h>
 #include <sblib/eib/bus.h>
+#include <sblib/eib/addr_tables.h>
 #include <sblib/eib/com_objects.h>
 #include <sblib/eib/properties.h>
 #include <sblib/eib/user_memory.h>
@@ -76,7 +77,9 @@ void BCU::begin_BCU(int manufacturer, int deviceType, int version)
     userEeprom.version = version;
 
 #if BCU_TYPE != BCU1_TYPE
-    iapReadPartID((unsigned int*) userEeprom.serial);
+    unsigned int serial;
+    iapReadPartID(& serial);
+    memcpy (userEeprom.serial, &serial, 4);
     userEeprom.serial[4] = SBLIB_VERSION >> 8;
     userEeprom.serial[5] = SBLIB_VERSION;
 
@@ -103,6 +106,15 @@ void BCU::setOwnAddress(int addr)
 {
     userEeprom.addrTab[0] = addr >> 8;
     userEeprom.addrTab[1] = addr;
+#if BCU_TYPE != BCU1_TYPE
+    if (userEeprom.loadState[OT_ADDR_TABLE] == 2)
+    {
+        byte * addrTab =  addrTable() + 1;
+
+        * (addrTab + 0)  = addr >> 8;
+        * (addrTab + 1)  = addr;
+    }
+#endif
     userEeprom.modified();
 
     bus.ownAddr = addr;
