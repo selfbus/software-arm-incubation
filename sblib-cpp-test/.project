@@ -27,6 +27,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>inc-sblib-cpp</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/sblib-cpp/inc</locationURI>
+		</link>
+		<link>
 			<name>sblib-cpp</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/sblib-cpp/src</locationURI>

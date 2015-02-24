@@ -14,7 +14,7 @@ Receive_Telegram  (device, 16, 1)
 App_Loop          ()
 
 Section           ("check grouped channels A/B")
-Section           ("  rection for channel A")
+Section           ("  reaction for channel A")
 App_Loop          ("_input1Set")
 App_Loop          (comment = "No direct action, only after debounce is complete")
 Progress_Time     (dbt, comment = "After debounce send ON on object 0")
