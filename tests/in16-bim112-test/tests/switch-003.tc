@@ -28,7 +28,7 @@ for n in range (3) :
     Progress_Time (delay_on + lpt)
     App_Loop      (comment = "no reaction after a long release(delay time)")
 
-Section           ("Channel F: send status with OFF delay")
+Section           ("Channel H: send status with OFF delay")
 for n in range (3) :
     App_Loop      ("_input8Set", comment = "set channel H")
     Progress_Time (dbt)

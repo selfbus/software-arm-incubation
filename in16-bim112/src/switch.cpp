@@ -46,8 +46,8 @@ void _Switch_::setLock(unsigned int value)
 Switch::Switch(unsigned int no, unsigned int  channelConfig) : _Switch_ (no)
 {
     action        = userEeprom.getUInt16(channelConfig + 2);
-    usage_falling = userEeprom.getUInt16(channelConfig + 4);
-    usage_rising  = userEeprom.getUInt16(channelConfig + 8);
+    usage_falling = userEeprom [channelConfig + 4];
+    usage_rising  = userEeprom [channelConfig + 8];
     delay         = userEeprom.getUInt16(channelConfig + 0x1E) * 1000;
 }
 
@@ -63,7 +63,7 @@ void Switch::inputChanged(int value, int longPress)
 		switch (action)
 		{
 		case SEND_ON_RISING_EDGE:
-			objValue = usage_rising != 0;
+			objValue = usage_rising;
 			break;
 		case TOGGLE_RISING_EDGE:
 			objValue = !objectRead(objNo);
@@ -90,7 +90,7 @@ void Switch::inputChanged(int value, int longPress)
 			break;
 		case SEND_VALUE_RISING_EDGE:
 		case SEND_VALUE_ANY_EDGE:
-			objValue = usage_rising & 0xFF;
+			objValue = usage_rising;
 			break;
 		default:
 			objNo = -1;
@@ -101,7 +101,7 @@ void Switch::inputChanged(int value, int longPress)
 		switch (action)
 		{
 		case SEND_ON_FALLING_EDGE:
-			objValue = usage_falling != 0;
+			objValue = usage_falling;
 			break;
 		case TOGGLE_FALLING_EDGE:
 			objValue = !objectRead(objNo);
@@ -120,7 +120,7 @@ void Switch::inputChanged(int value, int longPress)
 			break;
 		case SEND_VALUE_ANY_EDGE:
 		case SEND_VALUE_FALLING_EDGE:
-			objValue = usage_falling & 0xFF;
+			objValue = usage_falling;
 			break;
 		default:
 			objNo = -1;
@@ -147,7 +147,7 @@ void Switch::checkPeriodic(void)
             objValue = 0;
             break;
         case SEND_STATE:
-            objValue = objectRead(number);
+            objValue = objectRead(objNo);
             timeout.start(delay);
             break;
         default:
@@ -164,7 +164,7 @@ Switch2Level::Switch2Level(unsigned int no, unsigned int  channelConfig) : _Swit
 {
 	shortAction   = userEeprom [channelConfig + 0x14];
 	longAction    = userEeprom [channelConfig + 0x17];
-    usage_falling = userEeprom [channelConfig + 4];
+    usage_falling = userEeprom [channelConfig + 0x04];
     usage_rising  = userEeprom [channelConfig + 0x10];
 }
 

@@ -1,0 +1,38 @@
+name           = "switch_005"
+description    = "IN16 - Switch 005"
+ets_project    = "in16-tests.knxproj"
+device_address = "1.1.2"
+power_on_delay = 1000 ### 1 ms
+tags           = "SWITCH", "O", "P"
+
+lpt            = 800 ### 800ms
+dbt            = 30  ###  30ms
+
+Section           ("check grouped channels O/P")
+Section           ("  reaction for channel A")
+App_Loop          ("_input15Set")
+Progress_Time     (dbt, comment = "After debounce send OFF on object 70")
+App_Loop          ()
+Send_Telegram     (device, 70, 0)
+Progress_Time     (lpt, comment = "see if a reaction happens after long time")
+App_Loop          ()
+
+App_Loop          ("_input15Clear")
+Progress_Time     (dbt, comment = "no reaction on falling edge")
+App_Loop          ()
+Progress_Time     (lpt, comment = "see if a reaction happens after long time")
+App_Loop          ()
+
+Section           ("  reaction for channel P")
+App_Loop          ("_input16Set")
+Progress_Time     (dbt, comment = "After debounce send ON on object 70")
+App_Loop          ()
+Send_Telegram     (device, 70, 1)
+Progress_Time     (lpt, comment = "see if a reaction happens after long time")
+App_Loop          ()
+
+App_Loop          ("_input16Clear")
+Progress_Time     (dbt, comment = "no reaction on falling edge")
+App_Loop          ()
+Progress_Time     (lpt)
+App_Loop          ()

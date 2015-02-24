@@ -1,0 +1,58 @@
+name           = "switch_004"
+description    = "IN16 - Switch 004"
+ets_project    = "in16-tests.knxproj"
+device_address = "1.1.2"
+power_on_delay = 1000 ### 1 ms
+tags           = "SWITCH", "I", "J", "K", "L"
+
+lpt            = 800   ### 800ms
+dbt            = 30    ###  30ms
+cyt            = 60000 ### 60s
+
+Section           ("Channel I: send value R: ON, F:off cyclic 60s")
+App_Loop          ("_input9Set", comment = "set channel I")
+Progress_Time     (dbt)
+App_Loop          ()
+Send_Telegram     (device, 40, 1)
+Progress_Time     (cyt)
+App_Loop          ()
+Send_Telegram     (device, 40, 1)
+Progress_Time     (dbt)
+App_Loop          ("_input9Clear", comment = "clear channel I")
+Progress_Time     (dbt)
+App_Loop          ()
+Send_Telegram     (device, 40, 0)
+Progress_Time     (cyt)
+App_Loop          ()
+Send_Telegram     (device, 40, 0)
+
+Section           ("Channel J: send value 10 on rising edge")
+App_Loop          ("_input10Set", comment = "set channel J")
+Progress_Time     (dbt)
+App_Loop          ()
+Send_Telegram     (device, 45, 10)
+Progress_Time     (dbt)
+App_Loop          ("_input10Clear", comment = "clear channel J")
+Progress_Time     (dbt)
+App_Loop          ()
+App_Loop          ()
+
+Section           ("Channel K: send value 100 on falling edge")
+App_Loop          ("_input11Set", comment = "set channel K")
+Progress_Time     (dbt)
+App_Loop          ()
+App_Loop          ()
+App_Loop          ("_input11Clear", comment = "clear channel l")
+Progress_Time     (dbt)
+App_Loop          ()
+Send_Telegram     (device, 50, 100)
+
+Section           ("Channel L: send value 10 of rising, 100 on falling edge")
+App_Loop          ("_input12Set", comment = "set channel L")
+Progress_Time     (dbt)
+App_Loop          ()
+Send_Telegram     (device, 55, 10)
+App_Loop          ("_input12Clear", comment = "clear channel l")
+Progress_Time     (dbt)
+App_Loop          ()
+Send_Telegram     (device, 55, 100)
