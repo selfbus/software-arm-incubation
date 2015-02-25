@@ -27,7 +27,7 @@ public:
 class Switch: public _Switch_
 {
 public:
-    Switch(unsigned int no, unsigned int  channelConfig);
+    Switch(unsigned int no, unsigned int  channelConfig, unsigned int busReturn, unsigned int value);
     virtual void inputChanged(int value, int longPress);
     virtual void checkPeriodic(void);
 private:
@@ -40,7 +40,7 @@ private:
 class Switch2Level : public _Switch_
 {
 public:
-	Switch2Level(unsigned int no, unsigned int  channelConfig);
+	Switch2Level(unsigned int no, unsigned int  channelConfig, unsigned int busReturn, unsigned int value);
     virtual void inputChanged(int value, int longPress);
 private:
     bool lastWasLong;

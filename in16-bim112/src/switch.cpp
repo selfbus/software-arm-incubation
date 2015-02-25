@@ -43,12 +43,32 @@ void _Switch_::setLock(unsigned int value)
     timeout.stop();
 }
 
-Switch::Switch(unsigned int no, unsigned int  channelConfig) : _Switch_ (no)
+Switch::Switch(unsigned int no, unsigned int  channelConfig, unsigned int busReturn, unsigned int value)
+    : _Switch_ (no)
 {
     action        = userEeprom.getUInt16(channelConfig + 2);
     usage_falling = userEeprom [channelConfig + 4];
     usage_rising  = userEeprom [channelConfig + 8];
     delay         = userEeprom.getUInt16(channelConfig + 0x1E) * 1000;
+    if (busReturn)
+    {
+        switch (action)
+        {
+        case TOGGLE_RISING_EDGE:
+        case TOGGLE_FALLING_EDGE:
+            requestObjectRead(number * 5 + 1);
+            break;
+        case SEND_STATE:
+        case SEND_VALUE_ANY_EDGE:
+            if (value)
+                objectWrite(number * 5, usage_rising);
+            else
+                objectWrite(number * 5, usage_falling);
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 void Switch::inputChanged(int value, int longPress)
@@ -160,7 +180,8 @@ void Switch::checkPeriodic(void)
     }
 }
 
-Switch2Level::Switch2Level(unsigned int no, unsigned int  channelConfig) : _Switch_ (no)
+Switch2Level::Switch2Level(unsigned int no, unsigned int channelConfig, unsigned int busReturn, unsigned int value)
+    : _Switch_ (no)
 {
 	shortAction   = userEeprom [channelConfig + 0x14];
 	longAction    = userEeprom [channelConfig + 0x17];

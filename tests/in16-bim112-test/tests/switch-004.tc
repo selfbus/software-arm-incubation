@@ -9,6 +9,8 @@ lpt            = 800   ### 800ms
 dbt            = 30    ###  30ms
 cyt            = 60000 ### 60s
 
+Include           ("bus-return.tcinc")
+
 Section           ("Channel I: send value R: ON, F:off cyclic 60s")
 App_Loop          ("_input9Set", comment = "set channel I")
 Progress_Time     (dbt)

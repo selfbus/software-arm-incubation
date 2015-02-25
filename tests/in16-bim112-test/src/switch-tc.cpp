@@ -12,13 +12,13 @@
 #include "sblib/timer.h"
 #include "in16.h"
 // >>> TC:switch_001
-// Date: 2015-02-24 18:45:02.604251
+// Date: 2015-02-25 16:58:56.043720
 
 /* Code for test case switch_001 */
 static void switch_001_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2015-02-24 18:45:02.604285
+    // Date: 2015-02-25 16:58:56.043720
     userEeprom[0x4000] = 0x12; userEeprom[0x4001] = 0x11; userEeprom[0x4002] = 0x02; userEeprom[0x4003] = 0x00;
     userEeprom[0x4004] = 0x01; userEeprom[0x4005] = 0x00; userEeprom[0x4006] = 0x02; userEeprom[0x4007] = 0x00;
     userEeprom[0x4008] = 0x03; userEeprom[0x4009] = 0x00; userEeprom[0x400A] = 0x04; userEeprom[0x400B] = 0x00;
@@ -469,7 +469,7 @@ static void switch_001_eepromSetup(void)
     userEeprom[0x46FC] = 0x00; userEeprom[0x46FD] = 0x00; userEeprom[0x46FE] = 0x00; userEeprom[0x46FF] = 0x00;
     userEeprom[0x4700] = 0x00; userEeprom[0x4701] = 0x00; userEeprom[0x4702] = 0x00; userEeprom[0x4703] = 0x00;
     userEeprom[0x4704] = 0x00; userEeprom[0x4705] = 0x00; userEeprom[0x4706] = 0x00; userEeprom[0x4707] = 0x3C;
-    userEeprom[0x4708] = 0xC0; userEeprom[0x4709] = 0x00; userEeprom[0x470A] = 0x00; userEeprom[0x470B] = 0x00;
+    userEeprom[0x4708] = 0xF0; userEeprom[0x4709] = 0x00; userEeprom[0x470A] = 0x00; userEeprom[0x470B] = 0x00;
     userEeprom[0x470C] = 0x00; userEeprom[0x470D] = 0x00; userEeprom[0x470E] = 0x00; userEeprom[0x470F] = 0x00;
     userEeprom[0x4710] = 0x00; userEeprom[0x4711] = 0x00; userEeprom[0x4712] = 0x00; userEeprom[0x4713] = 0x00;
     userEeprom[0x4714] = 0x00; userEeprom[0x4715] = 0x00; userEeprom[0x4716] = 0x00; userEeprom[0x4717] = 0x00;
@@ -503,7 +503,7 @@ static void switch_001_eepromSetup(void)
     userEeprom[0x4784] = 0x00; userEeprom[0x4785] = 0x00; userEeprom[0x4786] = 0x00; userEeprom[0x4787] = 0x00;
     userEeprom[0x4788] = 0x00; userEeprom[0x4789] = 0x00; userEeprom[0x478A] = 0x00; userEeprom[0x478B] = 0x00;
     userEeprom[0x478C] = 0x00; userEeprom[0x478D] = 0x00; userEeprom[0x478E] = 0x00; userEeprom[0x478F] = 0x00;
-    userEeprom[0x4790] = 0x00; userEeprom[0x4791] = 0x00; userEeprom[0x4792] = 0x00; userEeprom[0x4793] = 0x00;
+    userEeprom[0x4790] = 0x00; userEeprom[0x4791] = 0x00; userEeprom[0x4792] = 0x30; userEeprom[0x4793] = 0x00;
     userEeprom[0x4794] = 0x00; userEeprom[0x4795] = 0x00; userEeprom[0x4796] = 0x00; userEeprom[0x4797] = 0x00;
     userEeprom[0x4798] = 0x00; userEeprom[0x4799] = 0x00; userEeprom[0x479A] = 0x00; userEeprom[0x479B] = 0x00;
     userEeprom[0x479C] = 0x00; userEeprom[0x479D] = 0x00; userEeprom[0x479E] = 0x00; userEeprom[0x479F] = 0x00;
@@ -586,7 +586,7 @@ static void switch_001_eepromSetup(void)
     userEeprom[0x48D0] = 0x00; userEeprom[0x48D1] = 0x00; userEeprom[0x48D2] = 0x00; userEeprom[0x48D3] = 0x00;
     userEeprom[0x48D4] = 0x00; userEeprom[0x48D5] = 0x00; userEeprom[0x48D6] = 0x00; userEeprom[0x48D7] = 0x00;
     userEeprom[0x48D8] = 0x00; userEeprom[0x48D9] = 0x00; userEeprom[0x48DA] = 0x00; userEeprom[0x48DB] = 0x00;
-    userEeprom[0x48DC] = 0x00; userEeprom[0x48DD] = 0x00; userEeprom[0x48DE] = 0x00; userEeprom[0x48DF] = 0x01;
+    userEeprom[0x48DC] = 0x00; userEeprom[0x48DD] = 0x40; userEeprom[0x48DE] = 0x00; userEeprom[0x48DF] = 0x01;
     userEeprom[0x48E0] = 0x00; userEeprom[0x48E1] = 0x00; userEeprom[0x48E2] = 0x00; userEeprom[0x48E3] = 0x00;
     userEeprom[0x48E4] = 0x00; userEeprom[0x48E5] = 0x00; userEeprom[0x48E6] = 0x00; userEeprom[0x48E7] = 0x00;
     userEeprom[0x48E8] = 0x00; userEeprom[0x48E9] = 0x00; userEeprom[0x48EA] = 0x00; userEeprom[0x48EB] = 0x00;
@@ -604,138 +604,140 @@ static void switch_001_eepromSetup(void)
 static Telegram tel_switch_001[] =
 {
 // check bus return telegram
-/*   1 */   {TEL_RX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0xFE, 0x00, 0x03, 0xE1, 0x00, 0x80}}
-/*   2 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*   3 */ , {TEL_RX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0xFE, 0x00, 0x05, 0xE1, 0x00, 0x81}}
-/*   4 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*   1 */   {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*   2 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x03, 0xE0, 0x00}}
+/*   3 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x05, 0xE0, 0x00}}
+/*   4 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0B, 0xE1, 0x00, 0x80}}
+/*   5 */ , {TEL_TX         ,    9,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0E, 0xE2, 0x00, 0x80, 0x64}}
+/*   6 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x10, 0xE0, 0x00}}
 
 // check grouped channels A/B
 
 //   reaction for channel A
-/*   5 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input1Set          , {}}
+/*   7 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input1Set          , {}}
           // No direct action, only after debounce is complete
-/*   6 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-          // After debounce send ON on object 0
-/*   7 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*   8 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*   9 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x01, 0xE1, 0x00, 0x81}}
+          // After debounce send ON on object 0
+/*   9 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  10 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  11 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x01, 0xE1, 0x00, 0x81}}
           // see if a reaction happens after long time
-/*  10 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-/*  11 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  12 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input1Clear        , {}}
+/*  12 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  13 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  14 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input1Clear        , {}}
           // no reaction on falling edge
-/*  13 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  14 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-          // see if a reaction happens after long time
-/*  15 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  15 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*  16 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+          // see if a reaction happens after long time
+/*  17 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  18 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
 
 //   reaction for channel B
-/*  17 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input2Set          , {}}
+/*  19 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input2Set          , {}}
           // After debounce send OFF on object 0
-/*  18 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  19 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  20 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x01, 0xE1, 0x00, 0x80}}
+/*  20 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  21 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  22 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x01, 0xE1, 0x00, 0x80}}
           // see if a reaction happens after long time
-/*  21 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-/*  22 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  23 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input2Clear        , {}}
+/*  23 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  24 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  25 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input2Clear        , {}}
           // no reaction on falling edge
-/*  24 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  25 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  26 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  26 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*  27 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  28 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  29 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
 
 // Channel C: toggle on rising edge
           // set channel C
-/*  28 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input3Set          , {}}
-/*  29 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  30 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  31 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x02, 0xE1, 0x00, 0x81}}
-/*  32 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  30 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input3Set          , {}}
+/*  31 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  32 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  33 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x02, 0xE1, 0x00, 0x81}}
+/*  34 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long press
-/*  33 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  34 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input3Clear        , {}}
-/*  35 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  36 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  37 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long release
+/*  35 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  36 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input3Clear        , {}}
+/*  37 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*  38 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-          // set channel C
-/*  39 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input3Set          , {}}
-/*  40 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  41 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  42 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x02, 0xE1, 0x00, 0x80}}
-/*  43 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long press
-/*  44 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  45 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input3Clear        , {}}
-/*  46 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  47 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  48 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  39 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long release
+/*  40 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+          // set channel C
+/*  41 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input3Set          , {}}
+/*  42 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  43 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  44 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x02, 0xE1, 0x00, 0x80}}
+/*  45 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long press
+/*  46 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  47 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input3Clear        , {}}
+/*  48 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*  49 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-          // set channel C
-/*  50 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input3Set          , {}}
-/*  51 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  52 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  53 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x02, 0xE1, 0x00, 0x81}}
-/*  54 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long press
-/*  55 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  56 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input3Clear        , {}}
-/*  57 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  58 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  59 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  50 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long release
+/*  51 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+          // set channel C
+/*  52 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input3Set          , {}}
+/*  53 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  54 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  55 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x02, 0xE1, 0x00, 0x81}}
+/*  56 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long press
+/*  57 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  58 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input3Clear        , {}}
+/*  59 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*  60 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  61 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long release
+/*  62 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
 
 // Channel D: toggle on falling edge
           // set channel C
-/*  61 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input4Set          , {}}
-/*  62 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  63 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input4Set          , {}}
+/*  64 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
           // no reaction on rising edge
-/*  63 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  64 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long press
 /*  65 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  66 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input4Clear        , {}}
-/*  67 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  68 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  69 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x04, 0xE1, 0x00, 0x81}}
-/*  70 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long release
-/*  71 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-          // set channel C
-/*  72 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input4Set          , {}}
-/*  73 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-          // no reaction on rising edge
-/*  74 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  75 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  66 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long press
+/*  67 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  68 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input4Clear        , {}}
+/*  69 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  70 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  71 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x04, 0xE1, 0x00, 0x81}}
+/*  72 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long release
+/*  73 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+          // set channel C
+/*  74 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input4Set          , {}}
+/*  75 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+          // no reaction on rising edge
 /*  76 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  77 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input4Clear        , {}}
-/*  78 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  79 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  80 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x04, 0xE1, 0x00, 0x80}}
-/*  81 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long release
-/*  82 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-          // set channel C
-/*  83 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input4Set          , {}}
-/*  84 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-          // no reaction on rising edge
-/*  85 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  86 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  77 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long press
-/*  87 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  88 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input4Clear        , {}}
-/*  89 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  90 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  91 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x04, 0xE1, 0x00, 0x81}}
-/*  92 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  78 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  79 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input4Clear        , {}}
+/*  80 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  81 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  82 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x04, 0xE1, 0x00, 0x80}}
+/*  83 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long release
-/*  93 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  84 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+          // set channel C
+/*  85 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input4Set          , {}}
+/*  86 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+          // no reaction on rising edge
+/*  87 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  88 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long press
+/*  89 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  90 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input4Clear        , {}}
+/*  91 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  92 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  93 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x04, 0xE1, 0x00, 0x81}}
+/*  94 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long release
+/*  95 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
 , {END}
 };
 static Test_Case switch_001_tc = 
@@ -757,13 +759,13 @@ TEST_CASE("IN16 - Switch 001","[SWITCH][A][B][C][D]")
 }
 // <<< TC:switch_001
 // >>> TC:switch_002
-// Date: 2015-02-24 18:45:02.646120
+// Date: 2015-02-25 16:58:56.192720
 
 /* Code for test case switch_002 */
 static void switch_002_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2015-02-24 18:45:02.646139
+    // Date: 2015-02-25 16:58:56.192720
     userEeprom[0x4000] = 0x12; userEeprom[0x4001] = 0x11; userEeprom[0x4002] = 0x02; userEeprom[0x4003] = 0x00;
     userEeprom[0x4004] = 0x01; userEeprom[0x4005] = 0x00; userEeprom[0x4006] = 0x02; userEeprom[0x4007] = 0x00;
     userEeprom[0x4008] = 0x03; userEeprom[0x4009] = 0x00; userEeprom[0x400A] = 0x04; userEeprom[0x400B] = 0x00;
@@ -1214,7 +1216,7 @@ static void switch_002_eepromSetup(void)
     userEeprom[0x46FC] = 0x00; userEeprom[0x46FD] = 0x00; userEeprom[0x46FE] = 0x00; userEeprom[0x46FF] = 0x00;
     userEeprom[0x4700] = 0x00; userEeprom[0x4701] = 0x00; userEeprom[0x4702] = 0x00; userEeprom[0x4703] = 0x00;
     userEeprom[0x4704] = 0x00; userEeprom[0x4705] = 0x00; userEeprom[0x4706] = 0x00; userEeprom[0x4707] = 0x3C;
-    userEeprom[0x4708] = 0xC0; userEeprom[0x4709] = 0x00; userEeprom[0x470A] = 0x00; userEeprom[0x470B] = 0x00;
+    userEeprom[0x4708] = 0xF0; userEeprom[0x4709] = 0x00; userEeprom[0x470A] = 0x00; userEeprom[0x470B] = 0x00;
     userEeprom[0x470C] = 0x00; userEeprom[0x470D] = 0x00; userEeprom[0x470E] = 0x00; userEeprom[0x470F] = 0x00;
     userEeprom[0x4710] = 0x00; userEeprom[0x4711] = 0x00; userEeprom[0x4712] = 0x00; userEeprom[0x4713] = 0x00;
     userEeprom[0x4714] = 0x00; userEeprom[0x4715] = 0x00; userEeprom[0x4716] = 0x00; userEeprom[0x4717] = 0x00;
@@ -1248,7 +1250,7 @@ static void switch_002_eepromSetup(void)
     userEeprom[0x4784] = 0x00; userEeprom[0x4785] = 0x00; userEeprom[0x4786] = 0x00; userEeprom[0x4787] = 0x00;
     userEeprom[0x4788] = 0x00; userEeprom[0x4789] = 0x00; userEeprom[0x478A] = 0x00; userEeprom[0x478B] = 0x00;
     userEeprom[0x478C] = 0x00; userEeprom[0x478D] = 0x00; userEeprom[0x478E] = 0x00; userEeprom[0x478F] = 0x00;
-    userEeprom[0x4790] = 0x00; userEeprom[0x4791] = 0x00; userEeprom[0x4792] = 0x00; userEeprom[0x4793] = 0x00;
+    userEeprom[0x4790] = 0x00; userEeprom[0x4791] = 0x00; userEeprom[0x4792] = 0x30; userEeprom[0x4793] = 0x00;
     userEeprom[0x4794] = 0x00; userEeprom[0x4795] = 0x00; userEeprom[0x4796] = 0x00; userEeprom[0x4797] = 0x00;
     userEeprom[0x4798] = 0x00; userEeprom[0x4799] = 0x00; userEeprom[0x479A] = 0x00; userEeprom[0x479B] = 0x00;
     userEeprom[0x479C] = 0x00; userEeprom[0x479D] = 0x00; userEeprom[0x479E] = 0x00; userEeprom[0x479F] = 0x00;
@@ -1331,7 +1333,7 @@ static void switch_002_eepromSetup(void)
     userEeprom[0x48D0] = 0x00; userEeprom[0x48D1] = 0x00; userEeprom[0x48D2] = 0x00; userEeprom[0x48D3] = 0x00;
     userEeprom[0x48D4] = 0x00; userEeprom[0x48D5] = 0x00; userEeprom[0x48D6] = 0x00; userEeprom[0x48D7] = 0x00;
     userEeprom[0x48D8] = 0x00; userEeprom[0x48D9] = 0x00; userEeprom[0x48DA] = 0x00; userEeprom[0x48DB] = 0x00;
-    userEeprom[0x48DC] = 0x00; userEeprom[0x48DD] = 0x00; userEeprom[0x48DE] = 0x00; userEeprom[0x48DF] = 0x01;
+    userEeprom[0x48DC] = 0x00; userEeprom[0x48DD] = 0x40; userEeprom[0x48DE] = 0x00; userEeprom[0x48DF] = 0x01;
     userEeprom[0x48E0] = 0x00; userEeprom[0x48E1] = 0x00; userEeprom[0x48E2] = 0x00; userEeprom[0x48E3] = 0x00;
     userEeprom[0x48E4] = 0x00; userEeprom[0x48E5] = 0x00; userEeprom[0x48E6] = 0x00; userEeprom[0x48E7] = 0x00;
     userEeprom[0x48E8] = 0x00; userEeprom[0x48E9] = 0x00; userEeprom[0x48EA] = 0x00; userEeprom[0x48EB] = 0x00;
@@ -1348,93 +1350,101 @@ static void switch_002_eepromSetup(void)
 
 static Telegram tel_switch_002[] =
 {
+// check bus return telegram
+/*   1 */   {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*   2 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x03, 0xE0, 0x00}}
+/*   3 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x05, 0xE0, 0x00}}
+/*   4 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0B, 0xE1, 0x00, 0x80}}
+/*   5 */ , {TEL_TX         ,    9,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0E, 0xE2, 0x00, 0x80, 0x64}}
+/*   6 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x10, 0xE0, 0x00}}
+
 // Channel E: send ON on rising edge
           // set channel C
-/*   1 */   {TIMER_TICK     ,    0,  0, (StepFunction *) _input5Set          , {}}
-/*   2 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*   3 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*   4 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x07, 0xE1, 0x00, 0x81}}
-/*   5 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long press
-/*   6 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*   7 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input5Clear        , {}}
+/*   7 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input5Set          , {}}
 /*   8 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*   9 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  10 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long release
-/*  11 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-          // set channel C
-/*  12 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input5Set          , {}}
-/*  13 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  14 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  15 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x07, 0xE1, 0x00, 0x81}}
-/*  16 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  10 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x07, 0xE1, 0x00, 0x81}}
+/*  11 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long press
+/*  12 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  13 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input5Clear        , {}}
+/*  14 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  15 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  16 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long release
 /*  17 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  18 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input5Clear        , {}}
+          // set channel C
+/*  18 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input5Set          , {}}
 /*  19 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*  20 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  21 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long release
-/*  22 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-          // set channel C
-/*  23 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input5Set          , {}}
-/*  24 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  25 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  26 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x07, 0xE1, 0x00, 0x81}}
-/*  27 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  21 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x07, 0xE1, 0x00, 0x81}}
+/*  22 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long press
+/*  23 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  24 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input5Clear        , {}}
+/*  25 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  26 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  27 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long release
 /*  28 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  29 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input5Clear        , {}}
+          // set channel C
+/*  29 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input5Set          , {}}
 /*  30 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*  31 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  32 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  32 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x07, 0xE1, 0x00, 0x81}}
+/*  33 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long press
+/*  34 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  35 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input5Clear        , {}}
+/*  36 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  37 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  38 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long release
-/*  33 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  39 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
 
 // Channel F: send OFF on falling edge
           // set channel C
-/*  34 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input6Set          , {}}
-/*  35 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  36 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  37 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long press
-/*  38 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  39 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input6Clear        , {}}
-/*  40 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  41 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  42 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x08, 0xE1, 0x00, 0x80}}
+/*  40 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input6Set          , {}}
+/*  41 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  42 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
 /*  43 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long release
+          // no reaction after a long press
 /*  44 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-          // set channel C
-/*  45 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input6Set          , {}}
+/*  45 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input6Clear        , {}}
 /*  46 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*  47 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  48 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long press
-/*  49 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  50 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input6Clear        , {}}
-/*  51 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  52 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  53 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x08, 0xE1, 0x00, 0x80}}
-/*  54 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  48 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x08, 0xE1, 0x00, 0x80}}
+/*  49 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long release
-/*  55 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  50 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
           // set channel C
-/*  56 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input6Set          , {}}
+/*  51 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input6Set          , {}}
+/*  52 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  53 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  54 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long press
+/*  55 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  56 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input6Clear        , {}}
 /*  57 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*  58 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  59 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long press
-/*  60 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  61 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input6Clear        , {}}
-/*  62 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  63 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  64 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x08, 0xE1, 0x00, 0x80}}
-/*  65 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  59 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x08, 0xE1, 0x00, 0x80}}
+/*  60 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long release
+/*  61 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+          // set channel C
+/*  62 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input6Set          , {}}
+/*  63 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  64 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  65 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long press
 /*  66 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  67 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input6Clear        , {}}
+/*  68 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  69 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  70 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x08, 0xE1, 0x00, 0x80}}
+/*  71 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long release
+/*  72 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
 , {END}
 };
 static Test_Case switch_002_tc = 
@@ -1456,13 +1466,13 @@ TEST_CASE("IN16 - Switch 002","[SWITCH][E][F]")
 }
 // <<< TC:switch_002
 // >>> TC:switch_003
-// Date: 2015-02-24 18:45:02.668696
+// Date: 2015-02-25 16:58:56.297720
 
 /* Code for test case switch_003 */
 static void switch_003_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2015-02-24 18:45:02.668721
+    // Date: 2015-02-25 16:58:56.297720
     userEeprom[0x4000] = 0x12; userEeprom[0x4001] = 0x11; userEeprom[0x4002] = 0x02; userEeprom[0x4003] = 0x00;
     userEeprom[0x4004] = 0x01; userEeprom[0x4005] = 0x00; userEeprom[0x4006] = 0x02; userEeprom[0x4007] = 0x00;
     userEeprom[0x4008] = 0x03; userEeprom[0x4009] = 0x00; userEeprom[0x400A] = 0x04; userEeprom[0x400B] = 0x00;
@@ -1913,7 +1923,7 @@ static void switch_003_eepromSetup(void)
     userEeprom[0x46FC] = 0x00; userEeprom[0x46FD] = 0x00; userEeprom[0x46FE] = 0x00; userEeprom[0x46FF] = 0x00;
     userEeprom[0x4700] = 0x00; userEeprom[0x4701] = 0x00; userEeprom[0x4702] = 0x00; userEeprom[0x4703] = 0x00;
     userEeprom[0x4704] = 0x00; userEeprom[0x4705] = 0x00; userEeprom[0x4706] = 0x00; userEeprom[0x4707] = 0x3C;
-    userEeprom[0x4708] = 0xC0; userEeprom[0x4709] = 0x00; userEeprom[0x470A] = 0x00; userEeprom[0x470B] = 0x00;
+    userEeprom[0x4708] = 0xF0; userEeprom[0x4709] = 0x00; userEeprom[0x470A] = 0x00; userEeprom[0x470B] = 0x00;
     userEeprom[0x470C] = 0x00; userEeprom[0x470D] = 0x00; userEeprom[0x470E] = 0x00; userEeprom[0x470F] = 0x00;
     userEeprom[0x4710] = 0x00; userEeprom[0x4711] = 0x00; userEeprom[0x4712] = 0x00; userEeprom[0x4713] = 0x00;
     userEeprom[0x4714] = 0x00; userEeprom[0x4715] = 0x00; userEeprom[0x4716] = 0x00; userEeprom[0x4717] = 0x00;
@@ -1947,7 +1957,7 @@ static void switch_003_eepromSetup(void)
     userEeprom[0x4784] = 0x00; userEeprom[0x4785] = 0x00; userEeprom[0x4786] = 0x00; userEeprom[0x4787] = 0x00;
     userEeprom[0x4788] = 0x00; userEeprom[0x4789] = 0x00; userEeprom[0x478A] = 0x00; userEeprom[0x478B] = 0x00;
     userEeprom[0x478C] = 0x00; userEeprom[0x478D] = 0x00; userEeprom[0x478E] = 0x00; userEeprom[0x478F] = 0x00;
-    userEeprom[0x4790] = 0x00; userEeprom[0x4791] = 0x00; userEeprom[0x4792] = 0x00; userEeprom[0x4793] = 0x00;
+    userEeprom[0x4790] = 0x00; userEeprom[0x4791] = 0x00; userEeprom[0x4792] = 0x30; userEeprom[0x4793] = 0x00;
     userEeprom[0x4794] = 0x00; userEeprom[0x4795] = 0x00; userEeprom[0x4796] = 0x00; userEeprom[0x4797] = 0x00;
     userEeprom[0x4798] = 0x00; userEeprom[0x4799] = 0x00; userEeprom[0x479A] = 0x00; userEeprom[0x479B] = 0x00;
     userEeprom[0x479C] = 0x00; userEeprom[0x479D] = 0x00; userEeprom[0x479E] = 0x00; userEeprom[0x479F] = 0x00;
@@ -2030,7 +2040,7 @@ static void switch_003_eepromSetup(void)
     userEeprom[0x48D0] = 0x00; userEeprom[0x48D1] = 0x00; userEeprom[0x48D2] = 0x00; userEeprom[0x48D3] = 0x00;
     userEeprom[0x48D4] = 0x00; userEeprom[0x48D5] = 0x00; userEeprom[0x48D6] = 0x00; userEeprom[0x48D7] = 0x00;
     userEeprom[0x48D8] = 0x00; userEeprom[0x48D9] = 0x00; userEeprom[0x48DA] = 0x00; userEeprom[0x48DB] = 0x00;
-    userEeprom[0x48DC] = 0x00; userEeprom[0x48DD] = 0x00; userEeprom[0x48DE] = 0x00; userEeprom[0x48DF] = 0x01;
+    userEeprom[0x48DC] = 0x00; userEeprom[0x48DD] = 0x40; userEeprom[0x48DE] = 0x00; userEeprom[0x48DF] = 0x01;
     userEeprom[0x48E0] = 0x00; userEeprom[0x48E1] = 0x00; userEeprom[0x48E2] = 0x00; userEeprom[0x48E3] = 0x00;
     userEeprom[0x48E4] = 0x00; userEeprom[0x48E5] = 0x00; userEeprom[0x48E6] = 0x00; userEeprom[0x48E7] = 0x00;
     userEeprom[0x48E8] = 0x00; userEeprom[0x48E9] = 0x00; userEeprom[0x48EA] = 0x00; userEeprom[0x48EB] = 0x00;
@@ -2047,132 +2057,140 @@ static void switch_003_eepromSetup(void)
 
 static Telegram tel_switch_003[] =
 {
+// check bus return telegram
+/*   1 */   {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*   2 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x03, 0xE0, 0x00}}
+/*   3 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x05, 0xE0, 0x00}}
+/*   4 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0B, 0xE1, 0x00, 0x80}}
+/*   5 */ , {TEL_TX         ,    9,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0E, 0xE2, 0x00, 0x80, 0x64}}
+/*   6 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x10, 0xE0, 0x00}}
+
 // Channel G: send status with ON delay
           // set channel G
-/*   1 */   {TIMER_TICK     ,    0,  0, (StepFunction *) _input7Set          , {}}
-/*   2 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*   3 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*   7 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input7Set          , {}}
+/*   8 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*   9 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
           // the on telegram is delayed
-/*   4 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*   5 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  10 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  11 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long press
-/*   6 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*   7 */ , {TIMER_TICK     , 9200,  0, (StepFunction *) _loop               , {}}
-/*   8 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*   9 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x09, 0xE1, 0x00, 0x81}}
-/*  10 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input7Clear        , {}}
-/*  11 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*  12 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  13 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x09, 0xE1, 0x00, 0x80}}
-/*  14 */ , {TIMER_TICK     , 10800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long release(delay time)
-/*  15 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-          // set channel G
-/*  16 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input7Set          , {}}
+/*  13 */ , {TIMER_TICK     , 9200,  0, (StepFunction *) _loop               , {}}
+/*  14 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  15 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x09, 0xE1, 0x00, 0x81}}
+/*  16 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input7Clear        , {}}
 /*  17 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*  18 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-          // the on telegram is delayed
-/*  19 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  20 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long press
-/*  21 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  22 */ , {TIMER_TICK     , 9200,  0, (StepFunction *) _loop               , {}}
-/*  23 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  24 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x09, 0xE1, 0x00, 0x81}}
-/*  25 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input7Clear        , {}}
-/*  26 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  27 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  28 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x09, 0xE1, 0x00, 0x80}}
-/*  29 */ , {TIMER_TICK     , 10800,  0, (StepFunction *) _loop               , {}}
+/*  19 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x09, 0xE1, 0x00, 0x80}}
+/*  20 */ , {TIMER_TICK     , 10800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long release(delay time)
-/*  30 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  21 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
           // set channel G
-/*  31 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input7Set          , {}}
+/*  22 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input7Set          , {}}
+/*  23 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  24 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+          // the on telegram is delayed
+/*  25 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  26 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long press
+/*  27 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  28 */ , {TIMER_TICK     , 9200,  0, (StepFunction *) _loop               , {}}
+/*  29 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  30 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x09, 0xE1, 0x00, 0x81}}
+/*  31 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input7Clear        , {}}
 /*  32 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*  33 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-          // the on telegram is delayed
-/*  34 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  35 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long press
-/*  36 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  37 */ , {TIMER_TICK     , 9200,  0, (StepFunction *) _loop               , {}}
-/*  38 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  39 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x09, 0xE1, 0x00, 0x81}}
-/*  40 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input7Clear        , {}}
-/*  41 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  42 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  43 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x09, 0xE1, 0x00, 0x80}}
-/*  44 */ , {TIMER_TICK     , 10800,  0, (StepFunction *) _loop               , {}}
+/*  34 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x09, 0xE1, 0x00, 0x80}}
+/*  35 */ , {TIMER_TICK     , 10800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long release(delay time)
-/*  45 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  36 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+          // set channel G
+/*  37 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input7Set          , {}}
+/*  38 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  39 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+          // the on telegram is delayed
+/*  40 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  41 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long press
+/*  42 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  43 */ , {TIMER_TICK     , 9200,  0, (StepFunction *) _loop               , {}}
+/*  44 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  45 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x09, 0xE1, 0x00, 0x81}}
+/*  46 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input7Clear        , {}}
+/*  47 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  48 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  49 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x09, 0xE1, 0x00, 0x80}}
+/*  50 */ , {TIMER_TICK     , 10800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long release(delay time)
+/*  51 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
 
 // Channel H: send status with OFF delay
           // set channel H
-/*  46 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input8Set          , {}}
-/*  47 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  48 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  49 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0A, 0xE1, 0x00, 0x81}}
-/*  50 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  52 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input8Set          , {}}
+/*  53 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  54 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  55 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0A, 0xE1, 0x00, 0x81}}
+/*  56 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long press
-/*  51 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  52 */ , {TIMER_TICK     , 60000,  0, (StepFunction *) _loop               , {}}
-          // no reaction after delay
-/*  53 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  54 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input8Clear        , {}}
-/*  55 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  56 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-          // OFF telegram is delayed
 /*  57 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  58 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long release
+/*  58 */ , {TIMER_TICK     , 60000,  0, (StepFunction *) _loop               , {}}
+          // no reaction after delay
 /*  59 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  60 */ , {TIMER_TICK     , 59200,  0, (StepFunction *) _loop               , {}}
-/*  61 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  62 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0A, 0xE1, 0x00, 0x80}}
-          // set channel H
-/*  63 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input8Set          , {}}
-/*  64 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  60 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input8Clear        , {}}
+/*  61 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  62 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+          // OFF telegram is delayed
+/*  63 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  64 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long release
 /*  65 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  66 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0A, 0xE1, 0x00, 0x81}}
-/*  67 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long press
-/*  68 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  69 */ , {TIMER_TICK     , 60000,  0, (StepFunction *) _loop               , {}}
-          // no reaction after delay
-/*  70 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  71 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input8Clear        , {}}
-/*  72 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  73 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-          // OFF telegram is delayed
-/*  74 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  75 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-          // no reaction after a long release
-/*  76 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  77 */ , {TIMER_TICK     , 59200,  0, (StepFunction *) _loop               , {}}
-/*  78 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  79 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0A, 0xE1, 0x00, 0x80}}
+/*  66 */ , {TIMER_TICK     , 59200,  0, (StepFunction *) _loop               , {}}
+/*  67 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  68 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0A, 0xE1, 0x00, 0x80}}
           // set channel H
-/*  80 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input8Set          , {}}
-/*  81 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  82 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  83 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0A, 0xE1, 0x00, 0x81}}
-/*  84 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  69 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input8Set          , {}}
+/*  70 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  71 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  72 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0A, 0xE1, 0x00, 0x81}}
+/*  73 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long press
-/*  85 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  86 */ , {TIMER_TICK     , 60000,  0, (StepFunction *) _loop               , {}}
+/*  74 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  75 */ , {TIMER_TICK     , 60000,  0, (StepFunction *) _loop               , {}}
           // no reaction after delay
-/*  87 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  88 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input8Clear        , {}}
-/*  89 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  90 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  76 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  77 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input8Clear        , {}}
+/*  78 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  79 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
           // OFF telegram is delayed
-/*  91 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  92 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  80 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  81 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
           // no reaction after a long release
+/*  82 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  83 */ , {TIMER_TICK     , 59200,  0, (StepFunction *) _loop               , {}}
+/*  84 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  85 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0A, 0xE1, 0x00, 0x80}}
+          // set channel H
+/*  86 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input8Set          , {}}
+/*  87 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  88 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  89 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0A, 0xE1, 0x00, 0x81}}
+/*  90 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long press
+/*  91 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  92 */ , {TIMER_TICK     , 60000,  0, (StepFunction *) _loop               , {}}
+          // no reaction after delay
 /*  93 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  94 */ , {TIMER_TICK     , 59200,  0, (StepFunction *) _loop               , {}}
-/*  95 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  96 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0A, 0xE1, 0x00, 0x80}}
+/*  94 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input8Clear        , {}}
+/*  95 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  96 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+          // OFF telegram is delayed
+/*  97 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  98 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+          // no reaction after a long release
+/*  99 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/* 100 */ , {TIMER_TICK     , 59200,  0, (StepFunction *) _loop               , {}}
+/* 101 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/* 102 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0A, 0xE1, 0x00, 0x80}}
 , {END}
 };
 static Test_Case switch_003_tc = 
@@ -2194,13 +2212,13 @@ TEST_CASE("IN16 - Switch 003","[SWITCH][G][H]")
 }
 // <<< TC:switch_003
 // >>> TC:switch_004
-// Date: 2015-02-24 18:45:02.688898
+// Date: 2015-02-25 16:58:56.373720
 
 /* Code for test case switch_004 */
 static void switch_004_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2015-02-24 18:45:02.688914
+    // Date: 2015-02-25 16:58:56.373720
     userEeprom[0x4000] = 0x12; userEeprom[0x4001] = 0x11; userEeprom[0x4002] = 0x02; userEeprom[0x4003] = 0x00;
     userEeprom[0x4004] = 0x01; userEeprom[0x4005] = 0x00; userEeprom[0x4006] = 0x02; userEeprom[0x4007] = 0x00;
     userEeprom[0x4008] = 0x03; userEeprom[0x4009] = 0x00; userEeprom[0x400A] = 0x04; userEeprom[0x400B] = 0x00;
@@ -2651,7 +2669,7 @@ static void switch_004_eepromSetup(void)
     userEeprom[0x46FC] = 0x00; userEeprom[0x46FD] = 0x00; userEeprom[0x46FE] = 0x00; userEeprom[0x46FF] = 0x00;
     userEeprom[0x4700] = 0x00; userEeprom[0x4701] = 0x00; userEeprom[0x4702] = 0x00; userEeprom[0x4703] = 0x00;
     userEeprom[0x4704] = 0x00; userEeprom[0x4705] = 0x00; userEeprom[0x4706] = 0x00; userEeprom[0x4707] = 0x3C;
-    userEeprom[0x4708] = 0xC0; userEeprom[0x4709] = 0x00; userEeprom[0x470A] = 0x00; userEeprom[0x470B] = 0x00;
+    userEeprom[0x4708] = 0xF0; userEeprom[0x4709] = 0x00; userEeprom[0x470A] = 0x00; userEeprom[0x470B] = 0x00;
     userEeprom[0x470C] = 0x00; userEeprom[0x470D] = 0x00; userEeprom[0x470E] = 0x00; userEeprom[0x470F] = 0x00;
     userEeprom[0x4710] = 0x00; userEeprom[0x4711] = 0x00; userEeprom[0x4712] = 0x00; userEeprom[0x4713] = 0x00;
     userEeprom[0x4714] = 0x00; userEeprom[0x4715] = 0x00; userEeprom[0x4716] = 0x00; userEeprom[0x4717] = 0x00;
@@ -2685,7 +2703,7 @@ static void switch_004_eepromSetup(void)
     userEeprom[0x4784] = 0x00; userEeprom[0x4785] = 0x00; userEeprom[0x4786] = 0x00; userEeprom[0x4787] = 0x00;
     userEeprom[0x4788] = 0x00; userEeprom[0x4789] = 0x00; userEeprom[0x478A] = 0x00; userEeprom[0x478B] = 0x00;
     userEeprom[0x478C] = 0x00; userEeprom[0x478D] = 0x00; userEeprom[0x478E] = 0x00; userEeprom[0x478F] = 0x00;
-    userEeprom[0x4790] = 0x00; userEeprom[0x4791] = 0x00; userEeprom[0x4792] = 0x00; userEeprom[0x4793] = 0x00;
+    userEeprom[0x4790] = 0x00; userEeprom[0x4791] = 0x00; userEeprom[0x4792] = 0x30; userEeprom[0x4793] = 0x00;
     userEeprom[0x4794] = 0x00; userEeprom[0x4795] = 0x00; userEeprom[0x4796] = 0x00; userEeprom[0x4797] = 0x00;
     userEeprom[0x4798] = 0x00; userEeprom[0x4799] = 0x00; userEeprom[0x479A] = 0x00; userEeprom[0x479B] = 0x00;
     userEeprom[0x479C] = 0x00; userEeprom[0x479D] = 0x00; userEeprom[0x479E] = 0x00; userEeprom[0x479F] = 0x00;
@@ -2768,7 +2786,7 @@ static void switch_004_eepromSetup(void)
     userEeprom[0x48D0] = 0x00; userEeprom[0x48D1] = 0x00; userEeprom[0x48D2] = 0x00; userEeprom[0x48D3] = 0x00;
     userEeprom[0x48D4] = 0x00; userEeprom[0x48D5] = 0x00; userEeprom[0x48D6] = 0x00; userEeprom[0x48D7] = 0x00;
     userEeprom[0x48D8] = 0x00; userEeprom[0x48D9] = 0x00; userEeprom[0x48DA] = 0x00; userEeprom[0x48DB] = 0x00;
-    userEeprom[0x48DC] = 0x00; userEeprom[0x48DD] = 0x00; userEeprom[0x48DE] = 0x00; userEeprom[0x48DF] = 0x01;
+    userEeprom[0x48DC] = 0x00; userEeprom[0x48DD] = 0x40; userEeprom[0x48DE] = 0x00; userEeprom[0x48DF] = 0x01;
     userEeprom[0x48E0] = 0x00; userEeprom[0x48E1] = 0x00; userEeprom[0x48E2] = 0x00; userEeprom[0x48E3] = 0x00;
     userEeprom[0x48E4] = 0x00; userEeprom[0x48E5] = 0x00; userEeprom[0x48E6] = 0x00; userEeprom[0x48E7] = 0x00;
     userEeprom[0x48E8] = 0x00; userEeprom[0x48E9] = 0x00; userEeprom[0x48EA] = 0x00; userEeprom[0x48EB] = 0x00;
@@ -2785,61 +2803,69 @@ static void switch_004_eepromSetup(void)
 
 static Telegram tel_switch_004[] =
 {
+// check bus return telegram
+/*   1 */   {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*   2 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x03, 0xE0, 0x00}}
+/*   3 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x05, 0xE0, 0x00}}
+/*   4 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0B, 0xE1, 0x00, 0x80}}
+/*   5 */ , {TEL_TX         ,    9,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0E, 0xE2, 0x00, 0x80, 0x64}}
+/*   6 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x10, 0xE0, 0x00}}
+
 // Channel I: send value R: ON, F:off cyclic 60s
           // set channel I
-/*   1 */   {TIMER_TICK     ,    0,  0, (StepFunction *) _input9Set          , {}}
-/*   2 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*   3 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*   4 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0B, 0xE1, 0x00, 0x81}}
-/*   5 */ , {TIMER_TICK     , 60000,  0, (StepFunction *) _loop               , {}}
-/*   6 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*   7 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0B, 0xE1, 0x00, 0x81}}
+/*   7 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input9Set          , {}}
 /*   8 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*   9 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  10 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0B, 0xE1, 0x00, 0x81}}
+/*  11 */ , {TIMER_TICK     , 60000,  0, (StepFunction *) _loop               , {}}
+/*  12 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  13 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0B, 0xE1, 0x00, 0x81}}
+/*  14 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
           // clear channel I
-/*   9 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input9Clear        , {}}
-/*  10 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  11 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  12 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0B, 0xE1, 0x00, 0x80}}
-/*  13 */ , {TIMER_TICK     , 60000,  0, (StepFunction *) _loop               , {}}
-/*  14 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  15 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0B, 0xE1, 0x00, 0x80}}
+/*  15 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input9Clear        , {}}
+/*  16 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  17 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  18 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0B, 0xE1, 0x00, 0x80}}
+/*  19 */ , {TIMER_TICK     , 60000,  0, (StepFunction *) _loop               , {}}
+/*  20 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  21 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0B, 0xE1, 0x00, 0x80}}
 
 // Channel J: send value 10 on rising edge
           // set channel J
-/*  16 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input10Set         , {}}
-/*  17 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  18 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  19 */ , {TEL_TX         ,    9,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0C, 0xE2, 0x00, 0x80, 0x0A}}
-/*  20 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-          // clear channel J
-/*  21 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input10Clear       , {}}
-/*  22 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  23 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  22 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input10Set         , {}}
+/*  23 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*  24 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  25 */ , {TEL_TX         ,    9,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0C, 0xE2, 0x00, 0x80, 0x0A}}
+/*  26 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+          // clear channel J
+/*  27 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input10Clear       , {}}
+/*  28 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  29 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  30 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
 
 // Channel K: send value 100 on falling edge
           // set channel K
-/*  25 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input11Set         , {}}
-/*  26 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  27 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  28 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  31 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input11Set         , {}}
+/*  32 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  33 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  34 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
           // clear channel l
-/*  29 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input11Clear       , {}}
-/*  30 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  31 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  32 */ , {TEL_TX         ,    9,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0D, 0xE2, 0x00, 0x80, 0x64}}
+/*  35 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input11Clear       , {}}
+/*  36 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  37 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  38 */ , {TEL_TX         ,    9,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0D, 0xE2, 0x00, 0x80, 0x64}}
 
 // Channel L: send value 10 of rising, 100 on falling edge
           // set channel L
-/*  33 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input12Set         , {}}
-/*  34 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  35 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  36 */ , {TEL_TX         ,    9,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0E, 0xE2, 0x00, 0x80, 0x0A}}
+/*  39 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input12Set         , {}}
+/*  40 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  41 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  42 */ , {TEL_TX         ,    9,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0E, 0xE2, 0x00, 0x80, 0x0A}}
           // clear channel l
-/*  37 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input12Clear       , {}}
-/*  38 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  39 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  40 */ , {TEL_TX         ,    9,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0E, 0xE2, 0x00, 0x80, 0x64}}
+/*  43 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input12Clear       , {}}
+/*  44 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  45 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  46 */ , {TEL_TX         ,    9,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0E, 0xE2, 0x00, 0x80, 0x64}}
 , {END}
 };
 static Test_Case switch_004_tc = 
@@ -2861,13 +2887,13 @@ TEST_CASE("IN16 - Switch 004","[SWITCH][I][J][K][L]")
 }
 // <<< TC:switch_004
 // >>> TC:switch_005
-// Date: 2015-02-24 18:51:36.580679
+// Date: 2015-02-25 16:58:56.434720
 
 /* Code for test case switch_005 */
 static void switch_005_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2015-02-24 18:51:36.580710
+    // Date: 2015-02-25 16:58:56.434720
     userEeprom[0x4000] = 0x12; userEeprom[0x4001] = 0x11; userEeprom[0x4002] = 0x02; userEeprom[0x4003] = 0x00;
     userEeprom[0x4004] = 0x01; userEeprom[0x4005] = 0x00; userEeprom[0x4006] = 0x02; userEeprom[0x4007] = 0x00;
     userEeprom[0x4008] = 0x03; userEeprom[0x4009] = 0x00; userEeprom[0x400A] = 0x04; userEeprom[0x400B] = 0x00;
@@ -3200,7 +3226,7 @@ static void switch_005_eepromSetup(void)
     userEeprom[0x4524] = 0xCF; userEeprom[0x4525] = 0x4B; userEeprom[0x4526] = 0x07; userEeprom[0x4527] = 0x07;
     userEeprom[0x4528] = 0xD0; userEeprom[0x4529] = 0x4B; userEeprom[0x452A] = 0x0A; userEeprom[0x452B] = 0x07;
     userEeprom[0x452C] = 0xD4; userEeprom[0x452D] = 0x13; userEeprom[0x452E] = 0x00; userEeprom[0x452F] = 0x07;
-    userEeprom[0x4530] = 0xD5; userEeprom[0x4531] = 0x13; userEeprom[0x4532] = 0x07; userEeprom[0x4533] = 0x07;
+    userEeprom[0x4530] = 0xD5; userEeprom[0x4531] = 0x4B; userEeprom[0x4532] = 0x07; userEeprom[0x4533] = 0x07;
     userEeprom[0x4534] = 0xD6; userEeprom[0x4535] = 0x4B; userEeprom[0x4536] = 0x03; userEeprom[0x4537] = 0x07;
     userEeprom[0x4538] = 0xD7; userEeprom[0x4539] = 0x4B; userEeprom[0x453A] = 0x07; userEeprom[0x453B] = 0x07;
     userEeprom[0x453C] = 0xD8; userEeprom[0x453D] = 0x4B; userEeprom[0x453E] = 0x0A; userEeprom[0x453F] = 0x07;
@@ -3318,7 +3344,7 @@ static void switch_005_eepromSetup(void)
     userEeprom[0x46FC] = 0x00; userEeprom[0x46FD] = 0x00; userEeprom[0x46FE] = 0x00; userEeprom[0x46FF] = 0x00;
     userEeprom[0x4700] = 0x00; userEeprom[0x4701] = 0x00; userEeprom[0x4702] = 0x00; userEeprom[0x4703] = 0x00;
     userEeprom[0x4704] = 0x00; userEeprom[0x4705] = 0x00; userEeprom[0x4706] = 0x00; userEeprom[0x4707] = 0x3C;
-    userEeprom[0x4708] = 0xC0; userEeprom[0x4709] = 0x00; userEeprom[0x470A] = 0x00; userEeprom[0x470B] = 0x00;
+    userEeprom[0x4708] = 0xF0; userEeprom[0x4709] = 0x00; userEeprom[0x470A] = 0x00; userEeprom[0x470B] = 0x00;
     userEeprom[0x470C] = 0x00; userEeprom[0x470D] = 0x00; userEeprom[0x470E] = 0x00; userEeprom[0x470F] = 0x00;
     userEeprom[0x4710] = 0x00; userEeprom[0x4711] = 0x00; userEeprom[0x4712] = 0x00; userEeprom[0x4713] = 0x00;
     userEeprom[0x4714] = 0x00; userEeprom[0x4715] = 0x00; userEeprom[0x4716] = 0x00; userEeprom[0x4717] = 0x00;
@@ -3352,7 +3378,7 @@ static void switch_005_eepromSetup(void)
     userEeprom[0x4784] = 0x00; userEeprom[0x4785] = 0x00; userEeprom[0x4786] = 0x00; userEeprom[0x4787] = 0x00;
     userEeprom[0x4788] = 0x00; userEeprom[0x4789] = 0x00; userEeprom[0x478A] = 0x00; userEeprom[0x478B] = 0x00;
     userEeprom[0x478C] = 0x00; userEeprom[0x478D] = 0x00; userEeprom[0x478E] = 0x00; userEeprom[0x478F] = 0x00;
-    userEeprom[0x4790] = 0x00; userEeprom[0x4791] = 0x00; userEeprom[0x4792] = 0x00; userEeprom[0x4793] = 0x00;
+    userEeprom[0x4790] = 0x00; userEeprom[0x4791] = 0x00; userEeprom[0x4792] = 0x30; userEeprom[0x4793] = 0x00;
     userEeprom[0x4794] = 0x00; userEeprom[0x4795] = 0x00; userEeprom[0x4796] = 0x00; userEeprom[0x4797] = 0x00;
     userEeprom[0x4798] = 0x00; userEeprom[0x4799] = 0x00; userEeprom[0x479A] = 0x00; userEeprom[0x479B] = 0x00;
     userEeprom[0x479C] = 0x00; userEeprom[0x479D] = 0x00; userEeprom[0x479E] = 0x00; userEeprom[0x479F] = 0x00;
@@ -3435,7 +3461,7 @@ static void switch_005_eepromSetup(void)
     userEeprom[0x48D0] = 0x00; userEeprom[0x48D1] = 0x00; userEeprom[0x48D2] = 0x00; userEeprom[0x48D3] = 0x00;
     userEeprom[0x48D4] = 0x00; userEeprom[0x48D5] = 0x00; userEeprom[0x48D6] = 0x00; userEeprom[0x48D7] = 0x00;
     userEeprom[0x48D8] = 0x00; userEeprom[0x48D9] = 0x00; userEeprom[0x48DA] = 0x00; userEeprom[0x48DB] = 0x00;
-    userEeprom[0x48DC] = 0x00; userEeprom[0x48DD] = 0x00; userEeprom[0x48DE] = 0x00; userEeprom[0x48DF] = 0x01;
+    userEeprom[0x48DC] = 0x00; userEeprom[0x48DD] = 0x40; userEeprom[0x48DE] = 0x00; userEeprom[0x48DF] = 0x01;
     userEeprom[0x48E0] = 0x00; userEeprom[0x48E1] = 0x00; userEeprom[0x48E2] = 0x00; userEeprom[0x48E3] = 0x00;
     userEeprom[0x48E4] = 0x00; userEeprom[0x48E5] = 0x00; userEeprom[0x48E6] = 0x00; userEeprom[0x48E7] = 0x00;
     userEeprom[0x48E8] = 0x00; userEeprom[0x48E9] = 0x00; userEeprom[0x48EA] = 0x00; userEeprom[0x48EB] = 0x00;
@@ -3452,40 +3478,48 @@ static void switch_005_eepromSetup(void)
 
 static Telegram tel_switch_005[] =
 {
+// check bus return telegram
+/*   1 */   {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*   2 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x03, 0xE0, 0x00}}
+/*   3 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x05, 0xE0, 0x00}}
+/*   4 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0B, 0xE1, 0x00, 0x80}}
+/*   5 */ , {TEL_TX         ,    9,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x0E, 0xE2, 0x00, 0x80, 0x64}}
+/*   6 */ , {TEL_TX         ,    7,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x10, 0xE0, 0x00}}
+
 // check grouped channels O/P
 
 //   reaction for channel A
-/*   1 */   {TIMER_TICK     ,    0,  0, (StepFunction *) _input15Set         , {}}
+/*   7 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input15Set         , {}}
           // After debounce send OFF on object 70
-/*   2 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*   3 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*   4 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x11, 0xE1, 0x00, 0x80}}
-          // see if a reaction happens after long time
-/*   5 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-/*   6 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*   7 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input15Clear       , {}}
-          // no reaction on falling edge
 /*   8 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*   9 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  10 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x11, 0xE1, 0x00, 0x80}}
           // see if a reaction happens after long time
-/*  10 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-/*  11 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-
-//   reaction for channel P
-/*  12 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input16Set         , {}}
-          // After debounce send ON on object 70
-/*  13 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
-/*  14 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  15 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x11, 0xE1, 0x00, 0x81}}
+/*  11 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  12 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  13 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input15Clear       , {}}
+          // no reaction on falling edge
+/*  14 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  15 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
           // see if a reaction happens after long time
 /*  16 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
 /*  17 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  18 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input16Clear       , {}}
-          // no reaction on falling edge
+
+//   reaction for channel P
+/*  18 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input16Set         , {}}
+          // After debounce send ON on object 70
 /*  19 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
 /*  20 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
-/*  21 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
-/*  22 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  21 */ , {TEL_TX         ,    8,  0, (StepFunction *) _loop               , {0xBC, 0x11, 0x02, 0x00, 0x11, 0xE1, 0x00, 0x81}}
+          // see if a reaction happens after long time
+/*  22 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  23 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  24 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _input16Clear       , {}}
+          // no reaction on falling edge
+/*  25 */ , {TIMER_TICK     ,   30,  0, (StepFunction *) _loop               , {}}
+/*  26 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
+/*  27 */ , {TIMER_TICK     ,  800,  0, (StepFunction *) _loop               , {}}
+/*  28 */ , {TIMER_TICK     ,    0,  0, (StepFunction *) _loop               , {}}
 , {END}
 };
 static Test_Case switch_005_tc = 

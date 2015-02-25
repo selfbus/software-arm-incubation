@@ -8,6 +8,8 @@ tags           = "SWITCH", "E", "F"
 lpt            = 800 ### 800ms
 dbt            = 30  ###  30ms
 
+Include           ("bus-return.tcinc")
+
 Section           ("Channel E: send ON on rising edge")
 for n in range (3) :
     App_Loop      ("_input5Set", comment = "set channel C")

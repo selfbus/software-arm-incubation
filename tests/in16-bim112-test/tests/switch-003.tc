@@ -10,6 +10,8 @@ dbt            = 30    ###  30ms
 delay_on       = 10000 ### 10s
 delay_off      = 60000 ### 60s
 
+Include           ("bus-return.tcinc")
+
 Section           ("Channel G: send status with ON delay")
 for n in range (3) :
     App_Loop      ("_input7Set", comment = "set channel G")

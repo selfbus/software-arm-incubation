@@ -59,44 +59,20 @@ void checkPeriodic(void)
 void initApplication(void)
 {
     unsigned int channels = currentVersion->noOfChannels;
+    unsigned int addressStartupDelay =
+          currentVersion->baseAddress
+        + 4 // debounce, longTime
+        + channels * 46
+        + channels
+        + (11 + channels) * 4 // logic config
+        + 10;
+    unsigned int busReturn = userEeprom[addressStartupDelay - 1] & 0x40;
     memset (channelConfig, 0, sizeof (channelConfig));
     inputs.begin(channels, currentVersion->baseAddress);
 
-    for (unsigned int i = 0; i < channels; i++)
-    {
-        int       configBase = currentVersion->baseAddress + 4 + i * 46;
-        word      channelType = userEeprom.getUInt16(configBase);
-        Channel * channel;
-
-        switch (channelType)
-        {
-        case 0   : // channel is configured as switch
-            channel = new Switch(i, configBase); break;
-        case 256 : // channel is configured as switch short/long
-            channel = new Switch2Level(i, configBase); break;
-        case 1 : // channel is configured as dimmer
-            channel = 0; break;
-        case 2 : // channel is configured as jalo
-            channel = new Jalo(i); break;
-        case 3 : // channel is configured as scene
-            channel = 0; break;
-        case 4 : // channel is configured as counter
-            channel = 0; break;
-        default:
-            channel = 0;
-        }
-        channelConfig[i] = channel;
-    }
-
     Timeout startupDelay;
-    unsigned int address = currentVersion->baseAddress
-                         + 4 // debouce, longTime
-                         + channels * 46
-                         + channels
-                         + (11 + channels) * 4 // logic config
-                         + 10;
     // delay in config is in seconds
-    unsigned int delay = userEeprom.getUInt16(address) * 1000;
+    unsigned int delay = userEeprom.getUInt16(addressStartupDelay) * 1000;
     startupDelay.start(delay);
     if (delay)
     {
@@ -111,4 +87,34 @@ void initApplication(void)
             waitForInterrupt();
         }
     }
+
+    for (unsigned int i = 0; i < channels; i++)
+    {
+        unsigned int value;
+        bool      longPressed;
+        int       configBase = currentVersion->baseAddress + 4 + i * 46;
+        word      channelType = userEeprom.getUInt16(configBase);
+        Channel * channel;
+        inputs.checkInput(i, &value, &longPressed);
+
+        switch (channelType)
+        {
+        case 0   : // channel is configured as switch
+            channel = new Switch(i, configBase, busReturn, value); break;
+        case 256 : // channel is configured as switch short/long
+            channel = new Switch2Level(i, configBase, busReturn, value); break;
+        case 1 : // channel is configured as dimmer
+            channel = 0; break;
+        case 2 : // channel is configured as jalo
+            channel = new Jalo(i); break;
+        case 3 : // channel is configured as scene
+            channel = 0; break;
+        case 4 : // channel is configured as counter
+            channel = 0; break;
+        default:
+            channel = 0;
+        }
+        channelConfig[i] = channel;
+    }
+
 }

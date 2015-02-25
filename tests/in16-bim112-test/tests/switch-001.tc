@@ -7,11 +7,7 @@ tags           = "SWITCH", "A", "B", "C", "D"
 
 lpt            = 800 ### 800ms
 dbt            = 30  ###  30ms
-Section           ("check bus return telegram")
-Receive_Telegram  (device, 11, 0)
-App_Loop          ()
-Receive_Telegram  (device, 16, 1)
-App_Loop          ()
+Include           ("bus-return.tcinc")
 
 Section           ("check grouped channels A/B")
 Section           ("  reaction for channel A")
