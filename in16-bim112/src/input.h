@@ -17,14 +17,12 @@ class Input
 public:
     void begin(int noOfChannels, int baseAddress);
     virtual void scan(void);
-    bool checkInput(unsigned int channel, unsigned int * value, bool * longPressed);
+    bool checkInput(unsigned int channel, unsigned int * value);
 protected:
     unsigned int noOfChannels;
     unsigned int debounceTime;
-    unsigned int longKeyTime;
     unsigned int inputState;
     Debouncer inputDebouncer[16];
-    Timeout longPress[16];
 };
 
 #endif /* INPUT_H_ */

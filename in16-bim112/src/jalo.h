@@ -19,7 +19,7 @@
 class Jalo: public Channel
 {
 public:
-    Jalo(unsigned int no);
+    Jalo(unsigned int no, unsigned int longPress);
     virtual void inputChanged(int value);
 };
 

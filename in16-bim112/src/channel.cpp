@@ -15,7 +15,7 @@ void Channel::setLock(unsigned int value)
     locked = value;
 }
 
-void Channel::inputChanged(int value, int longPress)
+void Channel::inputChanged(int value)
 {
 
 }

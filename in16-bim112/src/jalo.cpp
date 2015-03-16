@@ -10,7 +10,7 @@
 
 #include "jalo.h"
 
-Jalo::Jalo(unsigned int no) : Channel (no)
+Jalo::Jalo(unsigned int no, unsigned int longPress) : Channel (no, longPress)
 {
 }
 

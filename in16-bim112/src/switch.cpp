@@ -43,8 +43,8 @@ void _Switch_::setLock(unsigned int value)
     timeout.stop();
 }
 
-Switch::Switch(unsigned int no, unsigned int  channelConfig, unsigned int busReturn, unsigned int value)
-    : _Switch_ (no)
+Switch::Switch(unsigned int no, unsigned int longPress, unsigned int channelConfig, unsigned int busReturn, unsigned int value)
+    : _Switch_ (no, longPress)
 {
     action        = userEeprom.getUInt16(channelConfig + 2);
     usage_falling = userEeprom [channelConfig + 4];
@@ -71,13 +71,11 @@ Switch::Switch(unsigned int no, unsigned int  channelConfig, unsigned int busRet
     }
 }
 
-void Switch::inputChanged(int value, int longPress)
+void Switch::inputChanged(int value)
 {
     int objNo = number * 5;
     unsigned int objValue;
 
-    if (longPress) // ignore the long press
-    	return;
     if (value)
     {   // this change is a rising edge
 		switch (action)
@@ -180,8 +178,8 @@ void Switch::checkPeriodic(void)
     }
 }
 
-Switch2Level::Switch2Level(unsigned int no, unsigned int channelConfig, unsigned int busReturn, unsigned int value)
-    : _Switch_ (no)
+Switch2Level::Switch2Level(unsigned int no, unsigned int longPress, unsigned int channelConfig, unsigned int busReturn, unsigned int value)
+    : _Switch_ (no, longPress)
 {
 	shortAction   = userEeprom [channelConfig + 0x14];
 	longAction    = userEeprom [channelConfig + 0x17];
@@ -189,44 +187,24 @@ Switch2Level::Switch2Level(unsigned int no, unsigned int channelConfig, unsigned
     usage_rising  = userEeprom [channelConfig + 0x10];
 }
 
-void Switch2Level::inputChanged(int value, int longPress)
+void Switch2Level::inputChanged(int value)
 {
 	int objNo = number * 5;
 	unsigned int objValue;
 
 	if (value)
-	{   // this change is a rising edge, only for a long press
-		// we handle this event here. The event for the short
-		// press will be handled by the falling edge
-		if (longPress)
-		{
-			lastWasLong = true;
-			objNo += 2;
-			switch (longAction)
-			{
-			case LS_SEND_OFF:
-				objValue = 0;
-				break;
-			case LS_SEND_ON:
-				objValue = 1;
-				break;
-			case LS_TOGGLE:
-				objValue = !objectRead(number);
-				break;
-			case LS_SEND_VALUE:
-				objValue = usage_rising & 0xFF;
-				break;
-			case LS_DO_NOTHING:
-			default:
-				objNo = -1;
-			}
-		}
+	{   // this change is a rising edge, just start the long pressed timeout
+	    // if a falling edge occurs before the timeout expires
+	    // the short action will be triggered
+	    // if the long press timeout expires -> the long press action will be
+	    // triggered
+	    timeout.start(longPressTime);
 	}
 	else
 	{   // this change is a falling edge
 		// only handle the falling edge if we don't had a long pressed
 		// for the last rising edge
-		if (!lastWasLong)
+		if (timeout.started())
 		{
 			switch (shortAction)
 			{
@@ -247,10 +225,41 @@ void Switch2Level::inputChanged(int value, int longPress)
 				objNo = -1;
 			}
 		}
-		lastWasLong = false;
+		timeout.stop();
 	}
 	if (objNo >= 0)
 	{
 		objectWrite(objNo, objValue);
 	}
+}
+
+void Switch2Level::checkPeriodic(void)
+{
+    int objNo = number * 5 + 2;
+    unsigned int objValue;
+    if (timeout.started() && timeout.expired())
+    {
+        switch (longAction)
+        {
+        case LS_SEND_OFF:
+            objValue = 0;
+            break;
+        case LS_SEND_ON:
+            objValue = 1;
+            break;
+        case LS_TOGGLE:
+            objValue = !objectRead(number);
+            break;
+        case LS_SEND_VALUE:
+            objValue = usage_rising & 0xFF;
+            break;
+        case LS_DO_NOTHING:
+        default:
+            objNo = -1;
+        }
+        if (objNo >= 0)
+        {
+            objectWrite(objNo, objValue);
+        }
+    }
 }

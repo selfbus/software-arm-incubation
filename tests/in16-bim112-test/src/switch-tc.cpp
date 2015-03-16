@@ -12,13 +12,13 @@
 #include "sblib/timer.h"
 #include "in16.h"
 // >>> TC:switch_001
-// Date: 2015-02-25 16:58:56.043720
+// Date: 2015-02-25 17:09:39.066720
 
 /* Code for test case switch_001 */
 static void switch_001_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2015-02-25 16:58:56.043720
+    // Date: 2015-02-25 17:09:39.066720
     userEeprom[0x4000] = 0x12; userEeprom[0x4001] = 0x11; userEeprom[0x4002] = 0x02; userEeprom[0x4003] = 0x00;
     userEeprom[0x4004] = 0x01; userEeprom[0x4005] = 0x00; userEeprom[0x4006] = 0x02; userEeprom[0x4007] = 0x00;
     userEeprom[0x4008] = 0x03; userEeprom[0x4009] = 0x00; userEeprom[0x400A] = 0x04; userEeprom[0x400B] = 0x00;
@@ -759,13 +759,13 @@ TEST_CASE("IN16 - Switch 001","[SWITCH][A][B][C][D]")
 }
 // <<< TC:switch_001
 // >>> TC:switch_002
-// Date: 2015-02-25 16:58:56.192720
+// Date: 2015-02-25 17:09:39.243720
 
 /* Code for test case switch_002 */
 static void switch_002_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2015-02-25 16:58:56.192720
+    // Date: 2015-02-25 17:09:39.243720
     userEeprom[0x4000] = 0x12; userEeprom[0x4001] = 0x11; userEeprom[0x4002] = 0x02; userEeprom[0x4003] = 0x00;
     userEeprom[0x4004] = 0x01; userEeprom[0x4005] = 0x00; userEeprom[0x4006] = 0x02; userEeprom[0x4007] = 0x00;
     userEeprom[0x4008] = 0x03; userEeprom[0x4009] = 0x00; userEeprom[0x400A] = 0x04; userEeprom[0x400B] = 0x00;
@@ -1466,13 +1466,13 @@ TEST_CASE("IN16 - Switch 002","[SWITCH][E][F]")
 }
 // <<< TC:switch_002
 // >>> TC:switch_003
-// Date: 2015-02-25 16:58:56.297720
+// Date: 2015-02-25 17:09:39.360720
 
 /* Code for test case switch_003 */
 static void switch_003_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2015-02-25 16:58:56.297720
+    // Date: 2015-02-25 17:09:39.360720
     userEeprom[0x4000] = 0x12; userEeprom[0x4001] = 0x11; userEeprom[0x4002] = 0x02; userEeprom[0x4003] = 0x00;
     userEeprom[0x4004] = 0x01; userEeprom[0x4005] = 0x00; userEeprom[0x4006] = 0x02; userEeprom[0x4007] = 0x00;
     userEeprom[0x4008] = 0x03; userEeprom[0x4009] = 0x00; userEeprom[0x400A] = 0x04; userEeprom[0x400B] = 0x00;
@@ -2212,13 +2212,13 @@ TEST_CASE("IN16 - Switch 003","[SWITCH][G][H]")
 }
 // <<< TC:switch_003
 // >>> TC:switch_004
-// Date: 2015-02-25 16:58:56.373720
+// Date: 2015-02-25 17:09:39.461720
 
 /* Code for test case switch_004 */
 static void switch_004_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2015-02-25 16:58:56.373720
+    // Date: 2015-02-25 17:09:39.461720
     userEeprom[0x4000] = 0x12; userEeprom[0x4001] = 0x11; userEeprom[0x4002] = 0x02; userEeprom[0x4003] = 0x00;
     userEeprom[0x4004] = 0x01; userEeprom[0x4005] = 0x00; userEeprom[0x4006] = 0x02; userEeprom[0x4007] = 0x00;
     userEeprom[0x4008] = 0x03; userEeprom[0x4009] = 0x00; userEeprom[0x400A] = 0x04; userEeprom[0x400B] = 0x00;
@@ -2887,13 +2887,13 @@ TEST_CASE("IN16 - Switch 004","[SWITCH][I][J][K][L]")
 }
 // <<< TC:switch_004
 // >>> TC:switch_005
-// Date: 2015-02-25 16:58:56.434720
+// Date: 2015-02-25 17:09:39.528720
 
 /* Code for test case switch_005 */
 static void switch_005_eepromSetup(void)
 {
     // >>> EEPROM INIT
-    // Date: 2015-02-25 16:58:56.434720
+    // Date: 2015-02-25 17:09:39.528720
     userEeprom[0x4000] = 0x12; userEeprom[0x4001] = 0x11; userEeprom[0x4002] = 0x02; userEeprom[0x4003] = 0x00;
     userEeprom[0x4004] = 0x01; userEeprom[0x4005] = 0x00; userEeprom[0x4006] = 0x02; userEeprom[0x4007] = 0x00;
     userEeprom[0x4008] = 0x03; userEeprom[0x4009] = 0x00; userEeprom[0x400A] = 0x04; userEeprom[0x400B] = 0x00;

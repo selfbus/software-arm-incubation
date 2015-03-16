@@ -23,15 +23,25 @@
 class Channel
 {
 public:
-    Channel (unsigned int no) : locked(0), number(no) { };
-    virtual void inputChanged(int value, int longPress);
+    Channel (unsigned int no, unsigned int longPress) :
+        locked(0)
+      , longPressTime(longPress)
+      , number(no)
+    { };
+    virtual void inputChanged(int value);
     virtual void checkPeriodic(void);
     virtual void setLock(unsigned int value);
-    bool locked;
+    bool isLocked();
 
 protected:
+    bool locked;
+    unsigned int longPressTime;
     unsigned int number;
     Timeout  timeout;
 };
 
+inline bool Channel::isLocked(void)
+{
+    return locked;
+}
 #endif /* CHANNEL_H_ */

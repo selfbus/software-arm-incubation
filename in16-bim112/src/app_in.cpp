@@ -40,12 +40,11 @@ void checkPeriodic(void)
     for (unsigned int i = 0; i < currentVersion->noOfChannels; i++)
     {
         unsigned int value;
-        bool longPressed;
-        if (inputs.checkInput(i, &value, &longPressed))
+        if (inputs.checkInput(i, &value))
         {
             Channel * channel = channelConfig[i];
-            if (channel && ! channel->locked)
-                channel->inputChanged(value, longPressed);
+            if (channel && ! channel->isLocked())
+                channel->inputChanged(value);
         }
     }
 
@@ -59,6 +58,7 @@ void checkPeriodic(void)
 void initApplication(void)
 {
     unsigned int channels = currentVersion->noOfChannels;
+    unsigned int longKeyTime = userEeprom.getUInt16(currentVersion->baseAddress + 2);
     unsigned int addressStartupDelay =
           currentVersion->baseAddress
         + 4 // debounce, longTime
@@ -81,8 +81,7 @@ void initApplication(void)
             for (int unsigned i = 0; i < currentVersion->noOfChannels; i++)
             {
                 unsigned int value;
-                bool longPressed;
-                inputs.checkInput(i, &value, &longPressed);
+                inputs.checkInput(i, &value);
             }
             waitForInterrupt();
         }
@@ -91,22 +90,21 @@ void initApplication(void)
     for (unsigned int i = 0; i < channels; i++)
     {
         unsigned int value;
-        bool      longPressed;
         int       configBase = currentVersion->baseAddress + 4 + i * 46;
         word      channelType = userEeprom.getUInt16(configBase);
         Channel * channel;
-        inputs.checkInput(i, &value, &longPressed);
+        inputs.checkInput(i, &value);
 
         switch (channelType)
         {
         case 0   : // channel is configured as switch
-            channel = new Switch(i, configBase, busReturn, value); break;
+            channel = new Switch(i, longKeyTime, configBase, busReturn, value); break;
         case 256 : // channel is configured as switch short/long
-            channel = new Switch2Level(i, configBase, busReturn, value); break;
+            channel = new Switch2Level(i, longKeyTime, configBase, busReturn, value); break;
         case 1 : // channel is configured as dimmer
             channel = 0; break;
         case 2 : // channel is configured as jalo
-            channel = new Jalo(i); break;
+            channel = new Jalo(i, longKeyTime); break;
         case 3 : // channel is configured as scene
             channel = 0; break;
         case 4 : // channel is configured as counter
