@@ -84,20 +84,6 @@ void Timer::begin()
     timer->CCR = 0;
 }
 
-void Timer::end()
-{
-    LPC_SYSCON->SYSAHBCLKCTRL &= ~(1 << (7 + timerNum));
-}
-
-void Timer::interrupts()
-{
-    NVIC_EnableIRQ((IRQn_Type) (TIMER_16_0_IRQn + timerNum));
-}
-
-void Timer::noInterrupts()
-{
-    NVIC_DisableIRQ((IRQn_Type) (TIMER_16_0_IRQn + timerNum));
-}
 
 void Timer::matchMode(int channel, int mode)
 {
@@ -110,10 +96,7 @@ void Timer::matchMode(int channel, int mode)
     timer->MCR |= (mode & 7) << offset;
 
     // Configure the external match channel
-
-    offset = channel << 1;
-    timer->EMR &= ~(0x30 << offset);
-    timer->EMR |= (mode & 0x30) << offset;
+    matchModePinConfig(channel, mode);
 }
 
 int Timer::matchMode(int channel) const

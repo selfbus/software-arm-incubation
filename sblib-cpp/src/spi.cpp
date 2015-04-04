@@ -118,11 +118,9 @@ void SPI::end()
 
 int SPI::transfer(int val, SpiTransferMode transferMode)
 {
-    int tmpVal;
-
     // Clear all remaining data in the receive FIFO
     while (port.SR & SSP_SR_RNE)
-        tmpVal = port.DR;
+        port.DR;  // reading is supported without assignment to a temporary variable
 
     // Clear the interrupt status
     port.ICR = SSP_ICR_BITMASK;
@@ -144,11 +142,9 @@ static SPI * instances[2];
 
 void SPI::transferBlock(uint16_t * sndData, int bytes, uint16_t * recData, bool asynchron)
 {
-    int tmpVal;
-
     // Clear all remaining data in the receive FIFO
     while (port.SR & SSP_SR_RNE)
-        tmpVal = port.DR;
+        port.DR;  // reading is supported without assignment to a temporary variable
 
     this->sndData = sndData;
     this->recData = recData;

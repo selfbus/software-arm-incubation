@@ -21,9 +21,13 @@ byte __attribute__ ((aligned (4))) userRamPadding[20];
 
 byte  __attribute__ ((aligned (4))) userRamData[USER_RAM_SIZE+USER_RAM_SHADOW_SIZE];
 UserRam& userRam = *(UserRam*) userRamData;
+// TODO: the line above causes a compiler warning which should be avoided:
+// warning : dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
 
 byte  __attribute__ ((aligned (4))) userEepromData[USER_EEPROM_SIZE];
 UserEeprom& userEeprom = *(UserEeprom*) userEepromData;
+// TODO: the line above causes a compiler warning which should be avoided:
+// warning : dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
 
 byte userEepromModified;
 unsigned int writeUserEepromTime;

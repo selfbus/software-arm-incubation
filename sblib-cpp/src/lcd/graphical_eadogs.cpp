@@ -166,6 +166,8 @@ int LcdGraphicalEADOGS::write(byte ch)
     digitalWrite(pinCD, 1);
     for (int i = fnt->charWidth; i > 0; --i, ++idx)
         spi.transfer(fnt->data[idx]);
+
+    return 1;
 }
 
 void LcdGraphicalEADOGS::clear()

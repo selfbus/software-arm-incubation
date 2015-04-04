@@ -385,6 +385,38 @@ public:
      */
     void counterMode(int mode, int clearMode);
 
+    /**
+     * Configure a match pin mode of the channel.
+     *
+     * @param channel - the match channel to configure: MAT0, MAT1, MAT2, MAT3.
+     * @param mode - the configuration. Multiple values are combined with "|".
+     *
+     * @brief
+     * The match channels allow the following configuration options:
+     *
+     * CLEAR:        Clear the digital pin of the match channel to 0 on match.
+     * SET:          Set the digital pin of the match channel to 1 on match.
+     * TOGGLE:       Toggle the digital pin of the match channel.
+     */
+    void matchModePinConfig(int channel, int mode);
+
+    /**
+     * Get the info if it is a 32bit timer
+     *
+     * @return true if the timer is a 32bit timer, otherwise 16bit timer
+     */
+    bool is32bitTimer(void);
+
+    /**
+     * Get the digital level of match channel (even if output pin is disabled)
+     *
+     * @param channel - the match channel to configure: MAT0, MAT1, MAT2, MAT3.
+     *
+     * @return - true = high, false = low
+     */
+    bool getMatchChannelLevel(int channel);
+
+
 protected:
 	LPC_TMR_TypeDef* timer;
     byte timerNum;
@@ -426,6 +458,11 @@ ALWAYS_INLINE void Timer::start()
 ALWAYS_INLINE void Timer::stop()
 {
     timer->TCR &= ~1;
+}
+
+ALWAYS_INLINE void Timer::end()
+{
+    LPC_SYSCON->SYSAHBCLKCTRL &= ~(1 << (7 + timerNum));
 }
 
 ALWAYS_INLINE void Timer::restart()
@@ -480,6 +517,17 @@ ALWAYS_INLINE int Timer::flagMask(TimerCapture capture)
     return 16 << capture;
 }
 
+ALWAYS_INLINE void Timer::interrupts()
+{
+    NVIC_EnableIRQ((IRQn_Type) (TIMER_16_0_IRQn + timerNum));
+}
+
+ALWAYS_INLINE void Timer::noInterrupts()
+{
+    NVIC_DisableIRQ((IRQn_Type) (TIMER_16_0_IRQn + timerNum));
+}
+
+
 ALWAYS_INLINE unsigned int Timer::match(int channel) const
 {
     return (&timer->MR0)[channel];
@@ -503,6 +551,23 @@ ALWAYS_INLINE void Timer::pwmEnable(int channel)
 ALWAYS_INLINE void Timer::pwmDisable(int channel)
 {
     timer->PWMC &= ~(1 << channel);
+}
+
+ALWAYS_INLINE void Timer::matchModePinConfig(int channel, int mode)
+{
+    int offset = channel << 1;
+    timer->EMR &= ~(0x30 << offset);
+    timer->EMR |= (mode & 0x30) << offset;
+}
+
+ALWAYS_INLINE bool Timer::is32bitTimer(void)
+{
+    return (bool)(this->timerNum > 1);
+}
+
+ALWAYS_INLINE bool Timer::getMatchChannelLevel(int channel)
+{
+    return (bool)(timer->EMR & (1 << channel));
 }
 
 #endif /*sblib_timer_h*/

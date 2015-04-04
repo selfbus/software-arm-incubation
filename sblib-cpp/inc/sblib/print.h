@@ -37,6 +37,15 @@ class Print
 {
 public:
     /**
+     * Print a character.
+     *
+     * @param ch - the character to print.
+     *
+     * @return The number of bytes that were written.
+     */
+    int print(const char ch);
+
+    /**
      * Print a zero terminated string.
      *
      * @param str - the string to print.
@@ -141,6 +150,11 @@ private:
 //
 // Inline functions
 //
+
+inline int Print::print(const char ch)
+{
+    return this->write((const byte*)&ch, 1);
+}
 
 inline int Print::print(const char* str)
 {
