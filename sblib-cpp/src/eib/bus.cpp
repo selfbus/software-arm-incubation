@@ -109,12 +109,6 @@ void Bus::begin()
     collision = false;
 
     timer.begin();
-
-
-    pinMode(rxPin, INPUT_CAPTURE);  // Configure bus input
-    pinMode(txPin, OUTPUT_MATCH);   // Configure bus output
-    digitalWrite(txPin, 0);
-
     timer.pwmEnable(pwmChannel);
     timer.captureMode(captureChannel, FALLING_EDGE | INTERRUPT);
     timer.start();
@@ -124,6 +118,13 @@ void Bus::begin()
     timer.match(timeChannel, 0xfffe);
     timer.matchMode(timeChannel, RESET);
     timer.match(pwmChannel, 0xffff);
+
+    // wait until output is driven low before enabling output pin.
+    // Using digitalWrite(txPin, 0) does not work with MAT channels.
+    timer.value(0xffff); // trigger the next event immediately
+    while (timer.getMatchChannelLevel(pwmChannel) == true);
+    pinMode(txPin, OUTPUT_MATCH);   // Configure bus output
+    pinMode(rxPin, INPUT_CAPTURE);  // Configure bus input
 
     //
     // Init GPIOs for debugging

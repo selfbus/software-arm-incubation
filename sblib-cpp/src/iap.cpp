@@ -8,6 +8,7 @@
 
 #include <sblib/internal/iap.h>
 
+#include <sblib/interrupt.h>
 #include <sblib/platform.h>
 #include <string.h>
 
@@ -50,7 +51,10 @@ struct IAP_Parameter
 int iapFlashBytes = 0;
 
 
-/** IAP call function */
+/** 
+ * IAP call function (DO NOT USE UNLESS YOU KNOW WHAT YOU ARE DOING!)
+ * use instead: IAP_Call_InterruptSafe()
+ */
 typedef void (*IAP_Func)(unsigned int * cmd, unsigned int * stat);
 
 #ifndef IAP_EMULATION
@@ -67,6 +71,24 @@ typedef void (*IAP_Func)(unsigned int * cmd, unsigned int * stat);
 #endif
 
 
+/**
+ * IAP_Call_InterruptSafe(): interrupt-safe IAP_Call function
+ *
+ * ATTENTION: interrupts shall be blocked during an IAP_Call()!
+ *
+ * Reason: during an IAP_Call() with flash access the flash is inaccessible for
+ *         the user application. When an interrupt occurs and the Interrupt
+ *         Vector Table is located in the Flash this will fail and raise a
+ *         non-handled HardFault condition.
+ */
+inline void IAP_Call_InterruptSafe(unsigned int *cmd, unsigned int *stat)
+{
+    noInterrupts();
+    IAP_Call(cmd, stat);
+    interrupts();
+}
+
+
 IAP_Status iapEraseSector(int sector)
 {
     IAP_Parameter p;
@@ -74,7 +96,7 @@ IAP_Status iapEraseSector(int sector)
     p.cmd = CMD_PREPARE;
     p.par[0] = sector;
     p.par[1] = sector;
-    IAP_Call(&p.cmd, &p.stat);
+    IAP_Call_InterruptSafe(&p.cmd, &p.stat);
 
     if (p.stat == IAP_SUCCESS)
     {
@@ -82,14 +104,14 @@ IAP_Status iapEraseSector(int sector)
         p.par[0] = sector;
         p.par[1] = sector;
         p.par[2] = SystemCoreClock / 1000;
-        IAP_Call(&p.cmd, &p.stat);
+        IAP_Call_InterruptSafe(&p.cmd, &p.stat);
 
         if (p.stat == IAP_SUCCESS)
         {
             p.cmd = CMD_BLANK_CHECK;
             p.par[0] = sector;
             p.par[1] = sector;
-            IAP_Call(&p.cmd, &p.stat);
+            IAP_Call_InterruptSafe(&p.cmd, &p.stat);
         }
     }
     return (IAP_Status) p.stat;
@@ -104,7 +126,7 @@ IAP_Status iapProgram(byte* rom, const byte* ram, unsigned int size)
     p.cmd = CMD_PREPARE;
     p.par[0] = sector;
     p.par[1] = sector;
-    IAP_Call(&p.cmd, &p.stat);
+    IAP_Call_InterruptSafe(&p.cmd, &p.stat);
 
     if (p.stat == IAP_SUCCESS)
     {
@@ -114,7 +136,7 @@ IAP_Status iapProgram(byte* rom, const byte* ram, unsigned int size)
         p.par[1] = (unsigned int) ram;
         p.par[2] = size;
         p.par[3] = SystemCoreClock / 1000;
-        IAP_Call(&p.cmd, &p.stat);
+        IAP_Call_InterruptSafe(&p.cmd, &p.stat);
 
         if (p.stat == IAP_SUCCESS)
         {
@@ -122,7 +144,7 @@ IAP_Status iapProgram(byte* rom, const byte* ram, unsigned int size)
             p.par[0] = (unsigned int) rom;
             p.par[1] = (unsigned int) ram;
             p.par[2] = size;
-            IAP_Call(&p.cmd, &p.stat);
+            IAP_Call_InterruptSafe(&p.cmd, &p.stat);
         }
     }
     return (IAP_Status) p.stat;
@@ -133,7 +155,7 @@ IAP_Status iapReadUID(byte* uid)
     IAP_Parameter p;
     p.cmd = CMD_READ_UID;
 
-    IAP_Call(&p.cmd, &p.stat);
+    IAP_Call_InterruptSafe(&p.cmd, &p.stat);
     memcpy(uid, p.res, 16);
 
     return (IAP_Status) p.stat;
@@ -144,7 +166,7 @@ IAP_Status iapReadPartID(unsigned int* partId)
     IAP_Parameter p;
     p.cmd = CMD_READ_PART_ID;
 
-    IAP_Call(&p.cmd, &p.stat);
+    IAP_Call_InterruptSafe(&p.cmd, &p.stat);
     *partId = p.res[0];
 
     return (IAP_Status) p.stat;
@@ -171,7 +193,7 @@ int iapFlashSize()
     {
         p.par[0] = sector;
         p.par[1] = sector;
-        IAP_Call(&p.cmd, &p.stat);
+        IAP_Call_InterruptSafe(&p.cmd, &p.stat);
 
         if (p.stat == IAP_INVALID_SECTOR)
             break;
