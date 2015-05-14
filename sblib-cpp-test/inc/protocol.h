@@ -26,7 +26,7 @@
 typedef void (TestCaseSetup) (void);
 
 typedef void (StateFunction) (void * state, void * refState);
-typedef void (StepFunction)  (void * state);
+typedef void (StepFunction)  (void * state, unsigned int var);
 
 typedef enum
 {

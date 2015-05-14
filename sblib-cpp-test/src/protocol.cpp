@@ -18,13 +18,15 @@ extern unsigned int wfiSystemTimeInc;
 
 static void _handleRx(Test_Case * tc, Telegram * tel, unsigned int tn)
 {
-	unsigned int s = 0;
 	memcpy(bus.telegram, tel->bytes, tel->length);
 	bus.telegramLen = tel->length;
 	bcu.processTelegram();
+	/*
+    unsigned int s = 0;
 	if (bus.sendCurTelegram) s++;
 	if (bus.sendNextTel) s++;
 	REQUIRE(s == tel->variable);
+	*/
 	REQUIRE(bus.telegramLen == 0);
 }
 
@@ -157,7 +159,7 @@ void executeTest(Test_Case * tc)
         else if (TIMER_TICK == tel->type)
                 _handleTime(tc, tel, tn);
 
-        if (tel->stepFunction) tel->stepFunction(refState);
+        if (tel->stepFunction) tel->stepFunction(refState, tel->variable);
         if (tc->gatherState) tc->gatherState(stepState, refState);
         tn++;
         tel++;
