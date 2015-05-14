@@ -11,8 +11,6 @@
 #include "app_out8.h"
 #include "com_objs.h"
 
-#define NUM_CHANNELS 8
-
 #include <sblib/eib.h>
 #include "outputs.h"
 
@@ -21,16 +19,26 @@
 #define PIO_GREEN  PIO3_3
 
 // Output pins
-const int outputPins[NO_OF_CHANNELS] =
+#ifdef BI_STABLE
+const int outputPins[NO_OF_OUTPUTS] =
+    { PIO2_10, PIO0_7 //  1,  2
+    , PIO0_5,  PIO0_2 //  3,  4
+    , PIO0_6,  PIO3_2 //  5,  6
+    , PIO2_9,  PIO2_2 //  7,  8
+
+    , PIO1_5,  PIO1_0 //  9, 10
+    , PIO1_6,  PIO1_7 // 11, 12
+    , PIO3_1,  PIO1_1 // 13, 14
+    , PIO1_2,  PIO3_0 // 15, 16
+    };
+#else
+const int outputPins[NO_OF_OUTPUTS] =
     { PIO2_2, PIO0_7, PIO2_10, PIO2_9, PIO0_2, PIO0_8, PIO0_9, PIO2_11 };
-#ifdef HAND_ACTUATION
-const int handPins[NO_OF_CHANNELS] =
-    { PIO2_1, PIO0_3, PIO2_4, PIO2_5, PIO3_5, PIO3_4, PIO1_10, PIO0_11 };
 #endif
 
 ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
 
-
+//#define IO_TEST
 
 /*
  * Initialize the application.
@@ -42,21 +50,37 @@ void setup()
     pinMode(PIO2_6, OUTPUT);	// Info LED
     pinMode(PIO3_3, OUTPUT);	// Run LED
     // Configure the output pins
-    for (int channel = 0; channel < NUM_CHANNELS; ++channel)
+    for (int channel = 0; channel < NO_OF_OUTPUTS; ++channel)
     {
+        digitalWrite(outputPins[channel], 0);
         pinMode(outputPins[channel], OUTPUT);
+    }
+#ifdef IO_TEST
+    for (unsigned int i = 0; i < NO_OF_OUTPUTS; i++)
+    {
+        digitalWrite(outputPins[i], 1);
 #ifdef HAND_ACTUATION
-        pinMode(handPins[channel], OUTPUT);
+        if (i < NO_OF_CHANNELS)
+            digitalWrite(handPins[i], 1);
+#endif
+        delay(1000);
+        digitalWrite(outputPins[i], 0);
+#ifdef HAND_ACTUATION
+        if (i < NO_OF_CHANNELS)
+            digitalWrite(handPins[i], 0);
+        delay(1000);
 #endif
     }
-#ifdef HAND_ACTUATION
-    pinMode(PIO2_3, INPUT | PULL_UP | HYSTERESIS);
 #endif
+#ifndef BI_STABLE
     pinMode(PIO1_2, OUTPUT);
     digitalWrite(PIO1_2, 1);
     pinInterruptMode(PIO0_5, INTERRUPT_EDGE_FALLING | INTERRUPT_ENABLED);
+#endif
     initApplication();
+#ifndef BI_STABLE
     enableInterrupt(EINT0_IRQn);
+#endif
 }
 
 /*

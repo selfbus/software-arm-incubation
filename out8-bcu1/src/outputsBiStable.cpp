@@ -10,20 +10,34 @@
  */
 
 #include "outputsBiStable.h"
+#define ON_DELAY 10
 
 void OutputsBiStable::updateOutputs(void)
 {
     unsigned int mask = 0x01;
     unsigned int i;
-    unsigned int state = _relayState ^ _inverted;
-	unsigned int data = 0;
+    unsigned int state   = _relayState ^ _inverted;
+	unsigned int changes = _relayState ^ _prevRelayState;
 
     for (i = 0; i < NO_OF_CHANNELS; i++, mask <<= 1)
     {
-    	data <<= 2;
-    	if (state & mask)
-    		 data |= 0b01;
-    	else data |= 0b10;
+    	if (changes & mask)
+    	{
+    	    if (state & mask)
+                 digitalWrite(outputPins[i*2],     1);
+            else digitalWrite(outputPins[i*2 + 1], 1);
+    	    _pwm_timeout.start(ON_DELAY);
+    	}
+    }
+    _prevRelayState = _relayState;
+}
+
+void OutputsBiStable::checkPWM(void)
+{
+    if (_pwm_timeout.started () && _pwm_timeout.expired ())
+    {
+        for (unsigned int i = 0; i < NO_OF_OUTPUTS; i++)
+            digitalWrite (outputPins[i], 0);
     }
 }
 

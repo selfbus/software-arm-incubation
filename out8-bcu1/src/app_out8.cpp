@@ -18,6 +18,7 @@
 #include "outputsBiStable.h"
 #endif
 
+#include "hand_actuation.h"
 #include <sblib/timeout.h>
 #include <sblib/eib/com_objects.h>
 #include <sblib/eib/user_memory.h>
@@ -278,14 +279,19 @@ void checkTimeouts(void)
 {
     unsigned int objno;
 
-#ifdef HAND_ACTUATION
-    relays.checkHandActution();
-#endif
+    int handStatus = handAct.check();
+    if (handStatus != HandActuation::NO_ACTUATION)
+    {
+        unsigned int number = handStatus & 0xFF;
+        if (handStatus & HandActuation::BUTTON_PRESSED)
+            relays.toggleChannel(number);
+    }
 
     // check if we can enable PWM
     relays.checkPWM();
-    for (objno = 0; objno < COMOBJ_SPECIAL1; ++objno) {
-        if(channel_timeout[objno].expired ())
+    for (objno = 0; objno < COMOBJ_SPECIAL1; ++objno)
+    {
+        if (channel_timeout[objno].expired ())
         {
             unsigned int obj_value = relays.toggleChannel(objno);
             objectWrite(objno, obj_value);

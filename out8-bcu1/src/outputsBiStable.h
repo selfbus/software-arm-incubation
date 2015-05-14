@@ -20,7 +20,7 @@ public:
 	OutputsBiStable() : Outputs() {};
 
     virtual void updateOutputs(void);
-
+    virtual void checkPWM(void);
 };
 
 #ifdef BI_STABLE

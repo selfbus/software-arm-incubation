@@ -13,16 +13,11 @@
 #define _outputs_h_ 1
 
 #include "app_out8.h"
+#include "config.h"
+#include "hand_actuation.h"
 #include <sblib/timeout.h>
 #include <sblib/timer.h>
 #include <sblib/digital_pin.h>
-
-//#define ZERO_DETECT
-#define HAND_ACTUATION
-
-#ifdef HAND_ACTUATION
-extern const int handPins[NO_OF_CHANNELS];
-#endif
 
 #define PWM_TIMEOUT 50
 #define PWM_PERIOD     857
@@ -47,17 +42,13 @@ public:
     unsigned int blocked(unsigned int channel);
     void setBlocked(unsigned int channel);
     void clearBlocked(unsigned int channel);
-    void checkPWM(void);
+    virtual void checkPWM(void);
     virtual void updateOutputs(void);
 	void setOutputs(void);
 	void clrOutputs(void);
 
 #ifdef ZERO_DETECT
 	void zeroDetectHandler(void);
-#endif
-
-#ifdef HAND_ACTUATION
-	void checkHandActution(void);
 #endif
 
 protected:
@@ -74,13 +65,6 @@ protected:
 
 #ifdef ZERO_DETECT
     unsigned int _state;
-#endif
-
-#ifdef HAND_ACTUATION
-    unsigned int _handCount;
-    unsigned int _stateOne;
-    Timeout      _handDelay;
-    Timeout      _handToggleDelay;
 #endif
 };
 

@@ -54,9 +54,6 @@ void Outputs::begin (unsigned int initial, unsigned int inverted)
     timer32_0.match(MAT3, ZD_RESET);
     timer32_0.interrupts();
 #endif
-#ifdef HAND_ACTUATION
-    _handCount = 0;
-#endif
 }
 
 void Outputs::updateOutputs(void)
@@ -92,9 +89,6 @@ void Outputs::updateOutputs(void)
 				else       _port_0_clr |= pinMask;
 			}
     	}
-#ifdef HAND_ACTUATION
-        digitalWrite(handPins[i], value);
-#endif
     }
     _prevRelayState = _relayState;
 #ifdef ZERO_DETECT
@@ -104,36 +98,6 @@ void Outputs::updateOutputs(void)
     clrOutputs();
 #endif
 }
-
-#ifdef HAND_ACTUATION
-void Outputs::checkHandActution(void)
-{
-	if (_handDelay.expired() || _handDelay.stopped())
-    {   // check one input at a time
-		if (_handToggleDelay.stopped ())
-		{
-			_stateOne = digitalRead(PIO2_3);
-			digitalWrite(handPins[_handCount], !digitalRead(handPins[_handCount]));
-			delayMicroseconds(10);
-			unsigned int stateTwo = digitalRead(PIO2_3);
-			digitalWrite(handPins[_handCount], !digitalRead(handPins[_handCount]));
-			if (_stateOne != stateTwo)
-			{
-				toggleChannel(_handCount);
-				updateOutputs();
-			}
-			_handCount++;
-			if (_handCount == NO_OF_CHANNELS)
-			{
-				_handCount = 0;
-				_handDelay.start(100);
-			}
-			else
-				_handDelay.start(30);
-		}
-    }
-}
-#endif
 
 #ifdef ZERO_DETECT
 extern "C" void PIOINT0_IRQHandler (void)

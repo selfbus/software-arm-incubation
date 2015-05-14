@@ -39,6 +39,8 @@
 								<option id="gnu.cpp.compiler.option.include.paths.875951426" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/src/app-common}"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.cpp.exe.debug.option.optimization.level.1547314858" name="Optimization Level" superClass="com.crt.advproject.cpp.exe.debug.option.optimization.level"/>
 								<option id="com.crt.advproject.cpp.misc.dialect.939147003" name="Language standard" superClass="com.crt.advproject.cpp.misc.dialect" value="com.crt.advproject.misc.dialect.cppdefault" valueType="enumerated"/>
@@ -63,6 +65,8 @@
 								<option id="gnu.c.compiler.option.include.paths.366091360" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/app-common}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.gcc.exe.debug.option.optimization.level.1932176208" name="Optimization Level" superClass="com.crt.advproject.gcc.exe.debug.option.optimization.level"/>
 								<inputType id="com.crt.advproject.compiler.input.13001928" superClass="com.crt.advproject.compiler.input"/>
