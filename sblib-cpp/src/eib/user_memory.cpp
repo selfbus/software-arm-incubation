@@ -95,10 +95,14 @@ void writeUserEeprom()
 
     IAP_Status rc;
 
-#if USER_EEPROM_SIZE == 2048
+#if (USER_EEPROM_SIZE == 2048) || (USER_EEPROM_SIZE == 3072)
     rc = iapProgram(page, userEepromData, 1024);
     if (rc == IAP_SUCCESS)
         rc = iapProgram(page + 1024, userEepromData + 1024, 1024);
+#if USER_EEPROM_SIZE == 3072
+    if (rc == IAP_SUCCESS)
+        rc = iapProgram(page + 2048, userEepromData + 2048, 1024);
+#endif
 #else
     rc = iapProgram(page, userEepromData, USER_EEPROM_SIZE);
 #endif

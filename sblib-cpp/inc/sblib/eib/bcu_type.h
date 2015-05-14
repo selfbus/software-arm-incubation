@@ -125,7 +125,7 @@
 #   define USER_EEPROM_START 0x3f00
 
     /** The size of the user EEPROM in bytes. */
-#   define USER_EEPROM_SIZE 4096
+#   define USER_EEPROM_SIZE 3072
 
 #else
     // BCU_TYPE contains an invalid value and no other BCU type define is set

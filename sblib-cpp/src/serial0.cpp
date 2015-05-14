@@ -11,8 +11,11 @@
 #include <sblib/serial.h>
 #include <sblib/digital_pin.h>
 
-
+#if defined (__LPC11XX__)
 Serial serial(PIO1_6, PIO1_7);
+#elif defined (__LPC11UXX__)
+Serial serial(PIO0_18, PIO0_19);
+#endif
 
 extern "C" void UART_IRQHandler()
 {

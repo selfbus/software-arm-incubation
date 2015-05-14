@@ -35,7 +35,9 @@ int Debug::write(byte ch)
 
 int Debug::write(const byte* data, int count)
 {
+#ifndef IAP_EMULATION
     if (DEBUG_ACTIVE)
         return __write(0, (const char*) data, count);
+#endif
     return 0;
 }

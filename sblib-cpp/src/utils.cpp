@@ -28,16 +28,12 @@ void fatalError()
 {
     // We use only low level functions here as a fatalError() could happen
     // anywhere in the lib and we want to ensure that the function works
-
-    int mask = digitalPinToBitMask(PIO0_7);
-    LPC_IOCON->PIO0_7 = 0xd0;
-    LPC_GPIO0->DIR |= mask;
-
+    pinMode(PIO0_7, OUTPUT);
     SysTick_Config(0x1000000);
 
     while (1)
     {
         // Blink the LED on the LPCxpresso board
-        LPC_GPIO0->MASKED_ACCESS[mask] = (SysTick->VAL & 0x800000) == 0 ? mask : 0;
+        digitalWrite(PIO0_7, (SysTick->VAL & 0x800000) == 0 ? 1 : 0);
     }
 }

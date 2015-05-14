@@ -14,7 +14,6 @@
 #include <sblib/platform.h>
 #include <sblib/types.h>
 
-
 /**
  * Configure the mode of an I/O pin.
  *
@@ -164,7 +163,7 @@ unsigned int pulseIn(int pin, int state, unsigned int timeout);
  * @param pin - the pin to process, e.g. PIO1_9
  * @return The bit mask for the pin, e.g. 0x200
  */
-#define digitalPinToBitMask(pin) portMask[pin & 31]
+#define digitalPinToBitMask(pin) (1 << (pin & 31))
 
 
 /**
@@ -335,7 +334,7 @@ enum PinInterruptMode
 //
 //  Inline functions
 //
-
+#if defined (__LPC11XX__)
 ALWAYS_INLINE void digitalWrite(int pin, bool value)
 {
     int mask = digitalPinToBitMask(pin);
@@ -363,4 +362,17 @@ ALWAYS_INLINE void pinDisableInterrupt(int pin)
     port->IE  &= ~mask;
 
 }
+#elif defined (__LPC11UXX__)
+ALWAYS_INLINE void digitalWrite(int pin, bool value)
+{
+    LPC_GPIO->B[digitalPinToPort(pin) * 32 + digitalPinToPinNum(pin)] = value;
+}
+
+ALWAYS_INLINE bool digitalRead(int pin)
+{
+    return LPC_GPIO->B[digitalPinToPort(pin) * 32 + digitalPinToPinNum(pin)] != 0;
+}
+
+#endif
+
 #endif /*sblib_digital_pin_h*/

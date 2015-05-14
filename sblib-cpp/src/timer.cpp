@@ -38,6 +38,7 @@ void delay(unsigned int msec)
     }
 }
 
+#ifndef IAP_EMULATION
 void delayMicroseconds(unsigned int usec)
 {
     unsigned int val, lastVal = SysTick->VAL;
@@ -59,7 +60,7 @@ void delayMicroseconds(unsigned int usec)
         lastVal = val;
     }
 }
-
+#endif
 
 //----- Class Timer -----------------------------------------------------------
 

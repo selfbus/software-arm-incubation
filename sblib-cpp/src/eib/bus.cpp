@@ -18,7 +18,12 @@
 #include <sblib/eib/properties.h>
 
 // The EIB bus access object
+#if defined (__LPC11XX__)
 Bus bus(timer16_1, PIO1_8, PIO1_9, CAP0, MAT0);
+#elif defined (__LPC11UXX__)
+Bus bus(timer16_1, PIO0_20, PIO0_21, CAP0, MAT0);
+#endif
+
 
 // The interrupt handler for the EIB bus access object
 BUS_TIMER_INTERRUPT_HANDLER(TIMER16_1_IRQHandler, bus);
@@ -42,10 +47,6 @@ BUS_TIMER_INTERRUPT_HANDLER(TIMER16_1_IRQHandler, bus);
 #define SB_TEL_REPEAT_FLAG 0x20
 
 static int debugLine = 0;
-
-
-static LPC_GPIO_TypeDef (* const LPC_GPIO[4]) = { LPC_GPIO0, LPC_GPIO1, LPC_GPIO2, LPC_GPIO3 };
-
 
 // Mask for the timer flag of the capture channel
 #define CAPTURE_FLAG (8 << captureChannel)

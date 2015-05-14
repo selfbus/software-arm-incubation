@@ -33,8 +33,11 @@ extern volatile unsigned int systemTime;
 
 
 // Default pin of the programming mode button+led
+#if defined (__LPC11XX__)
 #define DEFAULT_PROG_PIN  PIO2_0
-
+#elif defined (__LPC11UXX__)
+#define DEFAULT_PROG_PIN  PIO1_19
+#endif
 
 BCU::BCU()
 :progButtonDebouncer()

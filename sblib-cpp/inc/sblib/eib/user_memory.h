@@ -188,6 +188,7 @@ public:
      * @return The data byte.
      */
     byte& operator[](int idx) const;
+    unsigned char getUInt8(int idx) const;
 
     /**
      * Access the user EEPROM like an ordinary array. The start address is subtracted
@@ -251,6 +252,11 @@ inline byte& UserRam::operator[](int idx) const
 inline byte& UserEeprom::operator[](int idx) const
 {
     return *(((byte*) this) + idx - USER_EEPROM_START);
+}
+
+inline unsigned char UserEeprom::getUInt8(int idx) const
+{
+    return *(((unsigned char*) this) + idx - USER_EEPROM_START);
 }
 
 inline unsigned short UserEeprom::getUInt16(int idx) const

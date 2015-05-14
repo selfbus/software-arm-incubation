@@ -58,7 +58,7 @@ int iapFlashBytes = 0;
 typedef void (*IAP_Func)(unsigned int * cmd, unsigned int * stat);
 
 #ifndef IAP_EMULATION
-#  if defined(__LPC11XX__) || defined(__LPC13XX__) || defined(__LPC17XX__)
+#  if defined(__LPC11XX__) || defined(__LPC11UXX__) || defined(__LPC13XX__) || defined(__LPC17XX__)
 #    define IAP_LOCATION      0x1FFF1FF1
 #  elif defined(__LPC2XXX__)
 #    define IAP_LOCATION      0x7FFFFFF1
@@ -132,8 +132,8 @@ IAP_Status iapProgram(byte* rom, const byte* ram, unsigned int size)
     {
         /* then we can `copy` the RAM content to the FLASH */
         p.cmd = CMD_COPY_RAM2FLASH;
-        p.par[0] = (unsigned int) rom;
-        p.par[1] = (unsigned int) ram;
+        p.par[0] = (unsigned int) (unsigned long) rom;
+        p.par[1] = (unsigned int) (unsigned long) ram;
         p.par[2] = size;
         p.par[3] = SystemCoreClock / 1000;
         IAP_Call_InterruptSafe(&p.cmd, &p.stat);
@@ -141,8 +141,8 @@ IAP_Status iapProgram(byte* rom, const byte* ram, unsigned int size)
         if (p.stat == IAP_SUCCESS)
         {
             p.cmd = CMD_COMPARE;
-            p.par[0] = (unsigned int) rom;
-            p.par[1] = (unsigned int) ram;
+            p.par[0] = (unsigned int) (unsigned long) rom;
+            p.par[1] = (unsigned int) (unsigned long) ram;
             p.par[2] = size;
             IAP_Call_InterruptSafe(&p.cmd, &p.stat);
         }
