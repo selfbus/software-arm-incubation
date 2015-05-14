@@ -1,0 +1,8 @@
+Section           ("check bus return telegram")
+App_Loop          ()
+#Send_Telegram     (device, 11, kind = SCT.Get_Value)
+#Send_Telegram     (device, 16, kind = SCT.Get_Value)
+#Send_Telegram     (device, 40, 0)
+#Send_Telegram     (device, 55, 100)
+#Send_Telegram     (device, 61, kind = SCT.Get_Value)
+

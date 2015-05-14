@@ -1,0 +1,7 @@
+ToDo for Blind/Shutter
+======================
+
+- check return from automatic
+- check engage rules for automatic
+- alarm handling
+- lock handling

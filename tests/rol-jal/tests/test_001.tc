@@ -1,0 +1,30 @@
+name           = "test_001"
+description    = "ROL-JALO-BIM112 - Test 001"
+ets_project    = "bim112 Jalo.knxproj"
+device_address = "1.1.1"
+power_on_delay = 0
+tags           = "ROL-JAL", "ALL"
+setup          = "_clearOutputs"
+
+cha_up = chb_up = 100 * 1000
+cha_do = chb_do = 150 * 1000
+cha_up_ext      = cha_up * 0.05
+cha_do_ext      = cha_do * 0.05
+chb_up_ext      = chb_up * 0.10
+chb_do_ext      = chb_do * 0.10
+chb_slat        = 1200
+
+Include           ("bus-return.tcinc")
+
+Section                ("check operation for all channels")
+t0 = Receive_Telegram  (device, 0, 1, step = "_outputSet", variable = 0b1010)
+App_Loop               ("_loop", 200)
+t1 = App_Loop          ("_loop", chb_slat / 2);
+t2 = App_Loop          ("_loop", t1 + chb_slat);
+t3 = App_Loop          ("_loop", t0 + cha_do)
+App_Loop               ("_loop", t3 + chb_do)
+t4 = App_Loop          ("_loop", t0 + cha_do + cha_do_ext - 1)
+App_Loop               ("_outputClear", 1, variable = 0b0010)
+App_Loop               ("_loop",   t4 + chb_do_ext - 1)
+App_Loop               ("_outputClear", 1, variable = 0b1000)
+

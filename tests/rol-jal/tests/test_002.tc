@@ -1,0 +1,47 @@
+name           = "test_002"
+description    = "ROL-JALO-BIM112 - Test 002"
+ets_project    = "bim112 Jalo.knxproj"
+device_address = "1.1.1"
+power_on_delay = 0
+tags           = "ROL-JAL", "A"
+setup          = "_clearOutputs"
+
+cha_on_delay    = 200
+cha_off_delay   = 200
+cha_protect     = 500
+cha_up = chb_up = 100 * 1000
+cha_do = chb_do = 150 * 1000
+cha_up_ext      = cha_up * 0.05
+cha_do_ext      = cha_do * 0.05
+chb_up_ext      = chb_up * 0.10
+chb_do_ext      = chb_do * 0.10
+chb_slat        = 1200
+cha_step        = 200
+chb_step        = 200
+
+Include                ("bus-return.tcinc")
+Section                ("check operation for all channel A")
+Section                ("Move the shutter down")
+Receive_Telegram       (device, 13, 1, step = "_outputSet", variable = 0b0010)
+Progress_Time          (cha_on_delay)
+App_Loop               ("_loop", cha_do / 2)
+
+Section                ("Stop the movement and send an up command to test the protection delay")
+Receive_Telegram       (device, 15, 1, step = "_outputClear", variable = 0b0010)
+Receive_Telegram       (device, 13, 0, step = "_outputSet")
+App_Loop               ("_outputSet", variable = 0b0001, ticks = cha_protect)
+Progress_Time          (cha_on_delay)
+App_Loop               ("_loop", cha_up / 2)
+App_Loop               ("_loop", cha_up_ext - 1)
+App_Loop               ("_outputClear", 1, variable = 0b0001)
+
+Section                ("Move the shutter down again")
+Receive_Telegram       (device, 13, 1)
+App_Loop               ("_outputSet", variable = 0b0010, ticks = cha_protect)
+Progress_Time          (cha_on_delay)
+App_Loop               ("_loop", cha_do / 2)
+Receive_Telegram       (device, 14, 1, step = "_outputClear", variable = 0b0010)
+Receive_Telegram       (device, 14, 1)
+App_Loop               ("_outputSet", variable = 0b0010, ticks = cha_protect)
+Progress_Time          (cha_on_delay)
+App_Loop               ("_outputClear", cha_step, variable = 0b0010)
