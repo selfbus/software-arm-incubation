@@ -10,12 +10,10 @@
 
 #include <config.h>
 #include <sblib/eib.h>
+#include <sblib/ioports.h>
+#include <sblib/io_pin_names.h>
 #include "app-rol-jal.h"
 #include <string.h>
-
-// Digital pin for LED
-#define PIO_INFO PIO2_6
-#define PIO_RUN  PIO3_3
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const HardwareVersion hardwareVersion[] =
@@ -37,8 +35,8 @@ void setup()
     memcpy(userEeprom.order, currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
 
 
-    pinMode(PIO_INFO, OUTPUT);	// Info LED
-    pinMode(PIO_RUN,  OUTPUT);	// Run LED
+    pinMode(PIN_INFO, OUTPUT);	// Info LED
+    pinMode(PIN_RUN,  OUTPUT);	// Run LED
     initApplication();
 }
 

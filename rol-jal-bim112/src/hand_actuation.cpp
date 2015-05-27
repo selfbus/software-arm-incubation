@@ -8,11 +8,12 @@
 
 #include "hand_actuation.h"
 #include <sblib/digital_pin.h>
+#include <sblib/io_pin_names.h>
 #include <sblib/timer.h>
 
 const int handPins[NO_OF_HAND_PINS] =
-    { PIO2_1, PIO0_3, PIO2_4, PIO2_5, PIO3_5, PIO3_4, PIO1_10, PIO0_11 };
-#define HAND_READBACK PIO2_3
+    { PIN_LT1, PIN_LT2, PIN_LT3, PIN_LT4, PIN_LT5, PIN_LT6, PIN_LT7, PIN_LT8 };
+#define HAND_READBACK PIN_LT9
 #define BLINK_TIME 500
 
 HandActuation::HandActuation()
