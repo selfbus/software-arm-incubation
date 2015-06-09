@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>in16-bim112-test</name>
+	<name>test-rol-jal-bim112</name>
 	<comment></comment>
 	<projects>
-		<project>sblib-cpp-test</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -27,9 +26,24 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src/in16-bim112</name>
+			<name>src-app</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/in16-bim112/src</locationURI>
+			<locationURI>$%7BPARENT-4-PROJECT_LOC%7D/actuators/blind-shutter/rol-jal-bim112/src</locationURI>
+		</link>
+		<link>
+			<name>src/wrapper.cc</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-4-PROJECT_LOC%7D/software-arm-lib/test/sblib/src/wrapper.cc</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>$%7BPARENT-2-PROJECT_LOC%7D/software-arm-incubation</value>
+		</variable>
+		<variable>
+			<name>copy_PARENT1</name>
+			<value>$%7Bcopy_PARENT%7D/tests/actuators/software-arm-incubation</value>
+		</variable>
+	</variableList>
 </projectDescription>

@@ -28,6 +28,8 @@ void _loop(In8TestState * refState)
 }
 
 
+extern const int inputPins[];
+
 void _inputSet(unsigned int channel, unsigned int value, In8TestState * refState)
 {
 	unsigned int mask = 1 << channel;

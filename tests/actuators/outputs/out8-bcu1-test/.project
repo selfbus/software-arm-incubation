@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>out8-bcu1-test</name>
+	<name>test-out8-bcu1</name>
 	<comment></comment>
 	<projects>
 		<project>Catch</project>
@@ -30,7 +30,12 @@
 		<link>
 			<name>src/out8-src</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/out8-bcu1/src</locationURI>
+			<locationURI>$%7BPARENT-4-PROJECT_LOC%7D/actuators/outputs/out8-bcu1/src</locationURI>
+		</link>
+		<link>
+			<name>src/out8-src/hand-actuation</name>
+			<type>2</type>
+			<locationURI>PARENT-4-PROJECT_LOC/common/hand-actuation</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

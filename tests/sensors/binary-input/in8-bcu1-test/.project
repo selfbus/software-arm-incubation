@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>in8-bcu1-test</name>
+	<name>test-in8-bcu1</name>
 	<comment></comment>
 	<projects>
 		<project>Catch</project>
@@ -30,7 +30,13 @@
 		<link>
 			<name>src/in8-src</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/in8-bcu1/src</locationURI>
+			<locationURI>$%7BPARENT-4-PROJECT_LOC%7D/sensors/binary-inputs/in8-bcu1/src</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>$%7BPARENT-2-PROJECT_LOC%7D/software-arm-incubation</value>
+		</variable>
+	</variableList>
 </projectDescription>

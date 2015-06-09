@@ -77,7 +77,6 @@ void jaloPeriod(int channel)
 void jaloSetup(int channel)
 {
     unsigned int value;
-    int busReturnCfg;
 
    // Calculate blade change time
     value = userEeprom[EE_CHANNEL_TIMING_PARAMS_BASE + ((channel + 1 + 8) >> 1)];

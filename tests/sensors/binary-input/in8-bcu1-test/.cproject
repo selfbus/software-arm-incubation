@@ -28,12 +28,17 @@
 								<option id="gnu.cpp.compiler.mingw.exe.debug.option.debugging.level.397300123" name="Debug Level" superClass="gnu.cpp.compiler.mingw.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.196055337" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catch/inc}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp/inc}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/cpu-emu}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/inc-sblib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/cpu-emu}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/in8-bcu1/src}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.files.1769166291" name="Include files (-include)" superClass="gnu.cpp.compiler.option.include.files" useByScannerDiscovery="false"/>
+								<option id="gnu.cpp.compiler.option.preprocessor.def.702589573" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="BCU_TYPE=10"/>
+									<listOptionValue builtIn="false" value="DIRECT_IO"/>
+									<listOptionValue builtIn="false" value="__LPC11XX__"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.524053330" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug.1598871577" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug">
@@ -44,10 +49,10 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.debug.1790063577" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.debug"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug.788147189" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug">
 								<option id="gnu.cpp.link.option.paths.1432780035" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/Debug_BCU1}&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.libs.1900097446" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="sblib-cpp-test"/>
+									<listOptionValue builtIn="false" value="sblib-test"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.402732073" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>

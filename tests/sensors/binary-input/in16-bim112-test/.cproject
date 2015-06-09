@@ -24,10 +24,10 @@
 							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.base.1857744169" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.base"/>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.1654613171" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base">
 								<option id="macosx.cpp.link.option.libs.108898835" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="sblib-cpp-test"/>
+									<listOptionValue builtIn="false" value="sblib-test"/>
 								</option>
 								<option id="macosx.cpp.link.option.paths.1307567113" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/BIM112_Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/Debug_BIM112}&quot;"/>
 								</option>
 								<option id="macosx.cpp.link.option.flags.1218515520" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-m32" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.54493092" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
@@ -42,13 +42,14 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base.1026134007" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base">
 								<option id="gnu.cpp.compiler.option.include.paths.736984453" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/in16-bim112}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/cpu-emu}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/inc}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/inc-sblib-cpp}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/cpu-emu}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/inc-sblib}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catch/inc}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.821511711" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="BIM112"/>
+									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.level.1581424036" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.1033633467" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>

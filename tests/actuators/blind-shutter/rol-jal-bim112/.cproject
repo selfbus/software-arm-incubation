@@ -35,10 +35,10 @@
 								<option defaultValue="true" id="macosx.cpp.link.macosx.so.debug.option.shared.1989822108" name="Shared (-dynamiclib)" superClass="macosx.cpp.link.macosx.so.debug.option.shared" valueType="boolean"/>
 								<option id="macosx.cpp.link.option.flags.1374648837" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="" valueType="string"/>
 								<option id="macosx.cpp.link.option.paths.15099396" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/Debug64_Bim112}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/Debug64_BIM112}&quot;"/>
 								</option>
 								<option id="macosx.cpp.link.option.libs.538610394" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="sblib-cpp-test"/>
+									<listOptionValue builtIn="false" value="sblib-test"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.913161290" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -53,8 +53,8 @@
 								<option id="gnu.cpp.compiler.macosx.so.debug.option.optimization.level.1900922925" name="Optimization Level" superClass="gnu.cpp.compiler.macosx.so.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.macosx.so.debug.option.debugging.level.2007808187" name="Debug Level" superClass="gnu.cpp.compiler.macosx.so.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1893033125" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/inc-sblib-cpp}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/cpu-emu}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/inc-sblib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/cpu-emu}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src-app}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1765561609" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
@@ -115,54 +115,54 @@
 					<folderInfo id="cdt.managedbuild.config.macosx.so.debug.1291315815.1595129183." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.mingw.base.473952387" name="MinGW GCC" superClass="cdt.managedbuild.toolchain.gnu.mingw.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.PE" id="cdt.managedbuild.target.gnu.platform.mingw.base.1060739617" name="Debug Platform" osList="win32" superClass="cdt.managedbuild.target.gnu.platform.mingw.base"/>
-							<builder buildPath="${workspace_loc:/rol-jal}/Debug" id="cdt.managedbuild.tool.gnu.builder.mingw.base.1841753548" name="CDT Internal Builder.Debug" superClass="cdt.managedbuild.tool.gnu.builder.mingw.base"/>
+							<builder buildPath="${workspace_loc:/rol-jal}/Debug" id="cdt.managedbuild.tool.gnu.builder.mingw.base.1841753548" keepEnvironmentInBuildfile="false" name="CDT Internal Builder" superClass="cdt.managedbuild.tool.gnu.builder.mingw.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.mingw.base.49986706" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.base">
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.996366876" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.mingw.base.56239588" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.mingw.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base.134664287" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base">
-								<option id="gnu.cpp.compiler.option.include.paths.930867257" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/inc-sblib-cpp}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/cpu-emu}&quot;"/>
+								<option id="gnu.cpp.compiler.option.include.paths.930867257" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/inc-sblib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/cpu-emu}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src-app}&quot;"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.preprocessor.def.1130206432" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+								<option id="gnu.cpp.compiler.option.preprocessor.def.1130206432" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 									<listOptionValue builtIn="false" value="IAP_EMULATION"/>
 									<listOptionValue builtIn="false" value="HAND_DEBUG"/>
 									<listOptionValue builtIn="false" value="BIM112"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.optimization.level.176513249" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.debugging.level.419465945" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.optimization.level.176513249" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.debugging.level.419465945" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.23226931" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.base.42294486" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.base">
-								<option id="gnu.c.compiler.option.include.paths.1884412574" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.c.compiler.option.include.paths.1884412574" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src-app}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/cpu-emu}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src-app}&quot;"/>
 								</option>
-								<option id="gnu.c.compiler.option.preprocessor.def.symbols.505174976" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+								<option id="gnu.c.compiler.option.preprocessor.def.symbols.505174976" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 									<listOptionValue builtIn="false" value="IAP_EMULATION"/>
 									<listOptionValue builtIn="false" value="HAND_DEBUG"/>
 									<listOptionValue builtIn="false" value="BIM112"/>
 								</option>
-								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.710505711" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.debugging.level.1493455123" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.710505711" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.debugging.level.1493455123" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.407250016" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.base.713121290" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.base">
-								<option defaultValue="true" id="gnu.c.link.option.shared.182755963" superClass="gnu.c.link.option.shared" valueType="boolean"/>
+								<option defaultValue="true" id="gnu.c.link.option.shared.182755963" name="Shared (-shared)" superClass="gnu.c.link.option.shared" valueType="boolean"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base.1521990647" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base">
-								<option id="gnu.cpp.link.option.libs.1619029328" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="sblib-cpp-test"/>
+								<option id="gnu.cpp.link.option.libs.1619029328" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" value="sblib-test"/>
 								</option>
-								<option id="gnu.cpp.link.option.paths.987832604" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/BIM112_Debug}&quot;"/>
+								<option id="gnu.cpp.link.option.paths.987832604" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/Debug_BIM112}&quot;"/>
 								</option>
-								<option defaultValue="true" id="gnu.cpp.link.option.shared.261186139" superClass="gnu.cpp.link.option.shared" valueType="boolean"/>
+								<option defaultValue="true" id="gnu.cpp.link.option.shared.261186139" name="Shared (-shared)" superClass="gnu.cpp.link.option.shared" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1127269438" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>

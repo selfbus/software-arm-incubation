@@ -89,7 +89,6 @@ void dimPeriod(int channel)
 void dimSetup(int channel)
 {
     unsigned int value;
-    int busReturnCfg;
 
     // Calculate time between switch and dim
     value = userEeprom[EE_CHANNEL_TIMING_PARAMS_BASE + ((channel + 1) >> 1)];

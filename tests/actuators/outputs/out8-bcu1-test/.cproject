@@ -28,12 +28,17 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.494241951" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.613335423" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catch/inc}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp/inc}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/cpu-emu}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/inc-sblib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/cpu-emu}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/out8-src/hand-actuation}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/out8-bcu1/src}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.577225288" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-m32 -c -fmessage-length=0" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.preprocessor.def.68561289" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="BCU_TYPE=10"/>
+									<listOptionValue builtIn="false" value="__LPC11XX__"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1207603370" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool command="gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.600583131" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
@@ -45,10 +50,10 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1471306715" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug"/>
 							<tool command="g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GLDErrorParser" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.748622129" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 								<option id="gnu.cpp.link.option.libs.1116062270" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="sblib-cpp-test"/>
+									<listOptionValue builtIn="false" value="sblib-test"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.1020283133" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp-test/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/Debug_BCU1}&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1549431331" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-m32 " valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1223253920" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">

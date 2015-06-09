@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>rol-jal</name>
+	<name>test-in16-bim112</name>
 	<comment></comment>
 	<projects>
+		<project>sblib-cpp-test</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -26,14 +27,15 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src-app</name>
+			<name>src/in16-bim112</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/rol-jal-bim112/src</locationURI>
-		</link>
-		<link>
-			<name>src/wrapper.cc</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PARENT_LOC/sblib-cpp-test/src/wrapper.cc</locationURI>
+			<locationURI>$%7BPARENT-4-PROJECT_LOC%7D/sensors/binary-inputs/in16-bim112/src</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>$%7BPARENT-2-PROJECT_LOC%7D/software-arm-incubation</value>
+		</variable>
+	</variableList>
 </projectDescription>
