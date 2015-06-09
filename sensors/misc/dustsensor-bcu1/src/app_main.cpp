@@ -17,14 +17,13 @@
 #include <sblib/internal/iap.h>
 #include <sblib/ioports.h>
 #include <sblib/spi.h>
+#include <sblib/serial.h>
 
 
 //#include "app_in8.h"
-#include "com_objs.h"
-
-#include "params.h"
-
-#include "Interrupt.h"
+//#include "com_objs.h"
+//#include "params.h"
+//#include "Interrupt.h"
 
 //	PIO2_2	IO 1
 //	PIO0_7	IO 2

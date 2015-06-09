@@ -59,7 +59,6 @@ static void _handle_logic_function(int objno, unsigned int value)
     unsigned int logicFuncTyp;   // type of logic function ( 1: or, 2: and)
     unsigned int logicState;     // state of logic function
              int sfOut;          // output belonging to sf
-    unsigned int sfMask;         // special function bit mask (1 of 4)
     static unsigned int specialObjStates [4];
     if (objno >= 8)
     {
@@ -87,7 +86,6 @@ static void _handle_logic_function(int objno, unsigned int value)
     logicFuncTyp = 0;
     for (specialFunc = 0; specialFunc < 4; specialFunc++)
     {
-        sfMask = 1 << specialFunc;
         sfOut  = userEeprom[APP_SPECIAL_FUNC_OBJ_1_2 + (specialFunc >> 1)] >> ((specialFunc & 1) * 4) & 0x0F;
         if (sfOut == (objno + 1))
         {

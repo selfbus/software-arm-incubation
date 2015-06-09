@@ -76,7 +76,6 @@ void channelLockChanged(int channel, unsigned int value)
 {
     params = channelParams + (channel << 2);
     int lockPolarity = params [0] & 0x03;
-    int lockAction;
     if (lockPolarity)
     {
         const int type = channelType(channel);
@@ -154,8 +153,6 @@ void initApplication(void)
     	timeout[channel + 0].stop();
     	timeout[channel + 8].stop();
         const int type = channelType(channel);
-        unsigned int value;
-        int busReturnCfg;
         // set the initial state of the lock object
 		lastLock[channel] = (params [0] & 0x03) == 0x02;
         objectSetValue(COMOBJ_LOCK1      + channel, 0);

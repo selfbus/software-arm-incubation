@@ -30,7 +30,7 @@
 		<link>
 			<name>src/app-common</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/app-common</locationURI>
+			<locationURI>PARENT-3-PROJECT_LOC/common/hand-actuation</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
