@@ -10,6 +10,7 @@
  */
 
 #include "outputs.h"
+#include <sblib/io_pin_names.h>
 
 #ifndef BI_STABLE
 Outputs relays;
@@ -23,7 +24,7 @@ const unsigned int zeroDetectClrDelay = 0x8000;
 
 void Outputs::begin (unsigned int initial, unsigned int inverted)
 {
-    pinMode(PIO3_2, OUTPUT_MATCH);  // configure digital pin PIO3_2(PWM) to match MAT2 of timer16 #0
+    pinMode(PIN_PWM, OUTPUT_MATCH);  // configure digital pin PIO3_2(PWM) to match MAT2 of timer16 #0
     //pinMode(PIO1_4, OUTPUT);
     timer16_0.begin();
 
@@ -78,7 +79,7 @@ void Outputs::updateOutputs(void)
     	if (mask & toggle)
     	{
     		unsigned int pinMask = digitalPinToBitMask(outputPins[i]);
-			if (digitalPinToPort(outputPins[i]) == 2)
+			if (digitalPinToPort(outputPins[i]) != 0)
 			{
 				if (value) _port_2_set |= pinMask;
 				else       _port_2_clr |= pinMask;

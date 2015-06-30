@@ -10,7 +10,7 @@
 #define CONFIG_H_
 
 #define NO_OF_CHANNELS 8
-#define BI_STABLE
+//#define BI_STABLE
 #define NO_OF_HAND_PINS  8
 //#define ZERO_DETECT
 

@@ -22,5 +22,6 @@ extern const HardwareVersion * currentVersion;
 
 
 #define HAND_ACTUATION
+#define NO_OF_HAND_PINS  8
 
 #endif /* CONFIG_H_ */

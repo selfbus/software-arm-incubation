@@ -9,10 +9,11 @@
 #include "hand_actuation.h"
 #include <sblib/digital_pin.h>
 #include <sblib/timer.h>
+#include <sblib/io_pin_names.h>
 
 const int handPins[NO_OF_HAND_PINS] =
-    { PIO2_1, PIO0_3, PIO2_4, PIO2_5, PIO3_5, PIO3_4, PIO1_10, PIO0_11 };
-#define HAND_READBACK PIO2_3
+    { PIN_LT1, PIN_LT2, PIN_LT3, PIN_LT4, PIN_LT5, PIN_LT6, PIN_LT7, PIN_LT8 };
+#define HAND_READBACK PIN_LT9
 #define BLINK_TIME 500
 
 HandActuation::HandActuation()
@@ -35,12 +36,16 @@ int HandActuation::check(void)
     int result = NO_ACTUATION;
     if (_handDelay.expired() || _handDelay.stopped())
     {   // check one input at a time
+#ifdef HAND_DEBUG
+        unsigned int stateOne = 0;
+        unsigned int stateTwo = (_inputState & mask) ? 1 : 0;
+#else
         unsigned int stateOne = digitalRead(HAND_READBACK);
         digitalWrite(handPins[number], !digitalRead(handPins[number]));
         delayMicroseconds(10);
         unsigned int stateTwo = digitalRead(HAND_READBACK);
         digitalWrite(handPins[number], !digitalRead(handPins[number]));
-
+#endif
         if (stateOne != stateTwo)
         {   // this button is currently pressed
             result = number;

@@ -18,6 +18,7 @@
 #include <sblib/timeout.h>
 #include <sblib/timer.h>
 #include <sblib/digital_pin.h>
+#include <sblib/io_pin_names.h>
 
 #define PWM_TIMEOUT 50
 #define PWM_PERIOD     857
@@ -145,7 +146,7 @@ ALWAYS_INLINE void Outputs::zeroDetectHandler(void)
 {
 	if (_state = 1)
 	{
-	    digitalWrite(PIO2_6, ! digitalRead(PIO2_6));	// Info LED
+	    digitalWrite(PIN_INFO, ! digitalRead(PIN_INFO));	// Info LED
 		timer32_0.start();
 		_state = 0;
 	}
@@ -159,15 +160,25 @@ ALWAYS_INLINE void Outputs::setOutputs(void)
         timer16_0.match(MAT2, PWM_PERIOD);// disable the PWM
         _pwm_timeout.start(PWM_TIMEOUT);
 	}
+#ifdef __LPC11XX__
    	gpioPorts[0]->MASKED_ACCESS[_port_0_set] = 0xFFFF;
    	gpioPorts[2]->MASKED_ACCESS[_port_2_set] = 0xFFFF;
+#else
+   	LPC_GPIO->SET[0] = _port_0_set;
+   	LPC_GPIO->SET[1] = _port_2_set;
+#endif
     _port_0_set = _port_2_set = 0;
 }
 
 ALWAYS_INLINE void Outputs::clrOutputs(void)
 {
+#ifdef __LPC11XX__
    	gpioPorts[0]->MASKED_ACCESS[_port_0_clr] = 0x0000;
    	gpioPorts[2]->MASKED_ACCESS[_port_2_clr] = 0x0000;
+#else
+   	LPC_GPIO->CLR[0] = _port_0_clr;
+   	LPC_GPIO->CLR[1] = _port_2_clr;
+#endif
     _port_0_clr = _port_2_clr = 0;
 }
 
