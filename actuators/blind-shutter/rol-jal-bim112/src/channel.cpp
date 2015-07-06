@@ -22,6 +22,8 @@
 const int outputPins[NO_OF_OUTPUTS] =
     { PIN_IO1, PIN_IO2, PIN_IO3, PIN_IO4, PIN_IO5, PIN_IO6, PIN_IO7, PIN_IO8 };
 
+Timeout PWMDisabled;
+
 Channel::Channel(unsigned int number, unsigned int address)
   : shortTime(0)
   , number(number)
@@ -70,6 +72,8 @@ Channel::Channel(unsigned int number, unsigned int address)
     _enableFeature(address +  59, FEATURE_RESTORE_AFTER_REF);
     reactionLock   = userEeprom.getUInt8  (address +  60);
     closeTime      = userEeprom.getUInt16 (address +  62) * 1000;
+    if (closeTime == 0)
+        closeTime = openTime;
     unsigned char lockAbsPos     = userEeprom.getUInt8  (address +  64);
     if (lockAbsPos & 0x80)
         lockConfig |= LOCK_POS_UP_DOWN;
@@ -271,6 +275,8 @@ void Channel::_handleState(void)
             unsigned int outNo = number * 2;
             if (direction == DOWN) outNo++;
             digitalWrite(outputPins[outNo], 1);
+            timer16_0.match(MAT2, PWM_PERIOD);// disable the PWM
+            PWMDisabled.start(PWM_TIMEOUT);
 #ifdef HAND_ACTUATION
             handAct.setLedState(outNo, 1);
 #endif

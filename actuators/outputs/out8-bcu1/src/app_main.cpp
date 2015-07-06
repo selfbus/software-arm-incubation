@@ -22,15 +22,15 @@
 // Output pins
 #ifdef BI_STABLE
 const int outputPins[NO_OF_OUTPUTS] =
-    { PIN_IO1,  PIN_IO1 //  1,  2
-    , PIO_SDA,  PIN_IO5 //  3,  4
+    { PIN_IO3,  PIN_IO2 //  1,  2
+    , PIN_IO12, PIN_IO5 //  3,  4
     , PIN_APRG, PIN_PWM //  5,  6
     , PIN_IO4,  PIN_IO1 //  7,  8
 
     , PIN_IO13, PIN_IO9 //  9, 10
     , PIN_IO15, PIN_IO14 // 11, 12
     , PIN_RX,   PIN_IO10 // 13, 14
-    , PIN_IO11, PIN_TX // 15, 16
+    , PIN_IO11, PIN_TX   // 15, 16
     };
 #else
 const int outputPins[NO_OF_OUTPUTS] =
@@ -39,7 +39,7 @@ const int outputPins[NO_OF_OUTPUTS] =
 
 ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
 
-//#define IO_TEST
+#define IO_TEST
 
 /*
  * Initialize the application.
@@ -57,6 +57,13 @@ void setup()
         pinMode(outputPins[channel], OUTPUT);
     }
 #ifdef IO_TEST
+#ifdef HAND_ACTUATION
+    for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
+    {
+        digitalWrite(handPins[i], 0);
+        pinMode(handPins[i], OUTPUT);
+    }
+#endif
     for (unsigned int i = 0; i < NO_OF_OUTPUTS; i++)
     {
         digitalWrite(outputPins[i], 1);
@@ -64,13 +71,13 @@ void setup()
         if (i < NO_OF_CHANNELS)
             digitalWrite(handPins[i], 1);
 #endif
-        delay(1000);
+        delay(500);
         digitalWrite(outputPins[i], 0);
 #ifdef HAND_ACTUATION
         if (i < NO_OF_CHANNELS)
             digitalWrite(handPins[i], 0);
-        delay(1000);
 #endif
+        delay(500);
     }
 #endif
 #ifndef BI_STABLE

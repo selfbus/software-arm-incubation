@@ -19,6 +19,10 @@
 #define NO_OF_ALARMS    4
 
 extern const int outputPins[NO_OF_OUTPUTS];
+extern Timeout PWMDisabled;
+#define PWM_TIMEOUT 50
+#define PWM_PERIOD     857
+#define PWM_DUTY_33    (588)
 
 #define EE_CHANNEL_CFG_SIZE    72
 #define EE_ALARM_HEADER_SIZE   10

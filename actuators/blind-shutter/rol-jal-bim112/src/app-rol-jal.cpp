@@ -15,6 +15,8 @@
 #include "blind.h"
 #include "shutter.h"
 #include <sblib/eib.h>
+#include <sblib/digital_pin.h>
+#include <sblib/io_pin_names.h>
 
 #ifdef HAND_ACTUATION
 #include "hand_actuation.h"
@@ -94,7 +96,7 @@ void checkPeriodicFuntions(void)
     {
         unsigned int number = handStatus & 0xFF;
         Channel * chn = channels [number / 2];
-        if (handStatus & HandActuation::BUTTON_PRESSED)
+        if ((chn != 0) && (handStatus & HandActuation::BUTTON_PRESSED))
         {
             if (number & 0x01)
             {
@@ -113,12 +115,30 @@ void checkPeriodicFuntions(void)
         }
     }
 #endif
+    if (PWMDisabled.started () && PWMDisabled.expired())
+    {
+        // re-enable the PWM
+        timer16_0.match(MAT2, PWM_DUTY_33);
+    }
 }
 
 void initApplication(void)
 {
     unsigned int address = currentVersion->baseAddress;
 
+    pinMode(PIN_PWM, OUTPUT_MATCH);  // configure digital pin PIO3_2(PWM) to match MAT2 of timer16 #0
+    //pinMode(PIO1_4, OUTPUT);
+    timer16_0.begin();
+
+    timer16_0.prescaler((SystemCoreClock / 100000) - 1);
+    timer16_0.matchMode(MAT2, SET);  // set the output of PIO3_2 to 1 when the timer matches MAT1
+    timer16_0.match(MAT2, PWM_PERIOD);        // match MAT1 when the timer reaches this value
+    timer16_0.pwmEnable(MAT2);       // enable PWM for match channel MAT1
+    for (unsigned int i = 0; i < NO_OF_OUTPUTS; i++)
+    {
+        digitalWrite(outputPins[i], 0);
+        pinMode(outputPins[i], OUTPUT);
+    }
     for (unsigned int i = 0; i < NO_OF_CHANNELS; i++, address += EE_CHANNEL_CFG_SIZE)
     {
         switch (userEeprom.getUInt8(address))
