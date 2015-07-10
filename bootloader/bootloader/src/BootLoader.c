@@ -13,41 +13,9 @@
 #endif
 
 #include <cr_section_macros.h>
-#include <crc.h>
-
-typedef struct
-{
-    unsigned int startAddress;
-    unsigned int endAddress;
-    unsigned int crc;
-} AppDescriptionBlock;
+#include <boot_descriptor_block.h>
 
 const unsigned int blockAddresses[] = { 0x1000 - 0x200, 0x1000 - 0x100, 0x0 };
-
-unsigned int checkVectorTable (unsigned int start)
-{
-    unsigned int i;
-    unsigned int * address;
-    unsigned int cs = 0;
-    address = (unsigned int *) start;
-    for (i = 0; i < 8;i++, address++)
-        cs += * address;
-    return cs == 0;
-}
-
-unsigned int checkApplication (AppDescriptionBlock * block)
-{
-    unsigned int crc = crc32
-        ( 0xFFFFFFFF
-        , (unsigned char *) block->startAddress
-        , block->endAddress - block->startAddress
-        );
-    if (crc == block->crc)
-    {
-        return checkVectorTable(block->startAddress);
-    }
-    return 0;
-}
 
 void jumpToApplication(unsigned int start)
 {
