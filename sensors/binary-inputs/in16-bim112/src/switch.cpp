@@ -2,6 +2,7 @@
  *  switch.cpp - 
  *
  *  Copyright (c) 2015 Martin Glueck <martin@mangari.org>
+ *  Copyright (c) 2015 Deti Fliegl <deti@fliegl.de>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -84,7 +85,7 @@ void Switch::inputChanged(int value)
 			objValue = usage_rising;
 			break;
 		case TOGGLE_RISING_EDGE:
-			objValue = !objectRead(objNo);
+			objValue = !objectRead(objNo+1);
 			break;
 		case GROUP_SEND_ON:
 			objNo = (number / 2) * 10;
@@ -122,7 +123,7 @@ void Switch::inputChanged(int value)
 			objValue = usage_falling;
 			break;
 		case TOGGLE_FALLING_EDGE:
-			objValue = !objectRead(objNo);
+			objValue = !objectRead(objNo+1);
 			break;
 		case SEND_STATE:
 			objValue = usage_falling;
@@ -185,12 +186,32 @@ Switch2Level::Switch2Level(unsigned int no, unsigned int longPress, unsigned int
 	longAction    = userEeprom [channelConfig + 0x17];
     usage_falling = userEeprom [channelConfig + 0x04];
     usage_rising  = userEeprom [channelConfig + 0x10];
+
+    if (busReturn)
+    {
+        switch (shortAction)
+        {
+        case LS_TOGGLE:
+            requestObjectRead(number * 5 + 1);
+            break;
+        default:
+            break;
+        }
+        switch (longAction)
+        {
+        case LS_TOGGLE:
+            requestObjectRead(number * 5 + 3);
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 void Switch2Level::inputChanged(int value)
 {
 	int objNo = number * 5;
-	unsigned int objValue;
+	unsigned int objValue = -1;
 
 	if (value)
 	{   // this change is a rising edge, just start the long pressed timeout
@@ -215,7 +236,7 @@ void Switch2Level::inputChanged(int value)
 				objValue = 1;
 				break;
 			case LS_TOGGLE:
-				objValue = !objectRead(number);
+				objValue = !objectRead(objNo+1);
 				break;
 			case LS_SEND_VALUE:
 				objValue = usage_falling & 0xFF;
@@ -224,12 +245,12 @@ void Switch2Level::inputChanged(int value)
 			default:
 				objNo = -1;
 			}
+			timeout.stop();
+			if (objNo >= 0)
+			{
+				objectWrite(objNo, objValue);
+			}
 		}
-		timeout.stop();
-	}
-	if (objNo >= 0)
-	{
-		objectWrite(objNo, objValue);
 	}
 }
 
@@ -248,7 +269,7 @@ void Switch2Level::checkPeriodic(void)
             objValue = 1;
             break;
         case LS_TOGGLE:
-            objValue = !objectRead(number);
+            objValue = !objectRead(objNo+1);
             break;
         case LS_SEND_VALUE:
             objValue = usage_rising & 0xFF;
