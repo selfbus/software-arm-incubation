@@ -13,7 +13,7 @@
 
 #include <sblib/types.h>
 #include <sblib/timeout.h>
-
+#include "debug.h"
 /*
  * Base class which defines the interface used by the different channel
  * types for the real implementation.

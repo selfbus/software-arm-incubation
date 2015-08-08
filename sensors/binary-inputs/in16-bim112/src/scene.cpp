@@ -9,14 +9,15 @@
  */
 
 #include "scene.h"
-#include <sblib/serial.h>
 #include <sblib/eib.h>
 
 Scene::Scene(unsigned int no, unsigned int longPress, unsigned int channelConfig, unsigned int busReturn, unsigned int value)
     : _Switch_ (no, longPress)
 {
-	saveScene   = userEeprom [channelConfig + 0x03]&0x01;
+	saveScene   = userEeprom [channelConfig + 0x03] & 0x01;
 	numberScene = userEeprom [channelConfig + 0x04];
+
+	debug_cfg(channelConfig);
 
     sceneComObjNo = 5 * no + 2;
 }

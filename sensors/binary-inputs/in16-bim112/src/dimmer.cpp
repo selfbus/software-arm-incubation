@@ -9,37 +9,42 @@
  */
 
 #include "dimmer.h"
-#include <sblib/serial.h>
 #include <sblib/eib.h>
 
 Dimmer::Dimmer(unsigned int no, unsigned int longPress, unsigned int channelConfig, unsigned int busReturn, unsigned int value)
     : _Switch_ (no, longPress)
 {
-	oneButtonDimmer      = userEeprom [channelConfig + 0x03]&0x03?0:1;
-	upDownInverse        = userEeprom [channelConfig + 0x03]&0x01?1:0;
+	oneButtonDimmer      = userEeprom [channelConfig + 0x03] & 0x03 ? 0:1;
+	upDownInverse        = userEeprom [channelConfig + 0x03] & 0x03;
 	stepsDownWidthDimmer = userEeprom [channelConfig + 0x04];
 	stepsUpWidthDimmer   = userEeprom [channelConfig + 0x08];
 	repeatDimmerTime     = userEeprom.getUInt16(channelConfig + 0x1E);
+
+    debug_cfg(channelConfig);
+
 	if(!userEeprom[channelConfig + 0x20] & 0x3) {
 		repeatDimmerTime = 0;
 	}
 	doStopFlag = 0;
 
 	if(!oneButtonDimmer) {
-		if(!(no&1)) {
-			onOffComObjNo = no * 5;
-			dimValComObjNo = no * 5 + 1;
+		onOffComObjNo  = (number & 0xfffe) * 5;
+		dimValComObjNo = (number & 0xfffe) * 5 + 1;
+		stateComObjNo  = -1;
+		if(number & 0x01) { // patch this value due to wrong knxprod file
+			stepsDownWidthDimmer = 9;
+			if(upDownInverse == 1) {
+				upDownInverse = 0;
+			}
 		} else {
-			onOffComObjNo = (no -1 ) * 5;
-			dimValComObjNo = (no -1) * 5 + 1;
+			if(upDownInverse == 2) {
+				upDownInverse = 0;
+			}
 		}
-		stateComObjNo = -1;
 	} else {
-		if(oneButtonDimmer) {
-			onOffComObjNo = no * 5;
-			dimValComObjNo = no * 5 + 1;
-			stateComObjNo = no * 5 + 2;
-		}
+		onOffComObjNo  = number * 5;
+		dimValComObjNo = number * 5 + 1;
+		stateComObjNo  = number * 5 + 2;
 	}
 	if (busReturn && oneButtonDimmer)
 	{
@@ -65,13 +70,16 @@ void Dimmer::inputChanged(int value)
 			int objVal = 0;
 			doStopFlag = 0;
 			objectWrite(dimValComObjNo, objVal);
-    		upDownInverse = !upDownInverse;
-		} else if (timeout.started())
-		{
+			if(oneButtonDimmer) {
+				upDownInverse = !upDownInverse;
+			}
+		} else if (timeout.started()) {
 			unsigned int state = !upDownInverse;
 			if(oneButtonDimmer) { // in one button mode use the inverse direction com obj value
 				state = !objectRead(stateComObjNo);
 				objectSetValue(stateComObjNo, state);
+			} else {
+				state = upDownInverse ? (number&1):!(number&1);
 			}
 			objectWrite(onOffComObjNo, state);
 		}
@@ -83,7 +91,7 @@ void Dimmer::checkPeriodic(void)
 {
     if (timeout.started() && timeout.expired())
     {
-    	int val=((number&1)^upDownInverse)?stepsDownWidthDimmer:stepsUpWidthDimmer;
+    	int val=upDownInverse?stepsDownWidthDimmer:stepsUpWidthDimmer;
     	if(oneButtonDimmer) {
     		if(repeatDimmerTime) {
     			timeout.start(repeatDimmerTime);

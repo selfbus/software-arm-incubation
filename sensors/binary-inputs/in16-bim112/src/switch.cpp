@@ -51,31 +51,46 @@ Switch::Switch(unsigned int no, unsigned int longPress, unsigned int channelConf
     usage_falling = userEeprom [channelConfig + 4];
     usage_rising  = userEeprom [channelConfig + 8];
     delay         = userEeprom.getUInt16(channelConfig + 0x1E) * 1000;
+    repeat        = userEeprom [channelConfig + 0x20] & 0x03;
+
+    if(action&GROUP_SEND_ON) {
+        valueComObjNo  = number&0xfffe * 5;
+        statusComObjNo = number&0xfffe * 5 + 1;
+    } else {
+        valueComObjNo  = number * 5;
+        statusComObjNo = number * 5 + 1;
+    }
+
+    debug_cfg(channelConfig);
+
     if (busReturn)
     {
         switch (action)
         {
         case TOGGLE_RISING_EDGE:
         case TOGGLE_FALLING_EDGE:
-            requestObjectRead(number * 5 + 1);
+            requestObjectRead(statusComObjNo);
             break;
         case SEND_STATE:
         case SEND_VALUE_ANY_EDGE:
             if (value)
-                objectWrite(number * 5, usage_rising);
+                objectWrite(valueComObjNo, usage_rising);
             else
-                objectWrite(number * 5, usage_falling);
+                objectWrite(valueComObjNo, usage_falling);
             break;
         default:
             break;
         }
     }
+    if(repeat) {
+        timeout.start(delay);
+    }
+
 }
 
 void Switch::inputChanged(int value)
 {
-    int objNo = number * 5;
-    unsigned int objValue;
+    int objValue = -1;
 
     if (value)
     {   // this change is a rising edge
@@ -85,23 +100,20 @@ void Switch::inputChanged(int value)
 			objValue = usage_rising;
 			break;
 		case TOGGLE_RISING_EDGE:
-			objValue = !objectRead(objNo+1);
+			objValue = !objectRead(statusComObjNo);
 			break;
 		case GROUP_SEND_ON:
-			objNo = (number / 2) * 10;
 			objValue = 1;
 			break;
 		case GROUP_SEND_OFF:
-			objNo = (number / 2) * 10;
 			objValue = 0;
 			break;
 		case SEND_STATE:
 			objValue = usage_rising;
-			if (delay)
+			if (!repeat && delay)
 				timeout.start(delay);
 			break;
 		case SEND_STATE_ON_DELAY:
-			objNo = -1; // don't send a object now
 			timeout.start(delay);
 			break;
 		case SEND_STATE_OFF_DELAY:
@@ -111,8 +123,6 @@ void Switch::inputChanged(int value)
 		case SEND_VALUE_ANY_EDGE:
 			objValue = usage_rising;
 			break;
-		default:
-			objNo = -1;
 		}
     }
     else
@@ -123,31 +133,27 @@ void Switch::inputChanged(int value)
 			objValue = usage_falling;
 			break;
 		case TOGGLE_FALLING_EDGE:
-			objValue = !objectRead(objNo+1);
+			objValue = !objectRead(statusComObjNo);
 			break;
 		case SEND_STATE:
 			objValue = usage_falling;
-			if (delay)
+			if (!repeat && delay)
 				timeout.start(delay);
 			break;
 		case SEND_STATE_ON_DELAY:
 			objValue = 0;
 			break;
 		case SEND_STATE_OFF_DELAY:
-			objNo = -1; // don't send a object now
 			timeout.start(delay);
 			break;
 		case SEND_VALUE_ANY_EDGE:
 		case SEND_VALUE_FALLING_EDGE:
 			objValue = usage_falling;
 			break;
-		default:
-			objNo = -1;
 		}
     }
-    if (objNo >= 0)
-    {
-        objectWrite(objNo, objValue);
+    if(objValue != -1 && (repeat || !timeout.started())) {
+        objectWrite(valueComObjNo, objValue);
     }
 }
 
@@ -155,8 +161,7 @@ void Switch::checkPeriodic(void)
 {
     if(timeout.started() && timeout.expired())
     {
-        unsigned int objValue;
-        int objNo = number * 5;
+        unsigned int objValue = -1;
         switch (action)
         {
         case SEND_STATE_ON_DELAY:
@@ -166,15 +171,15 @@ void Switch::checkPeriodic(void)
             objValue = 0;
             break;
         case SEND_STATE:
-            objValue = objectRead(objNo);
+            objValue = objectRead(valueComObjNo);
             timeout.start(delay);
             break;
-        default:
-            objNo = -1;
         }
-        if (objNo >= 0)
-        {
-            objectWrite(objNo, objValue);
+        if(objValue != -1) {
+        	objectWrite(valueComObjNo, objValue);
+        }
+        if(repeat) {
+            timeout.start(delay);
         }
     }
 }
@@ -187,12 +192,17 @@ Switch2Level::Switch2Level(unsigned int no, unsigned int longPress, unsigned int
     usage_falling = userEeprom [channelConfig + 0x04];
     usage_rising  = userEeprom [channelConfig + 0x10];
 
+    valueComObjNo      = number * 5;
+    statusComObjNo     = number * 5 + 1;
+    valueLongComObjNo  = number * 5 + 2;
+    statusLongComObjNo = number * 5 + 3;
+
     if (busReturn)
     {
         switch (shortAction)
         {
         case LS_TOGGLE:
-            requestObjectRead(number * 5 + 1);
+            requestObjectRead(statusComObjNo);
             break;
         default:
             break;
@@ -200,7 +210,7 @@ Switch2Level::Switch2Level(unsigned int no, unsigned int longPress, unsigned int
         switch (longAction)
         {
         case LS_TOGGLE:
-            requestObjectRead(number * 5 + 3);
+            requestObjectRead(statusLongComObjNo);
             break;
         default:
             break;
@@ -210,7 +220,6 @@ Switch2Level::Switch2Level(unsigned int no, unsigned int longPress, unsigned int
 
 void Switch2Level::inputChanged(int value)
 {
-	int objNo = number * 5;
 	unsigned int objValue = -1;
 
 	if (value)
@@ -236,19 +245,17 @@ void Switch2Level::inputChanged(int value)
 				objValue = 1;
 				break;
 			case LS_TOGGLE:
-				objValue = !objectRead(objNo+1);
+				objValue = !objectRead(statusComObjNo);
 				break;
 			case LS_SEND_VALUE:
 				objValue = usage_falling & 0xFF;
 				break;
 			case LS_DO_NOTHING:
-			default:
-				objNo = -1;
+				break;
 			}
 			timeout.stop();
-			if (objNo >= 0)
-			{
-				objectWrite(objNo, objValue);
+			if(objValue != -1) {
+				objectWrite(valueComObjNo, objValue);
 			}
 		}
 	}
@@ -256,8 +263,7 @@ void Switch2Level::inputChanged(int value)
 
 void Switch2Level::checkPeriodic(void)
 {
-    int objNo = number * 5 + 2;
-    unsigned int objValue;
+    unsigned int objValue = -1;
     if (timeout.started() && timeout.expired())
     {
         switch (longAction)
@@ -269,18 +275,16 @@ void Switch2Level::checkPeriodic(void)
             objValue = 1;
             break;
         case LS_TOGGLE:
-            objValue = !objectRead(objNo+1);
+            objValue = !objectRead(statusLongComObjNo);
             break;
         case LS_SEND_VALUE:
             objValue = usage_rising & 0xFF;
             break;
         case LS_DO_NOTHING:
-        default:
-            objNo = -1;
+            break;
         }
-        if (objNo >= 0)
-        {
-            objectWrite(objNo, objValue);
+        if(objValue != -1) {
+        	objectWrite(valueLongComObjNo, objValue);
         }
     }
 }
