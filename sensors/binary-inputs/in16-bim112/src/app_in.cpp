@@ -15,6 +15,9 @@
 #include "channel.h"
 #include "switch.h"
 #include "jalo.h"
+#include "dimmer.h"
+#include "scene.h"
+#include "counter.h"
 #include "input.h"
 
 Input inputs;
@@ -66,7 +69,7 @@ void initApplication(void)
         + channels
         + (11 + channels) * 4 // logic config
         + 10;
-    unsigned int busReturn = userEeprom[addressStartupDelay - 1] & 0x40;
+    unsigned int busReturn = userEeprom[addressStartupDelay-1] & 0x2; // bit offset is 6: means 2^(7-bit offset)
     memset (channelConfig, 0, sizeof (channelConfig));
     inputs.begin(channels, currentVersion->baseAddress);
 
@@ -102,13 +105,13 @@ void initApplication(void)
         case 256 : // channel is configured as switch short/long
             channel = new Switch2Level(i, longKeyTime, configBase, busReturn, value); break;
         case 1 : // channel is configured as dimmer
-            channel = 0; break;
+            channel = new Dimmer(i, longKeyTime, configBase, busReturn, value); break;
         case 2 : // channel is configured as jalo
-            channel = new Jalo(i, longKeyTime); break;
+            channel = new Jalo(i, longKeyTime, configBase, busReturn, value); break;
         case 3 : // channel is configured as scene
-            channel = 0; break;
+            channel = new Scene(i, longKeyTime, configBase, busReturn, value); break;
         case 4 : // channel is configured as counter
-            channel = 0; break;
+            channel = new Counter(i, longKeyTime, configBase, busReturn, value); break;
         default:
             channel = 0;
         }
