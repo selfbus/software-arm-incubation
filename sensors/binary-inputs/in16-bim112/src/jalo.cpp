@@ -18,7 +18,7 @@ Jalo::Jalo(unsigned int no, unsigned int longPress, unsigned int channelConfig, 
 	shortLongInverse = userEeprom [channelConfig + 0x03] & 0x02 ? 1:0;
 	upDownInverse    = userEeprom [channelConfig + 0x03] & 0x01 ? 1:0;
 
-    debug_cfg(channelConfig);
+    debug_eeprom("Channel EEPROM:", channelConfig, 46);
 
 	if(!oneButtonShutter) {
 		upDownComObjNo    = (number & 0xfffe) * 5;

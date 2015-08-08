@@ -54,14 +54,14 @@ Switch::Switch(unsigned int no, unsigned int longPress, unsigned int channelConf
     repeat        = userEeprom [channelConfig + 0x20] & 0x03;
 
     if(action&GROUP_SEND_ON) {
-        valueComObjNo  = number&0xfffe * 5;
-        statusComObjNo = number&0xfffe * 5 + 1;
+        valueComObjNo  = (number & 0xfffe) * 5;
+        statusComObjNo = (number & 0xfffe) * 5 + 1;
     } else {
         valueComObjNo  = number * 5;
         statusComObjNo = number * 5 + 1;
     }
 
-    debug_cfg(channelConfig);
+    debug_eeprom("Channel EEPROM:", channelConfig, 46);
 
     if (busReturn)
     {
@@ -161,7 +161,7 @@ void Switch::checkPeriodic(void)
 {
     if(timeout.started() && timeout.expired())
     {
-        unsigned int objValue = -1;
+        int objValue = -1;
         switch (action)
         {
         case SEND_STATE_ON_DELAY:
@@ -220,7 +220,7 @@ Switch2Level::Switch2Level(unsigned int no, unsigned int longPress, unsigned int
 
 void Switch2Level::inputChanged(int value)
 {
-	unsigned int objValue = -1;
+	int objValue = -1;
 
 	if (value)
 	{   // this change is a rising edge, just start the long pressed timeout
@@ -263,7 +263,7 @@ void Switch2Level::inputChanged(int value)
 
 void Switch2Level::checkPeriodic(void)
 {
-    unsigned int objValue = -1;
+    int objValue = -1;
     if (timeout.started() && timeout.expired())
     {
         switch (longAction)

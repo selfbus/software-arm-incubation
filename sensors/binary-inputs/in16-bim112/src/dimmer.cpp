@@ -20,7 +20,7 @@ Dimmer::Dimmer(unsigned int no, unsigned int longPress, unsigned int channelConf
 	stepsUpWidthDimmer   = userEeprom [channelConfig + 0x08];
 	repeatDimmerTime     = userEeprom.getUInt16(channelConfig + 0x1E);
 
-    debug_cfg(channelConfig);
+    debug_eeprom("Channel EEPROM:", channelConfig, 46);
 
 	if(!userEeprom[channelConfig + 0x20] & 0x3) {
 		repeatDimmerTime = 0;

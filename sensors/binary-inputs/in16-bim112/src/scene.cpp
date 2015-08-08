@@ -17,7 +17,7 @@ Scene::Scene(unsigned int no, unsigned int longPress, unsigned int channelConfig
 	saveScene   = userEeprom [channelConfig + 0x03] & 0x01;
 	numberScene = userEeprom [channelConfig + 0x04];
 
-	debug_cfg(channelConfig);
+    debug_eeprom("Channel EEPROM:", channelConfig, 46);
 
     sceneComObjNo = 5 * no + 2;
 }

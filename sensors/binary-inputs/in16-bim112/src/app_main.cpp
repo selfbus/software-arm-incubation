@@ -14,9 +14,9 @@
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const HardwareVersion hardwareVersion[3] =
-{ {16, 0x4574, { 0, 0, 0, 0, 0x00, 0x1E }}
-, { 8, 0x44D4, { 0, 0, 0, 0, 0x01, 0x1E }}
-, { 4, 0x4484, { 0, 0, 0, 0, 0x01, 0x1F }}
+{ {16, 0x4574, 0x4868, 27, { 0, 0, 0, 0, 0x00, 0x1E }}
+, { 8, 0x44D4, 0x4650, 19, { 0, 0, 0, 0, 0x01, 0x1E }}
+, { 4, 0x4484, 0x4544, 15, { 0, 0, 0, 0, 0x01, 0x1F }}
 };
 
 const HardwareVersion * currentVersion;

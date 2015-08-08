@@ -19,26 +19,31 @@
 #include "scene.h"
 #include "counter.h"
 #include "input.h"
+#include "logic.h"
 
 Input inputs;
 
-
-#define MAX_CHANNELS 16
-
 Channel * channelConfig[MAX_CHANNELS];
-
+Logic   * logicConfig[MAX_LOGIC];
 
 void objectUpdated(int objno)
 {
     int channel = objno / 5;
     int channelObjno = objno - (channel * 5);
-    if (channelObjno == 4) // change of the lock object
+    if (channelObjno == 4) { // change of the lock object
         channelConfig[channel]->setLock(objectRead(objno));
+    }
+    if(objno >= 80) {
+    	for (unsigned int i = 0; i < MAX_LOGIC; i++) {
+    		if(logicConfig[i]) {
+    			logicConfig[i]->objectUpdated(objno);
+    		}
+    	}
+    }
 }
 
 void checkPeriodic(void)
 {
-
     inputs.scan();
     for (unsigned int i = 0; i < currentVersion->noOfChannels; i++)
     {
@@ -48,6 +53,11 @@ void checkPeriodic(void)
             Channel * channel = channelConfig[i];
             if (channel && ! channel->isLocked())
                 channel->inputChanged(value);
+            for (unsigned int n = 0; n < MAX_LOGIC; n++) {
+                	if(logicConfig[n]) {
+                		logicConfig[n]->inputChanged(i, value);
+                	}
+            }
         }
     }
 
@@ -90,6 +100,14 @@ void initApplication(void)
         }
     }
 
+    unsigned int busReturnLogic = userEeprom[addressStartupDelay-1] & 0x01;
+
+    for (unsigned int i = 0; i < MAX_LOGIC; i++) {
+    	if(userEeprom [currentVersion->logicBaseAddress + i * (11 + channels)] != 0xff) {
+    		logicConfig[i] = new Logic(currentVersion->logicBaseAddress, i, channels, busReturnLogic );
+    	}
+    }
+
     for (unsigned int i = 0; i < channels; i++)
     {
         unsigned int value;
@@ -97,6 +115,11 @@ void initApplication(void)
         word      channelType = userEeprom.getUInt16(configBase);
         Channel * channel;
         inputs.checkInput(i, &value);
+        for (unsigned int n = 0; n < MAX_LOGIC; n++) {
+            	if(logicConfig[n]) {
+            		logicConfig[n]->inputChanged(n, value);
+            	}
+        }
 
         switch (channelType)
         {
@@ -117,5 +140,4 @@ void initApplication(void)
         }
         channelConfig[i] = channel;
     }
-
 }

@@ -23,7 +23,7 @@ Counter::Counter(unsigned int no, unsigned int longPress, unsigned int channelCo
 	modeCounter   = userEeprom [channelConfig + 0x03];
 	txDiffCounter = userEeprom [channelConfig + 0x1d];
 
-    debug_cfg(channelConfig);
+    debug_eeprom("Channel EEPROM:", channelConfig, 46);
 
     resetComObjNo   = 5 * no;
     counterComObjNo = 5 * no + 3;
