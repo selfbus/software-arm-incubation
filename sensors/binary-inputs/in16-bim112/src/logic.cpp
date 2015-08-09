@@ -27,7 +27,7 @@ configBase(logicBase), number(no), channels(chans)
 	debug_eeprom("Scene Values:", addr, 2 );
 
 	extLogicalObjectAComObjNo = 80 + (number*3);
-    extLogicalObjectBComObjNo = 81 + (number*3);
+	extLogicalObjectBComObjNo = 81 + (number*3);
 	outLogicalObjectComObjNo  = 82 + (number*3);
 
 	if(busreturn) {
@@ -60,14 +60,14 @@ void Logic::doLogic(void)
 		result^=1;
 	}
 	switch(sendCondition) {
-		case SEND_COND_INPUT: 	objectWrite(outLogicalObjectComObjNo, result); break;
-		case SEND_COND_OUTPUT: if(objectRead(outLogicalObjectComObjNo)!=result){
-									objectWrite(outLogicalObjectComObjNo, result);
-								}; break;
-		case SEND_COND_SCENE: if(result){
-									objectWrite(outLogicalObjectComObjNo, numScene);
-								}; break;
-		case SEND_COND_NONE: objectSetValue(outLogicalObjectComObjNo, result); break;
+	case SEND_COND_INPUT: 	objectWrite(outLogicalObjectComObjNo, result); break;
+	case SEND_COND_OUTPUT: if(objectRead(outLogicalObjectComObjNo)!=result){
+		objectWrite(outLogicalObjectComObjNo, result);
+	}; break;
+	case SEND_COND_SCENE: if(result){
+		objectWrite(outLogicalObjectComObjNo, numScene);
+	}; break;
+	case SEND_COND_NONE: objectSetValue(outLogicalObjectComObjNo, result); break;
 	}
 }
 
