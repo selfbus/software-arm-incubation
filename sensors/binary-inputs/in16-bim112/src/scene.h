@@ -1,5 +1,5 @@
 /*
- *  jalo.h - 
+ *  scene.h -
  *
  *  Copyright (c) 2015 Deti Fliegl <deti@fliegl.de>
  *
@@ -8,27 +8,24 @@
  *  published by the Free Software Foundation.
  */
 
-#ifndef JALO_H_
-#define JALO_H_
+#ifndef SCENE_H_
+#define SCENE_H_
 
 #include "channel.h"
 #include "switch.h"
 /*
  *
  */
-class Jalo: public _Switch_
+class Scene: public _Switch_
 {
 public:
-	Jalo(unsigned int no, unsigned int longPress, unsigned int  channelConfig, unsigned int busReturn, unsigned int value);
+	Scene(unsigned int no, unsigned int longPress, unsigned int  channelConfig, unsigned int busReturn, unsigned int value);
     virtual void inputChanged(int value);
     virtual void checkPeriodic(void);
 private:
-    unsigned int oneButtonShutter;
-    unsigned int shortLongInverse;
-    unsigned int upDownInverse;
-    int upDownComObjNo;
-    int stopComObjNo;
-    int directionComObjNo;
+    unsigned int saveScene;
+    unsigned int numberScene;
+    int sceneComObjNo;
 };
 
-#endif /* JALO_H_ */
+#endif /* SCENE_H_ */
