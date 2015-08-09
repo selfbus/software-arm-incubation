@@ -31,6 +31,8 @@ Channel::Channel(unsigned int number, unsigned int address)
   , positionValid(false)
   , features(0)
   , limits(0)
+  , activeAlarms(0)
+  , activeLocks(0)
   , state(PROTECT)
   , direction(STOP)
   , moveForTime(0)
@@ -70,7 +72,6 @@ Channel::Channel(unsigned int number, unsigned int address)
     // userEeprom.getUInt8  (address +  57); // ?? stop Mode
     unsigned char extMoveTime    = userEeprom.getUInt8 (address +  58);
     _enableFeature(address +  59, FEATURE_RESTORE_AFTER_REF);
-    reactionLock   = userEeprom.getUInt8  (address +  60);
     closeTime      = userEeprom.getUInt16 (address +  62) * 1000;
     if (closeTime == 0)
         closeTime = openTime;
@@ -91,15 +92,16 @@ Channel::Channel(unsigned int number, unsigned int address)
         + currentVersion->noOfChannels * EE_CHANNEL_CFG_SIZE
         + (EE_ALARM_HEADER_SIZE + EE_ALARM_CFG_SIZE * NO_OF_ALARMS) * number;
 
+    reactionLockRemove = userEeprom.getUInt8  (baseAddr +  8);
     baseAddr += EE_ALARM_HEADER_SIZE;
     for (unsigned int i = 0; i < NO_OF_ALARMS; i++, baseAddr += EE_ALARM_CFG_SIZE)
     {
-        alarm[i].monitorTime   = userEeprom.getUInt16 (baseAddr + 0);
-        alarm[i].priority      = userEeprom.getUInt16 (baseAddr + 2);
-        alarm[i].releaseAction = userEeprom.getUInt8  (baseAddr + 5);
-        alarm[i].engageAction  = userEeprom.getUInt8  (baseAddr + 6);
+        alarms[i].monitorTime   = userEeprom.getUInt16 (baseAddr + 0);
+        alarms[i].priority      = userEeprom.getUInt16 (baseAddr + 2);
+        alarms[i].releaseAction = userEeprom.getUInt8  (baseAddr + 5);
+        alarms[i].engageAction  = userEeprom.getUInt8  (baseAddr + 6);
         if (userEeprom.getUInt8 (baseAddr + 4) == 255)
-            alarm[i].priority  = 0;
+            alarms[i].priority  = 0;
     }
     baseAddr = currentVersion->baseAddress
              + currentVersion->noOfChannels
@@ -115,6 +117,7 @@ Channel::Channel(unsigned int number, unsigned int address)
     }
     _enableFeature(baseAddr + 0x18 + number, FEATURE_CENTRAL);
     timeout.start (pauseChangeDir);
+    objectSetValue(firstObjNo + COM_OBJ_POS_VALID, 0);
 }
 
 void Channel::objectUpdate(unsigned int objno)
@@ -126,59 +129,92 @@ void Channel::objectUpdate(unsigned int objno)
         blind = (Blind *) this;
     switch (fct)
     {
-    case 0 : // object for move Up/Down (long)
-        handleMove(value);
+    case COM_OBJ_UP_DOWN : // object for move Up/Down (long)
+        if (! (activeLocks & LOCK_UP_DOWN))
+            handleMove(value);
         break;
-    case 1 : // object for Stop, slat open/close (short)
+    case COM_OBJ_SLAT : // object for Stop, slat open/close (short)
         handleStep(value);
         break;
-    case 2: // object for stopping the movement
+    case COM_OBJ_STOP: // object for stopping the movement
         stop();
         break;
-    case 3: // object for scene
-        handleScene(value);
+    case COM_OBJ_SCENE: // object for scene
+        if (! (activeLocks & LOCK_SCENE))
+            handleScene(value);
         break;
-    case 5: // object for requested position
-        moveTo(value);
+    case COM_OBJ_SET_POSITION: // object for requested position
+        if (! (activeLocks & LOCK_ABSOLUTE_POSITION))
+            moveTo(value);
         break;
-    case 6: // object for requested slat position
-        if (blind)
-            blind->moveSlatTo(value);
+    case COM_OBJ_SET_SLAT_POSITION: // object for requested slat position
+        if (! (activeLocks & LOCK_ABSOLUTE_POSITION))
+            if (blind)
+                blind->moveSlatTo(value);
         break;
-    case 10: // object for start reference drive
+    case COM_OBJ_START_REF_DRIVE: // object for start reference drive
         _savePosition (features & FEATURE_RESTORE_AFTER_REF);
         moveTo        (0);
         if (blind)
             blind->moveSlatTo    (0);
         break;
-    case 11: // object for move to limit (1 bit)/move to position (1 bit)
-        // TODO: implement one bit positioning
+    case COM_OBJ_1_BIT_ACTION: // object for move to limit (1 bit)/move to position (1 bit)
+        if (!obj24Config)
+        {   // configured as drive to limit
+            if (value)
+                moveTo(topLimitPos);
+            else
+                moveTo(botLimitPos);
+        }
+        else
+        {   // configured as drive to defined position
+            if (value)
+            {
+                unsigned int cfg;
+                cfg = obj24Config >> 5;
+                if (   (cfg == 1)
+                   || ((cfg == 3) && (position == 0))
+                   || ((cfg == 5) && (position == 255))
+                   )
+                    _moveToOneBitPostion();
+            }
+            else
+            {   // the config is the same as for the alarms -> we reuse the function
+                _alarmAction(obj24Config >> 3);
+            }
+        }
         break;
-    case 14: // object for lock absolute position
+    case COM_OBJ_LOCK_ABS_POSITION: // object for lock absolute position
         // TODO: implement lock absolute positioning
         break;
-    case 15: // object for lock universal
-        // TODO: implement lock universal
+    case COM_OBJ_LOCK_UNIVERSAL: // object for lock universal
+        if (value)
+        {
+            activeLocks = lockConfig;
+        }
+        else
+            activeLocks = 0;
         break;
-    case 16: // object for wind alert
-        // TODO: implement wind alert
+    case COM_OBJ_WIND_ALARM: // object for wind alert
+        _checkAlarms(0, value);
         break;
-    case 17: // object for rain alert
-        // TODO: implement rain alert
+    case COM_OBJ_RAIN_ALARM: // object for rain alert
+        _checkAlarms(1, value);
        break;
-    case 18: // object for frost alert
-        // TODO: implement frost alert
+    case COM_OBJ_FROST_ALARM: // object for frost alert
+        _checkAlarms(2, value);
         break;
-    case 19: // object for lock
-        // TODO: implement lock
+    case COM_OBJ_LOCK: // object for lock
+        _checkAlarms(3, value);
         break;
+
         // the following objects are send only
-    case 4: // object for state of movement
-    case 7: // object for status current position
-    case 8: // object for status current slat position
-    case 9: // object for position valid
-    case 12: // object for status top position
-    case 13: // object for status bottom position
+    case COM_OBJ_VISU_STATUS: // object for state of movement
+    case COM_OBJ_POSITION: // object for status current position
+    case COM_OBJ_SLAT_POSITION: // object for status current slat position
+    case COM_OBJ_POS_VALID: // object for position valid
+    case COM_OBJ_IN_TOP_LIMIT: // object for status top position
+    case COM_OBJ_IN_BOT_LIMIT: // object for status bottom position
     default:
         break;
     }
@@ -227,7 +263,15 @@ void Channel::stop(void)
 #endif
         state     = PROTECT;
         timeout.start(pauseChangeDir);
+        _sendPosition();
+        if (features & FEATURE_STATUS_MOVING)
+            objectWrite(firstObjNo + COM_OBJ_VISU_STATUS, (unsigned int) 0);
     }
+}
+
+void Channel::_sendPosition()
+{
+    objectWrite(firstObjNo + COM_OBJ_POSITION, position);
 }
 
 void Channel::_handleState(void)
@@ -255,7 +299,11 @@ void Channel::_handleState(void)
     case EXTEND:
         if (timeout.expired())
         {
-            positionValid = true;
+            if (!positionValid)
+            {
+                positionValid = true;
+                objectWrite(firstObjNo + COM_OBJ_POS_VALID, 1);
+            }
             targetPosition = -1;
             if (! _restorePosition()) // check if we need to restore a saved position
             {
@@ -275,6 +323,10 @@ void Channel::_handleState(void)
             unsigned int outNo = number * 2;
             if (direction == DOWN) outNo++;
             digitalWrite(outputPins[outNo], 1);
+            if (features & FEATURE_STATUS_MOVING)
+                objectWrite(firstObjNo + COM_OBJ_VISU_STATUS, 1);
+            else
+                objectWrite(firstObjNo + COM_OBJ_VISU_STATUS, (int) (direction == UP ? 0 : 1));
             timer16_0.match(MAT2, PWM_PERIOD);// disable the PWM
             PWMDisabled.start(PWM_TIMEOUT);
 #ifdef HAND_ACTUATION
@@ -289,7 +341,7 @@ void Channel::_handleState(void)
 
 bool Channel::_trackPosition(void)
 {
-    // We assume that the movement has started motorOffDelay earlier to achive the current
+    // We assume that the movement has started motorOffDelay earlier to reach the current
     // position when we stop the motor
     int moveBy;
     if (direction == UP)
@@ -309,7 +361,7 @@ bool Channel::_trackPosition(void)
         state = EXTEND;
         timeout.start(openTimeExt);
     }
-
+    objectSetValue(firstObjNo + COM_OBJ_POSITION, position);
     // check if we moved for a requested time
     if (  (   moveForTime
           && (elapsed(startTime) >= moveForTime)
@@ -331,8 +383,8 @@ bool Channel::_trackPosition(void)
             stop ();
         }
     }
-    _updatePosState(position <= topLimitPos, IN_TOP_POSITION, 12);
-    _updatePosState(position >= botLimitPos, IN_BOT_POSITION, 13);
+    _updatePosState(position <= topLimitPos, IN_TOP_POSITION, COM_OBJ_IN_TOP_LIMIT);
+    _updatePosState(position >= botLimitPos, IN_BOT_POSITION, COM_OBJ_IN_BOT_LIMIT);
     return false;
 }
 
@@ -344,7 +396,19 @@ bool Channel::_trackSlatPosition(void)
 
 void Channel::periodic(void)
 {
+    AlarmConfig * alarm = alarms;
     _handleState();
+    for (unsigned int i = 0; i < NO_OF_ALARMS; i++, alarm++)
+    {
+        if (  (alarm->priority & activeAlarms)
+           && alarm->monitorTime
+           && alarm->monitor.expired()
+           )
+        {   // this alarm is active, should be monitored and the timeout as expired
+            // we tread this alarm as inactive
+            _checkAlarms(i, 0);
+        }
+    }
 }
 
 void Channel::_updatePosState(unsigned int current, unsigned int mask, unsigned int objno)
@@ -389,11 +453,12 @@ void Channel::moveFor(unsigned int time, unsigned int direction)
         startDown();
 }
 
-// XXX check config values
 void Channel::handleAutomaticFunction(unsigned int pos, unsigned int block, unsigned int value)
 {
-    if (  (!block && automaticAEnabled())
-       || ( block && automaticBEnabled())
+    if (  ! (activeLocks & LOCK_AUTOMATIC_MODE)
+       && (  (!block && automaticAEnabled())
+          || ( block && automaticBEnabled())
+          )
        )
     {
         if (value)
@@ -539,7 +604,8 @@ void Channel::_moveToScene(unsigned int i)
 
 bool Channel::_restorePosition(void)
 {
-    if (savedPosition != -1)
+
+    if (!activeAlarms && (savedPosition != -1))
     {
         moveTo (savedPosition);
         savedPosition = -1;
@@ -556,4 +622,66 @@ void Channel::_enableFeature(unsigned int address, unsigned int feature, unsigne
     }
 }
 
+void Channel::_checkAlarms(unsigned int alarmNo, unsigned int value)
+{
+    AlarmConfig * alarm = & alarms[alarmNo];
+    bool active = activeAlarms & alarm->priority;
+    if (value && alarm->monitorTime)
+    {   // this is sent as active and we have to monitor the timeout ->
+        // re-trigger the timeout
+        alarm->monitor.start(alarm->monitorTime * 1000 * 60);
+    }
+    if (!value && active)
+    {   // the alarm was active and should now be disabled
+        activeAlarms &= ~alarm->priority;
+        if (!activeAlarms)
+        {   // this was the last active alarm -> perform the alarm off action
+            _alarmAction(reactionLockRemove);
+        }
+        if (activeAlarms < alarm->priority)
+        {   // an active alarm with lower priority is now the highest active alarm
+            // check the actions of that alarm
+            for (unsigned int i = 0; i < NO_OF_ALARMS; i++)
+            {
+                alarm = & alarms[i];
+                if (  (activeAlarms &  alarm->priority)
+                   && ((activeAlarms & ~alarm->priority) < alarm->priority)
+                   )
+                {   // this is the active alarm with the highest priority
+                    _alarmAction(alarm->engageAction);
+                    break;
+                }
+            }
+        }
+    }
+    else if (value && !active)
+    {   // the alarm was inactive and now becomes active
+        if (!activeAlarms)
+        {   // this is the first active alarm -> save the position
+            _savePosition(true);
+        }
+        if (activeAlarms < alarm->priority)
+        {   // this alarm becomes now the alarm with the highest priority
+            _alarmAction(alarm->engageAction);
+        }
+        activeAlarms |= alarm->priority;
+    }
+}
 
+void Channel::_alarmAction(unsigned int action)
+{
+    switch (action)
+    {
+    case 1:
+        moveTo(0); break;
+    case 2:
+        moveTo(255); break;
+    case 4:
+        _restorePosition(); break;
+    }
+}
+
+void Channel::_moveToOneBitPostion()
+{
+    moveTo(oneBitPosition);
+}

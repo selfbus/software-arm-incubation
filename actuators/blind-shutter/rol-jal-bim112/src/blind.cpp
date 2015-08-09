@@ -9,6 +9,7 @@
 #include <blind.h>
 #include <sblib/digital_pin.h>
 #include <sblib/timer.h>
+#include <sblib/eib.h>
 #include "config.h"
 
 Blind::Blind(unsigned int number, unsigned int address)
@@ -104,6 +105,7 @@ bool Blind::_trackSlatPosition(void)
         }
         slatPosReached = slatPosition >= slatTargetPosition;
     }
+    objectSetValue(firstObjNo + COM_OBJ_SLAT_POSITION, slatPosition);
     if (  (   slatMoveForTime
           && (elapsed(startTime) >= slatMoveForTime)
           )
@@ -169,7 +171,7 @@ void Blind::_moveToScene(unsigned int i)
 bool Blind::_restorePosition(void)
 {
     bool result = Channel::_restorePosition();
-    if (  ! result && (slatSavedPosition != -1)
+    if (  !activeAlarms && ! result && (slatSavedPosition != -1)
        )
     {
         moveSlatTo(slatSavedPosition);
@@ -178,3 +180,16 @@ bool Blind::_restorePosition(void)
     }
     return result;
 }
+
+void Blind::_sendPosition()
+{
+    objectWrite(firstObjNo + COM_OBJ_POSITION, position);
+    objectWrite(firstObjNo + COM_OBJ_SLAT_POSITION, slatPosition);
+}
+
+void Blind::_moveToOneBitPostion()
+{
+    moveTo(oneBitPosition);
+    moveSlatTo(oneBitSlatPosition);
+}
+

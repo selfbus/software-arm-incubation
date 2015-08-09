@@ -98,19 +98,22 @@ void checkPeriodicFuntions(void)
         Channel * chn = channels [number / 2];
         if ((chn != 0) && (handStatus & HandActuation::BUTTON_PRESSED))
         {
-            if (number & 0x01)
+            if (chn->isHandModeAllowed())
             {
-                if (chn->isRunning() == Channel::DOWN)
-                    chn->stop();
+                if (number & 0x01)
+                {
+                    if (chn->isRunning() == Channel::DOWN)
+                        chn->stop();
+                    else
+                        chn->startDown();
+                }
                 else
-                    chn->startDown();
-            }
-            else
-            {
-                if (chn->isRunning() == Channel::UP)
-                    chn->stop();
-                else
-                    chn->startUp();
+                {
+                    if (chn->isRunning() == Channel::UP)
+                        chn->stop();
+                    else
+                        chn->startUp();
+                }
             }
         }
     }

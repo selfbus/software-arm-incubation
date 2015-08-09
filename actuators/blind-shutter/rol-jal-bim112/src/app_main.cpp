@@ -10,6 +10,7 @@
 
 #include <config.h>
 #include <sblib/eib.h>
+#include <sblib/eib/sblib_default_objects.h>
 #include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 #include "app-rol-jal.h"
@@ -18,6 +19,14 @@
 #ifdef HAND_ACTUATION
 #include "hand_actuation.h"
 #endif
+
+extern "C" const char APP_VERSION[13] = "BS4.70  0.9";
+
+const char * getAppVersion()
+{
+    return APP_VERSION;
+}
+
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const HardwareVersion hardwareVersion[] =
@@ -37,12 +46,15 @@ void setup()
 {
     // XXX read some ID pins to determine which version is attached
     currentVersion = & hardwareVersion[0];
-    bcu.begin(131, currentVersion->hardwareVersion[5], 0x28);  // we are a MDT shutter/blind actuator, version 2.8
+    volatile char v = getAppVersion()[0];
+    v++;
+    bcu->begin(131, currentVersion->hardwareVersion[5], 0x28);  // we are a MDT shutter/blind actuator, version 2.8
     memcpy(userEeprom.order, currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
-    initApplication();
+    if (bcu->applicationRunning())
+        initApplication();
 	timeout.start    (1);
 }
 
@@ -63,11 +75,6 @@ void loop()
     // Sleep up to 1 millisecond if there is nothing to do
     if (bus.idle())
         waitForInterrupt();
-    if (timeout.started() && timeout.expired())
-    {
-    	timeout.start(1000);
-    	digitalWrite(PIN_INFO, !digitalRead(PIN_INFO));
-    }
 }
 
 void loop_test(void)

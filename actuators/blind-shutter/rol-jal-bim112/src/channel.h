@@ -44,11 +44,39 @@ extern Timeout PWMDisabled;
 
 #define LOCK_POS_UP_DOWN         0x01
 #define LOCK_POS_RELEASE_UP      0x02
-#define LOCK_SCENE               0x08
-#define LOCK_AUTOMATIC           0x10
-#define LOCK_ABS_POSITION        0x20
-#define LOCK_UP_DOWN             0x40
-#define LOCK_HAND                0x80
+
+enum
+{
+  COM_OBJ_UP_DOWN           = 0
+, COM_OBJ_SLAT              = 1
+, COM_OBJ_STOP              = 2
+, COM_OBJ_SCENE             = 3
+, COM_OBJ_VISU_STATUS       = 4
+, COM_OBJ_SET_POSITION      = 5
+, COM_OBJ_SET_SLAT_POSITION = 6
+, COM_OBJ_POSITION          = 7
+, COM_OBJ_SLAT_POSITION     = 8
+, COM_OBJ_POS_VALID         = 9
+, COM_OBJ_START_REF_DRIVE   = 10
+, COM_OBJ_1_BIT_ACTION      = 11
+, COM_OBJ_IN_TOP_LIMIT      = 12
+, COM_OBJ_IN_BOT_LIMIT      = 13
+, COM_OBJ_LOCK_ABS_POSITION = 14
+, COM_OBJ_LOCK_UNIVERSAL    = 15
+, COM_OBJ_WIND_ALARM        = 16
+, COM_OBJ_RAIN_ALARM        = 17
+, COM_OBJ_FROST_ALARM       = 18
+, COM_OBJ_LOCK              = 19
+};
+
+enum
+{
+  LOCK_MANUAL            = 0x01
+, LOCK_UP_DOWN           = 0x02
+, LOCK_ABSOLUTE_POSITION = 0x04
+, LOCK_AUTOMATIC_MODE    = 0x08
+, LOCK_SCENE             = 0x10
+};
 
 typedef struct
 {
@@ -102,10 +130,15 @@ public:
             void handleAutomaticFunction(unsigned int pos, unsigned int block, unsigned int value);
             void handleMove(unsigned int value);
             void handleStep(unsigned int value);
+            bool isHandModeAllowed();
 
 protected:
             void _handleState(void);
+            void _checkAlarms(unsigned int alarm, unsigned int value);
+            void _alarmAction(unsigned int action);
+
     virtual void _savePosition(bool currentPosition);
+    virtual void _sendPosition();
     virtual bool _inSavedPosition(void);
     virtual void _startTracking(void);
     virtual bool _trackPosition(void);
@@ -116,6 +149,7 @@ protected:
     virtual void _moveToScene(unsigned int i);
     virtual bool _isInPosition(unsigned char pos);
     virtual bool _stillInAutoPosition(void);
+    virtual void _moveToOneBitPostion();
 
     unsigned int timeToPercentage(unsigned int startTime, unsigned int maxTime);
     void _updatePosState(unsigned int current, unsigned int mask, unsigned int objno);
@@ -139,10 +173,10 @@ protected:
     unsigned char  topLimitPos;                   //!< limit for the top position
     unsigned char  botLimitPos;                   //!< limit for the top position
     unsigned char  lockConfig;                    //!< defines what the generic lock object should lock
-    unsigned char  reactionLock;                  //!< reaction when a lock is engaged
-    unsigned char  obj24Config;      //!< configuration of the object 24
-    unsigned char  oneBitPosition;   //!< position for the one bit operation
-    AlarmConfig    alarm[NO_OF_ALARMS]; //!< configuration of the alarms
+    unsigned char  reactionLockRemove;            //!< reaction when all lock/alarm are disabled
+    unsigned char  obj24Config;                   //!< configuration of the object 24
+    unsigned char  oneBitPosition;                //!< position for the one bit operation
+    AlarmConfig    alarms[NO_OF_ALARMS];          //!< configuration of the alarms
     unsigned char  busDownAction;
     unsigned char  busReturnAction;
     unsigned char  autoConfig;
@@ -154,6 +188,8 @@ protected:
     bool           positionValid;    //!< the internal position is valid
     unsigned short features;         //!< bitmask of enabled features
     unsigned char  limits;           //!< indicate whether the limit positions have been reached
+    unsigned char  activeAlarms;                  //!< bitmask storing all active alarm
+    unsigned char  activeLocks;                   //!< bitmask storing the active locks
     ChannelState   state;            //!< current state of the channel
     ChannelDirection direction;        //!< in which direction should the channel move
     unsigned int   moveForTime;      //!< specify for how long the blind/shutter should be moved
@@ -208,6 +244,11 @@ inline bool Channel::_isInPosition(unsigned char pos)
 inline bool Channel::_stillInAutoPosition(void)
 {
     return position == autoPosition;
+}
+
+inline bool Channel::isHandModeAllowed()
+{
+    return !(activeLocks & LOCK_MANUAL);
 }
 
 #endif /* ROL_JAL_BIM112_SRC_CHANNEL_H_ */
