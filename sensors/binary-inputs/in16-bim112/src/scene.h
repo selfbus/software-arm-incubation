@@ -1,5 +1,5 @@
 /*
- *  dimmer.h - 
+ *  scene.h -
  *
  *  Copyright (c) 2015 Deti Fliegl <deti@fliegl.de>
  *

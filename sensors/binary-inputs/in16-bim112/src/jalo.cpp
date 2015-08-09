@@ -15,24 +15,19 @@ Jalo::Jalo(unsigned int no, unsigned int longPress, unsigned int channelConfig, 
     : _Switch_ (no, longPress)
 {
 	oneButtonShutter = userEeprom [channelConfig + 0x03]&0x04?1:0;
-	shortLongInverse = userEeprom [channelConfig + 0x03]&0x02?1:0;
-	upDownInverse    = userEeprom [channelConfig + 0x03]&0x01?1:0;
+	shortLongInverse = userEeprom [channelConfig + 0x03] & 0x02 ? 1:0;
+	upDownInverse    = userEeprom [channelConfig + 0x03] & 0x01 ? 1:0;
+
+    debug_eeprom("Channel EEPROM:", channelConfig, 46);
 
 	if(!oneButtonShutter) {
-		if(!(no&1)) {
-			upDownComObjNo = no * 5;
-			stopComObjNo = no * 5 + 1;
-		} else {
-			upDownComObjNo = (no -1 ) * 5;
-			stopComObjNo = (no -1) * 5 + 1;
-		}
+		upDownComObjNo    = (number & 0xfffe) * 5;
+		stopComObjNo      = (number & 0xfffe) * 5 + 1;
 		directionComObjNo = -1;
 	} else {
-		if(oneButtonShutter) {
-			upDownComObjNo = no * 5;
-			stopComObjNo = no * 5 + 1;
-			directionComObjNo = no * 5 + 2;
-		}
+		upDownComObjNo    = number * 5;
+		stopComObjNo      = number * 5 + 1;
+		directionComObjNo = number * 5 + 2;
 	}
 	if (busReturn && oneButtonShutter)
 	{
@@ -61,11 +56,11 @@ void Jalo::inputChanged(int value)
 				direction = !objectRead(directionComObjNo);
 			}
 			if(!shortLongInverse) {
+				if(oneButtonShutter) {
+					direction ^= 1;
+				}
 				objectWrite(stopComObjNo, direction);
 			} else {
-				if(oneButtonShutter) {
-					objectSetValue(directionComObjNo, direction);
-				}
 				objectWrite(upDownComObjNo, direction);
 			}
 		}
@@ -82,11 +77,11 @@ void Jalo::checkPeriodic(void)
 			direction = !objectRead(directionComObjNo);
 		}
 		if(shortLongInverse) {
+			if(oneButtonShutter) {
+				direction ^= 1;
+			}
 			objectWrite(stopComObjNo, direction);
 		} else {
-			if(oneButtonShutter) {
-				objectSetValue(directionComObjNo, direction);
-			}
 			objectWrite(upDownComObjNo, direction);
 		}
     }

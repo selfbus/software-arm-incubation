@@ -15,6 +15,8 @@ typedef struct
 {
     unsigned int noOfChannels;  //!> how many channels are supported with this hardware
     unsigned short baseAddress; //!> Base address of the config parameters
+    unsigned short logicBaseAddress;
+    unsigned int sizeOfLogicBlock;
     byte hardwareVersion[6];    //!> The hardware identification number
 } HardwareVersion;
 

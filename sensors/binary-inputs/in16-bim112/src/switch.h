@@ -35,6 +35,10 @@ private:
     unsigned int usage_rising;
     unsigned int usage_falling;
     unsigned int delay;
+    unsigned int repeat;
+
+    int valueComObjNo;
+    int statusComObjNo;
 };
 
 class Switch2Level : public _Switch_
@@ -48,6 +52,11 @@ private:
     unsigned int longAction;
     unsigned int usage_rising;
     unsigned int usage_falling;
+
+    int valueComObjNo;
+    int statusComObjNo;
+    int valueLongComObjNo;
+    int statusLongComObjNo;
 };
 
 #endif /* SWITCH_H_ */

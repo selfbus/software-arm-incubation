@@ -9,7 +9,6 @@
  */
 
 #include "counter.h"
-#include <sblib/serial.h>
 #include <sblib/eib.h>
 
 // the following actions for individually configured channels
@@ -24,18 +23,10 @@ Counter::Counter(unsigned int no, unsigned int longPress, unsigned int channelCo
 	modeCounter   = userEeprom [channelConfig + 0x03];
 	txDiffCounter = userEeprom [channelConfig + 0x1d];
 
+    debug_eeprom("Channel EEPROM:", channelConfig, 46);
+
     resetComObjNo   = 5 * no;
     counterComObjNo = 5 * no + 3;
-
-	#ifdef SERIAL_DEBUG
-	for (int i = 0; i < 46; ++i)
-	{
-		if (i) serial.print(" ");
-		serial.print(userEeprom [channelConfig + i], HEX, 2);
-	}
-	serial.println();
-	#endif
-
 }
 
 void Counter::inputChanged(int value)

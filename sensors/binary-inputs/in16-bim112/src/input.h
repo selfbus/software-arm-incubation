@@ -12,6 +12,8 @@
 #include <sblib/debounce.h>
 #include <sblib/timeout.h>
 
+#define MAX_CHANNELS 16
+
 class Input
 {
 public:
