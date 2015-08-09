@@ -3,6 +3,11 @@
  *
  *  Created on: 08.08.2015
  *      Author: Deti Fliegl <deti@fliegl.de>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3 as
+ *  published by the Free Software Foundation.
+ *
  */
 
 #ifndef LOGIC_H_
