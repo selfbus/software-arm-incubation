@@ -20,11 +20,13 @@ public:
     virtual unsigned int channelType(void);
     //virtual void periodic(void);
     virtual void moveTo(short position);
+
     void moveSlatTo(short position);
     void moveSlatFor(unsigned int time, unsigned int direction);
 
 protected:
     virtual void _savePosition(bool currentPosition);
+    virtual void _sendPosition();
     virtual bool _inSavedPosition(void);
     virtual void _startTracking(void);
     //virtual bool _trackPosition(void);
@@ -35,6 +37,7 @@ protected:
     virtual void _moveToScene(unsigned int i);
     virtual bool _isInPosition(unsigned char pos);
     virtual bool _stillInAutoPosition(void);
+    virtual void _moveToOneBitPostion();
 
     unsigned int   slatTime;                          //!< time the slats need from fully closed to fully open
     unsigned int   slatPosAfterMove;                  //!< position the slats should take after a move command
