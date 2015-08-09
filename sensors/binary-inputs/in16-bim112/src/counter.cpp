@@ -33,22 +33,28 @@ void Counter::inputChanged(int value)
 {
 	int counter = objectRead(counterComObjNo);
 	int countok = 0;
-	if(modeCounter == COUNT_ON_RISING_EDGE && value) {
+	if(modeCounter == COUNT_ON_RISING_EDGE && value)
+	{
 		counter++;
 		countok=1;
 	}
-	if(modeCounter == COUNT_ON_FALLING_EDGE && !value) {
+	if(modeCounter == COUNT_ON_FALLING_EDGE && !value)
+	{
 		counter++;
 		countok=1;
 	}
-	if(modeCounter == COUNT_ON_ANY_EDGE) {
+	if(modeCounter == COUNT_ON_ANY_EDGE)
+	{
 		counter++;
 		countok=1;
 	}
-	if(countok) {
-		if(!(counter % txDiffCounter)) {
+	if(countok)
+	{
+		if(!(counter % txDiffCounter))
+		{
 			objectWrite(counterComObjNo, counter);
-		} else {
+		} else
+		{
 			objectSetValue(counterComObjNo, counter);
 		}
 	}
@@ -56,7 +62,8 @@ void Counter::inputChanged(int value)
 
 void Counter::checkPeriodic(void)
 {
-    if(objectRead(resetComObjNo)) {
+    if(objectRead(resetComObjNo))
+    {
     	int val = 0;
     	objectSetValue(resetComObjNo, val);
     	objectWrite(counterComObjNo, val);

@@ -53,10 +53,12 @@ Switch::Switch(unsigned int no, unsigned int longPress, unsigned int channelConf
     delay         = userEeprom.getUInt16(channelConfig + 0x1E) * 1000;
     repeat        = userEeprom [channelConfig + 0x20] & 0x03;
 
-    if(action&GROUP_SEND_ON) {
+    if(action&GROUP_SEND_ON)
+    {
         valueComObjNo  = (number & 0xfffe) * 5;
         statusComObjNo = (number & 0xfffe) * 5 + 1;
-    } else {
+    } else
+    {
         valueComObjNo  = number * 5;
         statusComObjNo = number * 5 + 1;
     }
@@ -152,7 +154,8 @@ void Switch::inputChanged(int value)
 			break;
 		}
     }
-    if(objValue != -1 && (repeat || !timeout.started())) {
+    if(objValue != -1 && (repeat || !timeout.started()))
+    {
         objectWrite(valueComObjNo, objValue);
     }
 }
@@ -175,10 +178,12 @@ void Switch::checkPeriodic(void)
             timeout.start(delay);
             break;
         }
-        if(objValue != -1) {
+        if(objValue != -1)
+        {
         	objectWrite(valueComObjNo, objValue);
         }
-        if(repeat) {
+        if(repeat)
+        {
             timeout.start(delay);
         }
     }
@@ -254,7 +259,8 @@ void Switch2Level::inputChanged(int value)
 				break;
 			}
 			timeout.stop();
-			if(objValue != -1) {
+			if(objValue != -1)
+			{
 				objectWrite(valueComObjNo, objValue);
 			}
 		}

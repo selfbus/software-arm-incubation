@@ -22,26 +22,33 @@ Dimmer::Dimmer(unsigned int no, unsigned int longPress, unsigned int channelConf
 
     debug_eeprom("Channel EEPROM:", channelConfig, 46);
 
-	if(!userEeprom[channelConfig + 0x20] & 0x3) {
+	if(!userEeprom[channelConfig + 0x20] & 0x3)
+	{
 		repeatDimmerTime = 0;
 	}
 	doStopFlag = 0;
 
-	if(!oneButtonDimmer) {
+	if(!oneButtonDimmer)
+	{
 		onOffComObjNo  = (number & 0xfffe) * 5;
 		dimValComObjNo = (number & 0xfffe) * 5 + 1;
 		stateComObjNo  = -1;
-		if(number & 0x01) { // patch this value due to wrong knxprod file
+		if(number & 0x01)
+		{ // patch this value due to wrong knxprod file
 			stepsDownWidthDimmer = 9;
-			if(upDownInverse == 1) {
+			if(upDownInverse == 1)
+			{
 				upDownInverse = 0;
 			}
-		} else {
-			if(upDownInverse == 2) {
+		} else
+		{
+			if(upDownInverse == 2)
+			{
 				upDownInverse = 0;
 			}
 		}
-	} else {
+	} else
+	{
 		onOffComObjNo  = number * 5;
 		dimValComObjNo = number * 5 + 1;
 		stateComObjNo  = number * 5 + 2;
@@ -66,19 +73,24 @@ void Dimmer::inputChanged(int value)
 	{   // this change is a falling edge
 		// only handle the falling edge if we don't had a long pressed
 		// for the last rising edge
-		if(doStopFlag) {
+		if(doStopFlag)
+		{
 			int objVal = 0;
 			doStopFlag = 0;
 			objectWrite(dimValComObjNo, objVal);
-			if(oneButtonDimmer) {
+			if(oneButtonDimmer)
+			{
 				upDownInverse = !upDownInverse;
 			}
-		} else if (timeout.started()) {
+		} else if (timeout.started())
+		{
 			unsigned int state = !upDownInverse;
-			if(oneButtonDimmer) { // in one button mode use the inverse direction com obj value
+			if(oneButtonDimmer)
+			{ // in one button mode use the inverse direction com obj value
 				state = !objectRead(stateComObjNo);
 				objectSetValue(stateComObjNo, state);
-			} else {
+			} else
+			{
 				state = upDownInverse ? (number&1):!(number&1);
 			}
 			objectWrite(onOffComObjNo, state);
@@ -92,8 +104,10 @@ void Dimmer::checkPeriodic(void)
     if (timeout.started() && timeout.expired())
     {
     	int val=upDownInverse?stepsDownWidthDimmer:stepsUpWidthDimmer;
-    	if(oneButtonDimmer) {
-    		if(repeatDimmerTime) {
+    	if(oneButtonDimmer)
+    	{
+    		if(repeatDimmerTime)
+    		{
     			timeout.start(repeatDimmerTime);
     		}
     	}

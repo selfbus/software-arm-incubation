@@ -51,10 +51,13 @@ void Input::begin(int noOfChannels, int baseAddress)
 
 void Input::scan(void)
 {
-	for(unsigned int i = 0; i < noOfChannels; i++) {
-		if(digitalRead(inputPins[i])) {
+	for(unsigned int i = 0; i < noOfChannels; i++)
+	{
+		if(digitalRead(inputPins[i]))
+		{
 		    inputState&=0xffff^(1<<i);
-		} else {
+		} else
+		{
 			inputState|=1<<i;
 		}
 	}

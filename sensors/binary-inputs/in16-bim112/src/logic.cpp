@@ -3,6 +3,11 @@
  *
  *  Created on: 08.08.2015
  *      Author: Deti Fliegl <deti@fliegl.de>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3 as
+ *  published by the Free Software Foundation.
+ *
  */
 
 #include "logic.h"
@@ -19,7 +24,8 @@ configBase(logicBase), number(no), channels(chans)
 
 	int addr       = configBase + 4 * (11 + channels) + 1 + 2 * number;
 	numScene       = userEeprom [addr + 1];
-	for(unsigned int i=0; i < MAX_CHANNELS+2; i++) {
+	for(unsigned int i=0; i < MAX_CHANNELS+2; i++)
+	{
 		inputs[i]=0;
 	}
 
@@ -30,7 +36,8 @@ configBase(logicBase), number(no), channels(chans)
 	extLogicalObjectBComObjNo = 81 + (number*3);
 	outLogicalObjectComObjNo  = 82 + (number*3);
 
-	if(busreturn) {
+	if(busreturn)
+	{
 		requestObjectRead(extLogicalObjectAComObjNo);
 		requestObjectRead(extLogicalObjectBComObjNo);
 	}
@@ -40,18 +47,24 @@ void Logic::doLogic(void)
 {
 	unsigned int result = 0;
 
-	if(logicOperation == LOGIC_OP_OR) {
-		for(unsigned int i=0; i< channels + 2; i++) {
+	if(logicOperation == LOGIC_OP_OR)
+	{
+		for(unsigned int i=0; i< channels + 2; i++)
+		{
 			unsigned int chanMode = userEeprom [inputCfgPtr + i];
-			if(chanMode != CHAN_MODE_DISABLED) {
+			if(chanMode != CHAN_MODE_DISABLED)
+			{
 				result |= inputs[i]^(chanMode-1);
 			}
 		}
-	}else if(logicOperation == LOGIC_OP_AND) {
+	} else if(logicOperation == LOGIC_OP_AND)
+	{
 		result = 1;
-		for(unsigned int i=0; i< channels + 2; i++) {
+		for(unsigned int i=0; i< channels + 2; i++)
+		{
 			unsigned int chanMode = userEeprom [inputCfgPtr + i];
-			if(chanMode != CHAN_MODE_DISABLED) {
+			if(chanMode != CHAN_MODE_DISABLED)
+			{
 				result &= inputs[i]^(chanMode-1);
 			}
 		}
@@ -60,37 +73,48 @@ void Logic::doLogic(void)
 		result^=1;
 	}
 	switch(sendCondition) {
-	case SEND_COND_INPUT: 	objectWrite(outLogicalObjectComObjNo, result); break;
-	case SEND_COND_OUTPUT: if(objectRead(outLogicalObjectComObjNo)!=result){
-		objectWrite(outLogicalObjectComObjNo, result);
-	}; break;
-	case SEND_COND_SCENE: if(result){
-		objectWrite(outLogicalObjectComObjNo, numScene);
-	}; break;
-	case SEND_COND_NONE: objectSetValue(outLogicalObjectComObjNo, result); break;
+        case SEND_COND_INPUT:  objectWrite(outLogicalObjectComObjNo, result);
+                               break;
+        case SEND_COND_OUTPUT: if(objectRead(outLogicalObjectComObjNo)!=result)
+                               {
+                                  objectWrite(outLogicalObjectComObjNo, result);
+	                           };
+                               break;
+	    case SEND_COND_SCENE:  if(result)
+	                           {
+		                           objectWrite(outLogicalObjectComObjNo, numScene);
+                               };
+	                           break;
+	    case SEND_COND_NONE:   objectSetValue(outLogicalObjectComObjNo, result);
+	                           break;
 	}
 }
 
 void Logic::inputChanged(int num, int value)
 {
 	unsigned int chanMode = userEeprom [inputCfgPtr + num];
-	if(chanMode != CHAN_MODE_DISABLED) {
+	if(chanMode != CHAN_MODE_DISABLED)
+	{
 		inputs[num]=value?1:0;
 		doLogic();
 	}
 }
 void Logic::objectUpdated(int objno)
 {
-	if(objno == extLogicalObjectAComObjNo) {
+	if(objno == extLogicalObjectAComObjNo)
+	{
 		unsigned int chanMode = userEeprom [inputCfgPtr + channels];
-		if(chanMode != CHAN_MODE_DISABLED) {
+		if(chanMode != CHAN_MODE_DISABLED)
+		{
 			inputs[16] = objectRead(extLogicalObjectAComObjNo);
 			doLogic();
 		}
 	}
-	if(objno == extLogicalObjectBComObjNo) {
+	if(objno == extLogicalObjectBComObjNo)
+	{
 		unsigned int chanMode = userEeprom [inputCfgPtr + channels +1];
-		if(chanMode != CHAN_MODE_DISABLED) {
+		if(chanMode != CHAN_MODE_DISABLED)
+		{
 			inputs[17] = objectRead(extLogicalObjectBComObjNo);
 			doLogic();
 		}

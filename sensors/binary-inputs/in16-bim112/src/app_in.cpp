@@ -1,5 +1,6 @@
 /*
  *  Copyright (c) 2014 Stefan Taferner <stefan.taferner@gmx.at>
+ *                2015 Deti Fliegl <deti@fliegl.de>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -11,7 +12,6 @@
 #include <string.h>
 
 #include "app_in.h"
-#include "params.h"
 #include "channel.h"
 #include "switch.h"
 #include "jalo.h"
@@ -30,12 +30,16 @@ void objectUpdated(int objno)
 {
     int channel = objno / 5;
     int channelObjno = objno - (channel * 5);
-    if (channelObjno == 4) { // change of the lock object
+    if (channelObjno == 4)
+    { // change of the lock object
         channelConfig[channel]->setLock(objectRead(objno));
     }
-    if(objno >= 80) {
-    	for (unsigned int i = 0; i < MAX_LOGIC; i++) {
-    		if(logicConfig[i]) {
+    if(objno >= 80)
+    {
+    	for (unsigned int i = 0; i < MAX_LOGIC; i++)
+    	{
+    		if(logicConfig[i])
+    		{
     			logicConfig[i]->objectUpdated(objno);
     		}
     	}
@@ -53,8 +57,10 @@ void checkPeriodic(void)
             Channel * channel = channelConfig[i];
             if (channel && ! channel->isLocked())
                 channel->inputChanged(value);
-            for (unsigned int n = 0; n < MAX_LOGIC; n++) {
-                	if(logicConfig[n]) {
+            for (unsigned int n = 0; n < MAX_LOGIC; n++)
+            {
+                	if(logicConfig[n])
+                	{
                 		logicConfig[n]->inputChanged(i, value);
                 	}
             }
@@ -102,8 +108,10 @@ void initApplication(void)
 
     unsigned int busReturnLogic = userEeprom[addressStartupDelay-1] & 0x01;
 
-    for (unsigned int i = 0; i < MAX_LOGIC; i++) {
-    	if(userEeprom [currentVersion->logicBaseAddress + i * (11 + channels)] != 0xff) {
+    for (unsigned int i = 0; i < MAX_LOGIC; i++)
+    {
+    	if(userEeprom [currentVersion->logicBaseAddress + i * (11 + channels)] != 0xff)
+    	{
     		logicConfig[i] = new Logic(currentVersion->logicBaseAddress, i, channels, busReturnLogic );
     	}
     }
@@ -115,8 +123,10 @@ void initApplication(void)
         word      channelType = userEeprom.getUInt16(configBase);
         Channel * channel;
         inputs.checkInput(i, &value);
-        for (unsigned int n = 0; n < MAX_LOGIC; n++) {
-            	if(logicConfig[n]) {
+        for (unsigned int n = 0; n < MAX_LOGIC; n++)
+        {
+            	if(logicConfig[n])
+            	{
             		logicConfig[n]->inputChanged(n, value);
             	}
         }

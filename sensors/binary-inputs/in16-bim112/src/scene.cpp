@@ -48,7 +48,8 @@ void Scene::checkPeriodic(void)
 {
     if (timeout.started() && timeout.expired())
     {
-    	if(saveScene) {
+    	if(saveScene)
+    	{
     		objectWrite(sceneComObjNo, numberScene|0x80);
     	}
     }

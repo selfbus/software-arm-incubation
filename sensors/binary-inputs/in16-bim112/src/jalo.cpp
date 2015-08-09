@@ -20,11 +20,13 @@ Jalo::Jalo(unsigned int no, unsigned int longPress, unsigned int channelConfig, 
 
     debug_eeprom("Channel EEPROM:", channelConfig, 46);
 
-	if(!oneButtonShutter) {
+	if(!oneButtonShutter)
+	{
 		upDownComObjNo    = (number & 0xfffe) * 5;
 		stopComObjNo      = (number & 0xfffe) * 5 + 1;
 		directionComObjNo = -1;
-	} else {
+	} else
+	{
 		upDownComObjNo    = number * 5;
 		stopComObjNo      = number * 5 + 1;
 		directionComObjNo = number * 5 + 2;
@@ -52,11 +54,14 @@ void Jalo::inputChanged(int value)
 		if (timeout.started())
 		{
 			unsigned int direction = upDownInverse; //use inverse value from parameters
-			if(oneButtonShutter) { // in one button mode use the inverse direction com obj value
+			if(oneButtonShutter)
+			{ // in one button mode use the inverse direction com obj value
 				direction = !objectRead(directionComObjNo);
 			}
-			if(!shortLongInverse) {
-				if(oneButtonShutter) {
+			if(!shortLongInverse)
+			{
+				if(oneButtonShutter)
+				{
 					direction ^= 1;
 				}
 				objectWrite(stopComObjNo, direction);
@@ -73,15 +78,19 @@ void Jalo::checkPeriodic(void)
     if (timeout.started() && timeout.expired())
     {
 		unsigned int direction = upDownInverse; //use inverse value from parameters
-		if(oneButtonShutter) { // in one button mode use the inverse direction com obj value
+		if(oneButtonShutter)
+		{ // in one button mode use the inverse direction com obj value
 			direction = !objectRead(directionComObjNo);
 		}
-		if(shortLongInverse) {
-			if(oneButtonShutter) {
+		if(shortLongInverse)
+		{
+			if(oneButtonShutter)
+			{
 				direction ^= 1;
 			}
 			objectWrite(stopComObjNo, direction);
-		} else {
+		} else
+		{
 			objectWrite(upDownComObjNo, direction);
 		}
     }
