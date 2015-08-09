@@ -67,6 +67,7 @@ void Logic::doLogic(void)
 		case SEND_COND_SCENE: if(result){
 									objectWrite(outLogicalObjectComObjNo, numScene);
 								}; break;
+		case SEND_COND_NONE: objectSetValue(outLogicalObjectComObjNo, result); break;
 	}
 }
 
