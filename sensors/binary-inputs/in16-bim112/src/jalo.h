@@ -19,7 +19,8 @@
 class Jalo: public _Switch_
 {
 public:
-	Jalo(unsigned int no, unsigned int longPress, unsigned int  channelConfig, unsigned int busReturn, unsigned int value);
+    Jalo(unsigned int no, unsigned int longPress, unsigned int channelConfig,
+            unsigned int busReturn, unsigned int value);
     virtual void inputChanged(int value);
     virtual void checkPeriodic(void);
 private:
