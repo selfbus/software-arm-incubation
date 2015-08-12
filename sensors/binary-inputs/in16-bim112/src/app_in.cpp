@@ -24,7 +24,7 @@
 Input inputs;
 
 Channel * channelConfig[MAX_CHANNELS];
-Logic   * logicConfig[MAX_LOGIC];
+Logic * logicConfig[MAX_LOGIC];
 
 void objectUpdated(int objno)
 {
@@ -34,15 +34,15 @@ void objectUpdated(int objno)
     { // change of the lock object
         channelConfig[channel]->setLock(objectRead(objno));
     }
-    if(objno >= 80)
+    if (objno >= 80)
     {
-    	for (unsigned int i = 0; i < MAX_LOGIC; i++)
-    	{
-    		if(logicConfig[i])
-    		{
-    			logicConfig[i]->objectUpdated(objno);
-    		}
-    	}
+        for (unsigned int i = 0; i < MAX_LOGIC; i++)
+        {
+            if (logicConfig[i])
+            {
+                logicConfig[i]->objectUpdated(objno);
+            }
+        }
     }
 }
 
@@ -55,14 +55,14 @@ void checkPeriodic(void)
         if (inputs.checkInput(i, &value))
         {
             Channel * channel = channelConfig[i];
-            if (channel && ! channel->isLocked())
+            if (channel && !channel->isLocked())
                 channel->inputChanged(value);
             for (unsigned int n = 0; n < MAX_LOGIC; n++)
             {
-                	if(logicConfig[n])
-                	{
-                		logicConfig[n]->inputChanged(i, value);
-                	}
+                if (logicConfig[n])
+                {
+                    logicConfig[n]->inputChanged(i, value);
+                }
             }
         }
     }
@@ -77,16 +77,13 @@ void checkPeriodic(void)
 void initApplication(void)
 {
     unsigned int channels = currentVersion->noOfChannels;
-    unsigned int longKeyTime = userEeprom.getUInt16(currentVersion->baseAddress + 2);
-    unsigned int addressStartupDelay =
-          currentVersion->baseAddress
-        + 4 // debounce, longTime
-        + channels * 46
-        + channels
-        + (11 + channels) * 4 // logic config
-        + 10;
-    unsigned int busReturn = userEeprom[addressStartupDelay-1] & 0x2; // bit offset is 6: means 2^(7-bit offset)
-    memset (channelConfig, 0, sizeof (channelConfig));
+    unsigned int longKeyTime = userEeprom.getUInt16(
+            currentVersion->baseAddress + 2);
+    unsigned int addressStartupDelay = currentVersion->baseAddress + 4 // debounce, longTime
+            + channels * 46 + channels + (11 + channels) * 4 // logic config
+            + 10;
+    unsigned int busReturn = userEeprom[addressStartupDelay - 1] & 0x2; // bit offset is 6: means 2^(7-bit offset)
+    memset(channelConfig, 0, sizeof(channelConfig));
     inputs.begin(channels, currentVersion->baseAddress);
 
     Timeout startupDelay;
@@ -106,45 +103,54 @@ void initApplication(void)
         }
     }
 
-    unsigned int busReturnLogic = userEeprom[addressStartupDelay-1] & 0x01;
+    unsigned int busReturnLogic = userEeprom[addressStartupDelay - 1] & 0x01;
 
     for (unsigned int i = 0; i < MAX_LOGIC; i++)
     {
-    	if(userEeprom [currentVersion->logicBaseAddress + i * (11 + channels)] != 0xff)
-    	{
-    		logicConfig[i] = new Logic(currentVersion->logicBaseAddress, i, channels, busReturnLogic );
-    	}
+        if (userEeprom[currentVersion->logicBaseAddress + i * (11 + channels)]
+                != 0xff)
+        {
+            logicConfig[i] = new Logic(currentVersion->logicBaseAddress, i,
+                    channels, busReturnLogic);
+        }
     }
 
     for (unsigned int i = 0; i < channels; i++)
     {
         unsigned int value;
-        int       configBase = currentVersion->baseAddress + 4 + i * 46;
-        word      channelType = userEeprom.getUInt16(configBase);
+        int configBase = currentVersion->baseAddress + 4 + i * 46;
+        word channelType = userEeprom.getUInt16(configBase);
         Channel * channel;
         inputs.checkInput(i, &value);
         for (unsigned int n = 0; n < MAX_LOGIC; n++)
         {
-            	if(logicConfig[n])
-            	{
-            		logicConfig[n]->inputChanged(n, value);
-            	}
+            if (logicConfig[n])
+            {
+                logicConfig[n]->inputChanged(n, value);
+            }
         }
 
         switch (channelType)
         {
-        case 0   : // channel is configured as switch
-            channel = new Switch(i, longKeyTime, configBase, busReturn, value); break;
-        case 256 : // channel is configured as switch short/long
-            channel = new Switch2Level(i, longKeyTime, configBase, busReturn, value); break;
-        case 1 : // channel is configured as dimmer
-            channel = new Dimmer(i, longKeyTime, configBase, busReturn, value); break;
-        case 2 : // channel is configured as jalo
-            channel = new Jalo(i, longKeyTime, configBase, busReturn, value); break;
-        case 3 : // channel is configured as scene
-            channel = new Scene(i, longKeyTime, configBase, busReturn, value); break;
-        case 4 : // channel is configured as counter
-            channel = new Counter(i, longKeyTime, configBase, busReturn, value); break;
+        case 0: // channel is configured as switch
+            channel = new Switch(i, longKeyTime, configBase, busReturn, value);
+            break;
+        case 256: // channel is configured as switch short/long
+            channel = new Switch2Level(i, longKeyTime, configBase, busReturn,
+                    value);
+            break;
+        case 1: // channel is configured as dimmer
+            channel = new Dimmer(i, longKeyTime, configBase, busReturn, value);
+            break;
+        case 2: // channel is configured as jalo
+            channel = new Jalo(i, longKeyTime, configBase, busReturn, value);
+            break;
+        case 3: // channel is configured as scene
+            channel = new Scene(i, longKeyTime, configBase, busReturn, value);
+            break;
+        case 4: // channel is configured as counter
+            channel = new Counter(i, longKeyTime, configBase, busReturn, value);
+            break;
         default:
             channel = 0;
         }

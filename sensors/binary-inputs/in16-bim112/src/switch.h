@@ -19,7 +19,11 @@
 class _Switch_: public Channel
 {
 protected:
-	_Switch_(unsigned int no, unsigned int longPress) : Channel(no, longPress) {};
+    _Switch_(unsigned int no, unsigned int longPress) :
+            Channel(no, longPress)
+    {
+    }
+    ;
 public:
     virtual void setLock(unsigned int value);
 };
@@ -27,7 +31,8 @@ public:
 class Switch: public _Switch_
 {
 public:
-    Switch(unsigned int no, unsigned int longPress, unsigned int  channelConfig, unsigned int busReturn, unsigned int value);
+    Switch(unsigned int no, unsigned int longPress, unsigned int channelConfig,
+            unsigned int busReturn, unsigned int value);
     virtual void inputChanged(int value);
     virtual void checkPeriodic(void);
 private:
@@ -41,10 +46,12 @@ private:
     int statusComObjNo;
 };
 
-class Switch2Level : public _Switch_
+class Switch2Level: public _Switch_
 {
 public:
-	Switch2Level(unsigned int no, unsigned int longPress, unsigned int  channelConfig, unsigned int busReturn, unsigned int value);
+    Switch2Level(unsigned int no, unsigned int longPress,
+            unsigned int channelConfig, unsigned int busReturn,
+            unsigned int value);
     virtual void inputChanged(int value);
     virtual void checkPeriodic(void);
 private:

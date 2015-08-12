@@ -19,15 +19,17 @@
 #include <sblib/ioports.h>
 #include <sblib/eib/user_memory.h>
 
-inline void debug_eeprom(const char *name, unsigned int channelConfig, unsigned int len)
+inline void debug_eeprom(const char *name, unsigned int channelConfig,
+        unsigned int len)
 {
-	serial.println(name);
-	for (int i = 0; i < len; ++i)
-	{
-		if (i) serial.print(" ");
-		serial.print(userEeprom [channelConfig + i], HEX, 2);
-	}
-	serial.println();
+    serial.println(name);
+    for (int i = 0; i < len; ++i)
+    {
+        if (i)
+            serial.print(" ");
+        serial.print(userEeprom[channelConfig + i], HEX, 2);
+    }
+    serial.println();
 }
 
 inline void debug_init(void)
@@ -41,7 +43,5 @@ inline void debug_init(void)
 #define debug_init()
 #define debug_eeprom(x,y,z)
 #endif
-
-
 
 #endif /* DEBUG_H_ */

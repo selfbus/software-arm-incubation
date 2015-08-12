@@ -19,7 +19,8 @@
 class Counter: public _Switch_
 {
 public:
-	Counter(unsigned int no, unsigned int longPress, unsigned int  channelConfig, unsigned int busReturn, unsigned int value);
+    Counter(unsigned int no, unsigned int longPress, unsigned int channelConfig,
+            unsigned int busReturn, unsigned int value);
     virtual void inputChanged(int value);
     virtual void checkPeriodic(void);
 private:

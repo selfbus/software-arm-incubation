@@ -12,12 +12,17 @@
 #include <sblib/eib/user_memory.h>
 #include <string.h> /* for memcpy() */
 
+static const char APP_VERSION[] __attribute__((used)) = "Binary Input 1.1.20";
+
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const HardwareVersion hardwareVersion[3] =
-{ {16, 0x4574, 0x4868, 27, { 0, 0, 0, 0, 0x00, 0x1E }}
-, { 8, 0x44D4, 0x4650, 19, { 0, 0, 0, 0, 0x01, 0x1E }}
-, { 4, 0x4484, 0x4544, 15, { 0, 0, 0, 0, 0x01, 0x1F }}
-};
+{
+{ 16, 0x4574, 0x4868,
+{ 0, 0, 0, 0, 0x00, 0x1E }, APP_VERSION },
+{ 8, 0x44D4, 0x4650,
+{ 0, 0, 0, 0, 0x01, 0x1E }, APP_VERSION },
+{ 4, 0x4484, 0x4544,
+{ 0, 0, 0, 0, 0x01, 0x1F }, APP_VERSION } };
 
 const HardwareVersion * currentVersion;
 /**
@@ -35,8 +40,9 @@ void setup()
     bcu.begin(131, 0x0030, 0x20);  // we are a MDT binary input, version 2.0
 
     // XXX read some ID pins to determine which version is attached
-    currentVersion = & hardwareVersion[0];
-    memcpy(userEeprom.order, currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
+    currentVersion = &hardwareVersion[0];
+    memcpy(userEeprom.order, currentVersion->hardwareVersion,
+            sizeof(currentVersion->hardwareVersion));
     initApplication();
 }
 

@@ -19,7 +19,8 @@
 class Dimmer: public _Switch_
 {
 public:
-	Dimmer(unsigned int no, unsigned int longPress, unsigned int  channelConfig, unsigned int busReturn, unsigned int value);
+    Dimmer(unsigned int no, unsigned int longPress, unsigned int channelConfig,
+            unsigned int busReturn, unsigned int value);
     virtual void inputChanged(int value);
     virtual void checkPeriodic(void);
 private:

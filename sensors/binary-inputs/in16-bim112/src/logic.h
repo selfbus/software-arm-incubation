@@ -40,7 +40,8 @@
 class Logic
 {
 public:
-    Logic (unsigned int  logicBase, unsigned int no, unsigned int chans, unsigned int busreturn);
+    Logic(unsigned int logicBase, unsigned int no, unsigned int chans,
+            unsigned int busreturn);
     void inputChanged(int num, int value);
     void objectUpdated(int objno);
 
@@ -56,10 +57,10 @@ private:
     unsigned int outputInverted; // @2
     unsigned int numScene;
     unsigned int inputCfgPtr;
-    unsigned int inputs[MAX_CHANNELS+2];
+    unsigned int inputs[MAX_CHANNELS + 2];
 
     int extLogicalObjectAComObjNo;
     int extLogicalObjectBComObjNo;
-	int outLogicalObjectComObjNo;
+    int outLogicalObjectComObjNo;
 };
 #endif /* LOGIC_H_ */
