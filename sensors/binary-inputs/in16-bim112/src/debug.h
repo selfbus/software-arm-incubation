@@ -27,7 +27,7 @@ inline void debug_eeprom(const char *name, unsigned int channelConfig,
     {
         if (i)
             serial.print(" ");
-        serial.print(userEeprom[channelConfig + i], HEX, 2);
+        serial.print(userEeprom.getUInt8(channelConfig + i), HEX, 2);
     }
     serial.println();
 }
