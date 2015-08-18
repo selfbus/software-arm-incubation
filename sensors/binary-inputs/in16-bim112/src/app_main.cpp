@@ -30,21 +30,6 @@ const HardwareVersion * currentVersion;
  */
 void setup()
 {
-#if 0
-    unsigned int * magicWord = (unsigned int *) 0x10000000;
-    if(*magicWord == 0x5E1FB055) {
-        pinMode(PIO1_0, OUTPUT);
-        digitalWrite(PIO1_0, 0);
-        pinMode(PIO2_10, OUTPUT);
-        digitalWrite(PIO2_10, 1);
-        *magicWord = 0;
-    } else {
-        pinMode(PIO1_0, OUTPUT);
-        digitalWrite(PIO1_0, 0);
-        pinMode(PIO2_10, OUTPUT);
-        digitalWrite(PIO2_10, 0);
-    }
-#endif
     bcu.setProgPin(PIO2_11);
     bcu.setProgPinInverted(false);
     bcu.setRxPin(PIO1_8);
