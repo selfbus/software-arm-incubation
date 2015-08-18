@@ -12,7 +12,7 @@
 #include <sblib/eib/user_memory.h>
 #include <string.h> /* for memcpy() */
 
-static const char APP_VERSION[] __attribute__((used)) = "Binary Input 1.1.20";
+static const char APP_VERSION[] __attribute__((used)) = "Binary Input 1.1.21";
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const HardwareVersion hardwareVersion[3] =
@@ -30,6 +30,21 @@ const HardwareVersion * currentVersion;
  */
 void setup()
 {
+#if 0
+    unsigned int * magicWord = (unsigned int *) 0x10000000;
+    if(*magicWord == 0x5E1FB055) {
+        pinMode(PIO1_0, OUTPUT);
+        digitalWrite(PIO1_0, 0);
+        pinMode(PIO2_10, OUTPUT);
+        digitalWrite(PIO2_10, 1);
+        *magicWord = 0;
+    } else {
+        pinMode(PIO1_0, OUTPUT);
+        digitalWrite(PIO1_0, 0);
+        pinMode(PIO2_10, OUTPUT);
+        digitalWrite(PIO2_10, 0);
+    }
+#endif
     bcu.setProgPin(PIO2_11);
     bcu.setProgPinInverted(false);
     bcu.setRxPin(PIO1_8);
@@ -41,6 +56,7 @@ void setup()
 
     // XXX read some ID pins to determine which version is attached
     currentVersion = &hardwareVersion[0];
+    // FIXME for new memory mapper
     memcpy(userEeprom.order, currentVersion->hardwareVersion,
             sizeof(currentVersion->hardwareVersion));
     initApplication();

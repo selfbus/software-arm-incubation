@@ -18,13 +18,13 @@ Logic::Logic(unsigned int logicBase, unsigned int no, unsigned int chans,
         configBase(logicBase), number(no), channels(chans)
 {
     unsigned int base = configBase + number * (11 + channels);
-    logicOperation = userEeprom[base];
-    sendCondition = userEeprom[base + 1];
-    outputInverted = userEeprom[base + 2];
+    logicOperation = userEeprom.getUInt8(base);
+    sendCondition = userEeprom.getUInt8(base + 1);
+    outputInverted = userEeprom.getUInt8(base + 2);
     inputCfgPtr = base + 3;
 
     int addr = configBase + 4 * (11 + channels) + 1 + 2 * number;
-    numScene = userEeprom[addr + 1];
+    numScene = userEeprom.getUInt8(addr + 1);
     for (unsigned int i = 0; i < MAX_CHANNELS + 2; i++)
     {
         inputs[i] = 0;
@@ -52,7 +52,7 @@ void Logic::doLogic(void)
     {
         for (unsigned int i = 0; i < channels + 2; i++)
         {
-            unsigned int chanMode = userEeprom[inputCfgPtr + i];
+            unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + i);
             if (chanMode != CHAN_MODE_DISABLED)
             {
                 result |= inputs[i] ^ (chanMode - 1);
@@ -64,7 +64,7 @@ void Logic::doLogic(void)
         result = 1;
         for (unsigned int i = 0; i < channels + 2; i++)
         {
-            unsigned int chanMode = userEeprom[inputCfgPtr + i];
+            unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + i);
             if (chanMode != CHAN_MODE_DISABLED)
             {
                 result &= inputs[i] ^ (chanMode - 1);
@@ -102,7 +102,7 @@ void Logic::doLogic(void)
 
 void Logic::inputChanged(int num, int value)
 {
-    unsigned int chanMode = userEeprom[inputCfgPtr + num];
+    unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + num);
     if (chanMode != CHAN_MODE_DISABLED)
     {
         inputs[num] = value ? 1 : 0;
@@ -113,7 +113,7 @@ void Logic::objectUpdated(int objno)
 {
     if (objno == extLogicalObjectAComObjNo)
     {
-        unsigned int chanMode = userEeprom[inputCfgPtr + channels];
+        unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + channels);
         if (chanMode != CHAN_MODE_DISABLED)
         {
             inputs[16] = objectRead(extLogicalObjectAComObjNo);
@@ -122,7 +122,7 @@ void Logic::objectUpdated(int objno)
     }
     if (objno == extLogicalObjectBComObjNo)
     {
-        unsigned int chanMode = userEeprom[inputCfgPtr + channels + 1];
+        unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + channels + 1);
         if (chanMode != CHAN_MODE_DISABLED)
         {
             inputs[17] = objectRead(extLogicalObjectBComObjNo);

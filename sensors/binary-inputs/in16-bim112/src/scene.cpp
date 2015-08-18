@@ -15,8 +15,8 @@ Scene::Scene(unsigned int no, unsigned int longPress,
         unsigned int channelConfig, unsigned int busReturn, unsigned int value) :
         _Switch_(no, longPress)
 {
-    saveScene = userEeprom[channelConfig + 0x03] & 0x01;
-    numberScene = userEeprom[channelConfig + 0x04];
+    saveScene = userEeprom.getUInt8(channelConfig + 0x03) & 0x01;
+    numberScene = userEeprom.getUInt8(channelConfig + 0x04);
 
     debug_eeprom("Channel EEPROM:", channelConfig, 46);
 

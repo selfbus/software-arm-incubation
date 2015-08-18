@@ -15,9 +15,9 @@ Jalo::Jalo(unsigned int no, unsigned int longPress, unsigned int channelConfig,
         unsigned int busReturn, unsigned int value) :
         _Switch_(no, longPress)
 {
-    oneButtonShutter = userEeprom[channelConfig + 0x03] & 0x04 ? 1 : 0;
-    shortLongInverse = userEeprom[channelConfig + 0x03] & 0x02 ? 1 : 0;
-    upDownInverse = userEeprom[channelConfig + 0x03] & 0x01 ? 1 : 0;
+    oneButtonShutter = userEeprom.getUInt8(channelConfig + 0x03) & 0x04 ? 1 : 0;
+    shortLongInverse = userEeprom.getUInt8(channelConfig + 0x03) & 0x02 ? 1 : 0;
+    upDownInverse = userEeprom.getUInt8(channelConfig + 0x03) & 0x01 ? 1 : 0;
 
     debug_eeprom("Channel EEPROM:", channelConfig, 46);
 
