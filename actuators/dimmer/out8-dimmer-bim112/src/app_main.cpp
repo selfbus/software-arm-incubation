@@ -22,8 +22,6 @@ const HardwareVersion hardwareVersion[] =
 { {8, 0xADF0, { 0x00, 0x00, 0x40, 0x00, 0x00, 0x00 }}
 };
 
-const unsigned char property[10] = {0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0xDE, 0xFF, 0x00, 0x00};
-
 const HardwareVersion * currentVersion;
 
 /*
@@ -53,12 +51,11 @@ void setup()
     bcu.begin(0x0002, 0xa045, 0x0012);
     bcu.setMemMapper(&memMapper);
     memcpy(userEeprom.order, currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
-    memcpy(userRam.user2, property, sizeof(property));
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
     initApplication();
-	timeout.start    (1);
+	timeout.start(1);
 }
 
 /*
