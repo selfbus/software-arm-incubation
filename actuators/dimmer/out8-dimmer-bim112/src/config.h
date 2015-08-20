@@ -176,6 +176,36 @@ extern const HardwareVersion * currentVersion;
  27370/0x00ea: P_TreppeZeitAddierbar
  ...
  27372/0x00ec: P_TreppeHelligkeitNachAbdimmen
+
+ ComObjects:
+  0: In Operation (1bit out upd)
+
+ 25 ComObjects reserved per channel beginning from 10:
+ Channel A
+	 10: Switch / Status (1bit in/out upd)
+	 11: Status switch (1bit out upd)
+	 12: Relative dimming (4bit in)
+	 13: Brightness value (8bit in upd)
+	 14: Status brightness value (8bit out upd)
+	 15: Rel. Dimming speed 0...100% (16bit out)
+	 16: Forced operation (2bit in)
+	 17: Call preset 1 and 2 (1bit in)
+	 18: Set preset 1 and 2 (1bit in)
+	 19: Call preset 3 and 4 (1bit in)
+	 20: Set preset 3 and 4 (1bit in)
+	 21: 8-bit-scene (8bit in)
+	 22: Restore standard scene (1bit in)
+	 23: Block (1bit in)
+	 24: Activate staircase function (1bit in)
+	 25: Permanent ON (1bit in)
+	 26: Duration of staircase lighting (16bit in/out)
+	 27: Warning staircase lighting (1bit out upd)
+	 34: Statusbyte (8bit out upd)
+
+ Channel B
+ 	 35:...
+ 	 59:...
+
 */
 
 
