@@ -20,8 +20,8 @@ Counter::Counter(unsigned int no, unsigned int longPress,
         unsigned int channelConfig, unsigned int busReturn, unsigned int value) :
         _Switch_(no, longPress)
 {
-    modeCounter = userEeprom[channelConfig + 0x03];
-    txDiffCounter = userEeprom[channelConfig + 0x1d];
+    modeCounter = userEeprom.getUInt8(channelConfig + 0x03);
+    txDiffCounter = userEeprom.getUInt8(channelConfig + 0x1d);
 
     debug_eeprom("Channel EEPROM:", channelConfig, 46);
 

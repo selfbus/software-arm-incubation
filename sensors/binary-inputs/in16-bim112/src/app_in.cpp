@@ -82,7 +82,7 @@ void initApplication(void)
     unsigned int addressStartupDelay = currentVersion->baseAddress + 4 // debounce, longTime
             + channels * 46 + channels + (11 + channels) * 4 // logic config
             + 10;
-    unsigned int busReturn = userEeprom[addressStartupDelay - 1] & 0x2; // bit offset is 6: means 2^(7-bit offset)
+    unsigned int busReturn = userEeprom.getUInt8(addressStartupDelay - 1) & 0x2; // bit offset is 6: means 2^(7-bit offset)
     memset(channelConfig, 0, sizeof(channelConfig));
     inputs.begin(channels, currentVersion->baseAddress);
 
@@ -103,11 +103,11 @@ void initApplication(void)
         }
     }
 
-    unsigned int busReturnLogic = userEeprom[addressStartupDelay - 1] & 0x01;
+    unsigned int busReturnLogic = userEeprom.getUInt8(addressStartupDelay - 1) & 0x01;
 
     for (unsigned int i = 0; i < MAX_LOGIC; i++)
     {
-        if (userEeprom[currentVersion->logicBaseAddress + i * (11 + channels)]
+        if (userEeprom.getUInt8(currentVersion->logicBaseAddress + i * (11 + channels))
                 != 0xff)
         {
             logicConfig[i] = new Logic(currentVersion->logicBaseAddress, i,

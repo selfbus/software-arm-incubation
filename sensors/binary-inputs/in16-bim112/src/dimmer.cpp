@@ -15,10 +15,10 @@ Dimmer::Dimmer(unsigned int no, unsigned int longPress,
         unsigned int channelConfig, unsigned int busReturn, unsigned int value) :
         _Switch_(no, longPress)
 {
-    oneButtonDimmer = userEeprom[channelConfig + 0x03] & 0x03 ? 0 : 1;
-    upDownInverse = userEeprom[channelConfig + 0x03] & 0x03;
-    stepsDownWidthDimmer = userEeprom[channelConfig + 0x04];
-    stepsUpWidthDimmer = userEeprom[channelConfig + 0x08];
+    oneButtonDimmer = userEeprom.getUInt8(channelConfig + 0x03) & 0x03 ? 0 : 1;
+    upDownInverse = userEeprom.getUInt8(channelConfig + 0x03) & 0x03;
+    stepsDownWidthDimmer = userEeprom.getUInt8(channelConfig + 0x04);
+    stepsUpWidthDimmer = userEeprom.getUInt8(channelConfig + 0x08);
     repeatDimmerTime = userEeprom.getUInt16(channelConfig + 0x1E);
 
     debug_eeprom("Channel EEPROM:", channelConfig, 46);

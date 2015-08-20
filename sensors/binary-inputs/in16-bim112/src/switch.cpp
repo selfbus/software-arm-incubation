@@ -49,10 +49,10 @@ Switch::Switch(unsigned int no, unsigned int longPress,
         _Switch_(no, longPress)
 {
     action = userEeprom.getUInt16(channelConfig + 2);
-    usage_falling = userEeprom[channelConfig + 4];
-    usage_rising = userEeprom[channelConfig + 8];
+    usage_falling = userEeprom.getUInt8(channelConfig + 4);
+    usage_rising = userEeprom.getUInt8(channelConfig + 8);
     delay = userEeprom.getUInt16(channelConfig + 0x1E) * 1000;
-    repeat = userEeprom[channelConfig + 0x20] & 0x03;
+    repeat = userEeprom.getUInt8(channelConfig + 0x20) & 0x03;
 
     if (action & GROUP_SEND_ON)
     {
@@ -115,7 +115,7 @@ void Switch::inputChanged(int value)
             break;
         case SEND_STATE:
             objValue = usage_rising;
-            if (!repeat && delay)
+            if (repeat && delay)
                 timeout.start(delay);
             break;
         case SEND_STATE_ON_DELAY:
@@ -142,7 +142,7 @@ void Switch::inputChanged(int value)
             break;
         case SEND_STATE:
             objValue = usage_falling;
-            if (!repeat && delay)
+            if (repeat && delay)
                 timeout.start(delay);
             break;
         case SEND_STATE_ON_DELAY:
@@ -196,10 +196,10 @@ Switch2Level::Switch2Level(unsigned int no, unsigned int longPress,
         unsigned int channelConfig, unsigned int busReturn, unsigned int value) :
         _Switch_(no, longPress)
 {
-    shortAction = userEeprom[channelConfig + 0x14];
-    longAction = userEeprom[channelConfig + 0x17];
-    usage_falling = userEeprom[channelConfig + 0x04];
-    usage_rising = userEeprom[channelConfig + 0x10];
+    shortAction = userEeprom.getUInt8(channelConfig + 0x14);
+    longAction = userEeprom.getUInt8(channelConfig + 0x17);
+    usage_falling = userEeprom.getUInt8(channelConfig + 0x04);
+    usage_rising = userEeprom.getUInt8(channelConfig + 0x10);
 
     valueComObjNo = number * 5;
     statusComObjNo = number * 5 + 1;
