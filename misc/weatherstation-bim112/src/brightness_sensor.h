@@ -12,28 +12,52 @@
 #define BRIGHTNESS_SENSOR_H_
 
 #include <sblib/eib.h>
-#include <sblib/timeout.h>
+#include "sensor_base.h"
 #include "weatherstation.h"
 #include "threshold.h"
+#include "sensor_base.h"
 
-class Brightness_Sensor
+class BrightnessSensor : SensorBase
 {
-
 public:
-    Brightness_Sensor();
+    BrightnessSensor();
+
+    /**
+     * Read the configuration from the EEPROM and setup the brightness function.
+     *
+     * @param number - which channel (0 .. EST, 1 .. SOUTH, 2 .. WEST)
+     */
     void Initialize(unsigned int number);
 
-    void periodic();
+    /**
+     * Handle the periodic functions of the brightness channel.
+     */
+    void periodic(unsigned int temperature);
+
+    /**
+     * Handle the reaction to an object update from outside.
+     */
     void objectUpdated(int number);
 
 private:
+    /**
+     * Return the current brightness.
+     *
+     * @return current brightness value
+     */
+    virtual unsigned int _newValue();
+
+    /**
+     * Handle the function related to the facade control.
+     *
+     * @param newBrightness - the new brightness value.
+     */
+    void _handleFacade(unsigned int newBrightness, unsigned int temperature);
+
     // internal state
     unsigned int number;
-    unsigned int lastSentBrightness;
-    unsigned int temperatur;
-    Timeout      cyclicSend;
-    // stored config values
-    unsigned int cyclicPeriod;
+    unsigned int objNoOffset;
+
     Threshold threshold[2];
 };
 

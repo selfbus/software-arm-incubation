@@ -8,14 +8,25 @@
  *  published by the Free Software Foundation.
  */
 
+//#define NEW_LIB
+
 #include <sblib/eib.h>
+#ifdef NEW_LIB
 #include <sblib/eib/sblib_default_objects.h>
+#define BCU_ACCESS(x) bcu->x
+#else
+#define BCU_ACCESS(x) bcu.x
+#endif
+
 #include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 #include <sblib/timeout.h>
 #include <string.h>
 #include "weatherstation.h"
 #include "brightness_sensor.h"
+#include "dusk.h"
+#include "wind.h"
+#include "temperature.h"
 
 extern "C" const char APP_VERSION[13] = "WS 0.1";
 
@@ -40,7 +51,10 @@ void checkPeriodicFuntions(void);
 
 static Timeout monitorDelay;
 static unsigned int monitorTime;
-Brightness_Sensor brightness[3];
+static BrightnessSensor brightness[3];
+static Dusk dusk;
+static Wind wind;
+static Temperature temperature;
 
 /*
  * Initialize the application.
@@ -50,12 +64,12 @@ void setup()
 {
     volatile char v = getAppVersion()[0];
     v++;
-    bcu->begin(131, hardwareVersion[5], 0x13);  // we are a MDT weather station, version 1.3
+    BCU_ACCESS(begin)(131, hardwareVersion[5], 0x13);  // we are a MDT weather station, version 1.3
     memcpy(userEeprom.order, hardwareVersion, sizeof(hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
-    if (bcu->applicationRunning())
+    if (BCU_ACCESS(applicationRunning) ())
         initApplication();
 }
 
@@ -97,6 +111,12 @@ void initApplication(void)
 	    if (userEeprom.getUInt8(0x450B + i))
 	        brightness[i].Initialize(i);
 	}
+    if (userEeprom.getUInt8(0x4508))
+        dusk.Initialize();
+    if (userEeprom.getUInt8(0x4509))
+        wind.Initialize();
+    if (userEeprom.getUInt8(0x450A))
+        temperature.Initialize();
 }
 
 void objectUpdated(unsigned int objno)
@@ -117,5 +137,10 @@ void checkPeriodicFuntions(void)
 		monitorDelay.start (monitorTime);
 	}
 
+    for (unsigned int i = 0; i < 3; i++)
+    {
+        brightness[i].periodic(temperature.current());
+    }
+    dusk.periodic();
 }
 

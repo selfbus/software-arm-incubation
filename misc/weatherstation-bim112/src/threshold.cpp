@@ -13,6 +13,7 @@
 
 Threshold::Threshold()
 : objNumber(-1)
+, immediateObjNumber(-1)
 , changeLowerLimit(-1)
 , changeUpperLimit(-1)
 , blockObjNo(-1)
@@ -20,62 +21,66 @@ Threshold::Threshold()
     cycleTimeout.start(cycleTime);
 }
 
-unsigned int Threshold::periodic(unsigned int value)
+void Threshold::periodic(unsigned int value)
 {
-    unsigned int result = 0;
-
     if (objNumber < 0) // this threshold is not active
-        return result;
-    int objNo = -1;
-    if (value > upperLimit)
+        return;
+    bool sendRequested = false;
+    state    &= ~LIMIT_JUST_ENGAGED;
+    if ((value > upperLimit) && !(state & IN_UPPER_LIMIT))
     {   // the current value is above the limit
-        if (state & UPPER_LIMIT_TIME_ACTIVE)
+        if (!upperLimitTime || (state & UPPER_LIMIT_TIME_ACTIVE))
         {   // we have already started the timeout monitoring for the upper limit
             if (limitTimeout.expired())
             {   // the value was above the limit for the required time
-                state = IN_UPPER_LIMIT;
-                result = IN_UPPER_LIMIT;
+                state = IN_UPPER_LIMIT | LIMIT_JUST_ENGAGED;
                 if (sendLimitExceeded)
-                    // mark a request for send
-                    objNo = objNumber;
+                    sendRequested = true;
             }
         }
         else
         {
-            state = UPPER_LIMIT_TIME_ACTIVE;
+            state = (state & ~LOWER_LIMIT_TIME_ACTIVE) | UPPER_LIMIT_TIME_ACTIVE;
             limitTimeout.start (upperLimitTime);
+            if (immediateObjNumber >= 0)
+                objectWrite(immediateObjNumber & 0xFF, immediateObjNumber > 255 ? 0 : 1);
         }
     }
-    if (value < lowerLimit)
+    else if ((value < lowerLimit) && !(state & IN_LOWER_LIMIT))
     {   // the current value is below the limit
-        if (state & LOWER_LIMIT_TIME_ACTIVE)
+        if (!lowerLimitTime || (state & LOWER_LIMIT_TIME_ACTIVE))
         {   // we have already started the timeout monitoring for the lower limit
             if (limitTimeout.expired())
             {   // the value was below the limit for the required time
-                state = IN_LOWER_LIMIT;
-                result = IN_LOWER_LIMIT;
+                state = IN_LOWER_LIMIT | LIMIT_JUST_ENGAGED;;
                 if (sendLowerDeviation)
-                    // mark a request for send
-                    objNo = objNumber;
+                    sendRequested = true;
             }
         }
         else
         {
-            state = LOWER_LIMIT_TIME_ACTIVE;
+            state = (state & ~UPPER_LIMIT_TIME_ACTIVE) | LOWER_LIMIT_TIME_ACTIVE;
             limitTimeout.start (lowerLimitTime);
+            if (immediateObjNumber >= 0)
+                objectWrite(immediateObjNumber & 0xFF, immediateObjNumber > 255 ? 1 : 0);
         }
     }
-    if (cycleTimeout.expired ())
-    {
-        cycleTimeout.start(cycleTime);
-        objNo = objNumber;
+    else
+    {   // stop the timeout and the timer running flags
+        limitTimeout.stop ();
+        state &= ~(LOWER_LIMIT_TIME_ACTIVE | UPPER_LIMIT_TIME_ACTIVE);
     }
-    if (objNo >= 0)
+
+    if (cycleTimeout.expired ())
+        sendRequested = true;
+
+    if (sendRequested)
     {   // we should send the value
         if (state & IN_LOWER_LIMIT)
             objectWrite(objNumber, sendLowerDeviation == 1 ? 1 : 0);
         if (state & IN_UPPER_LIMIT)
             objectWrite(objNumber, sendLimitExceeded == 1 ? 1 : 0);
+        // we sent an update -> restart the cyclic timer
+        cycleTimeout.start(cycleTime);
     }
-    return result;
 }

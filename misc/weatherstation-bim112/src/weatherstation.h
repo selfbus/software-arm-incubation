@@ -77,7 +77,7 @@ enum
 ,   COM_OBJ_TEMPERATURE_THRESHOLD_2 = 57
 ,   COM_OBJ_STATUS                  = 58
 ,   COM_OBJ_DUSK_SHUTTER_UP_DOWN    = 59
-,   COM_OBJ_DUSK_BLOCK              = 60
+,   COM_OBJ_DUSK_SHUTTER_BLOCK      = 60
 ,   COM_OBJ_WIND_THRESHOLD_2        = 61
 // 62,63
 };
