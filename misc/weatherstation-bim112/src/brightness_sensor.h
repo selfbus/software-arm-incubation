@@ -24,11 +24,13 @@ public:
     void Initialize(unsigned int number);
 
     void periodic();
+    void objectUpdated(int number);
 
 private:
     // internal state
     unsigned int number;
     unsigned int lastSentBrightness;
+    unsigned int temperatur;
     Timeout      cyclicSend;
     // stored config values
     unsigned int cyclicPeriod;

@@ -13,12 +13,21 @@
 
 #include <sblib/timeout.h>
 
+enum
+{
+    IN_UPPER_LIMIT = 0x01
+,   IN_LOWER_LIMIT = 0x02
+,   LOWER_LIMIT_TIME_ACTIVE = 0x04
+,   UPPER_LIMIT_TIME_ACTIVE = 0x08
+};
+
 class Threshold
 {
 public:
     Threshold();
+    unsigned int periodic(unsigned int value);
 
-             int objNumber;
+             int  objNumber;
     unsigned int  lowerLimit;
     unsigned int  upperLimit;
     unsigned int  lowerLimitTime;
@@ -31,7 +40,9 @@ public:
     int           blockObjNo;
 
 private:
-    Timeout timeout;
+    unsigned int state;
+    Timeout cycleTimeout;
+    Timeout limitTimeout;
 };
 
 #endif /* THRESHOLD_H_ */

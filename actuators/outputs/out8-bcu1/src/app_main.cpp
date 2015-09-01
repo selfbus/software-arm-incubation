@@ -47,7 +47,7 @@ const int outputPins[NO_OF_OUTPUTS] =
 
 ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
 
-#define IO_TEST
+//#define IO_TEST
 
 /*
  * Initialize the application.

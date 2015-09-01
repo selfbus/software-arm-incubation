@@ -101,4 +101,93 @@ void Brightness_Sensor::periodic()
     }
     else
         objectSetValue (objNo, newBrightness);
+    unsigned int action_1 = threshold[0].periodic(newBrightness);
+    unsigned int action_2 = threshold[1].periodic(newBrightness);
+    if (userEeprom.getUInt8(0x450E + number))
+    {   // Facade control active
+        unsigned int tempReaction = userEeprom.getUInt8(0x45A5 + number);
+        unsigned int tempLimit    = userEeprom.getUInt8(0x4574 + number);
+        if (  (tempReaction == 0)
+           || (  (tempReaction == 1)
+              && (temperatur >= tempLimit)
+              )
+           || (  (tempReaction == 2)
+              && (objectRead(COM_OBJ_FACADE_EAST_EXT_TEMP + 17 * number) >= tempLimit)
+              )
+           )
+        {
+            switch(userEeprom.getUInt8(0x454D + number))
+            {
+            case 2: // scene
+                if (  (action_1 & IN_UPPER_LIMIT)
+                   && (userEeprom.getUInt8(0x4550 + number) == 2)
+                   )
+                    // the upper limit has been activated
+                    objectWrite(COM_OBJ_FACADE_EAST_SCENE + 17 * number, userEeprom.getUInt8(0x4556 + number));
+                if (  (action_1 & IN_LOWER_LIMIT)
+                   && (userEeprom.getUInt8(0x4568 + number) == 2)
+                   )
+                    // the lower limit has been activated
+                    objectWrite(COM_OBJ_FACADE_EAST_SCENE + 17 * number, userEeprom.getUInt8(0x456B + number));
+                if (  (action_2 & IN_UPPER_LIMIT)
+                   && (userEeprom.getUInt8(0x4553 + number) == 2)
+                   )
+                    // the lower limit has been activated
+                    objectWrite(COM_OBJ_FACADE_EAST_SCENE + 17 * number, userEeprom.getUInt8(0x4559 + number));
+                break;
+            case 3: // shutter pos
+            case 4: // shutter and slat pos
+                if (  (action_1 & IN_UPPER_LIMIT)
+                   && (userEeprom.getUInt8(0x4550 + number) == 4)
+                   )
+                {   // the upper limit has been activated
+                    objectWrite(COM_OBJ_FACADE_EAST_POS_SHUTTER + 17 * number, userEeprom.getUInt8(0x4556 + number));
+                    objectWrite(COM_OBJ_FACADE_EAST_POS_SLATS   + 17 * number, userEeprom.getUInt8(0x455C + number));
+                }
+                if (  (action_1 & IN_LOWER_LIMIT)
+                   && (userEeprom.getUInt8(0x4568 + number) == 4)
+                   )
+                {   // the lower limit has been activated
+                    objectWrite(COM_OBJ_FACADE_EAST_POS_SHUTTER + 17 * number, userEeprom.getUInt8(0x456B + number));
+                    objectWrite(COM_OBJ_FACADE_EAST_POS_SLATS   + 17 * number, userEeprom.getUInt8(0x456E + number));
+                }
+                if (  (action_2 & IN_UPPER_LIMIT)
+                   && (userEeprom.getUInt8(0x4553 + number) == 4)
+                   )
+                {   // the upper limit has been activated
+                    objectWrite(COM_OBJ_FACADE_EAST_POS_SHUTTER + 17 * number, userEeprom.getUInt8(0x4559 + number));
+                    objectWrite(COM_OBJ_FACADE_EAST_POS_SLATS   + 17 * number, userEeprom.getUInt8(0x455F + number));
+                }
+                break;
+            }
+        }
+    }
 }
+
+void Brightness_Sensor::objectUpdated(int number)
+{
+    unsigned int noOff = 17 * this->number;
+    if (number == threshold[0].changeLowerLimit)
+        // this is the object for changing the lower limit
+        threshold[0].lowerLimit = objectRead(number);
+    if (number == threshold[0].changeUpperLimit)
+        // this is the object for changing the upper limit
+        threshold[0].upperLimit = objectRead(number);
+    if (  ((number - noOff)         == COM_OBJ_FACADE_EAST_TEACH_IN_P1)
+       && (userEeprom.getUInt8(0x4562 + number) == 1)
+       )
+    {   // a teach request as been received and is enabled for position 1
+        userEeprom [0x4556 + number] = objectRead(COM_OBJ_FACADE_EAST_STATUS_POS  + noOff);
+        userEeprom [0x455C + number] = objectRead(COM_OBJ_FACADE_EAST_STATUS_SLAT + noOff);
+        userEeprom.modified();
+    }
+    if (  ((number - noOff)         == COM_OBJ_FACADE_EAST_TEACH_IN_P2)
+       && (userEeprom.getUInt8(0x4565 + number) == 1)
+       )
+    {   // a teach request as been received and is enabled for position 2
+        userEeprom [0x4559 + number] = objectRead(COM_OBJ_FACADE_EAST_STATUS_POS  + noOff);
+        userEeprom [0x455F + number] = objectRead(COM_OBJ_FACADE_EAST_STATUS_SLAT + noOff);
+        userEeprom.modified();
+    }
+}
+

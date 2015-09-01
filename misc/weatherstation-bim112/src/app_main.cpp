@@ -9,7 +9,7 @@
  */
 
 #include <sblib/eib.h>
-//#include <sblib/eib/sblib_default_objects.h>
+#include <sblib/eib/sblib_default_objects.h>
 #include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 #include <sblib/timeout.h>
@@ -50,12 +50,12 @@ void setup()
 {
     volatile char v = getAppVersion()[0];
     v++;
-    bcu.begin(131, hardwareVersion[5], 0x13);  // we are a MDT weather station, version 1.3
+    bcu->begin(131, hardwareVersion[5], 0x13);  // we are a MDT weather station, version 1.3
     memcpy(userEeprom.order, hardwareVersion, sizeof(hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
-    if (bcu.applicationRunning())
+    if (bcu->applicationRunning())
         initApplication();
 }
 
@@ -95,13 +95,17 @@ void initApplication(void)
 	for (unsigned int i = 0; i < 3; i++)
 	{
 	    if (userEeprom.getUInt8(0x450B + i))
-	        brightness[0].Initialize(i);
+	        brightness[i].Initialize(i);
 	}
 }
 
 void objectUpdated(unsigned int objno)
 {
-
+    unsigned int channel = objno / 17;
+    if (channel < 3)
+    {
+        brightness[channel].objectUpdated(objno);
+    }
 }
 
 void checkPeriodicFuntions(void)

@@ -80,8 +80,8 @@ Channel::Channel(unsigned int number, unsigned int address)
         lockConfig |= LOCK_POS_UP_DOWN;
     if (lockAbsPos & 0x20)
         lockConfig |= LOCK_POS_RELEASE_UP;
-    _enableFeature(address + 65,                FEATURE_STATUS_MOVING,   0x01);
-    _enableFeature(address + 65,                FEATURE_SHORT_OPERATION, 0x02);
+    _enableFeature(address + 65,                FEATURE_STATUS_MOVING,   0x80);
+    _enableFeature(address + 65,                FEATURE_SHORT_OPERATION, 0x40);
     obj24Config    = userEeprom.getUInt8(address + 66);
     oneBitPosition = userEeprom.getUInt8(address + 67);
 
