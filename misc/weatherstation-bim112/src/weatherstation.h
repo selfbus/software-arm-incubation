@@ -12,6 +12,8 @@
 #ifndef WEATHERSTATION_H_
 #define WEATHERSTATION_H_
 
+#include "io_config.h"
+
 enum
 {
     COM_OBJ_BRIGHTNESS_EAST         =  0

@@ -8,9 +8,10 @@
  *  published by the Free Software Foundation.
  */
 
-//#define NEW_LIB
+#define NEW_LIB
 
 #include <sblib/eib.h>
+#include <sblib/analog_pin.h>
 #ifdef NEW_LIB
 #include <sblib/eib/sblib_default_objects.h>
 #define BCU_ACCESS(x) bcu->x
@@ -69,6 +70,7 @@ void setup()
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
+    analogBegin();
     if (BCU_ACCESS(applicationRunning) ())
         initApplication();
 }
