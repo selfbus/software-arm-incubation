@@ -9,10 +9,13 @@
  */
 #include "wind.h"
 #include "weatherstation.h"
+#include <sblib/analog_pin.h>
+#include <sblib/digital_pin.h>
 
 Wind::Wind()
  : SensorBase()
 {
+    pinMode(WIND_AD_CHANNEL, INPUT_ANALOG);
 }
 
 void Wind::Initialize(void)
@@ -58,5 +61,5 @@ void Wind::periodic()
 
 unsigned int Wind::_newValue()
 {
-    return 0;
+    return analogRead(WIND_AD_CHANNEL);
 }
