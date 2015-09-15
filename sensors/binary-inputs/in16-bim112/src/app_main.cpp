@@ -10,6 +10,7 @@
 #include "debug.h"
 #include <sblib/eib.h>
 #include <sblib/eib/user_memory.h>
+#include <sblib/eib/sblib_default_objects.h>
 #include <string.h> /* for memcpy() */
 
 static const char APP_VERSION[] __attribute__((used)) = "Binary Input 1.1.21";

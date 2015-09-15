@@ -11,8 +11,7 @@
 #include <sblib/eib.h>
 
 Channel::Channel()
-: number(-1)
-, pwm(0)
+: pwm(0)
 {
 }
 

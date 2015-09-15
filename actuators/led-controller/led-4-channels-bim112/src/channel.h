@@ -1,5 +1,5 @@
 /*
- *  channel.h - 
+ *  channel.h - Base class for a channel of the LED actuator
  *
  *  Copyright (c) 2015 Martin Glueck <martin@mangari.org>
  *
@@ -15,7 +15,6 @@ class Channel
 public:
     Channel();
 
-    bool isActive();
     bool isOn();
 
     void setValue(unsigned char value);
@@ -25,11 +24,6 @@ private:
     unsigned char pwm;
 };
 
-
-inline bool Channel::isActive()
-{
-    return number >= 0;
-}
 
 inline bool Channel::isOn()
 {

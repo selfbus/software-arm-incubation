@@ -48,12 +48,12 @@ void setup()
     currentVersion = & hardwareVersion[0];
     volatile char v = getAppVersion()[0];
     v++;
-    bcu->begin(131, currentVersion->hardwareVersion[5], 0x28);  // we are a MDT shutter/blind actuator, version 2.8
+    bcu.begin(131, currentVersion->hardwareVersion[5], 0x28);  // we are a MDT shutter/blind actuator, version 2.8
     memcpy(userEeprom.order, currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
-    if (bcu->applicationRunning())
+    if (bcu.applicationRunning())
         initApplication();
 	timeout.start    (1);
 }

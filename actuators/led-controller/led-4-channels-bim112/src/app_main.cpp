@@ -8,7 +8,7 @@
  *  published by the Free Software Foundation.
  */
 
-//#define NEW_LIB
+#define NEW_LIB
 
 #include <sblib/eib.h>
 #ifdef NEW_LIB
@@ -22,7 +22,7 @@
 #include <sblib/io_pin_names.h>
 #include <sblib/timeout.h>
 #include <string.h>
-#include "channel.h"
+#include "individual_channel.h"
 #include "led-controller.h"
 
 extern "C" const char APP_VERSION[13] = "LED 0.1";
@@ -39,6 +39,8 @@ const unsigned char hardwareVersion[] =
 
 /* initialization of the application software */
 void initApplication(void);
+/* initialize a channel as standalone dimming channel */
+void initChannel(unsigned int channel);
 
 /* called when a com object has been changed from outside */
 void objectUpdated(unsigned int objno);
@@ -46,7 +48,7 @@ void objectUpdated(unsigned int objno);
 /* call in the main loop to handle the periodic functions */
 void checkPeriodicFuntions(void);
 
-static Channel channels[4];
+static Channel * channels[4];
 
 /*
  * Initialize the application.
@@ -89,6 +91,24 @@ void initApplication(void)
     unsigned int pwmFreq = userEeprom.getUInt8 (0x476C) * 1000;
     timer16_0.prescaler(pwmFreq);
 
+    switch (userEeprom.getUInt8 (0x470E))
+    {
+    case 0x00 : // 4 seperate channels for dimming
+        channles [0] =initChannel(0);
+        initChannel(1);
+        initChannel(2);
+        initChannel(3);
+        break;
+    case 0x01 : // RGB dimming
+        if (userEeprom.getUInt8(0x476B) == 0x1)
+        {   // channel D is used as standalone channel but configured as channel A !
+            initChannel(0);
+        }
+        break;
+    case 0x02 : // RGBW dimming
+        break;
+
+    }
 }
 
 void objectUpdated(unsigned int objno)
@@ -99,10 +119,16 @@ void checkPeriodicFuntions(void)
 {
     if (userEeprom.getUInt8 (0x4764) == 1)
     {   // relay output is controlled by the 4 channels
-        unsigned int value = channels[0].isOn() + channels[1].isOn() + channels[2].isOn() + channels[3].isOn();
+        unsigned int value = 0;
+        for (unsigned int i = 0; i < 4; i++)
+            value += (channels[i] != NULL) && channels[i]->isOn();
         objectSetValue(COM_OBJ_RELAI_SWITCH, value > 0);
     }
     // update the relay output state
     digitalWrite(RELAY_OUTPUT, objectRead(COM_OBJ_RELAI_SWITCH));
 }
 
+void initChannel(unsigned int channel)
+{
+
+}

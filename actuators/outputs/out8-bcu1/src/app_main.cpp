@@ -47,7 +47,7 @@ const int outputPins[NO_OF_OUTPUTS] =
 
 ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
 
-//#define IO_TEST
+#define IO_TEST
 
 /*
  * Initialize the application.
@@ -55,7 +55,7 @@ ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
 void setup()
 {
     volatile const char * v = getAppVersion();
-    bcu->begin(4, 0x2060, 1); // We are a "Jung 2138.10" device, version 0.1
+    bcu.begin(4, 0x2060, 1); // We are a "Jung 2138.10" device, version 0.1
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN, OUTPUT);	// Run LED
