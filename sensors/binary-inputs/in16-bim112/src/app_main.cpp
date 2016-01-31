@@ -31,10 +31,12 @@ const HardwareVersion * currentVersion;
  */
 void setup()
 {
-    bcu.setProgPin(PIO2_11);
+    bcu.setProgPin(PIN_PROG);
+#ifndef __LPC11UXX__
     bcu.setProgPinInverted(false);
     bcu.setRxPin(PIO1_8);
     bcu.setTxPin(PIO1_9);
+#endif
 
     debug_init();
 

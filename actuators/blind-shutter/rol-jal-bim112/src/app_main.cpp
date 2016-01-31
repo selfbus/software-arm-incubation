@@ -77,35 +77,3 @@ void loop()
         waitForInterrupt();
 }
 
-void loop_test(void)
-{
-    static int i = -1;
-    if (i == -1)
-    {
-        pinMode(PIN_PWM, OUTPUT);
-        digitalWrite(PIN_PWM, 0);
-        for (i = 0; i < NO_OF_OUTPUTS; i++)
-        {
-            pinMode(outputPins[i], OUTPUT);
-            digitalWrite(outputPins[i], 0);
-#ifdef HAND_ACTUATION
-            pinMode(handPins[i], OUTPUT);
-            digitalWrite(handPins[i], 0);
-#endif // HAND
-        }
-        i = 0;
-    }
-    else if (i < (2 * NO_OF_OUTPUTS))
-    {
-        if (timeout.expired ())
-        {
-            unsigned int n = i >> 1;
-            timeout.start  (500);
-            digitalWrite (outputPins[n], !(i & 0x01));
-#ifdef HAND_ACTUATION
-            digitalWrite (handPins[n], !(i & 0x01));
-#endif // HAND
-            i++;
-        }
-    }
-}

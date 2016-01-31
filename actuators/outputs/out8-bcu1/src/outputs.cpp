@@ -24,6 +24,7 @@ const unsigned int zeroDetectClrDelay = 0x8000;
 
 void Outputs::begin (unsigned int initial, unsigned int inverted)
 {
+#ifndef BI_STABLE
     pinMode(PIN_PWM, OUTPUT_MATCH);  // configure digital pin PIO3_2(PWM) to match MAT2 of timer16 #0
     //pinMode(PIO1_4, OUTPUT);
     timer16_0.begin();
@@ -35,9 +36,10 @@ void Outputs::begin (unsigned int initial, unsigned int inverted)
 
     // Reset the timer when the timer matches MAT3
     timer16_0.matchMode(MAT3, RESET);
-    timer16_0.match(MAT3, PWM_PERIOD);     // match MAT3 ato create 14lHz
+    timer16_0.match(MAT3, PWM_PERIOD);     // match MAT3 to create 14lHz
     timer16_0.start();
     _pwm_timeout.start(PWM_TIMEOUT); // start the timer to switch back to a PWM operation
+#endif
     //digitalWrite(PIO1_4, 1);
     _relayState     = initial;
     _prevRelayState = ~initial;
@@ -89,6 +91,9 @@ void Outputs::updateOutputs(void)
 				if (value) _port_0_set |= pinMask;
 				else       _port_0_clr |= pinMask;
 			}
+#ifdef HAND_ACTUATION
+			handAct.setLedState(i, value);
+#endif
     	}
     }
     _prevRelayState = _relayState;

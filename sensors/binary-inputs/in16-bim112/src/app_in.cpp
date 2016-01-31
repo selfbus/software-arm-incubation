@@ -20,6 +20,9 @@
 #include "counter.h"
 #include "input.h"
 #include "logic.h"
+#include "LedIndication.h"
+
+extern Led_Indication leds;
 
 Input inputs;
 
@@ -56,7 +59,10 @@ void checkPeriodic(void)
         {
             Channel * channel = channelConfig[i];
             if (channel && !channel->isLocked())
+            {
+                leds.setStatus(i, value);
                 channel->inputChanged(value);
+             }
             for (unsigned int n = 0; n < MAX_LOGIC; n++)
             {
                 if (logicConfig[n])
@@ -66,7 +72,7 @@ void checkPeriodic(void)
             }
         }
     }
-
+    leds.updateLeds();
     for (unsigned int i = 0; i < currentVersion->noOfChannels; i++)
     {
         if (channelConfig[i])
@@ -94,6 +100,7 @@ void initApplication(void)
     {
         while (!startupDelay.expired())
         {
+            inputs.scan();
             for (int unsigned i = 0; i < currentVersion->noOfChannels; i++)
             {
                 unsigned int value;
@@ -115,6 +122,7 @@ void initApplication(void)
         }
     }
 
+    inputs.scan();
     for (unsigned int i = 0; i < channels; i++)
     {
         unsigned int value;
@@ -122,6 +130,7 @@ void initApplication(void)
         word channelType = userEeprom.getUInt16(configBase);
         Channel * channel;
         inputs.checkInput(i, &value);
+        leds.setStatus(i, value);
         for (unsigned int n = 0; n < MAX_LOGIC; n++)
         {
             if (logicConfig[n])
@@ -130,6 +139,7 @@ void initApplication(void)
             }
         }
 
+        busReturn = userEeprom.getUInt8(configBase + 32);
         switch (channelType)
         {
         case 0: // channel is configured as switch
@@ -156,4 +166,5 @@ void initApplication(void)
         }
         channelConfig[i] = channel;
     }
+
 }

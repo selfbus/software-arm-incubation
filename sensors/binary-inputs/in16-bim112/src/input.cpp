@@ -11,28 +11,55 @@
 #include <sblib/digital_pin.h>
 #include "input.h"
 
+#include "LedIndication.h"
+#include <sblib/io_pin_names.h>
+
+Led_Indication leds(SPI_PORT_1, PIN_LT9, PIN_LT1, PIN_LT2, PIN_LT3);
 // Input pins
 const int inputPins[] =
-{ PIO2_5, //  A0
-        PIO3_5, //  A1
-        PIO0_7, //  A2
-        PIO2_9, //  A3
+{
+#ifndef __LPC11UXX__
+  PIO2_5, //  A0
+  PIO3_5, //  A1
+  PIO0_7, //  A2
+  PIO2_9, //  A3
 
-        PIO1_11, // B0
-        PIO1_4, //  B1
-        PIO1_2, //  B2
-        PIO1_1, //  B3
+  PIO1_11, // B0
+  PIO1_4, //  B1
+  PIO1_2, //  B2
+  PIO1_1, //  B3
 
-        PIO1_7, //  C0
-        PIO1_6, //  C1
-        PIO1_5, //  C2
-        PIO3_2, //  C3
+  PIO1_7, //  C0
+  PIO1_6, //  C1
+  PIO1_5, //  C2
+  PIO3_2, //  C3
 
-        PIO2_8, //  D0
-        PIO2_7, //  D1
-        PIO2_6, //  D2
-        PIO3_3, //  D3
-        };
+  PIO2_8, //  D0
+  PIO2_7, //  D1
+  PIO2_6, //  D2
+  PIO3_3, //  D3
+#else
+  PIN_PWM
+, PIN_APRG
+, PIN_IO1
+
+, PIN_IO2
+, PIN_IO3
+, PIN_IO4
+, PIO_SDA
+, PIN_IO5
+
+, PIN_IO14
+, PIN_IO15
+, PIN_IO13
+, PIN_IO11
+
+, PIN_IO9
+, PIN_IO10
+, PIN_TX
+, PIN_RX
+#endif
+};
 
 void Input::begin(int noOfChannels, int baseAddress)
 {
@@ -46,6 +73,7 @@ void Input::begin(int noOfChannels, int baseAddress)
         pinMode(inputPins[i], INPUT | HYSTERESIS | PULL_UP);
         inputDebouncer[i].init(inputState & mask);
     }
+    leds.begin();
 }
 
 void Input::scan(void)
@@ -54,11 +82,11 @@ void Input::scan(void)
     {
         if (digitalRead(inputPins[i]))
         {
-            inputState &= 0xffff ^ (1 << i);
+            inputState |= 1 << i;
         }
         else
         {
-            inputState |= 1 << i;
+            inputState &= 0xffff ^ (1 << i);
         }
     }
 }

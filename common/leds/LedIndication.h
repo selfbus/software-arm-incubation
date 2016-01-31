@@ -9,7 +9,6 @@
 #define LEDINDICATION_H_
 
 #include <sblib/spi.h>
-#include "config.h"
 
 class Led_Indication
 {

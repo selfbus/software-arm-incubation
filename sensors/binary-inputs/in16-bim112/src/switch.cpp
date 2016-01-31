@@ -54,7 +54,7 @@ Switch::Switch(unsigned int no, unsigned int longPress,
     delay = userEeprom.getUInt16(channelConfig + 0x1E) * 1000;
     repeat = userEeprom.getUInt8(channelConfig + 0x20) & 0x03;
 
-    if (action & GROUP_SEND_ON)
+    if ((action & GROUP_SEND_ON) == GROUP_SEND_ON)
     {
         valueComObjNo = (number & 0xfffe) * 5;
         statusComObjNo = (number & 0xfffe) * 5 + 1;

@@ -348,10 +348,11 @@ void initApplication(void)
         else if (temp == 0x02)
             temp = 1;
         else
-            temp = relays.channel(i) ? 1 : 0;
+            temp = -1;
         objectWrite(i, temp);
         objectWrite(COMOBJ_FEEDBACK1 + i, temp);
-        relays.updateChannel(i, temp);
+        if (temp != -1)
+            relays.updateChannel(i, temp);
     }
     relays.updateOutputs();
 }

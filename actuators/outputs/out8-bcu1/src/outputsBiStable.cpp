@@ -27,6 +27,9 @@ void OutputsBiStable::updateOutputs(void)
                  digitalWrite(outputPins[i*2],     1);
             else digitalWrite(outputPins[i*2 + 1], 1);
     	    _pwm_timeout.start(ON_DELAY);
+#ifdef HAND_ACTUATION
+            handAct.setLedState(i, state & mask);
+#endif
     	}
     }
     _prevRelayState = _relayState;
