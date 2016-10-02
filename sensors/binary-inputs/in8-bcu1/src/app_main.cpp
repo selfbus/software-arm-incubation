@@ -15,7 +15,7 @@
 #include <sblib/timeout.h>
 
 // Digital pin for LED
-#define PIO_LED PIO3_3
+#define PIO_LED PIO2_0
 
 //#define DIRECT_IO
 
