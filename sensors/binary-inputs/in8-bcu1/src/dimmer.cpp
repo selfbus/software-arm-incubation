@@ -21,13 +21,6 @@ void dimChannelChanged(int channel, int pinValue)
     if (pinValue) // raising edge
     {   // start the time between switch and dim
         timeout[channel].start(delayTime[channel]);
-        unsigned int value  = !objectRead(channel);
-        if (method == DIMMER_TYPE_TWO_HAND_LIGHTER_ON)
-            value = 1;
-        if (method == DIMMER_TYPE_TWO_HAND_DARKER_OFF)
-            value = 0;
-        // send telegram on switching object
-        objectWrite(COMOBJ_PRIMARY1 + channel, value);
     }
     else // falling edge
     {   // if dimming has already been started -> update the value of the dim object
@@ -39,6 +32,16 @@ void dimChannelChanged(int channel, int pinValue)
             if (params [0] & 0x08)
                  objectWrite(COMOBJ_SECONDARY1 + channel, value);
             else objectUpdate(COMOBJ_SECONDARY1 + channel, value);
+        }
+        else
+        {
+            unsigned int value  = !objectRead(channel);
+            if (method == DIMMER_TYPE_TWO_HAND_LIGHTER_ON)
+                value = 1;
+            if (method == DIMMER_TYPE_TWO_HAND_DARKER_OFF)
+                value = 0;
+            // send telegram on switching object
+            objectWrite(COMOBJ_PRIMARY1 + channel, value);
         }
         timeout[channel    ].stop();
         timeout[channel + 8].stop();
