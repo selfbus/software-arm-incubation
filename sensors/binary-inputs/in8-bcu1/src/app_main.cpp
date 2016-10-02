@@ -17,7 +17,7 @@
 // Digital pin for LED
 #define PIO_LED PIO2_0
 
-//#define DIRECT_IO
+#define DIRECT_IO
 
 // Debouncers for inputs
 Debouncer inputDebouncer[NUM_CHANNELS];
@@ -28,7 +28,8 @@ const byte* channelTimingParams = userEepromData + (EE_CHANNEL_TIMING_PARAMS_BAS
 #ifdef DIRECT_IO
 // Input pins
 const int inputPins[] =
-    { PIO2_2, PIO0_7, PIO2_10, PIO2_9, PIO0_2, PIO0_8, PIO0_9, PIO2_11 };
+//    { PIO2_2, PIO0_7, PIO2_10, PIO2_9, PIO0_2, PIO0_8, PIO0_9, PIO2_11 };  // 4TE controller
+    { PIO2_2, PIO0_9, PIO2_11, PIO1_1, PIO3_0, PIO3_1, PIO3_2, PIO2_9 };   // TS-ARM
 
 void setupIO(void)
 {
