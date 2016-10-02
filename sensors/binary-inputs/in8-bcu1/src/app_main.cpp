@@ -36,7 +36,7 @@ void setupIO(void)
     // value of the pin.
     for (int channel = 0; channel < NUM_CHANNELS; ++channel)
     {
-        pinMode(inputPins[channel], INPUT | HYSTERESIS | PULL_UP);
+        pinMode(inputPins[channel], INPUT | HYSTERESIS | PULL_DOWN);
         inputDebouncer[channel].init(digitalRead(inputPins[channel]));
     }
 }
