@@ -21,8 +21,8 @@ void jaloChannelChanged(int channel, int pinValue)
     {   // rising edge
         switch (action)
         {
-        case 1 : value = 1;      break;
-        case 2 : value = 0;      break;
+        case 1 : value = 0;      break;
+        case 2 : value = 1;      break;
         case 3 : value = !value; break;
         }
         if (! ls)
