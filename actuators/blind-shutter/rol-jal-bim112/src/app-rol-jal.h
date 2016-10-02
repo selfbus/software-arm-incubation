@@ -2,7 +2,7 @@
 #define ROL_JAL_BIM112_SRC_APP_ROL_JAL_H_
 /*
  *  app-rol-jal.cpp - The application for the 4 channel blinds/shutter actuator
- *  acting as a Jung 2204REGH
+ *  acting as a MDT JAL-0410.01 (ver. 2.8)
  *
  *  Copyright (C) 2015 Martin Glueck <martin@mangari.org>
  *
