@@ -10,7 +10,6 @@
 
 #include "app_out8.h"
 #include "com_objs.h"
-#define BI_STABLE
 
 #ifndef BI_STABLE
 #include "outputs.h"
