@@ -1,4 +1,3 @@
 [submodule "software-arm-lib"]
 	path = software-arm-lib
-	url = git@github.com:glueckm/software-arm-lib.git
-	branch = master
+	url = https://github.com/selfbus/software-arm-lib.git

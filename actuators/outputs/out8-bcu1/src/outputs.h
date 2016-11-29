@@ -20,9 +20,9 @@
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
 
-#define PWM_TIMEOUT 50
-#define PWM_PERIOD     857
-#define PWM_DUTY_33    (588)
+#define PWM_TIMEOUT 20 // ms
+#define PWM_PERIOD  85 // 1.2kHz
+#define PWM_DUTY    22 // 0.25 duty
 
 class Outputs
 {
@@ -136,7 +136,7 @@ ALWAYS_INLINE void Outputs::checkPWM(void)
 {
     if(_pwm_timeout.expired())
     {
-        timer16_0.match(MAT2, PWM_DUTY_33);
+        timer16_0.match(MAT2, PWM_DUTY);
         //digitalWrite(PIO1_4, 0);
     }
 }
@@ -146,7 +146,7 @@ ALWAYS_INLINE void Outputs::zeroDetectHandler(void)
 {
 	if (_state = 1)
 	{
-	    digitalWrite(PIN_INFO, ! digitalRead(PIN_INFO));	// Info LED
+	    //digitalWrite(PIN_INFO, ! digitalRead(PIN_INFO));	// Info LED
 		timer32_0.start();
 		_state = 0;
 	}

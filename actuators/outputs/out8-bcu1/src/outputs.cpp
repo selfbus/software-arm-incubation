@@ -16,8 +16,8 @@
 Outputs relays;
 #endif
 
-const unsigned int zeroDetectSetDelay = 0x4000;
-const unsigned int zeroDetectClrDelay = 0x8000;
+const unsigned int zeroDetectSetDelay = 0x0200; //0x0200 Omron G5Q-1A EU 10A set
+const unsigned int zeroDetectClrDelay = 0x0240; //0x0220 Omron G5Q-1A EU 10A clear
 
 #define ZD_RESET ((zeroDetectSetDelay > zeroDetectClrDelay ? zeroDetectSetDelay : zeroDetectClrDelay) + 1)
 
@@ -31,7 +31,7 @@ void Outputs::begin (unsigned int initial, unsigned int inverted)
 
     timer16_0.prescaler((SystemCoreClock / 100000) - 1);
     timer16_0.matchMode(MAT2, SET);  // set the output of PIO3_2 to 1 when the timer matches MAT1
-    timer16_0.match(MAT2, PWM_PERIOD);        // match MAT1 when the timer reaches this value
+    timer16_0.match(MAT2, PWM_DUTY);        // match MAT1 when the timer reaches this value
     timer16_0.pwmEnable(MAT2);       // enable PWM for match channel MAT1
 
     // Reset the timer when the timer matches MAT3
@@ -115,7 +115,6 @@ extern "C" void PIOINT0_IRQHandler (void)
 
 extern "C" void TIMER32_0_IRQHandler(void)
 {
-    digitalWrite(PIO3_3, ! digitalRead(PIO3_3));	// Run LED
     if (timer32_0.flags () & 0x01)
     {   // handle SET ports
     	relays.setOutputs();
@@ -125,5 +124,6 @@ extern "C" void TIMER32_0_IRQHandler(void)
     	relays.clrOutputs();
     }
     timer32_0.resetFlags();
+    digitalWrite(PIN_INFO, ! digitalRead(PIN_INFO));
 }
 #endif

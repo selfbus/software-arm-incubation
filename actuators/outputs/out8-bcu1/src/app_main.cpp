@@ -69,14 +69,18 @@ void setup()
     volatile const char * v = getAppVersion();
     bcu.begin(4, 0x2060, 1); // We are a "Jung 2138.10" device, version 0.1
 
+    digitalWrite(PIN_INFO, 0);
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN, OUTPUT);	// Run LED
+    digitalWrite(PIN_RUN, 0);
+
     // Configure the output pins
     for (int channel = 0; channel < NO_OF_OUTPUTS; ++channel)
     {
-        digitalWrite(outputPins[channel], 0);
         pinMode(outputPins[channel], OUTPUT);
+        digitalWrite(outputPins[channel], 0);
     }
+
 #ifdef IO_TEST
 #ifdef HAND_ACTUATION
     for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
@@ -102,14 +106,15 @@ void setup()
     }
 #endif
 #ifndef BI_STABLE
-    pinMode(PIN_IO11, OUTPUT);
-    digitalWrite(PIN_IO11, 1);
-    pinInterruptMode(PIO_SDA, INTERRUPT_EDGE_FALLING | INTERRUPT_ENABLED);
+    //pinMode(PIN_IO11, OUTPUT);
+    //digitalWrite(PIN_IO11, 1);
 #endif
     initApplication();
 #ifndef BI_STABLE
 #ifdef ZERO_DETECT
+    pinInterruptMode(PIO_SDA, INTERRUPT_EDGE_FALLING | INTERRUPT_ENABLED);
     enableInterrupt(EINT0_IRQn);
+    pinEnableInterrupt(PIO_SDA);
 #endif
 #endif
 }
