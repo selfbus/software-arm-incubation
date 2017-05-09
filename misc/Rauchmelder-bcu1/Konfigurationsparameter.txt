@@ -1,0 +1,36 @@
+Parameter + Adressen im Rauchmelder
+
+503 = Zyklus Testalarm senden [sek] -> Zeitangabe 8 bit
+
+504 = Verzögerung Alarm senden [sek] -> Zeitangabe 8 bit
+
+505 = Zyklus Status Informationen senden [min] -> Zeitangabe 8 bit
+
+506 = Zyklus Alarm senden [sek] -> Zeitangabe 8 bit
+
+507.0 = Alarm verzögert senden -> boolsche Information 1 bit
+507.1 = Alarm zyklisch senden -> boolsche Information 1 bit
+507.2 = Testalarm zyklisch senden -> boolsche Information 1 bit
+507.3 = Status Infomationen zyklisch senden -> boolsche	Infomationen 1 bit
+507.4 = Betriebszeit senden als -> boolsche	Infomationen 1 bit (Auswahl DPT 7.007 oder 13.100)
+
+Status Informationen senden -> alle boolsche Informationen (1 bit)
+508.0 = Seriennummer 
+508.1 = Bertiebszeit
+508.2 = Rauchkammerwert
+508.3 = Verschmutzungsgrad
+508.4 = Batteriespannung
+508.5 = Temperatur
+508.6 = Fehlercode
+508.7 = Batterie leer
+
+509.0 = Rauchmelder Fehlfunktion
+509.1 = Anzahl Rauchalarme
+509.2 = Anzahl Temperaturalarme
+509.3 = Anzahl Testalarme
+509.4 = Anzahl Draht Alarme
+509.5 = Anzahl Bus Alarme
+509.6 = Anzahl Draht Testalarme
+509.7 = Anzahl Bus Testalarme
+
+510 = Temperaturabgleich -> Temperaturangabe 8 bit
