@@ -251,7 +251,7 @@
                     // Wert ist deutlich höher als 3,3V, fast 3,4V. Wird das nicht eingerechnet, leidet die Genauigkeit
 #define MAXURAIL (REF_V*13) // 44,16V Ein LSB sind dann ca 43mV
 
-#define MAXCURRLOWRANGE (REF_V/82*1500/2/19.56) // in Ampere
+#define MAXCURRLOWRANGE (REF_V/82*1500/2/19) // in Ampere
 #define MAXCURRHIGHRANGE (REF_V/82*1500/2)
 
 #define ADC12VOLTS (unsigned(12.0/MAXURAIL*1023+0.99)) // Der 12V ADC-Wert, aufgerundet

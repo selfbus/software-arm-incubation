@@ -467,9 +467,16 @@ void IsrSetup(void)
  IsrData.ActChIdx = 0;
  for (int idx=0; idx < (ADCCHANNELCNT*2); idx++)
  {
-  IsrData.Offs[idx] = 512;
+  IsrData.Offs[idx] = 511;
   IsrData.OffsIntegral[idx] = 0;
-  IsrData.GainCorr[idx] = 32768; // Festkommadarstellung von 1.0
+  if (idx & 1)
+  {
+   // Low Range
+   IsrData.GainCorr[idx] = (short unsigned)(1.0275*32768); // +2,75% Korrektur für den Low-Range
+  } else {
+   // High Range
+   IsrData.GainCorr[idx] = (short unsigned)(1.0125*32768); // +1,25% Korrektur für den High-Range
+  }
  }
  IsrData.UAccu[0] = 0;
  IsrData.UAccu[1] = 0;
