@@ -61,7 +61,7 @@ void ManualCtrl::StartManualCtrl(void)
 
 // Gehen wir mal von Aufrufen alle 10ms aus
 #define BUTTONDOWNDELAY 5 // 50ms
-#define BUTTONUPDELAY 25 // 250ms
+#define BUTTONUPDELAY 15 // 150ms
 
 unsigned ManualCtrl::DoManualCtrl(void)
 {

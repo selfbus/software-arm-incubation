@@ -1874,8 +1874,8 @@ void Appl::CurrentFunctions(unsigned referenceTime)
     }
    }
    float IObj = IMeas;
-   //if (IObj < 0.005) // TODO Funktion aktivieren
-   // IObj = 0;
+   if (IObj < 0.007) // Sorgt dafür, dass vermeintliche Ströme durch Rauschen
+    IObj = 0;        // und Offset ausgeblendet werden.
    if (SendStatus && AppObjSendEnabled())
    { // Strommesswert versenden
     if ((ReadChConfigByte(chno, APP_TYPCURRMEAS_O) & APP_TYPCURRMEAS_M) == 5) // Datentyp Strommesswert
