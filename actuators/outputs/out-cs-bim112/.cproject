@@ -26,8 +26,6 @@
 								<option id="com.crt.advproject.cpp.thumb.142384739" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.250614395" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__NEWLIB__"/>
-									<listOptionValue builtIn="false" value="USR_RAM_START_VARIABLE"/>
-									<listOptionValue builtIn="false" value="DUMP_TELEGRAMS"/>
 									<listOptionValue builtIn="false" value="BIM112"/>
 									<listOptionValue builtIn="false" value="DEBUG"/>
 									<listOptionValue builtIn="false" value="__CODE_RED"/>
