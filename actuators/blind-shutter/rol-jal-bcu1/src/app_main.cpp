@@ -10,6 +10,7 @@
 
 
 #include <sblib/eib.h>
+#include <sblib/eib/sblib_default_objects.h>
 #include "app-rol-jal.h"
 
 // Digital pin for LED
