@@ -26,11 +26,4 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>src/leds</name>
-			<type>2</type>
-			<locationURI>PARENT-3-PROJECT_LOC/common/leds</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>

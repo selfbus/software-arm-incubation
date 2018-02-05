@@ -31,6 +31,7 @@ public:
     virtual void inputChanged(int value);
     virtual void checkPeriodic(void);
     virtual void setLock(unsigned int value);
+    virtual void objectChanged(int value);		//for LED output function only
     bool isLocked();
 
 protected:

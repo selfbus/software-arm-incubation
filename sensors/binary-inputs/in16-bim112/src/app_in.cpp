@@ -20,9 +20,10 @@
 #include "counter.h"
 #include "input.h"
 #include "logic.h"
-#include "LedIndication.h"
+#include "ledoutput.h"
+//#include "LedIndication.h"
 
-extern Led_Indication leds;
+//extern Led_Indication leds;
 
 Input inputs;
 
@@ -31,13 +32,22 @@ Logic * logicConfig[MAX_LOGIC];
 
 void objectUpdated(int objno)
 {
-    int channel = objno / 5;
-    int channelObjno = objno - (channel * 5);
-    if (channelObjno == 4)
-    { // change of the lock object
-        channelConfig[channel]->setLock(objectRead(objno));
-    }
-    if (objno >= 80)
+    int channels = currentVersion->noOfChannels;
+	//Lock objects
+	if (objno < channels*5)
+	{
+		int channel = objno / 5;
+		int channelObjno = objno - (channel * 5);
+		if (channelObjno == 4)
+		{ // change of the lock object
+		    channelConfig[channel]->setLock(objectRead(objno));
+		}
+	}
+
+    // Logic input objects
+    int logicObjStart = channels/2 * 10;
+    int logicObjEnd = logicObjStart + MAX_LOGIC*3;
+    if (objno >= logicObjStart && objno <= logicObjEnd)
     {
         for (unsigned int i = 0; i < MAX_LOGIC; i++)
         {
@@ -46,6 +56,20 @@ void objectUpdated(int objno)
                 logicConfig[i]->objectUpdated(objno);
             }
         }
+    }
+
+    //LED output objects
+    if (currentVersion->ledOutputFunction)
+    {
+    	int ledObjStart = channels/2*10+12;
+    	if (objno >= ledObjStart && objno < ledObjStart+channels)
+    	{
+    		int i = objno - ledObjStart;
+    		Channel * channel = channelConfig[i];
+    		channel->objectChanged(objectRead(objno));
+    		//LED Output
+
+    	}
     }
 }
 
@@ -60,7 +84,7 @@ void checkPeriodic(void)
             Channel * channel = channelConfig[i];
             if (channel && !channel->isLocked())
             {
-                leds.setStatus(i, value);
+                //leds.setStatus(i, value);
                 channel->inputChanged(value);
              }
             for (unsigned int n = 0; n < MAX_LOGIC; n++)
@@ -72,7 +96,7 @@ void checkPeriodic(void)
             }
         }
     }
-    leds.updateLeds();
+    //leds.updateLeds();
     for (unsigned int i = 0; i < currentVersion->noOfChannels; i++)
     {
         if (channelConfig[i])
@@ -110,6 +134,7 @@ void initApplication(void)
         }
     }
 
+
     unsigned int busReturnLogic = userEeprom.getUInt8(addressStartupDelay - 1) & 0x01;
 
     for (unsigned int i = 0; i < MAX_LOGIC; i++)
@@ -130,7 +155,7 @@ void initApplication(void)
         word channelType = userEeprom.getUInt16(configBase);
         Channel * channel;
         inputs.checkInput(i, &value);
-        leds.setStatus(i, value);
+        //leds.setStatus(i, value);
         for (unsigned int n = 0; n < MAX_LOGIC; n++)
         {
             if (logicConfig[n])
@@ -139,7 +164,7 @@ void initApplication(void)
             }
         }
 
-        busReturn = userEeprom.getUInt8(configBase + 32);
+        busReturn = userEeprom.getUInt8(configBase + 32) || userEeprom.getUInt8(addressStartupDelay - 1) & 0x02; // param sendValue || readToggleObject
         switch (channelType)
         {
         case 0: // channel is configured as switch
@@ -160,6 +185,9 @@ void initApplication(void)
             break;
         case 4: // channel is configured as counter
             channel = new Counter(i, longKeyTime, configBase, busReturn, value);
+            break;
+        case 511: // channel is configured as LED output
+        	channel = new LedOutput(i, longKeyTime, configBase, busReturn, value);
             break;
         default:
             channel = 0;
