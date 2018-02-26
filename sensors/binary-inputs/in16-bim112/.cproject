@@ -5,8 +5,8 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.29419348" moduleId="org.eclipse.cdt.core.settings" name="Debug">
 				<macros>
 					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.0"/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="BI8"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.0"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -136,8 +136,8 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.release.189047520" moduleId="org.eclipse.cdt.core.settings" name="Release BI16">
 				<macros>
 					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.0"/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="BI16"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.0"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -258,8 +258,8 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.29419348.104841841" moduleId="org.eclipse.cdt.core.settings" name="Debug_LPC11Uxx">
 				<macros>
 					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.0"/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="BI8"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.0"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -326,7 +326,7 @@
 								<option id="gnu.c.compiler.option.misc.other.1271970860" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
 								<option id="gnu.c.compiler.option.include.paths.1004956567" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11Uxx/inc}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-cpp/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib/inc}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.gcc.exe.debug.option.optimization.level.338522430" name="Optimization Level" superClass="com.crt.advproject.gcc.exe.debug.option.optimization.level" value="gnu.c.optimization.level.none" valueType="enumerated"/>
 								<option id="com.crt.advproject.gcc.exe.debug.option.debugging.level.1194541412" name="Debug Level" superClass="com.crt.advproject.gcc.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
@@ -390,8 +390,8 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.release.189047520.1401171008" moduleId="org.eclipse.cdt.core.settings" name="Release BI8">
 				<macros>
 					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.0"/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="BI8"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.0"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -586,4 +586,5 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.crt.advproject.GCCManagedMakePerProjectProfile"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>
