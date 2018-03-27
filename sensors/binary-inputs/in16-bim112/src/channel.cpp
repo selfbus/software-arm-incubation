@@ -24,3 +24,7 @@ void Channel::checkPeriodic(void)
 {
 
 }
+void Channel::objectChanged(int value)
+{
+
+}

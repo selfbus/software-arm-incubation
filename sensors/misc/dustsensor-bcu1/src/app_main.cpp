@@ -12,6 +12,8 @@
 
 #include <sblib/core.h>
 #include <sblib/eib.h>
+#include <sblib/eib/sblib_default_objects.h>
+
 
 #include <math.h>
 #include <sblib/internal/iap.h>

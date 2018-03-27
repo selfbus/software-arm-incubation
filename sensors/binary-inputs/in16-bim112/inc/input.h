@@ -11,6 +11,7 @@
 
 #include <sblib/debounce.h>
 #include <sblib/timeout.h>
+#include "config.h"
 
 #define MAX_CHANNELS 16
 
@@ -24,7 +25,7 @@ protected:
     unsigned int noOfChannels;
     unsigned int debounceTime;
     unsigned int inputState;
-    Debouncer inputDebouncer[16];
+    Debouncer inputDebouncer[MAX_CHANNELS];
 };
 
 #endif /* INPUT_H_ */

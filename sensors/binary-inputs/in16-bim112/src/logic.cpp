@@ -33,9 +33,10 @@ Logic::Logic(unsigned int logicBase, unsigned int no, unsigned int chans,
     debug_eeprom("Logic-Channel:", base, 11 + channels);
     debug_eeprom("Scene Values:", addr, 2);
 
-    extLogicalObjectAComObjNo = 80 + (number * 3);
-    extLogicalObjectBComObjNo = 81 + (number * 3);
-    outLogicalObjectComObjNo = 82 + (number * 3);
+    int logicObjStart = channels/2 *10;
+    extLogicalObjectAComObjNo = logicObjStart + (number * 3);
+    extLogicalObjectBComObjNo = logicObjStart + 1 + (number * 3);
+    outLogicalObjectComObjNo = logicObjStart + 2 + (number * 3);
 
     if (busreturn)
     {
@@ -109,6 +110,7 @@ void Logic::inputChanged(int num, int value)
         doLogic();
     }
 }
+
 void Logic::objectUpdated(int objno)
 {
     if (objno == extLogicalObjectAComObjNo)
@@ -116,7 +118,7 @@ void Logic::objectUpdated(int objno)
         unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + channels);
         if (chanMode != CHAN_MODE_DISABLED)
         {
-            inputs[16] = objectRead(extLogicalObjectAComObjNo);
+            inputs[channels] = objectRead(extLogicalObjectAComObjNo);
             doLogic();
         }
     }
@@ -125,7 +127,7 @@ void Logic::objectUpdated(int objno)
         unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + channels + 1);
         if (chanMode != CHAN_MODE_DISABLED)
         {
-            inputs[17] = objectRead(extLogicalObjectBComObjNo);
+            inputs[channels+1] = objectRead(extLogicalObjectBComObjNo);
             doLogic();
         }
     }

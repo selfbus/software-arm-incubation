@@ -9,6 +9,7 @@
  */
 
 #include <sblib/eib.h>
+#include <sblib/eib/sblib_default_objects.h>
 #include <sblib/eib/apci.h>
 #include <sblib/serial.h>
 
