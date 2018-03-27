@@ -35,10 +35,9 @@ void setup()
 
     // Handle power-up delay
     Timeout delay;
-    delay.start(userEeprom.addrTab[0]*20); //aus LPC922 Raucmelder übernommen
+    delay.start(userEeprom.addrTab[0]*20); //aus LPC922 Rauchmelder übernommen
 
-	pinMode(PIO3_3, OUTPUT);	//Evalboard: LED
-	pinMode(PIO1_0, INPUT);		//Evalboard: Status RM Bodenplatte
+	pinMode(RM_ACTIVITY_PIN, INPUT);		// Status RM Bodenplatte
 
     initApplication();
 }
@@ -68,12 +67,6 @@ void loop()
         objectUpdated(objno);
     }
 
-    //Nur zum Test ob die Abfrage der Bodenplatte funktioniert
-    if(digitalRead(PIO1_0)){
-    	digitalWrite(PIO3_3, 1);
-    }else{
-    	digitalWrite(PIO3_3, 0);
-    }
 
     // Sleep up to 1 millisecond if there is nothing to do
     if (bus.idle())

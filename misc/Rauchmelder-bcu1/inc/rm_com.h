@@ -13,7 +13,7 @@
 #define rm_com_h
 
 // Eingangspin definieren, an dem die Erkennung der internen Rauchmelder Spannung angeschlossen ist
-#define RM_ACTIVITY_PIN PIO1_0
+#define RM_ACTIVITY_PIN PIO0_11
 
 //
 // Funktionen für die Kommunikation mit dem Rauchmelder

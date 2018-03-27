@@ -798,11 +798,8 @@ void initApplication()
 {
 	unsigned char i;
 
-	pinMode(PIO1_1, OUTPUT);
-	digitalWrite(PIO1_1, 0);
-	//ToDo: zurückändern -> DevBoard!!!
-//	pinMode(PIO3_5, OUTPUT);	// ARM: PIO3_5
-//	digitalWrite(PIO3_5, 0);	// ARM: PIO3_5 low to enable serial communication
+	pinMode(PIO3_5, OUTPUT);
+	digitalWrite(PIO3_5, 0);	// PIO3_5 low to enable serial communication
 
 	rm_serial_init(); 	//serielle Schnittstelle für die Kommunikarion mit dem Rauchmelder initialisieren
 
