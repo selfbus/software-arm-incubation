@@ -3,7 +3,7 @@
  *
  *  For any further information see: inc/config.h
  *
- *  Copyright (C) 2017 Florian Voelzke <fvoelzke@gmx.de>
+ *  Copyright (C) 2018 Florian Voelzke <fvoelzke@gmx.de>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -14,6 +14,7 @@
  *    (This is done by additional address-filtering for isMapped(), writeMemPtr(), readMemPtr().
  *    These three functions are used inside bcu.cpp)
  *    Page 0 (addr 0..255) is used for the page with access restrictions
+ *  - Creates a dummy memory from 0x4B20 upwards
  */
 
 #ifndef MEMMAPPERMOD_H_
@@ -45,7 +46,10 @@ virtual int readMemPtr(int virtAddress, byte *data, int length, bool forceFlash 
  * to virtAdress <= 255 to implement a local storage which can not be accessed from the bus.
   * To access the local storage, other functions has to be used.
  */
-bool isMapped(int virtAddress);
+virtual bool isMapped(int virtAddress);
+
+protected:
+ byte fakemem[32];
 };
 
 #endif /* MEMMAPPERMOD_H_ */

@@ -3,7 +3,7 @@
  *
  *  For any further information see: inc/config.h
  *
- *  Copyright (C) 2017 Florian Voelzke <fvoelzke@gmx.de>
+ *  Copyright (C) 2018 Florian Voelzke <fvoelzke@gmx.de>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -37,7 +37,8 @@ bool NextState = false;
 AppOperatingStates AppOperatingState;
 bool NoAppWasRunning = false;
 
-const byte SerialNumber[] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0x01 };
+// The last 2 Bytes of the Serial Number are now the Version number: 0x01 0x01 = V1.1
+const byte SerialNumber[] = { 0x12, 0x34, 0x56, 0x00, 0x01, 0x01 };
 
 /* Es gibt verschiedene Systemzustände, in denen Teile oder die ganze Funktionalität abgeschaltet ist:
  * - direkt nach dem Systemstart
@@ -272,6 +273,11 @@ void RelayAndSpiProcessing(void)
 
 void LedProcessing(void)
 {
+ // Die ETS5.6 programmiert merkwürdigerweise eine ganz andere Adresse,
+ // das muss korrigiert werden.
+ if (userEeprom.commsTabAddr != 0x4400)
+  userEeprom.commsTabAddr = 0x4400;
+
  unsigned OutputState;
  if (AppOrNoAppProcessingEnabled()) // LEDs nur dann, wenn kein Strom gespart werden muss
  {
