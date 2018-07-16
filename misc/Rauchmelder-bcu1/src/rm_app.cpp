@@ -761,7 +761,7 @@ extern "C" void TIMER32_0_IRQHandler()
 		// Info Objekt zum Senden vormerken wenn es dafür konfiguriert ist.
 		// Leider sind die Bits in der VD in der falschen Reihenfolge, daher 7-x
 		if ((infoSendObjno >= 14 && (userEeprom[CONF_INFO_14TO21] & pow2[7 - (infoSendObjno - 14)])) ||
-				(infoSendObjno >= 6 && (userEeprom[CONF_INFO_6TO13] & pow2[7 - (infoSendObjno - 6)])))
+				(infoSendObjno < 14 && infoSendObjno >= 6 && (userEeprom[CONF_INFO_6TO13] & pow2[7 - (infoSendObjno - 6)])))
 		{
 			ARRAY_SET_BIT(objSendReqFlags, infoSendObjno);
 		}
