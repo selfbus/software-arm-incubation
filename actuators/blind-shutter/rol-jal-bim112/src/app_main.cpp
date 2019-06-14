@@ -53,6 +53,16 @@ void setup()
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
+
+    // Running the controller in a closed housing makes these LEDs useless - they just consume power
+    // additionally at the moment the rol-jal application does not make use of these LEDs
+    // check config file to toggle the use
+#ifndef USE_DEV_LEDS
+	digitalWrite(PIN_INFO, 0);
+	digitalWrite(PIN_RUN, 0);
+#endif
+
+
     if (bcu.applicationRunning())
         initApplication();
 	timeout.start    (1);
