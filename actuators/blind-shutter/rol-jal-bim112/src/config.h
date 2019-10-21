@@ -21,7 +21,8 @@ typedef struct
 extern const HardwareVersion * currentVersion;
 
 
-#define HAND_ACTUATION
+//#define HAND_ACTUATION
 #define NO_OF_HAND_PINS  8
+//#define USE_DEV_LEDS
 
 #endif /* CONFIG_H_ */
