@@ -49,10 +49,17 @@ struct air_humidity_values{
 
 extern struct air_humidity_values air_humidity;
 
+// value to check if the temperature sensor is connected (Application Board is connected)
+extern bool TempSensAvailable;
 
 enum SollTemp {
 	SollTempIntern,
 	SollTempExtern
+};
+
+enum connExtTemp {
+	ExtTempOverKNX,
+	ExtTempAtBoard
 };
 
 struct temp_values{
@@ -77,6 +84,10 @@ struct temp_values{
 
 //	unsigned short tempExtern;		//DPT9 format, Messwert vom externen Temperatursensor
 	int tempExtern;
+
+	bool floorTempShow; 			//If the Floor Temp should be showed in the LCD
+
+	int ExtTempSensSource;			//Define where the external Temperature Sensor is connected (at the RTR or via KNX)
 };
 
 extern temp_values& temp;
@@ -87,6 +98,7 @@ extern temp_values& temp;
 extern int tempEepromData[TEMP_EEPROM_SIZE];
 
 
+void initSensors(void);
 void checkTempSensors(void);
 void handleSetTempSourcePeriodic(void);
 void checkAirQuality(void);

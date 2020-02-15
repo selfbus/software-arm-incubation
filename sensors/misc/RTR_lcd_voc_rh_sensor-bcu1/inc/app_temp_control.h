@@ -9,11 +9,13 @@
 #define app_temp_control_h
 
 unsigned int factortime_to_ms(unsigned int startaddress);
+void rebootApplication(void);
 void objectUpdated(int objno);
 void initApplication(void);
 void handlePeriodic(void);
 void inputChanged(int channel, int val, uint8_t pressType);
 
-
+// value to store if the Application Board is connected to the controller
+extern bool applicationBoardConnected;
 
 #endif

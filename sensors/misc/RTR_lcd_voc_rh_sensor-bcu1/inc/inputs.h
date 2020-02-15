@@ -30,4 +30,6 @@ static const int inputPins[] = { PIO2_10, PIO1_7 }; // input pins for both butto
 
 void init_inputs(void);
 
+void handlePeriodicInputs(void);
+
 #endif

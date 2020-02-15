@@ -66,7 +66,6 @@ ExtEeprom extEeprom;
  */
 void setup() {
 
-//	bcu.setProgPin(PIN_PROG);
 #if EINHEIZKREIS
 	bcu.begin(76, 0x474, 2);  // we are a MDT temperatur controller, version 1.2
 #else
@@ -122,9 +121,7 @@ void setup() {
 	int lcd_brightness = extEeprom.eepromGetUInt32(UF_LCD_BRIGHTNESS);
 	setPWM(lcd_brightness/100);
 
-	SHT21.Init();
-
-	CCS811.begin(CCS_811_ADDR, PIO2_8); //Address and Wake Pin of CCS811
+	initSensors();
 
 	initApplication();
 
@@ -139,14 +136,20 @@ bool LCDdrawFlag = false; //a helper to get more runs through the complete loop
  * The main processing loop.
  */
 void loop() {
-    int channel, value, lastValue, objno;
+    int objno;
 
+    if(!TempSensAvailable){
+    	applicationBoardConnected = false;
+    }
+
+
+    //divide the LCD process in pieces for better scheduling
     if(LCDdrawFlag == false){
     	u8g_FirstPage(&u8g);
     	LCDdrawFlag = true;
     }else{
     	drawLCD();
-    	if(u8g_NextPage(&u8g) == 0){
+    	if(u8g_NextPage(&u8g) == 0){ //returns 0 if the picture loop has been finished, 1 if another redraw of the picture is required
     		LCDdrawFlag = false;
     	}
     }
@@ -155,25 +158,12 @@ void loop() {
 
 	handlePeriodic();
 
+	handlePeriodicInputs();
+
 	// Handle updated communication objects
 	while ((objno = nextUpdatedObject()) >= 0)
 	{
 		objectUpdated(objno);
-	}
-
-	/*
-	 * Inputs are handled by Interrupt Handler in inputs.cpp
-	 */
-	for (channel = 0; channel < NUM_CHANNELS; ++channel)
-	{
-		if(timeout[channel].started() && timeout[channel].expired()){
-		   	inputChanged(channel, lastValue, LONG_PRESS);
-		}
-
-		if(inputChangedMem[channel] != NO_PRESS){
-			inputChanged(channel, 1, inputChangedMem[channel]);
-			inputChangedMem[channel] = NO_PRESS;
-		}
 	}
 
 }
