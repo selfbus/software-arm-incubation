@@ -25,6 +25,7 @@
 #include <DebugFunc.h>
 #include <string.h> /* for memcpy() */
 
+
 // System time in milliseconds (from timer.cpp)
 extern volatile unsigned int systemTime;
 
@@ -86,7 +87,7 @@ AppUsrCallback usrCallback;
  */
 void setup()
 {
- for (unsigned ipno=0; ipno<8; ipno++)
+	for (unsigned ipno=0; ipno<8; ipno++)
  {
   // Allen Interrupts eine mittlere Priorität einräumen
   // (2, was "zweitniedrigst" bedeutet (Werte 3..0 möglich, klein höher).
@@ -126,6 +127,13 @@ void setup()
  setUserRamStart(0x3FC);
  appl.RecallAppData(RECALLAPPL_STARTUP);
  manuCtrl.StartManualCtrl();
+#ifdef TS_ARM_2CH
+ //Ausgänge für Relais
+ pinMode(REL1ON, OUTPUT);
+ pinMode(REL1OFF, OUTPUT);
+ pinMode(REL2ON, OUTPUT);
+ pinMode(REL2OFF, OUTPUT);
+#endif
 }
 
 void AppOperatingStateMachine(unsigned referenceTime, bool AppValid)
@@ -259,6 +267,7 @@ void RelayAndSpiProcessing(void)
  {
   LastRelTime = referenceTime;
   relay.DoSwitching(LastRelTime, SpiRelData); // Erzeugt in SpiRelData die aktuellen Ansteuerdaten für die Relais
+#ifndef TS_ARM_2CH
   relspi.ReadRx(); // Liest die Daten aus dem Empfangspuffer der Schnittstelle
   // Die Anzahl der gelesenen Bytes wird verworfen, die Daten nie abgerufen
   unsigned OneSpiByte;
@@ -268,6 +277,13 @@ void RelayAndSpiProcessing(void)
    relspi.SetTxData(&OneSpiByte, 1);  // Setzt die Relaistreiber
   }
   relspi.StartTransfer();            // Startet den Transfer (SetTxData geht in den FIFO des SPI-Interfaces)
+#else
+  //Relais direkt an Ausgangspins angeschlossen
+  digitalWrite(REL1ON, (SpiRelData >> 0) & RELAYPATTERNON);
+  digitalWrite(REL1OFF, (SpiRelData >> 0) & RELAYPATTERNOFF);
+  digitalWrite(REL2ON, (SpiRelData >> 2) & RELAYPATTERNON);
+  digitalWrite(REL2OFF, (SpiRelData >> 2) & RELAYPATTERNOFF);
+#endif
  }
 }
 
