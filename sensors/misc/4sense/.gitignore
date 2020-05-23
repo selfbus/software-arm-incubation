@@ -1,0 +1,16 @@
+# MCUx
+/Debug
+/Release
+
+# misc
+/4*
+/run.cmd
+
+# CLION
+/.idea
+/cmake-build*
+
+# knx2header stuff
+conf.pyc
+/test.*
+/params.cpp
