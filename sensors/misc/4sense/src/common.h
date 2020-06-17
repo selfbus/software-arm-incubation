@@ -1,5 +1,5 @@
 //
-// Created by mario on 17.05.20.
+// Created by Mario Theodoridis on 17.05.20.
 //
 
 #ifndef INC_4SENSE_COMMON_H
@@ -8,10 +8,11 @@
 #include <stdint.h>
 #include <sblib/eib.h>
 #include <sblib/sensors/ds18x20.h>
+#include <sblib/sensors/dht.h>
 
 #ifdef LOGGING
     #include "log/logger.h"
-    #define pretty(val) (int)(val/1.6)
+    #define pretty(val) (int)(val*10)
     #define LOG(...) serPrintf(__VA_ARGS__)
 #else
     #define LOG(...) // nada!

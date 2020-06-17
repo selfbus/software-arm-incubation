@@ -1,5 +1,5 @@
 //
-// Created by mario on 19.05.20.
+// Created by Mario Theodoridis on 19.05.20.
 //
 
 #include "common.h"
@@ -33,25 +33,29 @@ const char* Threshold::actionString[] = {
 };
 
 void
-Threshold::init(int idx, int sensNum, uint triggerValue, uint triggerAction,
-                int comObject) {
+Threshold::init(int idx, int sensNum, GRENZWERT_ZUORDNUNG triggerType,
+        uint triggerValue, uint triggerAction, int comObject) {
     sensorNum = sensNum;
     thresholdNum = idx + 1;
+    type = triggerType;
     action = (uint8_t)triggerAction;
-    trigger = triggerValue * 1.6;
+    trigger = triggerValue * .1;
     comObj = comObject;
     currentValue = Value_off;
-    LOG("#%d threshold:%d at %dd° action is %s",
-        sensorNum, thresholdNum, pretty(trigger), actionString[action]);
+    LOG("#%d threshold:%d for %s at %d action is %s",
+        sensorNum, thresholdNum,
+        type == GRENZWERT_ZUORDNUNG_HUMIDITY? "humidity" : "temperature",
+        pretty(trigger), actionString[action]);
 }
 
-void Threshold::test(int16_t value, bool periodic) {
+void Threshold::test(float tempValue, float humValue, bool periodic) {
     if (action == GRENZWERT_REAKTION_DEACTIVATED) return;
+    float value = type == GRENZWERT_ZUORDNUNG_HUMIDITY? humValue : tempValue;
     if (value > trigger && action & Action_above) {
         byte v = action & Value_above? 1 : 0;
         if (currentValue != Value_above || periodic) {
             // only send changes unless we updating periodially
-            LOG("#%d value %dd° is above threshold %d, so sending %d",
+            LOG("#%d value %d is above threshold %d, so sending %d",
                 sensorNum, pretty(value), thresholdNum, v);
             objectWrite(comObj, &v);
         }
@@ -62,7 +66,7 @@ void Threshold::test(int16_t value, bool periodic) {
         byte v = action & Value_below? 1 : 0;
         if (currentValue != Value_below || periodic) {
             // only send changes unless we updating periodially
-            LOG("#%d value %dd° is below threshold %d, so sending %d",
+            LOG("#%d value %d is below threshold %d, so sending %d",
                 sensorNum, pretty(value), thresholdNum, v);
             objectWrite(comObj, &v);
         }

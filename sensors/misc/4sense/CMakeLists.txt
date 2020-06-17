@@ -20,7 +20,7 @@ set(LOGGING OFF CACHE BOOL "Whether to through the serial port")
 set(LIB_BUILD_DIR ${BUILD_DIR_PREFIX} CACHE STRING
         "The build subfolder where the libraries reside")
 
-add_definitions(-DBCU_TYPE=10)
+add_definitions(-DBCU_TYPE=10 -Wall -Werror)
 
 add_subdirectory(${SBLIB_DIR} sblib)
 
@@ -29,7 +29,9 @@ include_directories(${SBLIB_DIR}/inc)
 
 file(GLOB SRC src/*.cpp src/*.h)
 if (LOGGING)
-    file(GLOB LOGSRC src/log/*.cpp src/log/*.h)
+    add_subdirectory(${SBLOG_DIR} sblog)
+    include_directories(${SBLOG_DIR})
+    file(GLOB LOGSRC ${SBLOG_DIR}/log/*.cpp ${SBLOG_DIR}/log/*.h)
     list(APPEND SRC ${LOGSRC})
     add_definitions(-DLOGGING)
 endif()
