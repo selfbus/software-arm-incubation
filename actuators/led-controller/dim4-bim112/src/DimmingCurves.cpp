@@ -7,10 +7,11 @@
 
 #include "DimmingCurves.h"
 #include "config.h"
+#include <math.h>	// include before sblib's math.h via eib.h
 #include <sblib/eib.h>
 #include <com_objs.h>
 #include "pwmout.h"
-#include <math.h>
+
 
 
 #ifdef PWM
