@@ -1,13 +1,17 @@
 #include <sblib/timeout.h>
 #include <sblib/i2c/SHT2x.h>
 #include <sblib/i2c/iaq-core.h>
+#include <sblib/sensors/ds18x20.h>
 #include <sblib/eib/datapoint_types.h>
+#include <sblib/ioports.h>
 #include "sensors.h"
 #include "params.h"
 
 SHT2xClass SHT21;
 
 CCS811Class CCS811;
+
+DS18x20 extDS18B20;
 
 struct air_quality_values air_quality;
 struct air_humidity_values air_humidity;
@@ -16,14 +20,33 @@ struct air_humidity_values air_humidity;
 int  __attribute__ ((aligned (4))) tempEepromData[TEMP_EEPROM_SIZE];
 temp_values& temp = *(temp_values*) tempEepromData;
 
+bool TempSensAvailable;
 
-
-//bool SollTempFlagMem = memMapper.getUInt32(UF_TEMP_SOLL_TEMP_FLAG);
 bool SollTempFlagMem = extEeprom.eepromGetUInt32(UF_TEMP_SOLL_TEMP_FLAG);
 
+void initSensors(){
+	SHT21.Init();
+
+	CCS811.begin(CCS_811_ADDR, PIO2_8); //Address and Wake Pin of CCS811
+
+	extDS18B20.DS18x20Init(PIO2_5, false); //Data Pin, no parasite mode
+	extDS18B20.Search(1); //externen Sensor suchen
+}
+
 void checkTempSensors(void) {
+	if(temp.ExtTempSensSource == ExtTempAtBoard){
+		if(extDS18B20.m_foundDevices == 0){ //beim Start wird der Sonsor manchmal nicht gefunden
+			extDS18B20.Search(1); //externen Sensor erneut suchen
+		}
+		extDS18B20.readTemperature(extDS18B20.m_dsDev);
+		temp.tempExtern = (int)(extDS18B20.m_dsDev[0].last_temperature*100);
+	}
 	temp.tempIntern = SHT21.GetTemperature();
-	//TODO check external Temp Sensor!
+	if(temp.tempIntern == -273){
+		TempSensAvailable = false;
+	}else{
+		TempSensAvailable = true;
+	}
 }
 
 void handleSetTempSourcePeriodic(void) {

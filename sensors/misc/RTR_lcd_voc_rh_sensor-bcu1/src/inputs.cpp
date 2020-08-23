@@ -3,6 +3,7 @@
 #include <sblib/timeout.h>
 #include "inputs.h"
 #include "params.h"
+#include "app_temp_control.h"
 
 unsigned int debounceTime;
 Debouncer inputDebouncer[NUM_CHANNELS];
@@ -72,6 +73,25 @@ extern "C" void PIOINT2_IRQHandler(void)
 			}else if(timeDiff > debounceTime && timeDiff < LONGPRESSTIME){
 					inputChangedMem[1] = SHORT_PRESS;
 			}
+		}
+	}
+}
+
+void handlePeriodicInputs(){
+	int channel, lastValue;
+
+	for (channel = 0; channel < NUM_CHANNELS; ++channel)
+	{
+		if(timeout[channel].started() && timeout[channel].expired()){
+		   	if(timeout[channel ^ 1].started()){ //Channel 0 oder 1 Longpress und der andere auch gedrückt
+		   		rebootApplication(); //RESET und Neuinitialisierung aller Komponenten
+		   	}else{
+		   		inputChanged(channel, lastValue, LONG_PRESS);
+		   	}
+		}
+			if(inputChangedMem[channel] != NO_PRESS){
+			inputChanged(channel, 1, inputChangedMem[channel]);
+			inputChangedMem[channel] = NO_PRESS;
 		}
 	}
 }

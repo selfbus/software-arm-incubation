@@ -10,6 +10,11 @@
 #define CONFIG_H_
 
 
+/*
+ * Diese defines müssen vor dem Kompilieren ausgewählt werden
+ * Leider können nicht alle Kombinationen kompiliert werden, da der Speicherplatz des LPC1115 nicht ausreicht.
+ */
+
 // select if the hardware has a IAQ Sensor
 #define DEVICE_WITH_VOC	true	// with sensor = true, without sensor = false
 

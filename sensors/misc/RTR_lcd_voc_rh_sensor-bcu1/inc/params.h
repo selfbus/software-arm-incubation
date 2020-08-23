@@ -25,7 +25,8 @@
 #define AIR_HUMIDITY_ACTIVE			0x20
 #define DISPLAY_WINDOW_OPEN			0x10
 #define DISPLAY_AIR_VENTILATION		0x08
-#define EXTERNAL_TEMP_SENS			0x04
+#define FLOOR_TEMP_SHOW				0x04
+#define CONN_EXT_TEMP_SENS			0x02	//if the external Temp Sensor is connected to the board or the value is provided via KNX
 
 // Eeprom address: Send  actual temperature cyclically (not send = 0 or value: 1,2,3,4,5,10,15,20,30,40,50,60 min)
 // size: 8 bit
@@ -40,9 +41,12 @@
 enum timed_values {
 	SW1_LONG_PRESS,
 	SW2_LONG_PRESS,
-	TEMPERATURES,
-	AIR_QUALITY,
-	AIR_HUMIDITY,
+	TEMPERATURES_KO,
+	TEMPERATURES_LCD,
+	AIR_QUALITY_KO,
+	AIR_QUALITY_LCD,
+	AIR_HUMIDITY_KO,
+	AIR_HUMIDITY_LCD,
 	LCD_HOME_SCREEN, 	//timeout to get back to home screen
 	LCD_BACKLIGHT,		//timeout to shut backlight off
 	RETURN_TO_AUTO,		//timeout to get back to automatic (extern) temperature control

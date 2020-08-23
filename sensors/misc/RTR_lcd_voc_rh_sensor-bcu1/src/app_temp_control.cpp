@@ -21,7 +21,11 @@
 const byte* functionsParams = userEepromData + (EE_FUNCTIONS_PARAMS_BASE - USER_EEPROM_START);
 const byte* TimingParams = userEepromData + (EE_TIMING_PARAMS_BASE - USER_EEPROM_START);
 
+bool applicationBoardConnected = true;
 
+/*
+ * Funktion zur Umrechnung der Zeitbasis und der Einheit zu einem Wert in Millisekunden
+ */
 unsigned int factortime_to_ms(unsigned int startaddress) {
 	uint8_t time_factor, time_unit;
 	unsigned int result = 1000; //start at 1s = 1000ms
@@ -34,6 +38,21 @@ unsigned int factortime_to_ms(unsigned int startaddress) {
 	return (result *= time_factor);
 }
 
+/*
+ * Funktion zur Prüfung, ob nach erfolgtem langem Druck beider Tasten die Neuinitialisierung aller Komponenten nötig ist
+ * Nötig wird dieses, nachdem die Applikationsplatine vom Controller abgezogen und wieder angesteckt wurde.
+ */
+void rebootApplication(void){
+	if(TempSensAvailable == true){
+	   	if(applicationBoardConnected == false){
+	       	setup();
+	       	applicationBoardConnected = true;
+	   	}
+	}else{
+		applicationBoardConnected = false;
+	}
+}
+
 void initApplication(void) {
 
 	unsigned char eepromParams = userEeprom[EE_FUNCTIONS_PARAMS_BASE];
@@ -42,19 +61,32 @@ void initApplication(void) {
 		temp.functionActive = true;
 		temp.sendInterval = factortime_to_ms(EE_TIMING_PARAMS_BASE);
 //		temp.autoResetTime = factortime_to_ms(EE_TIMING_PARAMS_BASE + 1);
-		timeout[TEMPERATURES].start(temp.sendInterval);
+		timeout[TEMPERATURES_KO].start(temp.sendInterval);
+		timeout[TEMPERATURES_LCD].start(1000);
+	}
+
+	if (userEeprom[EE_FUNCTIONS_PARAMS_BASE] & FLOOR_TEMP_SHOW) {
+		temp.floorTempShow = true;
+	}
+
+	if (userEeprom[EE_FUNCTIONS_PARAMS_BASE] & CONN_EXT_TEMP_SENS) {
+		temp.ExtTempSensSource = ExtTempAtBoard;
+	}else{
+		temp.ExtTempSensSource = ExtTempOverKNX;
 	}
 
 	if (userEeprom[EE_FUNCTIONS_PARAMS_BASE] & AIR_QUALITY_ACTIVE) {
 		air_quality.functionActive = true;
 		air_quality.sendIntervall = factortime_to_ms(EE_TIMING_PARAMS_BASE + 2);
-		timeout[AIR_QUALITY].start(air_quality.sendIntervall);
+		timeout[AIR_QUALITY_KO].start(air_quality.sendIntervall);
+		timeout[AIR_QUALITY_LCD].start(1000);
 	}
 
 	if (userEeprom[EE_FUNCTIONS_PARAMS_BASE] & AIR_HUMIDITY_ACTIVE) {
 		air_humidity.functionActive = true;
 		air_humidity.sendIntervall = factortime_to_ms(EE_TIMING_PARAMS_BASE + 4);
-		timeout[AIR_HUMIDITY].start(air_humidity.sendIntervall);
+		timeout[AIR_HUMIDITY_KO].start(air_humidity.sendIntervall);
+		timeout[AIR_HUMIDITY_LCD].start(1000);
 	}
 
 	if (userEeprom[EE_FUNCTIONS_PARAMS_BASE] & DISPLAY_WINDOW_OPEN) {
@@ -64,8 +96,6 @@ void initApplication(void) {
 	if (userEeprom[EE_FUNCTIONS_PARAMS_BASE] & DISPLAY_AIR_VENTILATION) {
 		window_ventilation.show_ventilation_state = true;
 	}
-
-	//TODO: show_window_state und show_ventilation_state beschreiebn
 }
 
 // handle external-set-temperature, window state, ventilation state
@@ -84,19 +114,16 @@ void objectUpdated(int objno) {
 //		temp.TempSollExtern = dptFromFloat((objectRead(objno) & 0xFFFF));
 //		temp.hekaTempSollExtern = dptFromFloat( temp.TempSollExtern );
 	}
-#if EXTERNAL_TEMP_SENS
-	if(objno == REC_EXT_TEMP){
+
+	if(objno == REC_EXT_TEMP && temp.floorTempShow && temp.ExtTempSensSource == ExtTempOverKNX){
 		temp.tempExtern = dptFromFloat(objectRead(objno) & 0xFFFF);
 	}
-#endif
 }
 
 // send values periodic (temperature internal, temperature external, temperature set value, air quality, air humidity)
 void handlePeriodic(void) {
 
-	if (timeout[TEMPERATURES].started() && timeout[TEMPERATURES].expired()) {
-		//read all temperatures from sensors
-		checkTempSensors();
+	if (timeout[TEMPERATURES_KO].started() && timeout[TEMPERATURES_KO].expired()) {
 
 		// send temperature internal, temperature external, temperature set value
 		objectWriteFloat(SEND_INTERN_TEMP, temp.tempIntern);
@@ -110,25 +137,37 @@ void handlePeriodic(void) {
 //			objectWriteFloat(SEND_SET_TEMP, dptToFloat(memMapper.getUInt32(UF_TEMP_SOLL_EXTERN)));
 			objectWriteFloat(SEND_SET_TEMP, extEeprom.eepromGetUInt32(UF_TEMP_SOLL_EXTERN));
 		}
-		timeout[TEMPERATURES].start(temp.sendInterval);
+		timeout[TEMPERATURES_KO].start(temp.sendInterval);
+	}
+
+	if (timeout[TEMPERATURES_LCD].started() && timeout[TEMPERATURES_LCD].expired()) {
+		//read all temperatures from sensors
+		checkTempSensors();
+		timeout[TEMPERATURES_LCD].start(1000);
 	}
 
 #if DEVICE_WITH_VOC
-	if (timeout[AIR_QUALITY].started() && timeout[AIR_QUALITY].expired()) {
-		checkAirQuality();
-
+	if (timeout[AIR_QUALITY_KO].started() && timeout[AIR_QUALITY_KO].expired()) {
 		// send air quality
 		objectWriteFloat(SEND_AIR_QUALITY, (air_quality.AirCO2*100));
-		timeout[AIR_QUALITY].start(air_quality.sendIntervall);
+		timeout[AIR_QUALITY_KO].start(1000);
+	}
+
+	if (timeout[AIR_QUALITY_LCD].started() && timeout[AIR_QUALITY_LCD].expired()) {
+		checkAirQuality();
+		timeout[AIR_QUALITY_LCD].start(1000);
 	}
 #endif
 
-	if(timeout[AIR_HUMIDITY].started() && timeout[AIR_HUMIDITY].expired()) {
-		checkAirHumidity();
-
+	if(timeout[AIR_HUMIDITY_KO].started() && timeout[AIR_HUMIDITY_KO].expired()) {
 		//send air humidity
 		objectWriteFloat(SEND_AIR_HUMIDITY, air_humidity.AirRH);
-		timeout[AIR_HUMIDITY].start(air_humidity.sendIntervall);
+		timeout[AIR_HUMIDITY_KO].start(air_humidity.sendIntervall);
+	}
+
+	if(timeout[AIR_HUMIDITY_LCD].started() && timeout[AIR_HUMIDITY_LCD].expired()) {
+		checkAirHumidity();
+		timeout[AIR_HUMIDITY_LCD].start(air_humidity.sendIntervall);
 	}
 
 	//handle periodic if the setpoint temperature is changed from internal to external

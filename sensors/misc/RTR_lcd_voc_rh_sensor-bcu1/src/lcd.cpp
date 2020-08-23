@@ -91,7 +91,7 @@ void draw_home_screen(void) {
 
 #if DEVICE_WITH_VOC
 	//draw temperatures and air quality
-	if(temp.functionActive || 1) { //TODO remove 1
+	if(temp.functionActive) {
 		uint8_t x_next;
 #if not EXTERNAL_TEMP_SENS
 		u8g_SetFont(&u8g, u8g_font_fub20);
@@ -109,11 +109,12 @@ void draw_home_screen(void) {
 		string[0]= 176;
 		string[1] = 'C';
 		u8g_DrawStr(&u8g, x_next, 14, string);
-
-		u8g_SetFont(&u8g, u8g_font_6x13);
-		strwidth = u8g_DrawStr(&u8g, 0, 27, "Boden: ");
-		x_next = draw_float(strwidth, 27, temp.tempExtern);
-		u8g_DrawStr(&u8g, x_next, 27, string);
+		if(temp.floorTempShow){
+			u8g_SetFont(&u8g, u8g_font_6x13);
+			strwidth = u8g_DrawStr(&u8g, 0, 27, "Boden: ");
+			x_next = draw_float(strwidth, 27, temp.tempExtern);
+			u8g_DrawStr(&u8g, x_next, 27, string);
+		}
 #endif
 	}
 
@@ -121,7 +122,7 @@ void draw_home_screen(void) {
 #else // device without VOC sensor
 
 	//draw temperatures and air quality
-	if(temp.functionActive || 1) { //TODO remove 1
+	if(temp.functionActive) {
 		uint8_t x_next;
 #if not EXTERNAL_TEMP_SENS
 			u8g_SetFont(&u8g, u8g_font_fub20);
@@ -139,22 +140,24 @@ void draw_home_screen(void) {
 		string[1] = 'C';
 		u8g_DrawStr(&u8g, x_next, 14, string);
 
-		u8g_SetFont(&u8g, u8g_font_6x13);
-		strwidth = u8g_DrawStr(&u8g, 0, 27, "Boden: ");
-		x_next = draw_float(strwidth, 27, temp.tempExtern);
-		u8g_DrawStr(&u8g, x_next, 27, string);
+		if(temp.floorTempShow){
+			u8g_SetFont(&u8g, u8g_font_6x13);
+			strwidth = u8g_DrawStr(&u8g, 0, 27, "Boden: ");
+			x_next = draw_float(strwidth, 27, temp.tempExtern);
+			u8g_DrawStr(&u8g, x_next, 27, string);
+		}
 #endif
 	}
 #endif
 
-	if(air_humidity.functionActive || 1){  //TODO remove 1
+	if(air_humidity.functionActive){
 		uint8_t x_next;
 		u8g_SetFont(&u8g, u8g_font_fub14r);
 		x_next = draw_float(0, 44, air_humidity.AirRH);
 		u8g_DrawStr(&u8g, x_next, 44, "%RH");
 	}
 #if DEVICE_WITH_VOC
-	if(air_quality.functionActive || 1) {	//TODO remove 1
+	if(air_quality.functionActive) {
 		u8g_SetFont(&u8g, u8g_font_profont10r);
 		u8g_DrawStr(&u8g, 94, 6, "Air");
 		u8g_DrawStr(&u8g, 94, 13, "Quality");
@@ -303,7 +306,7 @@ void lcdMenu(int inputChannel, int value, uint8_t pressType) {
 			screen_redraw_required = 1;
 		}
 
-		if(value == 1){ //Hilfsflag, um unerwünschte Aktionen beim erstmaligen drücken eienr Taste zu unterbinden
+		if(value == 1){ //Hilfsflag, um unerwünschte Aktionen beim erstmaligen drücken einer Taste zu unterbinden
 			KeyPressedFlag = false;
 		}
 	}
