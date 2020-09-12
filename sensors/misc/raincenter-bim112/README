@@ -1,0 +1,9 @@
+raincenter-bim112
+=================
+
+This is the implementation of the ESPA Tacomat Comfort.
+
+It brings the already in the ESPA Tacomat Comfort existing serial RS232 to the KNX-Bus.
+
+inc/config.h		additional configuration
+inc/rc_protocol.h 	contains serial protocol information
