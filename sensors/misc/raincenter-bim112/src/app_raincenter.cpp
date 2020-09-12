@@ -22,8 +22,13 @@
 #include "debug.h"
 
 
+enum ePollState {Idle, PolledParam, ReceivedParam, PolledDisplay, ReceivedDisplay};
 
-static Timeout RaincenterPollTimer;
+static ePollState PollState = Idle;     // holds the actual state of the state machine
+static Timeout RaincenterPollTimer;     // Timeout Timer to cyclic poll the Raincenter
+static RCMessage Msg;                   // Raincenter Message received over the serial
+static RCParameterMessage rcParamMsg;   // holds the last received RCParameterMessage
+static RCDisplayMessage  rsDisplayMsg;  // holds the last receive RCDisplayMessage
 
 void objectUpdated(int objno)
 {
@@ -32,10 +37,9 @@ void objectUpdated(int objno)
 
 void checkPeriodic(void)
 {
-
     static int rxBytesRdy2Read;
     static byte * rx;
-    static RCParameterMessage msg;
+
 
     if (RaincenterPollTimer.expired())
     {
@@ -44,6 +48,8 @@ void checkPeriodic(void)
         serial.write(msg.msgIdentifier);
     }
 
+
+    // check weather we got something on the serial
     rxBytesRdy2Read = serial.available();
     if (rxBytesRdy2Read >= msg.msgLength)
     {
@@ -62,9 +68,10 @@ void checkPeriodic(void)
 void initApplication(void)
 {
     // serial port initialization 2400 8N1
-    // serial.setTxPin(RC_TX_PIN);
-    // serial.setRxPin(RC_RX_PIN);
+    serial.setTxPin(RC_TX_PIN);
+    serial.setRxPin(RC_RX_PIN);
     serial.begin(RAINCENTER_BAUDRATE);
+    PollState = Idle;
     RaincenterPollTimer.start(POLL_INTERVAL_MS);
 
 #ifdef DEBUG
