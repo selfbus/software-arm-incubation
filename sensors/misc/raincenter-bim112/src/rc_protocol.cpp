@@ -22,6 +22,21 @@ bool bit_is_set(byte x, byte n)
     return ((x >> n) & 0x01);
 }
 
+RCMessage::RCMessage()
+{
+
+}
+
+RCMessage::~RCMessage()
+{
+
+}
+
+bool RCMessage::Decode(byte * msg, int msg_len)
+{
+    return false;
+}
+
 RCParameterMessage::RCParameterMessage()
 {
     _WaterExchangePeriod_days = -1;

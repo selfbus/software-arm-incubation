@@ -33,6 +33,18 @@ const HardwareVersion hardwareVersion[] =
 #define MANUFACTURER 0x83       // MDT
 #define HARDWARE_ID 0
 
+#define LED_STARTUP_DISPLAY 1000
+
+#define RAINCENTER_TX_DELAY_SEND_MS 20 // time in ms the raincenter doesnt react to serial commands after it send a response
+
+#define POLL_INTERVAL_MS 6000
+#define RAINCENTER_BAUDRATE 2400
+
+#define TX_FLASH_MS 100 // time in ms TX-Led is flashing
+#define RX_FLASH_MS 100 // time in ms RX-Led is flashing
+#define RX_FLASH_OK_MS POLL_INTERVAL_MS - 1000 // time in ms RX-Led is active to display correct received values
+
+
 /* possible IOs for serial communication
     PIO1_6 ISP_RX
     PIO1_7 ISP_TX
@@ -68,9 +80,6 @@ const HardwareVersion hardwareVersion[] =
     #define RC_RX_PIN PIN_IO15 // PIO1_6
 #endif
 
-#define TX_FLASH_MS 100
-#define RX_FLASH_MS 200
-
 #if defined(DEMOBOARD_OM13087)
     #define LED_ON 0
     #define LED_OFF 1
@@ -81,8 +90,5 @@ const HardwareVersion hardwareVersion[] =
     #define LED_ON 1
     #define LED_OFF 0
 #endif
-
-#define POLL_INTERVAL_MS 3000
-#define RAINCENTER_BAUDRATE 2400
 
 #endif /* CONFIG_H_ */

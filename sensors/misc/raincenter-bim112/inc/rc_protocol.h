@@ -98,6 +98,8 @@ enum eDisplayUnit {invalid, cm, percent, m3};
 class RCMessage
 {
 public:
+    RCMessage();
+    virtual ~RCMessage();
     virtual bool Decode(byte * msg, int msg_len) = 0;
 protected:
     const static char msgIdentifier;
@@ -111,8 +113,11 @@ class RCParameterMessage : public RCMessage
 // #Data :     70 30 07 01 03 01 42 00 31 01 30 06 51 51 97 00 00
 public:
     static const char msgIdentifier = 'p'; // 01. byte
+    // static const byte msgLength = 16;
+    // static constexpr byte msgExample[msgLength] = {0x70, 0x30, 0x07, 0x01, 0x03, 0x01, 0x42, 0x00, 0x31, 0x01, 0x30, 0x06, 0x51, 0x51, 0x97, 0x00};
     static const byte msgLength = 17;
     static constexpr byte msgExample[msgLength] = {0x70, 0x30, 0x07, 0x01, 0x03, 0x01, 0x42, 0x00, 0x31, 0x01, 0x30, 0x06, 0x51, 0x51, 0x97, 0x00, 0x00};
+
     RCParameterMessage();
     bool Decode(byte * msg, int msg_len);
     int WaterExchangePeriod_days() const {return _WaterExchangePeriod_days;}
