@@ -39,7 +39,7 @@ class raincenter(object):
 		print("c = switch display info")
 		print("w = read display data")
 		print("p = read parameters including waterheight in cm")
-		print("a = switch to manual trinking water refill")
+		print("a = switch to manual drinking water refill")
 		print("b = switch to reservoir")
 		print("s = unknown (maybe set parameters)")
 		print("q = quit")
