@@ -47,11 +47,12 @@ extern "C" void TIMER32_1_IRQHandler()
 }
 */
 
-void FlashRX_LED()
+void FlashRX_LED(int FlashTime_ms = RX_FLASH_MS)
 {
     pinMode(RX_LED, OUTPUT);
     digitalWrite(RX_LED, LED_ON);
-    RX_FlashTimeOut.start(RX_FLASH_MS);
+    RX_FlashTimeOut.stop();
+    RX_FlashTimeOut.start(FlashTime_ms);
     /*
     // Enable the timer interrupt
     enableInterrupt(TIMER_32_0_IRQn);
@@ -72,11 +73,12 @@ void FlashRX_LED()
     */
 }
 
-void FlashTX_LED()
+void FlashTX_LED(int FlashTime_ms = TX_FLASH_MS)
 {
     pinMode(TX_LED, OUTPUT);
     digitalWrite(TX_LED, LED_ON);
-    TX_FlashTimeOut.start(TX_FLASH_MS);
+    TX_FlashTimeOut.stop();
+    TX_FlashTimeOut.start(FlashTime_ms);
     /*
     // Enable the timer interrupt
     enableInterrupt(TIMER_32_1_IRQn);

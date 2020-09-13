@@ -15,7 +15,7 @@
 <booleanAttribute key="com.nxp.mcuxpresso.flash.confirm" value="false"/>
 <stringAttribute key="com.nxp.mcuxpresso.flash.erase.algorithm" value="Mass erase"/>
 <stringAttribute key="com.nxp.mcuxpresso.flash.executable" value="axf"/>
-<stringAttribute key="com.nxp.mcuxpresso.flash.program.action" value="Program"/>
+<stringAttribute key="com.nxp.mcuxpresso.flash.program.action" value="Program (mass erase first)"/>
 <booleanAttribute key="com.nxp.mcuxpresso.flash.reset.target" value="true"/>
 <stringAttribute key="com.nxp.mcuxpresso.ide.probe.manufacturer" value="NXP"/>
 <stringAttribute key="com.nxp.mcuxpresso.ide.probe.name" value="NXP CMSIS-DAP"/>

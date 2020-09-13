@@ -26,9 +26,108 @@ enum ePollState {Idle, PolledParam, ReceivedParam, PolledDisplay, ReceivedDispla
 
 static ePollState PollState = Idle;     // holds the actual state of the state machine
 static Timeout RaincenterPollTimer;     // Timeout Timer to cyclic poll the Raincenter
-static RCMessage Msg;                   // Raincenter Message received over the serial
+static Timeout RaincenterDelayTxTimer;  // Timeout Timer to delay serial send messages, because raincenter needs som time between messages send to him
 static RCParameterMessage rcParamMsg;   // holds the last received RCParameterMessage
 static RCDisplayMessage  rsDisplayMsg;  // holds the last receive RCDisplayMessage
+static int rcMessageLengthWaitingFor;   // holds the length of the serial message we are waiting for
+
+bool Write2Serial(byte ch)
+{
+    if (!RaincenterDelayTxTimer.stopped())
+    {
+        while (!RaincenterDelayTxTimer.expired())
+        {
+            delay(1);
+        }
+    }
+    FlashTX_LED();
+    return (serial.write(ch) == 1);
+}
+
+
+bool RunPollStateMachine(int SerialBytesAvailable)
+{
+    bool result = false;
+    static byte * rx;
+
+    if ((SerialBytesAvailable > 0) && (rcMessageLengthWaitingFor > 0) && (SerialBytesAvailable == rcMessageLengthWaitingFor))
+    {
+        if (SerialBytesAvailable == rcMessageLengthWaitingFor)
+        {
+            rx = new byte[SerialBytesAvailable];
+            serial.readBytes(&rx[0], SerialBytesAvailable);
+            if (SerialBytesAvailable == RCParameterMessage::msgLength)
+            {
+                RCParameterMessage msg;
+                if (msg.Decode(&rx[0], SerialBytesAvailable))
+                {
+                    PollState = ReceivedParam;
+                }
+            }
+            else if (SerialBytesAvailable == RCDisplayMessage::msgLength)
+            {
+                RCDisplayMessage msg;
+                if (msg.Decode(&rx[0], SerialBytesAvailable))
+                {
+                    PollState = ReceivedDisplay;
+                }
+            }
+            delete[] rx;
+        }
+    }
+
+    switch (PollState)
+    {
+        case Idle:
+            // seams to be the first run, so lets start polling with RCParametermessage
+            serial.clearBuffers();
+            rcMessageLengthWaitingFor = RCParameterMessage::msgLength;
+            Write2Serial(RCParameterMessage::msgIdentifier);
+            PollState = PolledParam;
+            RaincenterPollTimer.start(POLL_INTERVAL_MS);
+            result = true;
+            break;
+        case PolledParam:
+            // seams like we got no valid answer, so lets just reset
+            if (RaincenterPollTimer.expired())
+            {
+                PollState = Idle;
+                RaincenterPollTimer.start(POLL_INTERVAL_MS);
+            }
+            result = false;
+            break;
+        case ReceivedParam:
+            // ok, we received the RCParametermessage, now lets get the RCDisplaymessage
+            serial.clearBuffers();
+            rcMessageLengthWaitingFor = RCDisplayMessage::msgLength;
+            Write2Serial(RCDisplayMessage::msgIdentifier);
+            PollState = PolledDisplay;
+            RaincenterDelayTxTimer.start(POLL_INTERVAL_MS);
+            RaincenterPollTimer.start(POLL_INTERVAL_MS);
+            result = true;
+            break;
+        case PolledDisplay:
+            // seams like we got no valid answer, so lets just reset
+            if (RaincenterPollTimer.expired())
+            {
+                PollState = Idle;
+                RaincenterPollTimer.start(POLL_INTERVAL_MS);
+            }
+            result = false;
+            break;
+        case ReceivedDisplay:
+            //
+            serial.clearBuffers();
+            FlashRX_LED(RX_FLASH_OK_MS);
+            PollState = Idle;
+            result = true;
+            break;
+        default:
+            //
+            break;
+    } //switch
+    return result;
+}
 
 void objectUpdated(int objno)
 {
@@ -37,32 +136,14 @@ void objectUpdated(int objno)
 
 void checkPeriodic(void)
 {
-    static int rxBytesRdy2Read;
-    static byte * rx;
-
-
-    if (RaincenterPollTimer.expired())
+    if (serial.available() > 0) // check weather we got something on the serial
     {
-        FlashTX_LED();
-        RaincenterPollTimer.start(POLL_INTERVAL_MS);
-        serial.write(msg.msgIdentifier);
-    }
-
-
-    // check weather we got something on the serial
-    rxBytesRdy2Read = serial.available();
-    if (rxBytesRdy2Read >= msg.msgLength)
-    {
+        RaincenterDelayTxTimer.start(RAINCENTER_TX_DELAY_SEND_MS); // delay the next possible serial send, cause raincenter needs a little break
         FlashRX_LED();
-        rx = new byte[rxBytesRdy2Read];
-        serial.readBytes(&rx[0], rxBytesRdy2Read);
-        // serial.write(&rx[0], rxBytesRdy2Read);
-        msg.Decode(&rx[0], rxBytesRdy2Read);
-
-        delete[] rx;
     }
+    RunPollStateMachine(serial.available());
 
-    debugCheckPeriodic(); // call to switch off TX/RX Leds
+    debugCheckPeriodic(); // call to switch off debugging TX/RX Leds
 }
 
 void initApplication(void)
@@ -72,7 +153,9 @@ void initApplication(void)
     serial.setRxPin(RC_RX_PIN);
     serial.begin(RAINCENTER_BAUDRATE);
     PollState = Idle;
-    RaincenterPollTimer.start(POLL_INTERVAL_MS);
+    rcMessageLengthWaitingFor = -1;
+    RaincenterPollTimer.start(1);
+    RaincenterDelayTxTimer.start(1);
 
 #ifdef DEBUG
     // LED Initialize
@@ -82,7 +165,7 @@ void initApplication(void)
     // LED Set Initial Value (ON|OFF)
     digitalWrite(TX_LED, LED_ON);
     digitalWrite(RX_LED, LED_ON);
-    delay(500);
+    delay(LED_STARTUP_DISPLAY);
     digitalWrite(TX_LED, LED_OFF);
     digitalWrite(RX_LED, LED_OFF);
 #endif
