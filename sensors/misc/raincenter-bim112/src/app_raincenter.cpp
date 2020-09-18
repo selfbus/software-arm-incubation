@@ -25,6 +25,7 @@
 enum ePollState {Idle, PolledParam, ReceivedParam, PolledDisplay, ReceivedDisplay};
 
 static ePollState PollState = Idle;     // holds the actual state of the state machine
+static Timeout SendPeriodicTimer;       // TODO this is just for testing, Timeout Timer to send all objects periodically
 static Timeout RaincenterPollTimer;     // Timeout Timer to cyclic poll the Raincenter
 static Timeout RaincenterDelayTxTimer;  // Timeout Timer to delay serial send messages, because raincenter needs som time between messages send to him
 static RCParameterMessage rcParamMsg;   // holds the last received RCParameterMessage
@@ -62,7 +63,13 @@ bool RunPollStateMachine(int SerialBytesAvailable)
                 RCParameterMessage msg;
                 if (msg.Decode(&rx[0], SerialBytesAvailable))
                 {
-                    rcParamMsg = msg;
+                    if (rcParamMsg != msg)
+                    {
+                        // TODO check weather to send or not conditions
+                        // Parameters have changed, lets send them for now
+                        rcParamMsg = msg;
+                        objectWrite(20, rcParamMsg.Level_m3_Calibrated()*10);
+                    }
                     PollState = ReceivedParam;
                 }
             }
@@ -72,6 +79,12 @@ bool RunPollStateMachine(int SerialBytesAvailable)
                 if (msg.Decode(&rx[0], SerialBytesAvailable))
                 {
                     rcDisplayMsg = msg;
+                    if (rcDisplayMsg != msg)
+                    {
+                        // TODO check weather to send or not conditions
+                        // Parameters have changed, lets send them for now
+                        objectWrite(17, rcDisplayMsg.IsSwitchedToTapWater());
+                    }
                     PollState = ReceivedDisplay;
                 }
             }
@@ -134,9 +147,6 @@ bool RunPollStateMachine(int SerialBytesAvailable)
             FlashRX_LED(RX_FLASH_OK_MS);
             RaincenterPollTimer.start(POLL_INTERVAL_MS);
             PollState = Idle;
-
-            objectWrite(20, rcParamMsg.Level_m3_Calibrated()*10);
-            objectWrite(17, rcDisplayMsg.IsSwitchedToTapWater());
             result = true;
             break;
         default:
@@ -175,6 +185,15 @@ void checkPeriodic(void)
     }
     RunPollStateMachine(serial.available());
 
+    // TODO this is just for testing
+    if (SendPeriodicTimer.expired())
+    {
+
+        objectWrite(20, rcParamMsg.Level_m3_Calibrated()*10);
+        objectWrite(17, rcDisplayMsg.IsSwitchedToTapWater());
+        SendPeriodicTimer.start(SENDPERIODIC_INTERVAL_MS);
+    }
+
     debugCheckPeriodic(); // call to switch off debugging TX/RX Leds
 }
 
@@ -188,6 +207,8 @@ void initApplication(void)
     rcMessageLengthWaitingFor = -1;
     RaincenterPollTimer.start(1);
     RaincenterDelayTxTimer.start(1);
+    // TODO this is just for testing
+    SendPeriodicTimer.start(SENDPERIODIC_INTERVAL_MS);
 
 #ifdef DEBUG
     // LED Initialize

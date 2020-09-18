@@ -37,6 +37,7 @@ const HardwareVersion hardwareVersion[] =
 
 #define RAINCENTER_TX_DELAY_SEND_MS 20 // time in ms the raincenter doesnt react to serial commands after it send a response
 
+#define SENDPERIODIC_INTERVAL_MS 60000 // TODO send period every 60s can't be the final solution, needs to be configured via ETS
 #define POLL_INTERVAL_MS 10000
 #define REPOLL_INTERVAL_MS 1000
 #define RAINCENTER_BAUDRATE 2400
