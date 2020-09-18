@@ -28,8 +28,9 @@ static ePollState PollState = Idle;     // holds the actual state of the state m
 static Timeout RaincenterPollTimer;     // Timeout Timer to cyclic poll the Raincenter
 static Timeout RaincenterDelayTxTimer;  // Timeout Timer to delay serial send messages, because raincenter needs som time between messages send to him
 static RCParameterMessage rcParamMsg;   // holds the last received RCParameterMessage
-static RCDisplayMessage  rsDisplayMsg;  // holds the last receive RCDisplayMessage
+static RCDisplayMessage  rcDisplayMsg;  // holds the last receive RCDisplayMessage
 static int rcMessageLengthWaitingFor;   // holds the length of the serial message we are waiting for
+static char CommandWaitingForSend = RC_INVALID_COMMAND; // holds the command which we want send between polling (Pollstate = Idle)
 
 bool Write2Serial(byte ch)
 {
@@ -61,6 +62,7 @@ bool RunPollStateMachine(int SerialBytesAvailable)
                 RCParameterMessage msg;
                 if (msg.Decode(&rx[0], SerialBytesAvailable))
                 {
+                    rcParamMsg = msg;
                     PollState = ReceivedParam;
                 }
             }
@@ -69,6 +71,7 @@ bool RunPollStateMachine(int SerialBytesAvailable)
                 RCDisplayMessage msg;
                 if (msg.Decode(&rx[0], SerialBytesAvailable))
                 {
+                    rcDisplayMsg = msg;
                     PollState = ReceivedDisplay;
                 }
             }
@@ -79,20 +82,30 @@ bool RunPollStateMachine(int SerialBytesAvailable)
     switch (PollState)
     {
         case Idle:
-            // seams to be the first run, so lets start polling with RCParametermessage
-            serial.clearBuffers();
-            rcMessageLengthWaitingFor = RCParameterMessage::msgLength;
-            Write2Serial(RCParameterMessage::msgIdentifier);
-            PollState = PolledParam;
-            RaincenterPollTimer.start(POLL_INTERVAL_MS);
-            result = true;
+            if (CommandWaitingForSend != RC_INVALID_COMMAND)
+            {
+                RaincenterPollTimer.start(1000);
+                Write2Serial(CommandWaitingForSend);
+                CommandWaitingForSend = RC_INVALID_COMMAND;
+                break;
+            }
+
+            if (RaincenterPollTimer.expired() || RaincenterPollTimer.stopped())
+            {
+                serial.clearBuffers();
+                rcMessageLengthWaitingFor = RCParameterMessage::msgLength;
+                Write2Serial(RCParameterMessage::msgIdentifier);
+                PollState = PolledParam;
+                RaincenterPollTimer.start(REPOLL_INTERVAL_MS);
+                result = true;
+            }
             break;
         case PolledParam:
             // seams like we got no valid answer, so lets just reset
             if (RaincenterPollTimer.expired())
             {
                 PollState = Idle;
-                RaincenterPollTimer.start(POLL_INTERVAL_MS);
+                RaincenterPollTimer.start(REPOLL_INTERVAL_MS);
             }
             result = false;
             break;
@@ -100,10 +113,10 @@ bool RunPollStateMachine(int SerialBytesAvailable)
             // ok, we received the RCParametermessage, now lets get the RCDisplaymessage
             serial.clearBuffers();
             rcMessageLengthWaitingFor = RCDisplayMessage::msgLength;
+            RaincenterDelayTxTimer.start(RAINCENTER_TX_DELAY_SEND_MS); // delay the next serial send
             Write2Serial(RCDisplayMessage::msgIdentifier);
             PollState = PolledDisplay;
-            RaincenterDelayTxTimer.start(POLL_INTERVAL_MS);
-            RaincenterPollTimer.start(POLL_INTERVAL_MS);
+            RaincenterPollTimer.start(REPOLL_INTERVAL_MS);
             result = true;
             break;
         case PolledDisplay:
@@ -111,7 +124,7 @@ bool RunPollStateMachine(int SerialBytesAvailable)
             if (RaincenterPollTimer.expired())
             {
                 PollState = Idle;
-                RaincenterPollTimer.start(POLL_INTERVAL_MS);
+                RaincenterPollTimer.start(REPOLL_INTERVAL_MS);
             }
             result = false;
             break;
@@ -119,11 +132,18 @@ bool RunPollStateMachine(int SerialBytesAvailable)
             //
             serial.clearBuffers();
             FlashRX_LED(RX_FLASH_OK_MS);
+            RaincenterPollTimer.start(POLL_INTERVAL_MS);
             PollState = Idle;
+
+            objectWrite(20, rcParamMsg.Level_m3_Calibrated()*10);
+            objectWrite(17, rcDisplayMsg.IsSwitchedToTapWater());
             result = true;
             break;
         default:
-            //
+            // this should never happen
+            serial.clearBuffers();
+            PollState = Idle;
+            result = false;
             break;
     } //switch
     return result;
@@ -131,7 +151,19 @@ bool RunPollStateMachine(int SerialBytesAvailable)
 
 void objectUpdated(int objno)
 {
-
+    if (objno == 13)
+    {
+        bool switchToTapWater;
+        switchToTapWater = objectRead(13);
+        if (switchToTapWater)
+        {
+            CommandWaitingForSend = RCSwitchToTapWaterRefillMessage::msgIdentifier;
+        }
+        else
+        {
+            CommandWaitingForSend = RCSwitchToReservoirMessage::msgIdentifier;
+        }
+    }
 }
 
 void checkPeriodic(void)
