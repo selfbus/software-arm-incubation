@@ -37,12 +37,13 @@ const HardwareVersion hardwareVersion[] =
 
 #define RAINCENTER_TX_DELAY_SEND_MS 20 // time in ms the raincenter doesnt react to serial commands after it send a response
 
-#define POLL_INTERVAL_MS 6000
+#define POLL_INTERVAL_MS 10000
+#define REPOLL_INTERVAL_MS 1000
 #define RAINCENTER_BAUDRATE 2400
 
 #define TX_FLASH_MS 100 // time in ms TX-Led is flashing
 #define RX_FLASH_MS 100 // time in ms RX-Led is flashing
-#define RX_FLASH_OK_MS POLL_INTERVAL_MS - 1000 // time in ms RX-Led is active to display correct received values
+#define RX_FLASH_OK_MS POLL_INTERVAL_MS/2 // time in ms RX-Led is active to display correct received values
 
 
 /* possible IOs for serial communication
