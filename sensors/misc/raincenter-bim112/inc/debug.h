@@ -113,11 +113,13 @@ void debugCheckPeriodic()
 
 }
 
-#else
+#else /* DEBUG */
 #define FlashRX_LED()
+#define FlashRX_LED(int FlashTime_ms)
 #define FlashTX_LED()
+#define FlashTX_LED(int FlashTime_ms)
 #define debugCheckPeriodic()
-#endif /* DEBUG */
+#endif
 
 
 
