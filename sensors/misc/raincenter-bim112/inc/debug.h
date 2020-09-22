@@ -23,7 +23,7 @@ Timeout RX_FlashTimeOut;
 extern "C" void TIMER32_0_IRQHandler()
 {
     // Toggle the Info LED
-    digitalWrite(RX_LED, !digitalRead(RX_LED));
+    digitalWrite(RX_LED, LED_OFF);
 
     // Clear the timer interrupt flags. Otherwise the interrupt handler is called
     // again immediately after returning.
@@ -53,6 +53,7 @@ void FlashRX_LED(int FlashTime_ms = RX_FLASH_MS)
     digitalWrite(RX_LED, LED_ON);
     RX_FlashTimeOut.stop();
     RX_FlashTimeOut.start(FlashTime_ms);
+
     /*
     // Enable the timer interrupt
     enableInterrupt(TIMER_32_0_IRQn);

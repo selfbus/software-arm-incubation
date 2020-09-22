@@ -128,6 +128,7 @@ enum eDisplayUnit {invalid, cm, percent, m3};
 
 const static char RC_INVALID_COMMAND = (char)0;
 const static byte RC_LEVEL_CALIBRATION_FACTOR = 50;
+const static int RC_INVALID_MESSAGE_LENGTH = 30;
 
 class RCMessage
 {
@@ -135,9 +136,11 @@ public:
     RCMessage();
     virtual ~RCMessage();
     virtual bool Decode(byte * msg, int msg_len) = 0;
+    bool IsValid() const {return _IsValid;}
 protected:
     const static char msgIdentifier = RC_INVALID_COMMAND;
     const static byte msgLength;
+    bool _IsValid;
 };
 
 class RCParameterMessage : public RCMessage
