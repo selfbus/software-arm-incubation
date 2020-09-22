@@ -15,6 +15,35 @@
 #include <sblib/io_pin_names.h>
 #include <sblib/digital_pin.h>
 
+
+
+/*
+ *
+ * Raincenter objects for testing
+ * JAL-410.01 Kanal A Rolladen
+ * Object   Name                        Function
+ * 13       Rolladen Auf/Ab             TapWaterRefill (on/off)
+ * 15       Stop                        TapWaterExchangeActive (on/off)
+ * 17       Status aktuelle Richtung    TapWaterRefill Status (on/off)
+ *
+ * 20       Status aktuelle Position    Calibrated Fill Level in m3 * 10 (43 means 4.3m³)
+ * 22       Akt. Position gueltig       Alarm (on/off)
+ * 23       Referenzfahrt starten       Pump active (on/off)
+ * 25       Status obere Position       AutomaticTapwaterRefill Status (on/off)
+ * 26       Status untere Position      ManualTapwaterRefill Status (on/off)
+ *
+ */
+
+#define OBJ_TAPWATER_REFILL 13
+#define OBJ_TAPWATER_REFILL_STATUS 17
+#define OBJ_TAPWATER_EXCHANGE_STATUS 15
+#define OBJ_CALIBRATED_FILL_LEVEL_m3 20
+#define OBJ_ALARM 22
+#define OBJ_PUMP_ACTIVE 23
+#define OBJ_AUTOMATIC_TAPWATER_REFILL_STATUS 25
+#define OBJ_MANUAL_TAPWATER_REFILL_STATUS 26
+
+
 typedef struct
 {
     unsigned int noOfChannels;  //!> how many channels are supported with this hardware

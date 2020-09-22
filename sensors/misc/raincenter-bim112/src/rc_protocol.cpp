@@ -48,8 +48,8 @@ RCParameterMessage::RCParameterMessage()
     _ReservoirType = cylindrical;
     _ReservoirArea_m2 = -1;
     _OptionalRelaisFunction = no_function;
-    _AutomaticTimerInterval_days = -1;
-    _AutomaticTimerDuration_seconds = -1;
+    _FilterBackFlushingAutomaticTimerInterval_days = -1;
+    _FilterBackFlushingAutomaticTimerDuration_seconds = -1;
     _LevelCalibrationFactory = -1;
     _LevelCalibrationUser = -1;
     _LevelMeasured_cm = -1;
@@ -69,8 +69,8 @@ void RCParameterMessage::operator=(const RCParameterMessage &msg)
     _ReservoirType = msg._ReservoirType;
     _ReservoirArea_m2 = msg._ReservoirArea_m2;
     _OptionalRelaisFunction = msg._OptionalRelaisFunction;
-    _AutomaticTimerInterval_days = msg._AutomaticTimerInterval_days;
-    _AutomaticTimerDuration_seconds = msg._AutomaticTimerDuration_seconds;
+    _FilterBackFlushingAutomaticTimerInterval_days = msg._FilterBackFlushingAutomaticTimerInterval_days;
+    _FilterBackFlushingAutomaticTimerDuration_seconds = msg._FilterBackFlushingAutomaticTimerDuration_seconds;
     _LevelCalibrationFactory = msg._LevelCalibrationFactory;
     _LevelCalibrationUser = msg._LevelCalibrationUser;
     _LevelMeasured_cm = msg._LevelMeasured_cm;
@@ -90,8 +90,8 @@ bool RCParameterMessage::operator==(const RCParameterMessage &msg)
     if (_ReservoirType != msg._ReservoirType) return false;
     if (_ReservoirArea_m2 != msg._ReservoirArea_m2) return false;
     if (_OptionalRelaisFunction != msg._OptionalRelaisFunction) return false;
-    if (_AutomaticTimerInterval_days != msg._AutomaticTimerInterval_days) return false;
-    if (_AutomaticTimerDuration_seconds != msg._AutomaticTimerDuration_seconds) return false;
+    if (_FilterBackFlushingAutomaticTimerInterval_days != msg._FilterBackFlushingAutomaticTimerInterval_days) return false;
+    if (_FilterBackFlushingAutomaticTimerDuration_seconds != msg._FilterBackFlushingAutomaticTimerDuration_seconds) return false;
     if (_LevelCalibrationFactory != msg._LevelCalibrationFactory) return false;
     if (_LevelCalibrationUser != msg._LevelCalibrationUser) return false;
     if (_LevelMeasured_cm != msg._LevelMeasured_cm) return false;
@@ -119,8 +119,8 @@ bool RCParameterMessage::Decode(byte * msg, int msg_len)
         _ReservoirType = eReservoirType(bcd2int(msg[7]));
         _ReservoirArea_m2 = bcd2int(msg[8]) * 0.1;
         _OptionalRelaisFunction = eOptionalRelaisFunction(bcd2int(msg[9]));
-        _AutomaticTimerInterval_days = bcd2int(msg[10]);
-        _AutomaticTimerDuration_seconds = bcd2int(msg[11]) * 10;
+        _FilterBackFlushingAutomaticTimerInterval_days = bcd2int(msg[10]);
+        _FilterBackFlushingAutomaticTimerDuration_seconds = bcd2int(msg[11]) * 10;
         _LevelCalibrationFactory = bcd2int(msg[12]);
         _LevelCalibrationUser = bcd2int(msg[13]);
         _LevelMeasured_cm = bcd2int(msg[14]) + bcd2int(msg[15]) * 100;
@@ -159,23 +159,23 @@ RCDisplayMessage::RCDisplayMessage()
 {
     _DisplayValue = -1;
     _DisplayUnit = invalid;
-    _byte4_7 = -1;
-    _byte4_6 = -1;
-    _Alarm_2 = -1;
-    _byte4_4 = -1;
+    _AlarmBuzzerActive = -1;
+    _OptionalRelaisBlinking = -1;
+    _OptionalRelaisAlwaysOn = -1;
+    _WaterExchangeActive = -1;
     _ManualSwitchedToTapWater = -1;
     _AutomaticallySwitchedToTapWater = -1;
-    _Alarm_1 = -1;
-    _byte4_0 = -1;
+    _OptionalLEDBlinking = -1;
+    _OptionalLEDAlwaysOn = -1;
 
-    _QubicMeters = -1;
-    _Percent = -1;
-    _byte5_5 = -1;
-    _byte5_4 = -1;
-    _byte5_3 = -1;
-    _byte5_2 = -1;
-    _byte5_1 = -1;
-    _byte5_0 = -1;
+    _DisplayInQubicMeters = -1;
+    _DisplayInPercent = -1;
+    _OffButtonPressed = -1;
+    _OnButtonPressed = -1;
+    _unused = -1;
+    _PumpActive = -1;
+    _TapWaterRefillInputActive = -1;
+    _OptionalInputActive = -1;
 }
 
 void RCDisplayMessage::operator=(const RCDisplayMessage &msg)
@@ -183,23 +183,23 @@ void RCDisplayMessage::operator=(const RCDisplayMessage &msg)
     _IsValid = msg._IsValid;
     _DisplayValue = msg._DisplayValue;
     _DisplayUnit = msg._DisplayUnit;
-    _byte4_7 = msg._byte4_7;
-    _byte4_6 = msg._byte4_6;
-    _Alarm_2 = msg._Alarm_2;
-    _byte4_4 = msg._byte4_4;
+    _AlarmBuzzerActive = msg._AlarmBuzzerActive;
+    _OptionalRelaisBlinking = msg._OptionalRelaisBlinking;
+    _OptionalRelaisAlwaysOn = msg._OptionalRelaisAlwaysOn;
+    _WaterExchangeActive = msg._WaterExchangeActive;
     _ManualSwitchedToTapWater = msg._ManualSwitchedToTapWater;
     _AutomaticallySwitchedToTapWater = msg._AutomaticallySwitchedToTapWater;
-    _Alarm_1 = msg._Alarm_1;
-    _byte4_0 = msg._byte4_0;
+    _OptionalLEDBlinking = msg._OptionalLEDBlinking;
+    _OptionalLEDAlwaysOn = msg._OptionalLEDAlwaysOn;
 
-    _QubicMeters = msg._QubicMeters;
-    _Percent = msg._Percent;
-    _byte5_5 = msg._byte5_5;
-    _byte5_4 = msg._byte5_4;
-    _byte5_3 = msg._byte5_3;
-    _byte5_2 = msg._byte5_2;
-    _byte5_1 = msg._byte5_1;
-    _byte5_0 = msg._byte5_0;
+    _DisplayInQubicMeters = msg._DisplayInQubicMeters;
+    _DisplayInPercent = msg._DisplayInPercent;
+    _OffButtonPressed = msg._OffButtonPressed;
+    _OnButtonPressed = msg._OnButtonPressed;
+    _unused = msg._unused;
+    _PumpActive = msg._PumpActive;
+    _TapWaterRefillInputActive = msg._TapWaterRefillInputActive;
+    _OptionalInputActive = msg._OptionalInputActive;
 }
 
 bool RCDisplayMessage::operator==(const RCDisplayMessage &msg)
@@ -207,23 +207,23 @@ bool RCDisplayMessage::operator==(const RCDisplayMessage &msg)
     if (_IsValid != msg._IsValid) return false;
     if (_DisplayValue != msg._DisplayValue) return false;
     if (_DisplayUnit != msg._DisplayUnit) return false;
-    if (_byte4_7 != msg._byte4_7) return false;
-    if (_byte4_6 != msg._byte4_6) return false;
-    if (_Alarm_2 != msg._Alarm_2) return false;
-    if (_byte4_4 != msg._byte4_4) return false;
+    if (_AlarmBuzzerActive != msg._AlarmBuzzerActive) return false;
+    if (_OptionalRelaisBlinking != msg._OptionalRelaisBlinking) return false;
+    if (_OptionalRelaisAlwaysOn != msg._OptionalRelaisAlwaysOn) return false;
+    if (_WaterExchangeActive != msg._WaterExchangeActive) return false;
     if (_ManualSwitchedToTapWater != msg._ManualSwitchedToTapWater) return false;
     if (_AutomaticallySwitchedToTapWater != msg._AutomaticallySwitchedToTapWater) return false;
-    if (_Alarm_1 != msg._Alarm_1) return false;
-    if (_byte4_0 != msg._byte4_0) return false;
+    if (_OptionalLEDBlinking != msg._OptionalLEDBlinking) return false;
+    if (_OptionalLEDAlwaysOn != msg._OptionalLEDAlwaysOn) return false;
 
-    if (_QubicMeters != msg._QubicMeters) return false;
-    if (_Percent != msg._Percent) return false;
-    if (_byte5_5 != msg._byte5_5) return false;
-    if (_byte5_4 != msg._byte5_4) return false;
-    if (_byte5_3 != msg._byte5_3) return false;
-    if (_byte5_2 != msg._byte5_2) return false;
-    if (_byte5_1 != msg._byte5_1) return false;
-    if (_byte5_0 != msg._byte5_0) return false;
+    if (_DisplayInQubicMeters != msg._DisplayInQubicMeters) return false;
+    if (_DisplayInPercent != msg._DisplayInPercent) return false;
+    if (_OffButtonPressed != msg._OffButtonPressed) return false;
+    if (_OnButtonPressed != msg._OnButtonPressed) return false;
+    if (_unused != msg._unused) return false;
+    if (_PumpActive != msg._PumpActive) return false;
+    if (_TapWaterRefillInputActive != msg._TapWaterRefillInputActive) return false;
+    if (_OptionalInputActive != msg._OptionalInputActive) return false;
     return true;
 }
 
@@ -239,32 +239,32 @@ bool RCDisplayMessage::Decode(byte * msg, int msg_len)
     {
         _DisplayValue = bcd2int(msg[1]) + 100 * bcd2int(msg[2]);
 
-        _byte4_7 = bit_is_set(msg[3], 7);
-        _byte4_6 = bit_is_set(msg[3], 6);
-        _Alarm_2 = bit_is_set(msg[3], 5);
-        _byte4_4 = bit_is_set(msg[3], 4);
+        _AlarmBuzzerActive = bit_is_set(msg[3], 7);
+        _OptionalRelaisBlinking = bit_is_set(msg[3], 6);
+        _OptionalRelaisAlwaysOn = bit_is_set(msg[3], 5);
+        _WaterExchangeActive = bit_is_set(msg[3], 4);
 
         _ManualSwitchedToTapWater = bit_is_set(msg[3], 3);
         _AutomaticallySwitchedToTapWater = bit_is_set(msg[3], 2);
-        _Alarm_1 = bit_is_set(msg[3], 1);
-        _byte4_0 = bit_is_set(msg[3], 0);
+        _OptionalLEDBlinking = bit_is_set(msg[3], 1);
+        _OptionalLEDAlwaysOn = bit_is_set(msg[3], 0);
 
-        _QubicMeters = bit_is_set(msg[4], 7);
-        _Percent = bit_is_set(msg[4], 6);
-        _byte5_5 = bit_is_set(msg[4], 5);
-        _byte5_4 = bit_is_set(msg[4], 4);
+        _DisplayInQubicMeters = bit_is_set(msg[4], 7);
+        _DisplayInPercent = bit_is_set(msg[4], 6);
+        _OffButtonPressed = bit_is_set(msg[4], 5);
+        _OnButtonPressed = bit_is_set(msg[4], 4);
 
-        _byte5_3 = bit_is_set(msg[4], 3); // this bit "flickers"
-        _byte5_2 = bit_is_set(msg[4], 2);
-        _byte5_1 = bit_is_set(msg[4], 1);
-        _byte5_0 = bit_is_set(msg[4], 0);
+        _unused = bit_is_set(msg[4], 3); // this bit "flickers"
+        _PumpActive = bit_is_set(msg[4], 2);
+        _TapWaterRefillInputActive = bit_is_set(msg[4], 1);
+        _OptionalInputActive = bit_is_set(msg[4], 0);
 
-        if (_QubicMeters == true)
+        if (_DisplayInQubicMeters == true)
         {
             _DisplayUnit = m3;
             _DisplayValue = _DisplayValue / 10;
         }
-        else if (_Percent == true)
+        else if (_DisplayInPercent == true)
         {
             _DisplayUnit = percent;
         }
@@ -277,12 +277,6 @@ bool RCDisplayMessage::Decode(byte * msg, int msg_len)
 
     return _IsValid;
 }
-
-bool RCDisplayMessage::IsSwitchedToTapWater()
-{
-    return ManualSwitchedToTapWater() || AutomaticallySwitchedToTapWater();
-}
-
 
 RCSwitchDisplayMessage::RCSwitchDisplayMessage()
 {

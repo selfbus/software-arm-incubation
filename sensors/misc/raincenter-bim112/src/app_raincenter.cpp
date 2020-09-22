@@ -52,7 +52,7 @@ bool Write2Serial(byte ch)
 
 bool ProcessParameterMsg(RCParameterMessage msg)
 {
-    // objectWrite(20, msg.Level_m3_Calibrated()*10);
+    // objectWrite(OBJ_CALIBRATED_FILL_LEVEL_m3, msg.Level_m3_Calibrated()*10);
     // return false;
 
     bool processed = false;
@@ -60,7 +60,7 @@ bool ProcessParameterMsg(RCParameterMessage msg)
     if (!rcParamMsg.IsValid())
     {
         // seems like we have restarted, so lets send all objects
-        objectWrite(20, msg.Level_m3_Calibrated()*10);
+        objectWrite(OBJ_CALIBRATED_FILL_LEVEL_m3, msg.Level_m3_Calibrated()*10);
         processed = true;
     }
     else if (rcParamMsg != msg)
@@ -69,7 +69,7 @@ bool ProcessParameterMsg(RCParameterMessage msg)
         // some values have changed, lets send the changed ones
         if (rcParamMsg.Level_m3_Calibrated() != msg.Level_m3_Calibrated())
         {
-            objectWrite(20, msg.Level_m3_Calibrated()*10);
+            objectWrite(OBJ_CALIBRATED_FILL_LEVEL_m3, msg.Level_m3_Calibrated()*10);
             processed = true;
         }
     }
@@ -80,14 +80,19 @@ bool ProcessParameterMsg(RCParameterMessage msg)
 
 bool ProcessDisplayMsg(RCDisplayMessage msg)
 {
-    // objectWrite(17, msg.IsSwitchedToTapWater());
+    // objectWrite(OBJ_TAPWATER_REFILL_STATUS, msg.IsSwitchedToTapWater());
     // return false;
 
     bool processed = false;
 
     if (!rcDisplayMsg.IsValid())
     {   // seems like we have restarted, so lets send all objects
-        objectWrite(17, msg.IsSwitchedToTapWater());
+        objectWrite(OBJ_TAPWATER_REFILL_STATUS, msg.IsSwitchedToTapWater());
+        objectWrite(OBJ_AUTOMATIC_TAPWATER_REFILL_STATUS, msg.AutomaticallySwitchedToTapWater());
+        objectWrite(OBJ_MANUAL_TAPWATER_REFILL_STATUS, msg.ManualSwitchedToTapWater());
+        objectWrite(OBJ_TAPWATER_EXCHANGE_STATUS, msg.WaterExchangeActive());
+        objectWrite(OBJ_ALARM, msg.AlarmBuzzerActive());
+        objectWrite(OBJ_PUMP_ACTIVE, msg.PumpActive());
         processed = true;
     }
     else if (rcDisplayMsg != msg)
@@ -96,9 +101,40 @@ bool ProcessDisplayMsg(RCDisplayMessage msg)
         // some values have changed, lets send them for now
         if (rcDisplayMsg.IsSwitchedToTapWater() != msg.IsSwitchedToTapWater())
         {
-            objectWrite(17, msg.IsSwitchedToTapWater());
+            objectWrite(OBJ_TAPWATER_REFILL_STATUS, msg.IsSwitchedToTapWater());
             processed = true;
         }
+
+        if (rcDisplayMsg.AutomaticallySwitchedToTapWater() != msg.AutomaticallySwitchedToTapWater())
+        {
+            objectWrite(OBJ_AUTOMATIC_TAPWATER_REFILL_STATUS, msg.AutomaticallySwitchedToTapWater());
+            processed = true;
+        }
+
+        if (rcDisplayMsg.ManualSwitchedToTapWater() != msg.ManualSwitchedToTapWater())
+        {
+            objectWrite(OBJ_MANUAL_TAPWATER_REFILL_STATUS, msg.ManualSwitchedToTapWater());
+            processed = true;
+        }
+
+        if (rcDisplayMsg.WaterExchangeActive() != msg.WaterExchangeActive())
+        {
+            objectWrite(OBJ_TAPWATER_EXCHANGE_STATUS, msg.WaterExchangeActive());
+            processed = true;
+        }
+
+        if (rcDisplayMsg.AlarmBuzzerActive() != msg.AlarmBuzzerActive())
+        {
+            objectWrite(OBJ_ALARM, msg.AlarmBuzzerActive());
+            processed = true;
+        }
+
+        if (rcDisplayMsg.PumpActive() != msg.PumpActive())
+        {
+            objectWrite(OBJ_PUMP_ACTIVE, msg.PumpActive());
+            processed = true;
+        }
+
     }
     rcDisplayMsg = msg;
     PollState = ReceivedDisplay;
@@ -211,10 +247,10 @@ bool RunPollStateMachine(int SerialBytesAvailable)
 
 void objectUpdated(int objno)
 {
-    if (objno == 13)
+    if (objno == OBJ_TAPWATER_REFILL)
     {
         bool switchToTapWater;
-        switchToTapWater = objectRead(13);
+        switchToTapWater = objectRead(OBJ_TAPWATER_REFILL);
         if (switchToTapWater)
         {
             CommandWaitingForSend = RCSwitchToTapWaterRefillMessage::msgIdentifier;
@@ -237,8 +273,14 @@ void checkPeriodic(void)
     // TODO this is just for testing
     if (SendPeriodicTimer.expired())
     {
-        objectWrite(20, rcParamMsg.Level_m3_Calibrated()*10);
-        objectWrite(17, rcDisplayMsg.IsSwitchedToTapWater());
+        objectWrite(OBJ_CALIBRATED_FILL_LEVEL_m3, rcParamMsg.Level_m3_Calibrated()*10);
+        objectWrite(OBJ_TAPWATER_REFILL_STATUS, rcDisplayMsg.IsSwitchedToTapWater());
+        objectWrite(OBJ_AUTOMATIC_TAPWATER_REFILL_STATUS, rcDisplayMsg.AutomaticallySwitchedToTapWater());
+        objectWrite(OBJ_MANUAL_TAPWATER_REFILL_STATUS, rcDisplayMsg.ManualSwitchedToTapWater());
+        objectWrite(OBJ_TAPWATER_EXCHANGE_STATUS, rcDisplayMsg.WaterExchangeActive());
+        objectWrite(OBJ_ALARM, rcDisplayMsg.AlarmBuzzerActive());
+        objectWrite(OBJ_PUMP_ACTIVE, rcDisplayMsg.PumpActive());
+
         SendPeriodicTimer.start(SENDPERIODIC_INTERVAL_MS);
     }
 

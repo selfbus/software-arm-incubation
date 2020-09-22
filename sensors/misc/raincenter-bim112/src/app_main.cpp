@@ -9,19 +9,6 @@
  *  published by the Free Software Foundation.
  */
 
-/*
- * Raincenter objects for testing
- * JAL-410.01 Kanal A Rolladen
- * objects
- * 13 = TapWaterRefill (on/off)
- * 17 = TapWaterRefill Status (on/off)
- * 20 = Calibrated Fill Level in m3 * 10 (43 means 4.3m³)
- *
- *
- *
- *
- */
-
 #include <sblib/eib.h>
 #include <sblib/eib/user_memory.h>
 #include <sblib/eib/sblib_default_objects.h>
