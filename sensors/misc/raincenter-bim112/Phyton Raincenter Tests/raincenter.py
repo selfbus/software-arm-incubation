@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: iso-8859-1 -*-
 
-# cd D:\SVN\Selfbus Darthyson\software-arm-incubation\trunk\sensors\misc\raincenter\
-# python raincenter.py
-# or
-# start with python "D:\SVN\Selfbus Darthyson\software-arm-incubation\trunk\sensors\misc\raincenter\raincenter.py"
+# start with "python raincenter.py"
 
 # Selfbus Raincenter Simulator by Darthyson
 # created: August 16, 2020
@@ -22,8 +19,6 @@ CMD_SET_B = 'b'
 PAUSE_LONG = 2.0
 PAUSE = 0.1
 
-
-
 #def TimerTimeOut():
 #   print('TimerTimeOut')
 #   if len(telegram) > 0:
@@ -39,9 +34,9 @@ class raincenter(object):
         print("c = switch display info")
         print("w = read display data")
         print("p = read parameters including waterheight in cm")
-        print("a = switch to manual drinking water refill")
+        print("a = switch to manual tap water refill")
         print("b = switch to reservoir")
-        print("s = unknown (maybe set parameters)")
+        print("s = set parameters (not implemented)")
         print("q = quit")
         print("")
     def SendDisplayCommand(self):
