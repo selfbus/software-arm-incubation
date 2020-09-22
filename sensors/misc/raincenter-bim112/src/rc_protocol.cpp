@@ -24,7 +24,7 @@ bool bit_is_set(byte x, byte n)
 
 RCMessage::RCMessage()
 {
-
+    _IsValid = false;
 }
 
 RCMessage::~RCMessage()
@@ -59,6 +59,7 @@ RCParameterMessage::RCParameterMessage()
 
 void RCParameterMessage::operator=(const RCParameterMessage &msg)
 {
+    _IsValid = msg._IsValid;
     _WaterExchangePeriod_days = msg._WaterExchangePeriod_days;
     _TapWaterSwitchOnHeight_cm = msg._TapWaterSwitchOnHeight_cm;
     _TapWaterSwitchOnHysteresis_cm = msg._TapWaterSwitchOnHysteresis_cm;
@@ -79,6 +80,7 @@ void RCParameterMessage::operator=(const RCParameterMessage &msg)
 
 bool RCParameterMessage::operator==(const RCParameterMessage &msg)
 {
+    if (_IsValid != msg._IsValid) return false;
     if (_WaterExchangePeriod_days != msg._WaterExchangePeriod_days) return false;
     if (_TapWaterSwitchOnHeight_cm != msg._TapWaterSwitchOnHeight_cm) return false;
     if (_TapWaterSwitchOnHysteresis_cm != msg._TapWaterSwitchOnHysteresis_cm) return false;
@@ -105,6 +107,7 @@ bool RCParameterMessage::operator!=(const RCParameterMessage &msg)
 
 bool RCParameterMessage::Decode(byte * msg, int msg_len)
 {
+    _IsValid = false;
     if ((msg_len >= RCParameterMessage::msgLength) && (msg[0] == RCParameterMessage::msgIdentifier))
     {
         _WaterExchangePeriod_days = bcd2int(msg[1]);
@@ -147,12 +150,9 @@ bool RCParameterMessage::Decode(byte * msg, int msg_len)
             }
         }
         _Level_m3_Calibrated = trunc(_Level_m3_Calibrated * 10) /10;
-        return true;
+        _IsValid = true;
     }
-    else
-    {
-        return false;
-    }
+    return _IsValid;
 }
 
 RCDisplayMessage::RCDisplayMessage()
@@ -180,6 +180,7 @@ RCDisplayMessage::RCDisplayMessage()
 
 void RCDisplayMessage::operator=(const RCDisplayMessage &msg)
 {
+    _IsValid = msg._IsValid;
     _DisplayValue = msg._DisplayValue;
     _DisplayUnit = msg._DisplayUnit;
     _byte4_7 = msg._byte4_7;
@@ -203,6 +204,7 @@ void RCDisplayMessage::operator=(const RCDisplayMessage &msg)
 
 bool RCDisplayMessage::operator==(const RCDisplayMessage &msg)
 {
+    if (_IsValid != msg._IsValid) return false;
     if (_DisplayValue != msg._DisplayValue) return false;
     if (_DisplayUnit != msg._DisplayUnit) return false;
     if (_byte4_7 != msg._byte4_7) return false;
@@ -232,6 +234,7 @@ bool RCDisplayMessage::operator!=(const RCDisplayMessage &msg)
 
 bool RCDisplayMessage::Decode(byte * msg, int msg_len)
 {
+    _IsValid = false;
     if ((msg_len >= RCDisplayMessage::msgLength) && (msg[0] == RCDisplayMessage::msgIdentifier))
     {
         _DisplayValue = bcd2int(msg[1]) + 100 * bcd2int(msg[2]);
@@ -269,12 +272,10 @@ bool RCDisplayMessage::Decode(byte * msg, int msg_len)
         {
             _DisplayUnit = cm;
         }
-        return true;
+        _IsValid = true;
     }
-    else
-    {
-        return false;
-    }
+
+    return _IsValid;
 }
 
 bool RCDisplayMessage::IsSwitchedToTapWater()

@@ -42,54 +42,99 @@ bool Write2Serial(byte ch)
             delay(1);
         }
     }
-    FlashTX_LED();
-    return (serial.write(ch) == 1);
+    FlashTX_LED(TX_FLASH_MS);
+    int sendresult;
+    sendresult = (serial.write(ch) == 1);
+    RaincenterDelayTxTimer.start(RAINCENTER_TX_DELAY_SEND_MS); // delay the next possible serial send, cause raincenter needs a little break
+    return sendresult;
 }
 
+
+bool ProcessParameterMsg(RCParameterMessage msg)
+{
+    // objectWrite(20, msg.Level_m3_Calibrated()*10);
+    // return false;
+
+    bool processed = false;
+
+    if (!rcParamMsg.IsValid())
+    {
+        // seems like we have restarted, so lets send all objects
+        objectWrite(20, msg.Level_m3_Calibrated()*10);
+        processed = true;
+    }
+    else if (rcParamMsg != msg)
+    {
+        // TODO check weather to send or not conditions
+        // some values have changed, lets send the changed ones
+        if (rcParamMsg.Level_m3_Calibrated() != msg.Level_m3_Calibrated())
+        {
+            objectWrite(20, msg.Level_m3_Calibrated()*10);
+            processed = true;
+        }
+    }
+    rcParamMsg = msg;
+    PollState = ReceivedParam;
+    return processed;
+}
+
+bool ProcessDisplayMsg(RCDisplayMessage msg)
+{
+    // objectWrite(17, msg.IsSwitchedToTapWater());
+    // return false;
+
+    bool processed = false;
+
+    if (!rcDisplayMsg.IsValid())
+    {   // seems like we have restarted, so lets send all objects
+        objectWrite(17, msg.IsSwitchedToTapWater());
+        processed = true;
+    }
+    else if (rcDisplayMsg != msg)
+    {
+        // TODO check weather to send or not conditions
+        // some values have changed, lets send them for now
+        if (rcDisplayMsg.IsSwitchedToTapWater() != msg.IsSwitchedToTapWater())
+        {
+            objectWrite(17, msg.IsSwitchedToTapWater());
+            processed = true;
+        }
+    }
+    rcDisplayMsg = msg;
+    PollState = ReceivedDisplay;
+    return processed;
+}
 
 bool RunPollStateMachine(int SerialBytesAvailable)
 {
     bool result = false;
     static byte * rx;
 
-    if ((SerialBytesAvailable > 0) && (rcMessageLengthWaitingFor > 0) && (SerialBytesAvailable == rcMessageLengthWaitingFor))
+    if ((SerialBytesAvailable > 0) && (rcMessageLengthWaitingFor > 0) && (SerialBytesAvailable >= rcMessageLengthWaitingFor))
     {
-        if (SerialBytesAvailable == rcMessageLengthWaitingFor)
+        // delay the next possible serial send, cause raincenter needs a little break
+        RaincenterDelayTxTimer.start(RAINCENTER_TX_DELAY_SEND_MS);
+        rx = new byte[SerialBytesAvailable];
+        serial.readBytes(&rx[0], SerialBytesAvailable);
+        if (SerialBytesAvailable == RCParameterMessage::msgLength)
         {
-            rx = new byte[SerialBytesAvailable];
-            serial.readBytes(&rx[0], SerialBytesAvailable);
-            if (SerialBytesAvailable == RCParameterMessage::msgLength)
+            RCParameterMessage msg;
+            if (msg.Decode(&rx[0], SerialBytesAvailable))
             {
-                RCParameterMessage msg;
-                if (msg.Decode(&rx[0], SerialBytesAvailable))
-                {
-                    if (rcParamMsg != msg)
-                    {
-                        // TODO check weather to send or not conditions
-                        // Parameters have changed, lets send them for now
-                        rcParamMsg = msg;
-                        objectWrite(20, rcParamMsg.Level_m3_Calibrated()*10);
-                    }
-                    PollState = ReceivedParam;
-                }
+                ProcessParameterMsg(msg);
+                PollState = ReceivedParam;
             }
-            else if (SerialBytesAvailable == RCDisplayMessage::msgLength)
-            {
-                RCDisplayMessage msg;
-                if (msg.Decode(&rx[0], SerialBytesAvailable))
-                {
-                    rcDisplayMsg = msg;
-                    if (rcDisplayMsg != msg)
-                    {
-                        // TODO check weather to send or not conditions
-                        // Parameters have changed, lets send them for now
-                        objectWrite(17, rcDisplayMsg.IsSwitchedToTapWater());
-                    }
-                    PollState = ReceivedDisplay;
-                }
-            }
-            delete[] rx;
         }
+        else if (SerialBytesAvailable == RCDisplayMessage::msgLength)
+        {
+            RCDisplayMessage msg;
+            if (msg.Decode(&rx[0], SerialBytesAvailable))
+            {
+                ProcessDisplayMsg(msg);
+                PollState = ReceivedDisplay;
+            }
+        }
+        delete[] rx;
     }
 
     switch (PollState)
@@ -97,9 +142,12 @@ bool RunPollStateMachine(int SerialBytesAvailable)
         case Idle:
             if (CommandWaitingForSend != RC_INVALID_COMMAND)
             {
-                RaincenterPollTimer.start(1000);
                 Write2Serial(CommandWaitingForSend);
+                Write2Serial(RCDisplayMessage::msgIdentifier);
+                rcMessageLengthWaitingFor = RCDisplayMessage::msgLength;
+                RaincenterPollTimer.start(REPOLL_INTERVAL_MS);
                 CommandWaitingForSend = RC_INVALID_COMMAND;
+                PollState = PolledDisplay;
                 break;
             }
 
@@ -123,21 +171,23 @@ bool RunPollStateMachine(int SerialBytesAvailable)
             result = false;
             break;
         case ReceivedParam:
-            // ok, we received the RCParametermessage, now lets get the RCDisplaymessage
+            // received the RCParametermessage, now get the RCDisplaymessage
             serial.clearBuffers();
             rcMessageLengthWaitingFor = RCDisplayMessage::msgLength;
-            RaincenterDelayTxTimer.start(RAINCENTER_TX_DELAY_SEND_MS); // delay the next serial send
             Write2Serial(RCDisplayMessage::msgIdentifier);
             PollState = PolledDisplay;
             RaincenterPollTimer.start(REPOLL_INTERVAL_MS);
             result = true;
             break;
         case PolledDisplay:
-            // seams like we got no valid answer, so lets just reset
+            // seams like we got no valid answer, so lets just poll again
             if (RaincenterPollTimer.expired())
             {
-                PollState = Idle;
-                RaincenterPollTimer.start(REPOLL_INTERVAL_MS);
+                Write2Serial(RCDisplayMessage::msgIdentifier);
+                rcMessageLengthWaitingFor = RCDisplayMessage::msgLength;
+                RaincenterPollTimer.start(REPOLL_INTERVAL_MS / 2);
+                CommandWaitingForSend = RC_INVALID_COMMAND;
+                PollState = PolledDisplay;
             }
             result = false;
             break;
@@ -180,15 +230,13 @@ void checkPeriodic(void)
 {
     if (serial.available() > 0) // check weather we got something on the serial
     {
-        RaincenterDelayTxTimer.start(RAINCENTER_TX_DELAY_SEND_MS); // delay the next possible serial send, cause raincenter needs a little break
-        FlashRX_LED();
+        FlashRX_LED(RX_FLASH_MS);
     }
     RunPollStateMachine(serial.available());
 
     // TODO this is just for testing
     if (SendPeriodicTimer.expired())
     {
-
         objectWrite(20, rcParamMsg.Level_m3_Calibrated()*10);
         objectWrite(17, rcDisplayMsg.IsSwitchedToTapWater());
         SendPeriodicTimer.start(SENDPERIODIC_INTERVAL_MS);
@@ -206,7 +254,7 @@ void initApplication(void)
     PollState = Idle;
     rcMessageLengthWaitingFor = -1;
     RaincenterPollTimer.start(1);
-    RaincenterDelayTxTimer.start(1);
+    // RaincenterDelayTxTimer.start(1);
     // TODO this is just for testing
     SendPeriodicTimer.start(SENDPERIODIC_INTERVAL_MS);
 
