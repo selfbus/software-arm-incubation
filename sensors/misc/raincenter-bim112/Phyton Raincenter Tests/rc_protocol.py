@@ -70,8 +70,30 @@ class rcMessage(object):
             return None
 
 class rcParameterMessage(rcMessage):
-#Byte#:     01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17
-#Daten:     70 30 07 01 03 01 42 00 31 01 30 06 51 51 97 00 00
+# p Parameter request Answer:
+# Example in hex
+# Byte#:     00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16
+# Data :     70 30 07 01 03 01 42 00 31 01 30 06 51 51 97 00 00
+
+# byte numbering according to PROFIRAIN PCA documentation
+# #byte   Description                             Multiplier  Unit    Code
+#  0.     0x70 = 'p'
+#  1.     water exchange period                       1       days    BCD
+#  2.     tap water switch on height                  5       cm      BCD
+#  3.     tap water switch on hysteresis              2       cm      BCD
+#  4.     water exchange duration                     1       min     BCD
+#  5.     tap water supply type                       -       0-2     BCD
+#  6.     maximum fill level                          5       cm      BCD
+#  7.     reservoir type                              -       0-1     BCD
+#  8.     reservoir area                              0.1     m2      BCD
+#  9.     optional relay function                     -       0-9     BCD
+# 10.     automatic timer interval                    1       days    BCD
+# 11.     automatic timer duration                    10      s       BCD
+# 12.     fill level factory calibration              1       -       BCD
+# 13.     fill level user calibration                 1       -       BCD
+# 14.     fill level measured (raw data)              1       cm      BCD
+# 15.     fill level measured (raw data)              100     cm      BCD
+# 16.     0x00 (end of message ?)
 
     msgIdentifier = b'p'
     msgLength = 17
@@ -159,33 +181,36 @@ class rcParameterMessage(rcMessage):
         InformationText += ' Real-Messwert:                          {0:0d} cm\n'.format(self.LevelMeasured)
         InformationText += ' Kalibrierter-Messwert:                  {0:0d} cm\n'.format(self.LevelCalibrated)
         return InformationText
-        
-class rcDisplayMessage(rcMessage):
-#w Display data request Answer:
-# Example in hex
-# #Byte#:   01 02 03 04 05
-# #Data:    77 95 00 08 02
 
-#byte.bit   Description                         Multiplier  Unit    Code
-#1.          0x77 = 'w'
-#2.          display Value                           100     -       BCD
-#3.          display Value                           1       -       BCD
-#4.0         unknown
-#4.1         alarm
-#4.2         ?? automatically switched to tap water refill
-#4.3         manually switched to tap water refill
-#4.4         unknown
-#4.5         ?? Alarm ??
-#4.6         unknown
-#4.7         unknown
-#5.0         unknown
-#5.1         unknown
-#5.2         unknown
-#5.3         unknown / this bit "flickers"
-#5.4         unknown
-#5.5         unknown
-#5.6         display value is in percent
-#5.7         display value is in qubic meters
+class rcDisplayMessage(rcMessage):
+# w Display data request Answer:
+# Example in hex
+# Byte#:   00 01 02 03 04
+# Data:    77 95 00 08 02
+
+# byte numbering according to PROFIRAIN PCA documentation
+# #byte.bit   Description                         Multiplier  Unit    Code
+# 0.          0x77 = 'w'
+# 1.          display Value (low byte)                100     -       BCD
+# 2.          display Value (high byte)               1       -       BCD
+
+# 3.0         OptionalLEDAlwaysOn
+# 3.1         OptionalLEDBlinking ?? Alarm 1 ??
+# 3.2         automatically switched to tap water refill
+# 3.3         manually switched to tap water refill
+# 3.4         water exchange active
+# 3.5         optional relais always on
+# 3.6         optional relais blinking
+# 3.7         buzzer active ?? in PROFIRAIN PCA documentation refered to bit 3.6 which should be for optional relais
+
+# 4.0         optional input active
+# 4.1         tap water refill input active
+# 4.2         pump running
+# 4.3         unused / this bit "flickers/blinks"
+# 4.4         on button pressed
+# 4.5         off button pressed
+# 4.6         display value is in percent
+# 4.7         display value is in qubic meters
 
     msgIdentifier = b'w'
     msgLength = 5
@@ -195,55 +220,54 @@ class rcDisplayMessage(rcMessage):
     def __init__(self):
         rcMessage.__init__(self)
         self.msgPrintLongInfo = True
-        self.DisplayValue = -1
+        self.DisplayValue = -1 #byte 1 & 2
         self.DisplayUnit = '-'
-        self.byte4_7 = -1
-        self.byte4_6 = -1
-        self.Alarm1 = -1 #byte4_5
-        self.byte4_4 = -1
-        self.ManualSwitchedToTapWater = -1 #byte4_3
-        self.AutomaticallySwitchedToTapWater = -1 #byt4_2
-        self.Alarm2 = -1 #byte4_1
-        self.byte4_0 = -1
         
-        self.QubicMeters = -1
-        self.Percent = -1
-        self.byte5_5 = -1
-        self.byte5_4 = -1
-        self.byte5_3 = -1
-        self.byte5_2 = -1
-        self.byte5_1 = -1
-        self.byte5_0 = -1
-        
+        self.OptionalLEDAlwaysOn = -1 #byte 3.0
+        self.OptionalLEDBlinking = -1 #byte 3.1
+        self.AutomaticallySwitchedToTapWater = -1 #byte 3.2
+        self.ManualSwitchedToTapWater = -1 #byte 3.3
+        self.WaterExchangeActive = -1 #byte 3.4
+        self.OptionalRelaisAlwaysOn = -1 #byte 3.5
+        self.OptionalRelaisBlinking = -1 #byte 3.6
+        self.AlarmBuzzerActive = -1 #byte 3.7
+
+        self.OptionalInputActive = -1 #byte 4.0
+        self.TapWaterRefillInputActive = -1 #byte 4.1
+        self.PumpActive = -1 #byte 4.2
+        self.unused = -1 #byte 4.3
+        self.OnButtonPressed = -1 #byte 4.4
+        self.OffButtonPressed = -1 #byte 4.5
+        self.DisplayInPercent = -1 #byte 4.6
+        self.DisplayInQubicMeters = -1 #byte 4.7
+
     def Decode(self):
         rcMessage.Decode(self)
         if (self.data[0] == ord(rcDisplayMessage.msgIdentifier)) and (len(self.data) >= rcDisplayMessage.msgLength):
             self.DisplayValue = bcd2int(self.data[1]) + 100 * bcd2int(self.data[2])
-            
-            self.byte4_7 = bit_is_set(self.data[3], 7)
-            self.byte4_6 = bit_is_set(self.data[3], 6)
-            self.Alarm1 = bit_is_set(self.data[3], 5)
-            self.byte4_4 = bit_is_set(self.data[3], 4)
-            
-            self.ManualSwitchedToTapWater = bit_is_set(self.data[3], 3)
+            # byte 3 decoding
+            self.OptionalLEDAlwaysOn = bit_is_set(self.data[3], 0)
+            self.OptionalLEDBlinking = bit_is_set(self.data[3], 1)
             self.AutomaticallySwitchedToTapWater = bit_is_set(self.data[3], 2)
-            self.Alarm2 = bit_is_set(self.data[3], 1)
-            self.byte4_0 = bit_is_set(self.data[3], 0)
-            
-            self.QubicMeters = bit_is_set(self.data[4], 7)
-            self.Percent = bit_is_set(self.data[4], 6)
-            self.byte5_5 = bit_is_set(self.data[4], 5)
-            self.byte5_4 = bit_is_set(self.data[4], 4)
-            
-            self.byte5_3 = bit_is_set(self.data[4], 3) #flackert
-            self.byte5_2 = bit_is_set(self.data[4], 2)
-            self.byte5_1 = bit_is_set(self.data[4], 1)
-            self.byte5_0 = bit_is_set(self.data[4], 0)
-            
-            if self.QubicMeters == True:
+            self.ManualSwitchedToTapWater = bit_is_set(self.data[3], 3)
+            self.WaterExchangeActive = bit_is_set(self.data[3], 4)
+            self.OptionalRelaisAlwaysOn = bit_is_set(self.data[3], 5)
+            self.OptionalRelaisBlinking = bit_is_set(self.data[3], 6)
+            self.AlarmBuzzerActive = bit_is_set(self.data[3], 7)
+            # byte 4 decoding
+            self.OptionalInputActive = bit_is_set(self.data[4], 0)
+            self.TapWaterRefillInputActive = bit_is_set(self.data[4], 1)
+            self.PumpActive = bit_is_set(self.data[4], 2)
+            self.unused = bit_is_set(self.data[4], 3) #flickers
+            self.OnButtonPressed = bit_is_set(self.data[4], 4)
+            self.OffButtonPressed = bit_is_set(self.data[4], 5)
+            self.DisplayInPercent = bit_is_set(self.data[4], 6)
+            self.DisplayInQubicMeters = bit_is_set(self.data[4], 7)
+
+            if self.DisplayInQubicMeters == True:
                 self.DisplayUnit = 'm^3'
                 self.DisplayValue = self.DisplayValue / 10
-            elif self.Percent == True:
+            elif self.DisplayInPercent == True:
                 self.DisplayUnit = '%'
             else:
                 self.DisplayUnit = 'cm'
@@ -253,16 +277,26 @@ class rcDisplayMessage(rcMessage):
             InformationText =  ' Anzeige:                 {0:.1f} {1:s}\n'.format(self.DisplayValue, self.DisplayUnit)
         else:
             InformationText =  ' Anzeige:                 {0:d} {1:s}\n'.format(self.DisplayValue, self.DisplayUnit)
-        
-        InformationText +=  ' manuelle Nachspeisung:   {0:0d}\n'.format(self.ManualSwitchedToTapWater)
-        InformationText +=  ' autom. Nachspeisung:     {0:0d}\n'.format(self.AutomaticallySwitchedToTapWater)
-        InformationText +=  ' Alarm 1:                 {0:0d}\n'.format(self.Alarm1)
-        InformationText +=  ' Alarm 2:                 {0:0d}\n'.format(self.Alarm2)
-        #InformationText +=  ' Qubikmeter:              {0:0d}\n'.format(self.QubicMeters)
-        #InformationText +=  ' Prozent:                 {0:0d}\n'.format(self.Percent)
 
-        InformationText += ' Byte 4:                  {0:0d} {1:0d} {2:0d} {3:0d}    {4:0d} {5:0d} {6:0d} {7:0d}\n'.format(self.byte4_7, self.byte4_6, self.Alarm1, self.byte4_4, self.ManualSwitchedToTapWater, self.AutomaticallySwitchedToTapWater, self.Alarm2, self.byte4_0)
-        InformationText += ' Byte 5:                  {0:0d} {1:0d} {2:0d} {3:0d}    {4:0d} {5:0d} {6:0d} {7:0d}\n'.format(self.QubicMeters, self.Percent, self.byte5_5, self.byte5_4, self.byte5_3, self.byte5_2, self.byte5_1, self.byte5_0)
+        InformationText +=  ' opt. LED an:             {0:0d}\n'.format(self.OptionalLEDAlwaysOn)
+        InformationText +=  ' opt. LED blinkt:         {0:0d}\n'.format(self.OptionalLEDBlinking)
+        InformationText +=  ' autom. Nachspeisung:     {0:0d}\n'.format(self.AutomaticallySwitchedToTapWater)
+        InformationText +=  ' manuelle Nachspeisung:   {0:0d}\n'.format(self.ManualSwitchedToTapWater)
+        InformationText +=  ' Wasseraustausch aktiv:   {0:0d}\n'.format(self.WaterExchangeActive)
+        InformationText +=  ' opt. Relais an:          {0:0d}\n'.format(self.OptionalRelaisAlwaysOn)
+        InformationText +=  ' opt. Relais blinkt:      {0:0d}\n'.format(self.OptionalRelaisBlinking)
+        InformationText +=  ' Alarmbuzzer an:          {0:0d}\n'.format(self.AlarmBuzzerActive)
+
+        InformationText +=  ' opt. Eingang an:         {0:0d}\n'.format(self.OptionalInputActive)
+        InformationText +=  ' Nachspeise-Eingang an:   {0:0d}\n'.format(self.TapWaterRefillInputActive)
+        InformationText +=  ' Pumpe laeuft:            {0:0d}\n'.format(self.PumpActive)
+        InformationText +=  ' unbenutzt (flackert):    {0:0d}\n'.format(self.unused)
+        InformationText +=  ' ON Button gedrueckt:     {0:0d}\n'.format(self.OnButtonPressed)
+        InformationText +=  ' OFF Button gedrueckt:    {0:0d}\n'.format(self.OffButtonPressed)
+        InformationText +=  ' Anzeige ist in %:        {0:0d}\n'.format(self.DisplayInPercent)
+        InformationText +=  ' Anzeige ist in m^3:      {0:0d}\n'.format(self.DisplayInQubicMeters)
+        #InformationText += ' Byte 3:                  {0:0d} {1:0d} {2:0d} {3:0d}    {4:0d} {5:0d} {6:0d} {7:0d}\n'.format(self.byte4_7, self.byte4_6, self.Alarm1, self.byte4_4, self.ManualSwitchedToTapWater, self.AutomaticallySwitchedToTapWater, self.Alarm2, self.byte4_0)
+        #InformationText += ' Byte 4:                  {0:0d} {1:0d} {2:0d} {3:0d}    {4:0d} {5:0d} {6:0d} {7:0d}\n'.format(self.QubicMeters, self.Percent, self.byte5_5, self.byte5_4, self.byte5_3, self.byte5_2, self.byte5_1, self.byte5_0)
         return InformationText
         
         
