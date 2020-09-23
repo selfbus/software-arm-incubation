@@ -85,8 +85,16 @@ Channel::Channel(unsigned int number, unsigned int address)
     obj24Config    = userEeprom.getUInt8(address + 66);
     oneBitPosition = userEeprom.getUInt8(address + 67);
 
-    openTimeExt    = openTime  * extMoveTime / 100;
-    closeTimeExt   = closeTime * extMoveTime / 100;
+    if (extMoveTime != 0)
+    {
+        openTimeExt    = openTime  * extMoveTime / 100;
+        closeTimeExt   = closeTime * extMoveTime / 100;
+    }
+    else
+    {
+        openTimeExt    = 1;
+        closeTimeExt   = 1;
+    }
     unsigned int baseAddr =
           currentVersion->baseAddress
         + currentVersion->noOfChannels * EE_CHANNEL_CFG_SIZE
