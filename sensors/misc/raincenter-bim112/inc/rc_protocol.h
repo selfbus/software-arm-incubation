@@ -16,12 +16,12 @@ Baudrate settings: 2400 8N1 (2400 Baud, 8 Databits, No Parity, 1 Stopbit)
 so far known commands (single char):
 Command         Description
 p               Parameter request
-s               Parameter Set (raincenter acknowledges command with 's', then it waits for 11 configuration bytes
+s               Parameter Set (raincenter acknowledges command with 's', then it waits for 11 configuration bytes)
 w               Display data request
 c               Switch Display (m³, cm, percent)
 a               Switch to tap water refill
 b               Switch to reservoir
-
+z               water exchange counter & filter backflush counter
 -------------------------------------------------------------------------------
 p Parameter request Answer:
 Example in hex
@@ -29,23 +29,23 @@ Byte#:     00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16
 Data :     70 30 07 01 03 01 42 00 31 01 30 06 51 51 97 00 00
 
 byte numbering according to PROFIRAIN PCA documentation
-#byte   Description                             Multiplier  Unit    Code
+#byte   Description                                             Multiplier  Unit    Code
  0.     0x70 = 'p'
- 1.     water exchange period                       1       days    BCD
- 2.     tap water switch on height                  5       cm      BCD
- 3.     tap water switch on hysteresis              2       cm      BCD
- 4.     water exchange duration                     1       min     BCD
- 5.     tap water supply type                       -       0-2     BCD
- 6.     maximum fill level                          5       cm      BCD
- 7.     reservoir type                              -       0-1     BCD
- 8.     reservoir area                              0.1     m2      BCD
- 9.     optional relay function                     -       0-9     BCD
-10.     automatic timer interval                    1       days    BCD
-11.     automatic timer duration                    10      s       BCD
-12.     fill level factory calibration              1       -       BCD
-13.     fill level user calibration                 1       -       BCD
-14.     fill level measured (raw data)              1       cm      BCD
-15.     fill level measured (raw data)              100     cm      BCD
+ 1.     water exchange period                                   1       days    BCD
+ 2.     tap water switch on height                              5       cm      BCD
+ 3.     tap water switch on hysteresis                          2       cm      BCD
+ 4.     water exchange duration                                 1       min     BCD
+ 5.     tap water supply type                                   -       0-2     BCD
+ 6.     maximum fill level                                      5       cm      BCD
+ 7.     reservoir type                                          -       0-1     BCD
+ 8.     reservoir area                                          0.1     m2      BCD
+ 9.     optional relay function                                 -       0-9     BCD
+10.     automatic filter backflush timer interval               1       days    BCD
+11.     automatic filter backflush timer duration               10      s       BCD
+12.     fill level factory calibration (< 50 subtract > 50 add) 1       -       BCD
+13.     fill level user calibration (< 50 subtract > 50 add)    1       -       BCD
+14.     fill level measured low byte (raw data)                 1       cm      BCD
+15.     fill level measured high byte (raw data)                100     cm      BCD
 16.     0x00 (end of message ?)
 
 -------------------------------------------------------------------------------
@@ -99,38 +99,46 @@ enum eOptionalRelaisFunction{no_function,
                              reservoir_filling};
 enum eDisplayUnit {invalid, cm, percent, m3};
 
-const static char RC_INVALID_COMMAND = (char)0;
-const static byte RC_LEVEL_CALIBRATION_FACTOR = 50;
-const static int RC_INVALID_MESSAGE_LENGTH = 30;
+enum class Type {tRCMessage, tRCParameterMessage, tRCDisplayMessage, tRCSwitchDisplayMessage, tRCSwitchToTapWaterRefillMessage, tRCSwitchToReservoirMessage};
+
+static const char RC_INVALID_COMMAND = (char)0;
+static const byte RC_LEVEL_CALIBRATION_FACTOR = 50;
+static const int RC_INVALID_MESSAGE_LENGTH = 30;
 
 class RCMessage
 {
 public:
     RCMessage();
     virtual ~RCMessage();
-    virtual bool Decode(byte * msg, int msg_len) = 0;
+    virtual const Type type() { return Type::tRCMessage;}
+
+    static RCMessage* GetRCMessageFromTelegram(byte * msg, int msg_len);
     bool IsValid() const {return _IsValid;}
 protected:
-    const static char msgIdentifier = RC_INVALID_COMMAND;
-    const static byte msgLength;
+    static const char msgIdentifier = RC_INVALID_COMMAND;
+    static const byte msgLength = 0;
+    static constexpr byte msgExample[msgLength] = {};
     bool _IsValid;
+
+    virtual bool Decode(byte * msg, int msg_len) = 0;
 };
 
 class RCParameterMessage : public RCMessage
 {
 // Example in hex
-// #Byte#:     01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17
+// #Byte#:     00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16
 // #Data :     70 30 07 01 03 01 42 00 31 01 30 06 51 51 97 00 00
 public:
-    static const char msgIdentifier = 'p'; // 01. byte
+    static const char msgIdentifier = 'p'; // 0 byte
     static const byte msgLength = 17;
     static constexpr byte msgExample[msgLength] = {0x70, 0x30, 0x07, 0x01, 0x03, 0x01, 0x42, 0x00, 0x31, 0x01, 0x30, 0x06, 0x51, 0x51, 0x97, 0x00, 0x00};
 
     RCParameterMessage();
-    bool Decode(byte * msg, int msg_len);
+    Type const type() override {return Type::tRCParameterMessage;}
     void operator=(const RCParameterMessage &msg);
     bool operator==(const RCParameterMessage &msg);
     bool operator!=(const RCParameterMessage &msg);
+
     int WaterExchangePeriod_days() const {return _WaterExchangePeriod_days;}
     int TapWaterSwitchOnHeight_cm() const {return _TapWaterSwitchOnHeight_cm;}
     int TapWaterSwitchOnHysteresis_cm() const {return _TapWaterSwitchOnHysteresis_cm;}
@@ -148,7 +156,7 @@ public:
     int LevelCalibratedcm() const {return _LevelCalibrated_cm;}
     float Level_m3_Calibrated() const {return _Level_m3_Calibrated;}
 protected:
-    int _WaterExchangePeriod_days; //02. byte how many days
+    int _WaterExchangePeriod_days;
     int _TapWaterSwitchOnHeight_cm;
     int _TapWaterSwitchOnHysteresis_cm;
     int _WaterExchangeDuration_min;
@@ -164,6 +172,8 @@ protected:
     int _LevelMeasured_cm;
     int _LevelCalibrated_cm;
     float _Level_m3_Calibrated;
+
+    bool Decode(byte * msg, int msg_len) override;
 };
 
 class RCDisplayMessage : public RCMessage
@@ -177,14 +187,14 @@ public:
     static constexpr byte msgExample[msgLength] = {0x77, 0x95, 0x00, 0x08, 0x02};
 
     RCDisplayMessage();
-    bool Decode(byte * msg, int msg_len);
+    Type const type() override {return Type::tRCDisplayMessage;}
     void operator=(const RCDisplayMessage &msg);
     bool operator==(const RCDisplayMessage &msg);
     bool operator!=(const RCDisplayMessage &msg);
 
     float DisplayValue() const {return _DisplayValue;}
     eDisplayUnit DisplayUnit() const {return _DisplayUnit;}
-    bool IsSwitchedToTapWater() {return (ManualSwitchedToTapWater() || AutomaticallySwitchedToTapWater() || WaterExchangeActive());}
+    bool IsSwitchedToTapWater() const {return (ManualSwitchedToTapWater() || AutomaticallySwitchedToTapWater() || WaterExchangeActive());}
 
     // byte 3 decodings
     bool OptionalLEDAlwaysOn() const {return _OptionalLEDAlwaysOn;} // byte 3.0
@@ -226,7 +236,7 @@ protected:
     bool _PumpActive;
     bool _TapWaterRefillInputActive;
     bool _OptionalInputActive;
-
+    bool Decode(byte * msg, int msg_len) override;
 };
 
 class RCSwitchDisplayMessage : public RCMessage
@@ -236,8 +246,9 @@ public:
     static const byte msgLength = 1;
     static constexpr byte msgExample[msgLength] = {msgIdentifier};
     RCSwitchDisplayMessage();
-    bool Decode(byte * msg, int msg_len);
+    Type const type() override {return Type::tRCSwitchDisplayMessage;}
 protected:
+    bool Decode(byte * msg, int msg_len) override;
 };
 
 class RCSwitchToTapWaterRefillMessage : public RCMessage
@@ -247,8 +258,9 @@ public:
     static const byte msgLength = 1;
     static constexpr byte msgExample[msgLength] = {msgIdentifier};
     RCSwitchToTapWaterRefillMessage();
-    bool Decode(byte * msg, int msg_len);
+    Type const type() override {return Type::tRCSwitchToTapWaterRefillMessage;}
 protected:
+    bool Decode(byte * msg, int msg_len) override;
 };
 
 class RCSwitchToReservoirMessage : public RCMessage
@@ -258,8 +270,9 @@ public:
     static const byte msgLength = 1;
     static constexpr byte msgExample[msgLength] = {msgIdentifier};
     RCSwitchToReservoirMessage();
-    bool Decode(byte * msg, int msg_len);
+    Type const type() override {return Type::tRCSwitchToReservoirMessage;}
 protected:
+    bool Decode(byte * msg, int msg_len) override;
 };
 
 #endif /* RC_PROTOCOL_H_ */
