@@ -32,9 +32,27 @@ RCMessage::~RCMessage()
 
 }
 
-bool RCMessage::Decode(byte * msg, int msg_len)
+RCMessage* RCMessage::GetRCMessageFromTelegram(byte * msg, int msg_len)
 {
-    return false;
+    RCMessage* ret;
+    if ((msg_len >= RCParameterMessage::msgLength) && (msg[0] == RCParameterMessage::msgIdentifier))
+    {
+        ret = new RCParameterMessage();
+        if (ret->Decode(msg, msg_len))
+        {
+            return ret;
+        }
+
+    }
+    else if ((msg_len >= RCDisplayMessage::msgLength) && (msg[0] == RCDisplayMessage::msgIdentifier))
+    {
+        ret = new RCDisplayMessage();
+        if (ret->Decode(msg, msg_len))
+        {
+            return ret;
+        }
+    }
+    return NULL;
 }
 
 RCParameterMessage::RCParameterMessage()
@@ -124,7 +142,6 @@ bool RCParameterMessage::Decode(byte * msg, int msg_len)
         _LevelCalibrationFactory = bcd2int(msg[12]);
         _LevelCalibrationUser = bcd2int(msg[13]);
         _LevelMeasured_cm = bcd2int(msg[14]) + bcd2int(msg[15]) * 100;
-        //_LevelCalibrated_cm = _LevelCalibrationUser + _LevelMeasured_cm - RC_LEVEL_CALIBRATION_FACTOR + 1;
         _LevelCalibrated_cm = _LevelCalibrationUser + _LevelMeasured_cm - RC_LEVEL_CALIBRATION_FACTOR;
 
         switch (_ReservoirType)
