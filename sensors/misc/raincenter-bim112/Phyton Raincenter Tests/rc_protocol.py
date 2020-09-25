@@ -12,15 +12,24 @@ def bcd2int(b):
     nibleft = (b & 0xF0) >> 4
     nibright = (b & 0x0F)
     return (nibleft * 10 + nibright)
+    
+def int2bcd(i):
+    nibleft = int((i / 10))
+    nibright = int((i % 10))
+    b = ((nibleft << 4) + nibright)
+    #print('inttbcd {0:02d} {1:02x}'.format(int(i), b))
+    return (b)
 
 def bit_is_set(x, n):
     return x & 2**n != 0
 
 
 class rcMessage(object):
+    msgTeleExample = []
     def __init__(self):
         self.telegram = ''
         self.telegram_bytes = []
+        self.data = []
         self.msgPrintLongInfo = True
         self.msgTimeStamp = time.strftime("%Y-%m-%d ") + time.strftime("%H:%M:%S")
 
@@ -41,6 +50,9 @@ class rcMessage(object):
         
     def Decode(self):
         self.data = self.telegram_bytes # extract the data bytes from the telegram
+        
+    def Encode(self):
+        self.telegram_bytes = self.data # copy the data to the telegram bytes
         
     def ToInformationText(self, printbytes, longoutput):
         InformationText = '{0:s} - {1:20s}\n'.format(self.msgTimeStamp, self.msgName)
@@ -138,6 +150,25 @@ class rcParameterMessage(rcMessage):
             self.LevelMeasured = bcd2int(self.data[14]) + 100 * bcd2int(self.data[15])
             self.LevelCalibrated = self.LevelCalibrationUser-51+self.LevelMeasured
 
+    def Encode(self):
+        self.data = bytearray(rcParameterMessage.msgLength)
+        self.data[0] = rcParameterMessage.msgIdentifier[0]
+        self.data[1] = int2bcd(self.WaterExchangePeriod_days)
+        self.data[2] = int2bcd(self.TapWaterSwitchOnHeight_cm / 5)
+        self.data[3] = int2bcd( self.TapWaterSwitchOnHysteresis_cm / 2)
+        self.data[4] = int2bcd(self.WaterExchangeDuration_min)
+        self.data[5] = int2bcd(self.TapWaterSupplyType)
+        self.data[6] = int2bcd(self.FillingLevelMax_cm / 5)
+        self.data[7] = int2bcd(self.ReservoirType)
+        self.data[8] = int2bcd(self.ReservoirArea_m2 * 10)
+        self.data[9] = int2bcd(self.OptionalRelaisFunction)
+        self.data[10] = int2bcd(self.AutomaticTimerInterval_days)
+        self.data[11] = int2bcd(self.AutomaticTimerDuration_seconds / 10)
+        self.data[12] = int2bcd(self.LevelCalibrationFactory)
+        self.data[13] = int2bcd(self.LevelCalibrationUser)
+        self.data[14] = int2bcd(self.LevelMeasured % 100)
+        self.data[15] = int2bcd(self.LevelMeasured / 100)
+        rcMessage.Encode(self)
 
     def GetLongToInformationText(self):
         InformationText =  ' Wasseraustauschperiode:                 {0:0d} Tage\n'.format(self.WaterExchangePeriod_days)
@@ -271,6 +302,35 @@ class rcDisplayMessage(rcMessage):
                 self.DisplayUnit = '%'
             else:
                 self.DisplayUnit = 'cm'
+
+    def Encode(self):
+        self.data = bytearray(rcDisplayMessage.msgLength)
+        self.data[0] = rcDisplayMessage.msgIdentifier[0]
+        self.data[1] = int2bcd(self.DisplayValue % 100)
+        self.data[2] = int2bcd(self.DisplayValue / 100)
+        
+        self.data[3] = 0
+        self.data[3] = (self.data[3] | (self.AlarmBuzzerActive & 0x01)) << 1
+        self.data[3] = (self.data[3] | (self.OptionalRelaisBlinking & 0x01)) << 1
+        self.data[3] = (self.data[3] | (self.OptionalRelaisAlwaysOn & 0x01)) << 1
+        self.data[3] = (self.data[3] | (self.WaterExchangeActive & 0x01)) << 1
+        self.data[3] = (self.data[3] | (self.ManualSwitchedToTapWater & 0x01)) << 1
+        self.data[3] = (self.data[3] | (self.AutomaticallySwitchedToTapWater & 0x01)) << 1
+        self.data[3] = (self.data[3] | (self.OptionalLEDBlinking & 0x01)) << 1
+        self.data[3] = (self.data[3] | (self.OptionalLEDAlwaysOn & 0x01))
+        
+        
+        self.data[4] = 0
+        self.data[4] = (self.data[4] | (self.DisplayInQubicMeters & 0x01)) << 1
+        self.data[4] = (self.data[4] | (self.DisplayInPercent & 0x01)) << 1
+        self.data[4] = (self.data[4] | (self.OffButtonPressed & 0x01)) << 1
+        self.data[4] = (self.data[4] | (self.OnButtonPressed & 0x01)) << 1
+        self.data[4] = (self.data[4] | (self.unused & 0x01)) << 1
+        self.data[4] = (self.data[4] | (self.PumpActive & 0x01)) << 1
+        self.data[4] = (self.data[4] | (self.TapWaterRefillInputActive & 0x01)) << 1
+        self.data[4] = (self.data[4] | (self.OptionalInputActive & 0x01))
+        rcMessage.Encode(self)
+
 
     def GetLongToInformationText(self):
         if self.DisplayUnit == 'm^3':
