@@ -20,14 +20,19 @@ void Input::begin(int noOfChannels, int baseAddress)
     inputState = 0;
     scan();
     int mode;
+    unsigned int mask = 0;
+
 #ifdef INVERT
     	mode = INPUT | HYSTERESIS | PULL_UP;
 #else
     	mode = INPUT | HYSTERESIS | PULL_DOWN;
 #endif
+
     for (int i = 0; i < noOfChannels; i++)
     {
-        unsigned int mask = 1 << i;
+#ifdef INVERT
+        mask  = 1 << i;
+#endif
         pinMode(inputPins[i], mode);
         inputDebouncer[i].init(inputState & mask);
     }
