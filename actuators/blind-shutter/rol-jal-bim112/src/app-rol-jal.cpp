@@ -45,7 +45,8 @@ void objectUpdated(int objno)
     {   // handle global objects
         unsigned char value = objectRead(objno);
         for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
-        {   Channel * chn = channels [i];
+        {
+            Channel * chn = channels [i];
             if (chn && (objno <= 4) && chn->centralEnabled())
             {
                 switch (objno)
@@ -77,6 +78,7 @@ void objectUpdated(int objno)
                 else
                     chn->handleAutomaticFunction(objno - 9, 1, value);
             }
+
         }
     }
 }
@@ -135,7 +137,7 @@ void initApplication(void)
     for (unsigned int i = 0; i < NO_OF_OUTPUTS; i++)
     {
         pinMode(outputPins[i], OUTPUT);  // first set pinmode to OUTPUT
-        digitalWrite(outputPins[i], 0);  // then set pin to low, otherwise relays for deactivated shutter/blind channels (in ETS) will switch on
+        digitalWrite(outputPins[i], Channel::OUTPUT_LOW);  // then set pin to low, otherwise relays for deactivated shutter/blind channels (in ETS) will switch on
     }
 
     for (unsigned int i = 0; i < NO_OF_CHANNELS; i++, address += EE_CHANNEL_CFG_SIZE)

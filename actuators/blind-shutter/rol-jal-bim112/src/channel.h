@@ -38,13 +38,15 @@ extern Timeout PWMDisabled;
 #define TIMER_PWM timer16_0
 
 #ifdef DEBUG
-    #define PWM_TIMEOUT 2000 // ms
+    #define PWM_TIMEOUT 50 // ms
 #else
     #define PWM_TIMEOUT 50   // ms
 #endif
 #define PWM_PERIOD  85       // 1,2 kHz
 #define PWM_DUTY 22          // 25% duty
 #define PWM_DUTY_MAX 99      // 99% duty
+
+#define BLOCKING_MS 1000 // ms a channel should block other channels from switching on a relay
 
 
 #define EE_CHANNEL_CFG_SIZE    72
@@ -135,6 +137,11 @@ public:
     };
     enum { SHUTTER, BLIND};
 
+    typedef enum
+    {
+        OUTPUT_LOW = 0x00, OUTPUT_HIGH = 0x01
+    } OutputState;
+
     static void initPWM(int PWMPin);
     static void startPWM();
     static void setPWMtoMaxDuty();
@@ -146,11 +153,16 @@ public:
     bool centralEnabled();
     bool automaticAEnabled();
     bool automaticBEnabled();
+    bool isBlocking();
     unsigned short currentPosition(void);
     virtual void objectUpdate(unsigned int objno);
             void startUp(void);
             void startDown(void);
             void stop(void);
+            bool delaySwitchingForMs(int ms);
+            bool UpdateRelayState();
+    virtual void switchOutputPin(int OutputPin, OutputState state);
+
     virtual void periodic(void);
     virtual void moveTo(short position);
             void moveFor(unsigned int time, unsigned int direction);
@@ -227,6 +239,7 @@ protected:
              short targetPosition;   //!< requested target position
              short savedPosition;    //!< position before an automatic commands was triggered
     Timeout        timeout;
+    Timeout        Blocking;         //!< active while the "cooldown" of an recently high switched OutputPin is blocking other channels from doing the same
 };
 
 inline unsigned int Channel::isRunning(void)

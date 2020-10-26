@@ -24,6 +24,7 @@ const int outputPins[NO_OF_OUTPUTS] =
 Timeout PWMDisabled;
 
 
+
 /*
  *  sets PWM Frequency and pulse width (more or less copy & paste from out8-bcu1 (outputs.cpp)
  */
@@ -81,7 +82,7 @@ Channel::Channel(unsigned int number, unsigned int address)
     for (unsigned int i = number * 2 ;i <= (number * 2 + 1); i++)
     {
         pinMode(outputPins [i], OUTPUT);
-        digitalWrite(outputPins [i], 0);
+        switchOutputPin(outputPins [i], OUTPUT_LOW);
     }
 
     pauseChangeDir = userEeprom.getUInt16 (address +   2);
@@ -299,8 +300,8 @@ void Channel::stop(void)
     direction = STOP;
     if (state & MOVE)
     {
-        digitalWrite(outputPins[number * 2 + 0], 0);
-        digitalWrite(outputPins[number * 2 + 1], 0);
+        switchOutputPin(outputPins[number * 2 + 0], OUTPUT_LOW);
+        switchOutputPin(outputPins[number * 2 + 1], OUTPUT_LOW);
 #ifdef HAND_ACTUATION
         handAct.setLedState(number * 2 + 0, 0);
         handAct.setLedState(number * 2 + 1, 0);
@@ -317,6 +318,65 @@ void Channel::_sendPosition()
 {
     objectWrite(firstObjNo + COM_OBJ_POSITION, position);
 }
+
+/*
+ * delays switching actions on the channel for ms milliseconds
+ *
+ */
+bool Channel::delaySwitchingForMs(int ms)
+{
+    bool bDelaySwitching;
+    bDelaySwitching = (state == IDLE) || (state == PROTECT);
+    if (bDelaySwitching)
+    {
+        if (timeout.expired ())
+        {
+            timeout.start (ms);
+            state = PROTECT;
+        }
+        else
+        {
+            //TODO need to know the remaining ms of the timeout, to decide weather or not we have to restart the timeout timer
+            timeout.start(ms);
+            state = PROTECT;
+        }
+    }
+    return bDelaySwitching;
+}
+
+/*
+ * use switchOutputPin which will call digitalWrite, so we can track then the output was set to high
+ */
+void Channel::switchOutputPin(int OutputPin, OutputState state)
+{
+    if (state == OUTPUT_HIGH)
+    {
+        //TODO save requested Outputpin and state, so we can later in UpdateRelayState() set it with digitalWrite
+        digitalWrite(OutputPin,state);
+        Blocking.start(BLOCKING_MS);
+    }
+    else
+    {
+        digitalWrite(OutputPin,state);
+        Blocking.stop();
+    }
+}
+
+/*
+ * returns true, while the "cooldown" of an recently high switched OutputPin is blocking other channels from doing the same
+ */
+bool Channel::isBlocking()
+{
+    return Blocking.started();
+}
+
+bool Channel::UpdateRelayState()
+{
+    //TODO switch relay according to the requested state from switchOutputPin
+    //digitalWrite(OutputPin,state);
+    return false;
+}
+
 
 void Channel::_handleState(void)
 {
@@ -366,13 +426,13 @@ void Channel::_handleState(void)
         {
             unsigned int outNo = number * 2;
             if (direction == DOWN) outNo++;
-            digitalWrite(outputPins[outNo], 1);
+            switchOutputPin(outputPins[outNo], OUTPUT_HIGH);
             if (features & FEATURE_STATUS_MOVING)
                 objectWrite(firstObjNo + COM_OBJ_VISU_STATUS, 1);
             else
                 objectWrite(firstObjNo + COM_OBJ_VISU_STATUS, (int) (direction == UP ? 0 : 1));
 
-            Channel::setPWMtoMaxDuty();     // set PWM to maximum pulse width so relais can switch
+            Channel::setPWMtoMaxDuty();     // set PWM to maximum pulse width so relays can switch
             PWMDisabled.start(PWM_TIMEOUT); // start timer to reset PWM back to normal pulse width
 
 #ifdef HAND_ACTUATION
