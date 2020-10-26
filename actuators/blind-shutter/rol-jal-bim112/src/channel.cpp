@@ -10,7 +10,6 @@
 #include "channel.h"
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
-#include <sblib/timer.h>
 #include <sblib/eib.h>
 #include <string.h>
 #include <blind.h>
@@ -23,6 +22,43 @@ const int outputPins[NO_OF_OUTPUTS] =
     { PIN_IO1, PIN_IO2, PIN_IO3, PIN_IO4, PIN_IO5, PIN_IO6, PIN_IO7, PIN_IO8 };
 
 Timeout PWMDisabled;
+
+
+/*
+ *  sets PWM Frequency and pulse width (more or less copy & paste from out8-bcu1 (outputs.cpp)
+ */
+void Channel::initPWM(int PWMPin)
+{
+    pinMode(PWMPin, OUTPUT_MATCH);       // configure digital pin PWMPin to match MAT2 of PWMTimer
+    TIMER_PWM.begin();
+    TIMER_PWM.prescaler((SystemCoreClock / 100000) - 1);
+    TIMER_PWM.matchMode(MAT2, SET);      // set the output of PWMPin to 1 when the timer matches MAT2
+    TIMER_PWM.match(MAT2, PWM_DUTY);     // match MAT2 when the timer reaches this value
+    TIMER_PWM.pwmEnable(MAT2);           // enable PWM for match channel MAT2
+
+    TIMER_PWM.matchMode(MAT3, RESET);    // Reset the timer when the timer matches MAT3
+    TIMER_PWM.match(MAT3, PWM_PERIOD);   // match MAT3 to create 14lHz
+
+    Channel::startPWM();                 // start PWM
+}
+
+/*
+ *  start PWM with PWM_DUTY pulse width
+ */
+void Channel::startPWM()
+{
+    TIMER_PWM.match(MAT2, PWM_DUTY);  // match MAT2 when the timer reaches this value
+    TIMER_PWM.pwmEnable(MAT2);        // enable PWM for match channel MAT2
+    TIMER_PWM.start();
+}
+
+/*
+ *  "stops" PWM by setting pulse width to PWM_DUTY_MAX
+ */
+void Channel::setPWMtoMaxDuty()
+{
+    TIMER_PWM.match(MAT2, PWM_DUTY_MAX);  // match MAT2 when the timer reaches this value
+}
 
 Channel::Channel(unsigned int number, unsigned int address)
   : shortTime(0)
@@ -335,8 +371,10 @@ void Channel::_handleState(void)
                 objectWrite(firstObjNo + COM_OBJ_VISU_STATUS, 1);
             else
                 objectWrite(firstObjNo + COM_OBJ_VISU_STATUS, (int) (direction == UP ? 0 : 1));
-            timer16_0.match(MAT2, PWM_PERIOD);// disable the PWM
-            PWMDisabled.start(PWM_TIMEOUT);
+
+            Channel::setPWMtoMaxDuty();     // set PWM to maximum pulse width so relais can switch
+            PWMDisabled.start(PWM_TIMEOUT); // start timer to reset PWM back to normal pulse width
+
 #ifdef HAND_ACTUATION
             handAct.setLedState(outNo, 1);
 #endif

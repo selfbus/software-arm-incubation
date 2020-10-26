@@ -36,12 +36,11 @@ const HardwareVersion hardwareVersion[] =
 
 const HardwareVersion * currentVersion;
 
+Timeout timeout;
+
 /*
  * Initialize the application.
  */
-
-Timeout timeout;
-
 void setup()
 {
     // XXX read some ID pins to determine which version is attached
@@ -64,7 +63,16 @@ void setup()
 
 
     if (bcu.applicationRunning())
+    {
         initApplication();
+    }
+    else
+    {
+        // no application is loaded, make sure that all relays are off
+        pinMode(PIN_PWM, OUTPUT);  // configure PWM Pin as output when app is not loaded
+        digitalWrite(PIN_PWM, 1);  // set PWM Pin to high so all relays will be off
+    }
+
 	timeout.start    (1);
 }
 
