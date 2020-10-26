@@ -276,6 +276,7 @@ void checkTimeouts(void)
 {
     unsigned int objno;
 
+#ifdef HAND_ACTUATION
     int handStatus = handAct.check();
     if (handStatus != HandActuation::NO_ACTUATION)
     {
@@ -283,6 +284,7 @@ void checkTimeouts(void)
         if (handStatus & HandActuation::BUTTON_PRESSED)
             relays.toggleChannel(number);
     }
+#endif
 
     // check if we can enable PWM
     relays.checkPWM();
