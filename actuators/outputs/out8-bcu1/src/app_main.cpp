@@ -31,7 +31,7 @@ const char * getAppVersion()
 #ifdef BI_STABLE
 const int outputPins[NO_OF_OUTPUTS] =
 { PIN_IO2,  PIN_IO3 //  1,  2
-, PIN_IO5,  PIN_IO12 //  3,  4
+, PIN_IO5,  PIO_SDA //  3,  4
 , PIN_PWM,  PIN_APRG //  5,  6
 , PIN_IO1,  PIN_IO4 //  7,  8
 
