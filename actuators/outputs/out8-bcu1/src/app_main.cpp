@@ -15,10 +15,7 @@
 #include <sblib/eib/sblib_default_objects.h>
 #include <sblib/io_pin_names.h>
 #include "outputs.h"
-
-// Digital pin for LED
-#define PIO_YELLOW PIO2_6
-#define PIO_GREEN  PIO3_3
+#include "bus_voltage.h"
 
 extern "C" const char APP_VERSION[13] = "O08.10  1.00";
 
@@ -97,13 +94,25 @@ ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
  */
 void setup()
 {
+#ifdef DEBUG
+    // first set pin mode for Info & Run LED
+    pinMode(PIN_INFO, OUTPUT);
+    pinMode(PIN_RUN, OUTPUT);
+    // then set value
+    digitalWrite(PIN_INFO, 0);
+    // digitalWrite(PIN_RUN, 0);
+#endif
+
     volatile const char * v = getAppVersion();
     bcu.begin(4, 0x2060, 1); // We are a "Jung 2138.10" device, version 0.1
 
-    digitalWrite(PIN_INFO, 0);
-    pinMode(PIN_INFO, OUTPUT);	// Info LED
-    pinMode(PIN_RUN, OUTPUT);	// Run LED
-    digitalWrite(PIN_RUN, 0);
+    // enable bus voltage monitoring on PIO1_11 & AD7 with 1.94V threshold
+    vBus.enableBusVRefMonitoring(PIN_VBUS, VBUS_AD_CHANNEL, VBUS_THRESHOLD);
+
+// TODO REMOVE after testing
+#ifdef DEBUG
+    digitalWrite(PIN_INFO, userEeprom[APP_PIN_STATE_MEMORY] == true);
+#endif
 
     // Configure the output pins
     for (int channel = 0; channel < NO_OF_OUTPUTS; ++channel)
@@ -165,7 +174,41 @@ void loop()
     // check if any of the timeouts for an output has expire and react on them
     checkTimeouts();
 
+    // check the bus voltage, should be done before waitForInterrupt()
+    vBus.checkPeriodic();
+
     // Sleep up to 1 millisecond if there is nothing to do
     if (bus.idle())
+    {
         waitForInterrupt();
+    }
 }
+
+/*
+ * will be called by the bus_voltage.h ISR which handles the ADC interrupt for the bus voltage.
+ */
+void BusVoltageFail()
+{
+#ifdef DEBUG
+    pinMode(PIN_RUN, OUTPUT);   // Run LED
+    digitalWrite(PIN_RUN, 0);
+    digitalWrite(PIN_INFO, !digitalRead(PIN_INFO));
+#endif
+    userEeprom[APP_PIN_STATE_MEMORY] = digitalRead(PIN_INFO);
+    userEeprom.modified();
+    bus.end();
+}
+
+/*
+ * will be called by the bus_voltage.h ISR which handles the ADC interrupt for the bus voltage.
+ */
+void BusVoltageReturn()
+{
+    setup();
+#ifdef DEBUG
+    pinMode(PIN_RUN, OUTPUT);   // Run LED
+    digitalWrite(PIN_RUN, 1);
+#endif
+}
+
+

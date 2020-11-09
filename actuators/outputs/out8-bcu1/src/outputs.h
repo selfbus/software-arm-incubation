@@ -27,6 +27,7 @@
 class Outputs
 {
 public:
+    enum State : byte {OPEN = 0x00, CLOSED = 0x01, LAST_STATE = 0xFF};
     Outputs() : _relayState(0)
               , _prevRelayState(0)
               , _inverted(0)

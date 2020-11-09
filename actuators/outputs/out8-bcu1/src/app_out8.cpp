@@ -336,24 +336,57 @@ void initApplication(void)
 {
     unsigned int i;
     unsigned int initialChannelAction;
+    unsigned int RelaysBeginState;
+    Outputs::State initialOutputState[NO_OF_CHANNELS];
 
-    //relays.begin(userEeprom[APP_PIN_STATE_MEMORY], userEeprom[APP_CLOSER_MODE]);
-    relays.begin(0x00, userEeprom[APP_CLOSER_MODE]);
-    lockPolarity         = userEeprom[APP_SPECIAL_POLARITY];
-    initialChannelAction = userEeprom[APP_RESTORE_AFTER_PL_HI] << 8
-                         | userEeprom[APP_RESTORE_AFTER_PL_LO];
-    for (i=0; i < 8; i++) {
-        unsigned int temp = (initialChannelAction >> (i * 2)) & 0x03;
-        if      (temp == 0x01)
-            temp = 0;
-        else if (temp == 0x02)
-            temp = 1;
+    // TODO userEeprom[APP_PIN_STATE_MEMORY] is nowhere set, guess it was meant to save relay-output pin state in case of a brown-out
+    // relays.begin(userEeprom[APP_PIN_STATE_MEMORY], userEeprom[APP_CLOSER_MODE]);
+
+    // TODO REMOVE this doesn't set the Outputs::_prevRelayState correctly for app start-up, so relays won't switch on/off
+    // relays.begin(0x00, userEeprom[APP_CLOSER_MODE]);
+
+    lockPolarity         = userEeprom[APP_SPECIAL_POLARITY]; // polarity of the lock object
+    // read & combine initialChannelAction's low & high byte from userEeprom
+    initialChannelAction = (userEeprom[APP_RESTORE_AFTER_PL_HI] << 8) | userEeprom[APP_RESTORE_AFTER_PL_LO];
+
+    RelaysBeginState = 0x00;
+    // 2 bits for each channel: 0x00=LAST_STATE, 0x01=OPEN, 0x02=CLOSED, e.g. initialChannelAction: 0xAAAA Ch1-8 closed; 0x5555 Ch1-8 open; 0x0000 Ch1-8 last state
+    for (i=0; i < NO_OF_CHANNELS; i++) {
+        unsigned int ChannelAction = (initialChannelAction >> (i * 2)) & 0x03;
+        if (ChannelAction == 0x01)
+            initialOutputState[i] = Outputs::OPEN;
+        else if (ChannelAction == 0x02)
+            initialOutputState[i] = Outputs::CLOSED;
         else
-            temp = -1;
-        objectWrite(i, temp);
-        objectWrite(COMOBJ_FEEDBACK1 + i, temp);
-        if (temp != -1)
-            relays.updateChannel(i, temp);
+            initialOutputState[i] = Outputs::LAST_STATE;
+
+        // TODO Outputs::LAST_STATE doesn't work right now, it sets relays to open, because last state is nowhere saved right now
+        // create the RelaysBeginState according to the requested initial outputs states
+        if (initialOutputState[i] == Outputs::CLOSED)
+            RelaysBeginState |= 1 << i;
     }
+
+    // initialize the relays
+    relays.begin(RelaysBeginState, userEeprom[APP_CLOSER_MODE]);
+
+    // send channel feedback-objects on the bus and set relays to initial output states
+    for (i=0; i < NO_OF_CHANNELS; i++) {
+        if (initialOutputState[i] != Outputs::LAST_STATE)
+        {
+            objectWrite(i, initialOutputState[i]);
+            objectWrite(COMOBJ_FEEDBACK1 + i, initialOutputState[i]);
+            relays.updateChannel(i, initialOutputState[i]);
+        }
+        else
+        {
+            // TODO Outputs::LAST_STATE is right now always relays open, see above TODO
+            objectWrite(i, Outputs::OPEN);
+            objectWrite(COMOBJ_FEEDBACK1 + i, Outputs::OPEN);
+            relays.updateChannel(i, Outputs::OPEN);
+        }
+    }
+
+    // TODO check: maybe setting a forced relays.updateOutputs(bool bForcedUpdate) can eliminate the need of using RelaysBeginState
+    // something like relays.updateOutputs(true); // void Outputs::updateOutputs(bool bForcedUpdate = false)
     relays.updateOutputs();
 }
