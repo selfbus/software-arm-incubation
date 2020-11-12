@@ -100,7 +100,7 @@ void HandActuation::setLedState(unsigned int led, bool state, bool blink)
     }
 }
 
-void HandActuation::setallLedStates(bool state)
+void HandActuation::setallLedState(bool state)
 {
     for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
     {
