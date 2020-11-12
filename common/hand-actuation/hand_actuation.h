@@ -23,6 +23,7 @@ public:
     bool ledState(unsigned int led);
     bool blinkState(unsigned int led);
     void setLedState(unsigned int led, bool state, bool blinking = false);
+    void setallLedStates(bool state);
 
 protected:
     static const unsigned int DELAY_AT_END          = 10;
