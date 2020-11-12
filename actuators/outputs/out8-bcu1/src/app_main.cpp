@@ -19,7 +19,9 @@
 
 #include "MemMapperMod.h"
 
+byte testBusRestartCounter; //TODO remove after testing
 
+// TODO move this all to separate source
 // from out-cs-bim112/app_main.cpp
 /*
  * Der MemMapper bekommt einen 1kB Bereich ab 0xEA00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.
@@ -31,14 +33,11 @@
  */
 MemMapperMod memMapper(0xea00, 0x400);
 
-
-byte relaisstate;
-
 void RecallAppData()
 {
     byte* StoragePtr;
     StoragePtr = memMapper.memoryPtr(0, false);
-    relaisstate  =  *StoragePtr++;
+    testBusRestartCounter  =  *StoragePtr++;
 }
 
 void StoreApplData()
@@ -48,7 +47,7 @@ void StoreApplData()
     // Kann der Mapper überhaupt die Seite 0 mappen? Checken!
     memMapper.writeMem(0, 0); // writeMem() aktiviert die passende Speicherseite, entgegen zu memoryPtr()
     StoragePtr = memMapper.memoryPtr(0, false);
-    *StoragePtr++ = relaisstate;
+    *StoragePtr++ = testBusRestartCounter;
     memMapper.doFlash(); // Erase time for one sector is 100 ms ± 5%. Programming time for one block of 256
                          // bytes is 1 ms ± 5%.
                          // see manual page 407
@@ -199,7 +198,6 @@ void setup()
 /*
  * The main processing loop.
  */
-
 void loop()
 {
     int objno;
@@ -227,19 +225,15 @@ void loop()
 void BusVoltageFail()
 {
 #ifdef HAND_ACTUATION
-    // make sure all Handactuation LED's are switched off to save some power
-    handAct.setallLedStates(false);
+    // switch off all Handactuation LED to save some power
+    handAct.setallLedState(false);
 #endif
 
 #ifdef DEBUG
-
-    digitalWrite(PIN_RUN, 0);
-    //digitalWrite(PIN_INFO, !digitalRead(PIN_INFO));
+    digitalWrite(PIN_RUN, 0); // switch RUN-LED to save some power
 #endif
-    relaisstate++;
+    testBusRestartCounter++;
     StoreApplData();
-    // call _bcu.end() to write userEeprom into flash
-    // _bcu.end(); // after flash writing is finished bus will call AppUsrCallback::Notify(int type)
 }
 
 /*
@@ -249,8 +243,7 @@ void BusVoltageReturn()
 {
     RecallAppData();
 #ifdef DEBUG
-    // pinMode(PIN_RUN, OUTPUT);   // Run LED
-    digitalWrite(PIN_RUN, 1);
+    digitalWrite(PIN_RUN, 1); // switch RUN-LED ON
 #endif
 }
 
