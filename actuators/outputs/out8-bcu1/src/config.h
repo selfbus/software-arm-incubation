@@ -12,13 +12,20 @@
 #include <sblib/ioports.h>
 
 #define NO_OF_CHANNELS 8
-#define BI_STABLE
-#define NO_OF_HAND_PINS  8
-// #define ZERO_DETECT
+#define NO_OF_HAND_PINS 8
 
+#define BI_STABLE
 #define HAND_ACTUATION
+
+// #define ZERO_DETECT // no more supported? at least it's mentioned in a comment from 2014
+                       // https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_16A_4TE
 
 #define VBUS_AD_CHANNEL AD7
 #define VBUS_THRESHOLD 1.94 // TODO 1.94V @ ADC-Pin of the LPC11xx, 1.94V is just selected for fast testing, needs further investigation
+
+
+#define MANUFACTURER 0x04   // We are a "Jung 2138.10" device, version 0.1
+#define DEVICETYPE 0x2060
+#define APPVERSION 1
 
 #endif /* CONFIG_H_ */

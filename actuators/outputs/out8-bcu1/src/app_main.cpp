@@ -16,50 +16,61 @@
 #include <sblib/io_pin_names.h>
 #include "outputs.h"
 #include "bus_voltage.h"
+#include "app_nov_settings.h"
 
 #include "MemMapperMod.h"
-
-byte testBusRestartCounter; //TODO remove after testing
 
 // TODO move this all to separate source
 // from out-cs-bim112/app_main.cpp
 /*
- * Der MemMapper bekommt einen 1kB Bereich ab 0xEA00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.
- * Damit lassen sich 3 Pages (je 256Byte) (und die allocTable die MemMappers) unterbringen.
- * Benötigt werden zwei Pages:
- * - für den Konfigurationsspeicher jenseits von 0x4B00. Für die SbLib endet der Konfigurationspeicher dort,
- *   unser Vorbild legt dort jedoch noch einige allgemeine Optionen ab.
+ * Der MemMapper bekommt einen 256 Byte Bereich ab 0xEA00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.
  * - für die Systemzustände. Diese werden bei Busspannungsausfall und Neustart abgespeichert.
  */
-MemMapperMod memMapper(0xea00, 0x400);
+MemMapperMod memMapper(0xea00, 0x100);
 
 void RecallAppData()
 {
     byte* StoragePtr;
     StoragePtr = memMapper.memoryPtr(0, false);
-    testBusRestartCounter  =  *StoragePtr++;
+    for (unsigned int i = 0; i < sizeof(AppSavedSettings); i++)
+    {
+        byte tmp = *StoragePtr++; // TODO remove tmp
+        AppSavedSettings.AppValues[i] = tmp;
+    }
+    // TODO implemenent crc-check
 }
 
 void StoreApplData()
 {
-    digitalWrite(PIN_INFO, 1);
     byte* StoragePtr;
     // Kann der Mapper überhaupt die Seite 0 mappen? Checken!
     memMapper.writeMem(0, 0); // writeMem() aktiviert die passende Speicherseite, entgegen zu memoryPtr()
     StoragePtr = memMapper.memoryPtr(0, false);
-    *StoragePtr++ = testBusRestartCounter;
+
+#ifdef DEBUG
+    AppSavedSettings.testBusRestartCounter++; // TODO remove after testing
+#endif
+
+    for (unsigned int i = 0; i < sizeof(AppSavedSettings); i++)
+    {
+        byte tmp = AppSavedSettings.AppValues[i]; // TODO remove tmp
+        *StoragePtr++ = tmp;
+    }
+    // TODO implemenent crc-check and save in flash
+
     memMapper.doFlash(); // Erase time for one sector is 100 ms ± 5%. Programming time for one block of 256
                          // bytes is 1 ms ± 5%.
                          // see manual page 407
-    digitalWrite(PIN_INFO, 0);
 }
 
-extern "C" const char APP_VERSION[13] = "O08.10  1.00";
+/* is used nowhere. Why its here ?
+extern "C" const char APP_VERSION[13] = "O08.10  1.00"; // TODO move this also to config.h
 
 const char * getAppVersion()
 {
     return APP_VERSION;
 }
+*/
 
 // Output pins
 #ifdef BI_STABLE
@@ -140,8 +151,8 @@ void setup()
     digitalWrite(PIN_RUN, 1);
 #endif
 
-    volatile const char * v = getAppVersion();
-    bcu.begin(4, 0x2060, 1); // We are a "Jung 2138.10" device, version 0.1
+    // volatile const char * v = getAppVersion();
+    bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
 
     _bcu.setMemMapper((MemMapper *)&memMapper); // Der BCU wird hier der modifizierte MemMapper bekanntgemacht
     memMapper.addRange(0x0, 0x100); // Zum Abspeichern/Laden des Systemzustands
@@ -211,7 +222,7 @@ void loop()
 
     // check the bus voltage, should be done before waitForInterrupt()
     vBus.checkPeriodic();
-
+    int tmp = vBus.valuemV();
     // Sleep up to 1 millisecond if there is nothing to do
     if (bus.idle())
     {
@@ -231,9 +242,14 @@ void BusVoltageFail()
 
 #ifdef DEBUG
     digitalWrite(PIN_RUN, 0); // switch RUN-LED to save some power
+    digitalWrite(PIN_INFO, 1);
 #endif
-    testBusRestartCounter++;
-    StoreApplData();
+
+    StoreApplData(); // write application settings to flash
+
+#ifdef DEBUG
+    digitalWrite(PIN_INFO, 0);
+#endif
 }
 
 /*
@@ -242,6 +258,7 @@ void BusVoltageFail()
 void BusVoltageReturn()
 {
     RecallAppData();
+    initApplication();
 #ifdef DEBUG
     digitalWrite(PIN_RUN, 1); // switch RUN-LED ON
 #endif
