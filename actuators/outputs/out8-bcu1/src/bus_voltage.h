@@ -33,6 +33,7 @@ public:
     void disableBusVRefMonitoring();
     void checkPeriodic();
     bool failed();
+    int valuemV(); // returns measured bus voltage in mV (-1 if measurement isnt startet)
 protected:
 
 private:
@@ -40,6 +41,7 @@ private:
     bool pendingRead();
     void startBusVoltageRead();
     void enableADCIsr(void);
+    void resetIsrData();
 };
 
 extern BusVoltage vBus; // declared in bus_voltage.cpp, use only this instance for acccess
