@@ -42,6 +42,6 @@ private:
     void enableADCIsr(void);
 };
 
-extern BusVoltage vBus;
+extern BusVoltage vBus; // declared in bus_voltage.cpp, use only this instance for acccess
 
 #endif /* BUS_VOLTAGE_H_ */

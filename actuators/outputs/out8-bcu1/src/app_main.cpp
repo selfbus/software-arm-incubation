@@ -17,6 +17,44 @@
 #include "outputs.h"
 #include "bus_voltage.h"
 
+#include "MemMapperMod.h"
+
+
+// from out-cs-bim112/app_main.cpp
+/*
+ * Der MemMapper bekommt einen 1kB Bereich ab 0xEA00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.
+ * Damit lassen sich 3 Pages (je 256Byte) (und die allocTable die MemMappers) unterbringen.
+ * Benötigt werden zwei Pages:
+ * - für den Konfigurationsspeicher jenseits von 0x4B00. Für die SbLib endet der Konfigurationspeicher dort,
+ *   unser Vorbild legt dort jedoch noch einige allgemeine Optionen ab.
+ * - für die Systemzustände. Diese werden bei Busspannungsausfall und Neustart abgespeichert.
+ */
+MemMapperMod memMapper(0xea00, 0x400);
+
+
+byte relaisstate;
+
+void RecallAppData()
+{
+    byte* StoragePtr;
+    StoragePtr = memMapper.memoryPtr(0, false);
+    relaisstate  =  *StoragePtr++;
+}
+
+void StoreApplData()
+{
+    digitalWrite(PIN_INFO, 1);
+    byte* StoragePtr;
+    // Kann der Mapper überhaupt die Seite 0 mappen? Checken!
+    memMapper.writeMem(0, 0); // writeMem() aktiviert die passende Speicherseite, entgegen zu memoryPtr()
+    StoragePtr = memMapper.memoryPtr(0, false);
+    *StoragePtr++ = relaisstate;
+    memMapper.doFlash(); // Erase time for one sector is 100 ms ± 5%. Programming time for one block of 256
+                         // bytes is 1 ms ± 5%.
+                         // see manual page 407
+    digitalWrite(PIN_INFO, 0);
+}
+
 extern "C" const char APP_VERSION[13] = "O08.10  1.00";
 
 const char * getAppVersion()
@@ -96,23 +134,22 @@ void setup()
 {
 #ifdef DEBUG
     // first set pin mode for Info & Run LED
-    pinMode(PIN_INFO, OUTPUT);
-    pinMode(PIN_RUN, OUTPUT);
+    pinMode(PIN_INFO, OUTPUT); // this also sets pin to high/true
+    pinMode(PIN_RUN, OUTPUT); // this also sets pin to high/true
     // then set value
     digitalWrite(PIN_INFO, 0);
-    // digitalWrite(PIN_RUN, 0);
+    digitalWrite(PIN_RUN, 1);
 #endif
 
     volatile const char * v = getAppVersion();
     bcu.begin(4, 0x2060, 1); // We are a "Jung 2138.10" device, version 0.1
 
+    _bcu.setMemMapper((MemMapper *)&memMapper); // Der BCU wird hier der modifizierte MemMapper bekanntgemacht
+    memMapper.addRange(0x0, 0x100); // Zum Abspeichern/Laden des Systemzustands
+    RecallAppData(); // load custom app settings
+
     // enable bus voltage monitoring on PIO1_11 & AD7 with 1.94V threshold
     vBus.enableBusVRefMonitoring(PIN_VBUS, VBUS_AD_CHANNEL, VBUS_THRESHOLD);
-
-// TODO REMOVE after testing
-#ifdef DEBUG
-    digitalWrite(PIN_INFO, userEeprom[APP_PIN_STATE_MEMORY] == true);
-#endif
 
     // Configure the output pins
     for (int channel = 0; channel < NO_OF_OUTPUTS; ++channel)
@@ -189,14 +226,20 @@ void loop()
  */
 void BusVoltageFail()
 {
-#ifdef DEBUG
-    pinMode(PIN_RUN, OUTPUT);   // Run LED
-    digitalWrite(PIN_RUN, 0);
-    digitalWrite(PIN_INFO, !digitalRead(PIN_INFO));
+#ifdef HAND_ACTUATION
+    // make sure all Handactuation LED's are switched off to save some power
+    handAct.setallLedStates(false);
 #endif
-    userEeprom[APP_PIN_STATE_MEMORY] = digitalRead(PIN_INFO);
-    userEeprom.modified();
-    bus.end();
+
+#ifdef DEBUG
+
+    digitalWrite(PIN_RUN, 0);
+    //digitalWrite(PIN_INFO, !digitalRead(PIN_INFO));
+#endif
+    relaisstate++;
+    StoreApplData();
+    // call _bcu.end() to write userEeprom into flash
+    // _bcu.end(); // after flash writing is finished bus will call AppUsrCallback::Notify(int type)
 }
 
 /*
@@ -204,11 +247,10 @@ void BusVoltageFail()
  */
 void BusVoltageReturn()
 {
-    setup();
+    RecallAppData();
 #ifdef DEBUG
-    pinMode(PIN_RUN, OUTPUT);   // Run LED
+    // pinMode(PIN_RUN, OUTPUT);   // Run LED
     digitalWrite(PIN_RUN, 1);
 #endif
 }
-
 

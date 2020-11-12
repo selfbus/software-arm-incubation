@@ -12,12 +12,15 @@
 #include "com_objs.h"
 
 #ifndef BI_STABLE
-#include "outputs.h"
+#   include "outputs.h"
 #else
-#include "outputsBiStable.h"
+#   include "outputsBiStable.h"
 #endif
 
-#include "hand_actuation.h"
+#ifdef HAND_ACTUATION
+#   include "hand_actuation.h"
+#endif
+
 #include <sblib/timeout.h>
 #include <sblib/eib/com_objects.h>
 #include <sblib/eib/user_memory.h>

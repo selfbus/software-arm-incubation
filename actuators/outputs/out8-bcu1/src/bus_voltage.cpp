@@ -24,10 +24,11 @@
 #define ADC_RESOLUTION 1023 //10bit
 #define ADC_MAX_VOLTAGE 3.3 // 3.3V VDD on LPC11xx
 
-static volatile bool waitingADC_ = false; // true while we wait for an ADC-conversion to complete
-static volatile bool busVoltageFailed_ = false; // true while bus voltage is to low
-static volatile int threshold_ = 600; // 1.94V on 10bit resolution of the ADC
-static volatile int ADChannel_ = AD7; // default AD channel for 4TE & TS_ARM controller
+// careful, variables can change any time by the Isr ADC_IRQHandler
+static volatile bool isrwaitingADC = false; // true while we wait for an ADC-conversion to complete
+static volatile bool isrbusVoltageFailed = false; // true while bus voltage is to low
+static volatile int isrthreshold = 600; // 1.94V on 10bit resolution of the ADC
+static volatile int isrADChannel = AD7; // default AD channel for 4TE & TS_ARM controller
 
 /*
  * BusVoltageFail() should be overwritten in the apps main
@@ -55,7 +56,7 @@ extern "C" void ADC_IRQHandler(void)
     unsigned int regVal;
     bool busVoltageState;
 
-    regVal = LPC_ADC->DR[ADChannel_];
+    regVal = LPC_ADC->DR[isrADChannel];
 
     if (regVal & ADC_DONE)
     {
@@ -65,19 +66,19 @@ extern "C" void ADC_IRQHandler(void)
     // overwritten before the conversion that produced the result.
     if (!(regVal & ADC_OVERRUN))
     {
-        waitingADC_ = false;
+        isrwaitingADC = false;
         // this should be our ADC read out value
         regVal = (regVal >> 6) & 0x3ff;
 
-        busVoltageState = regVal < threshold_;
-        if (busVoltageState != busVoltageFailed_) // bus voltage state changed since last ADC-conversion
+        busVoltageState = regVal < isrthreshold;
+        if (busVoltageState != isrbusVoltageFailed) // bus voltage state changed since last ADC-conversion
         {
             if (busVoltageState)
                 BusVoltageFail();
             else
                 BusVoltageReturn();
         }
-        busVoltageFailed_ = busVoltageState; // preserve actual bus voltage state
+        isrbusVoltageFailed = busVoltageState; // preserve actual bus voltage state
     }
 }
 
@@ -87,6 +88,8 @@ extern "C" void ADC_IRQHandler(void)
 BusVoltage::BusVoltage()
 {
     ADPin_ = PIN_VBUS;
+    isrwaitingADC = false;
+    isrbusVoltageFailed = false;
 }
 
 
@@ -96,8 +99,8 @@ BusVoltage::BusVoltage()
 void BusVoltage::enableBusVRefMonitoring(int ADPin, int ADChannel, float thresholdVoltage)
 {
     ADPin_ = ADPin;
-    ADChannel_ = ADChannel;
-    threshold_ = (thresholdVoltage * ADC_RESOLUTION) / ADC_MAX_VOLTAGE; // convert voltage to ADC-resolution
+    isrADChannel = ADChannel;
+    isrthreshold = (thresholdVoltage * ADC_RESOLUTION) / ADC_MAX_VOLTAGE; // convert voltage to ADC-resolution
     analogBegin();
     pinMode(ADPin_, INPUT_ANALOG); // for TS_ARM & 4TE controller Analog channel 7 (pin PIO1_11)
 }
@@ -109,7 +112,7 @@ void BusVoltage::disableBusVRefMonitoring()
 {
     clearPendingInterrupt(ADC_IRQn);
     disableInterrupt(ADC_IRQn);
-    waitingADC_ = false;
+    isrwaitingADC = false;
     analogEnd();
 }
 
@@ -129,18 +132,18 @@ void BusVoltage::startBusVoltageRead()
 {
     if (!pendingRead())
     {
-        waitingADC_ = true;
+        isrwaitingADC = true;
         enableADCIsr();
         LPC_ADC->CR &= 0xffffff00;                      // CLKDIV = 0x13, CLKS=0x0 =>10bit resolution
-        LPC_ADC->DR[ADChannel_];                           // read the channel to clear the "done" flag
-        LPC_ADC->CR |= (1 << ADChannel_) | ADC_START_NOW;  // start the ADC reading
-        LPC_ADC->INTEN = (1 << ADChannel_);                // enable only interrupt for channel
+        LPC_ADC->DR[isrADChannel];                           // read the channel to clear the "done" flag
+        LPC_ADC->CR |= (1 << isrADChannel) | ADC_START_NOW;  // start the ADC reading
+        LPC_ADC->INTEN = (1 << isrADChannel);                // enable only interrupt for channel
     }
 }
 
 bool BusVoltage::pendingRead()
 {
-    return waitingADC_;
+    return isrwaitingADC;
 }
 
 void BusVoltage::checkPeriodic()
@@ -150,7 +153,7 @@ void BusVoltage::checkPeriodic()
 
 bool BusVoltage::failed()
 {
-    return busVoltageFailed_;
+    return isrbusVoltageFailed;
 }
 
 BusVoltage vBus = BusVoltage();
