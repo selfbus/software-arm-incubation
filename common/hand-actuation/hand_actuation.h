@@ -6,8 +6,8 @@
  *  published by the Free Software Foundation.
  */
 
-#ifndef ROL_JAL_BIM112_SRC_HAND_ACTUATION_H_
-#define ROL_JAL_BIM112_SRC_HAND_ACTUATION_H_
+#ifndef HAND_ACTUATION_H_
+#define HAND_ACTUATION_H_
 
 #include "config.h"
 #include <sblib/timeout.h>
@@ -50,4 +50,4 @@ inline bool HandActuation::blinkState(unsigned int led)
 {
     return _blinkState & (1 << led) ? true : false;
 }
-#endif /* ROL_JAL_BIM112_SRC_HAND_ACTUATION_H_ */
+#endif /* HAND_ACTUATION_H_ */
