@@ -342,6 +342,8 @@ void initApplication(void)
     unsigned int RelaysBeginState;
     Outputs::State initialOutputState[NO_OF_CHANNELS];
 
+    // TODO delay the app start by some random seconds, so not all apps will return the same time the bus returns.
+
     // TODO userEeprom[APP_PIN_STATE_MEMORY] is nowhere set, guess it was meant to save relay-output pin state in case of a brown-out
     // relays.begin(userEeprom[APP_PIN_STATE_MEMORY], userEeprom[APP_CLOSER_MODE]);
 

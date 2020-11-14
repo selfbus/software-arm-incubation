@@ -12,13 +12,16 @@
 #ifndef _outputs_h_
 #define _outputs_h_ 1
 
-#include "app_out8.h"
-#include "config.h"
-#include "hand_actuation.h"
 #include <sblib/timeout.h>
 #include <sblib/timer.h>
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
+
+#include "app_out8.h"
+#include "config.h"
+#ifdef HAND_ACTUATION
+#   include "hand_actuation.h"
+#endif
 
 #define PWM_TIMEOUT 20 // ms
 #define PWM_PERIOD  85 // 1.2kHz

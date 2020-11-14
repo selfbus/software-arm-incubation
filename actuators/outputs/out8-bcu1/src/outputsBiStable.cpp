@@ -45,7 +45,7 @@ void OutputsBiStable::checkPWM(void)
 }
 
 #ifdef BI_STABLE
-OutputsBiStable relays;
+    OutputsBiStable relays;
 #endif
 
 
