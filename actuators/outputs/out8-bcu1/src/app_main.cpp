@@ -15,66 +15,57 @@
 #include <sblib/eib/sblib_default_objects.h>
 
 #include "outputs.h"
-#include "bus_voltage.h"
-#include "app_nov_settings.h"
 
-#include "MemMapperMod.h"
-
-// TODO move this all to separate source
-// from out-cs-bim112/app_main.cpp
-/*
- * Der MemMapper bekommt einen 256 Byte Bereich ab 0xEA00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.
- * - für die Systemzustände. Diese werden bei Busspannungsausfall und Neustart abgespeichert.
- */
-MemMapperMod memMapper(0xea00, 0x100);
-
-void RecallAppData()
-{
-    byte* StoragePtr;
-    StoragePtr = memMapper.memoryPtr(0, false);
-    for (unsigned int i = 0; i < sizeof(AppSavedSettings); i++)
-    {
-        byte tmp = *StoragePtr++; // TODO remove tmp
-        AppSavedSettings.AppValues[i] = tmp;
-    }
-    // TODO implemenent crc-check
-}
-
-void StoreApplData()
-{
-    byte* StoragePtr;
-    // Kann der Mapper überhaupt die Seite 0 mappen? Checken!
-    memMapper.writeMem(0, 0); // writeMem() aktiviert die passende Speicherseite, entgegen zu memoryPtr()
-    StoragePtr = memMapper.memoryPtr(0, false);
-
-#ifdef DEBUG
-    AppSavedSettings.testBusRestartCounter++; // TODO remove after testing
+#ifdef BUSFAIL
+#    include "bus_voltage.h"
+#    include "app_nov_settings.h"
 #endif
-
-    for (unsigned int i = 0; i < sizeof(AppSavedSettings); i++)
-    {
-        byte tmp = AppSavedSettings.AppValues[i]; // TODO remove tmp
-        *StoragePtr++ = tmp;
-    }
-    // TODO implemenent crc-check and save in flash
-
-    memMapper.doFlash(); // Erase time for one sector is 100 ms ± 5%. Programming time for one block of 256
-                         // bytes is 1 ms ± 5%.
-                         // see manual page 407
-}
-
-/* is used nowhere. Why its here ?
-extern "C" const char APP_VERSION[13] = "O08.10  1.00"; // TODO move this also to config.h
-
-const char * getAppVersion()
-{
-    return APP_VERSION;
-}
-*/
 
 ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
 
-//#define IO_TEST
+/*
+ * from out-cs-bim112/app_main.cpp
+ * Der MemMapper von AppNov bekommt einen 256 Byte Bereich ab 0xEA00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.
+ * - für die Systemzustände. Diese werden bei Busspannungsausfall und Neustart abgespeichert.
+ */
+#ifdef BUSFAIL
+    AppNovSetting AppNov(0xEA00, 0x100, 3);  // flash-storage for application relevant parameters
+#endif
+
+/*
+ * simple IO test
+ */
+void ioTest()
+{
+#ifdef IO_TEST
+     // setup LED's
+     const int togglePausems = 500;
+#    ifdef HAND_ACTUATION
+        for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
+        {
+            digitalWrite(handPins[i], 0);
+            pinMode(handPins[i], OUTPUT);
+        }
+#    endif /* HAND_ACTUATION */
+
+     // toggle every channel/LED with a delay of 500ms
+     for (unsigned int i = 0; i < NO_OF_OUTPUTS; i++)
+     {
+         digitalWrite(outputPins[i], 1);   // relay high
+#ifdef HAND_ACTUATION
+         if (i < NO_OF_CHANNELS)
+             digitalWrite(handPins[i], 1); // LED high
+#endif /* HAND_ACTUATION */
+         delay(togglePausems);
+         digitalWrite(outputPins[i], 0);   // relay low
+#ifdef HAND_ACTUATION
+         if (i < NO_OF_CHANNELS)
+             digitalWrite(handPins[i], 0); // LED low
+#endif /* HAND_ACTUATION */
+         delay(togglePausems);
+     }
+#endif
+}
 
 /*
  * Initialize the application.
@@ -90,15 +81,21 @@ void setup()
     digitalWrite(PIN_RUN, 1);
 #endif
 
-    // volatile const char * v = getAppVersion();
     bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
 
-    _bcu.setMemMapper((MemMapper *)&memMapper); // Der BCU wird hier der modifizierte MemMapper bekanntgemacht
-    memMapper.addRange(0x0, 0x100); // Zum Abspeichern/Laden des Systemzustands
-    RecallAppData(); // load custom app settings
+#ifdef BUSFAIL
+    if (!AppNov.RecallAppData()) // load custom app settings
+    {
+#ifdef DEBUG
+        digitalWrite(PIN_INFO, 1);
+        delay(1000);
+        digitalWrite(PIN_INFO, 1);
+#endif
+    }
 
     // enable bus voltage monitoring on PIO1_11 & AD7 with 1.94V threshold
     vBus.enableBusVRefMonitoring(PIN_VBUS, VBUS_AD_CHANNEL, VBUS_THRESHOLD);
+#endif
 
     // Configure the output pins
     for (int channel = 0; channel < NO_OF_OUTPUTS; ++channel)
@@ -107,42 +104,22 @@ void setup()
         digitalWrite(outputPins[channel], 0);
     }
 
-#ifdef IO_TEST
-#ifdef HAND_ACTUATION
-    for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
-    {
-        digitalWrite(handPins[i], 0);
-        pinMode(handPins[i], OUTPUT);
-    }
-#endif
-    for (unsigned int i = 0; i < NO_OF_OUTPUTS; i++)
-    {
-        digitalWrite(outputPins[i], 1);
-#ifdef HAND_ACTUATION
-        if (i < NO_OF_CHANNELS)
-            digitalWrite(handPins[i], 1);
-#endif
-        delay(500);
-        digitalWrite(outputPins[i], 0);
-#ifdef HAND_ACTUATION
-        if (i < NO_OF_CHANNELS)
-            digitalWrite(handPins[i], 0);
-#endif
-        delay(500);
-    }
-#endif
+    ioTest();
+
 #ifndef BI_STABLE
     //pinMode(PIN_IO11, OUTPUT);
     //digitalWrite(PIN_IO11, 1);
 #endif
-    initApplication();
+
 #ifndef BI_STABLE
-#ifdef ZERO_DETECT
-    pinInterruptMode(PIO_SDA, INTERRUPT_EDGE_FALLING | INTERRUPT_ENABLED);
-    enableInterrupt(EINT0_IRQn);
-    pinEnableInterrupt(PIO_SDA);
+#   ifdef ZERO_DETECT
+       pinInterruptMode(PIO_SDA, INTERRUPT_EDGE_FALLING | INTERRUPT_ENABLED);
+       enableInterrupt(EINT0_IRQn);
+       pinEnableInterrupt(PIO_SDA);
+#   endif
 #endif
-#endif
+
+    initApplication();
 }
 
 /*
@@ -158,10 +135,10 @@ void loop()
     }
     // check if any of the timeouts for an output has expire and react on them
     checkTimeouts();
-
+#ifdef BUSFAIL
     // check the bus voltage, should be done before waitForInterrupt()
     vBus.checkPeriodic();
-    int tmp = vBus.valuemV();
+#endif
     // Sleep up to 1 millisecond if there is nothing to do
     if (bus.idle())
     {
@@ -169,13 +146,14 @@ void loop()
     }
 }
 
+#ifdef BUSFAIL
 /*
  * will be called by the bus_voltage.h ISR which handles the ADC interrupt for the bus voltage.
  */
 void BusVoltageFail()
 {
 #ifdef HAND_ACTUATION
-    // switch off all Handactuation LED to save some power
+    // switch off all Handactuation LEDs to save some power
     handAct.setallLedState(false);
 #endif
 
@@ -184,7 +162,7 @@ void BusVoltageFail()
     digitalWrite(PIN_INFO, 1);
 #endif
 
-    StoreApplData(); // write application settings to flash
+    AppNov.StoreApplData(); // write application settings to flash
 
 #ifdef DEBUG
     digitalWrite(PIN_INFO, 0);
@@ -196,10 +174,17 @@ void BusVoltageFail()
  */
 void BusVoltageReturn()
 {
-    RecallAppData();
+    if (!AppNov.RecallAppData()) // load custom app settings
+    {
+#ifdef DEBUG
+        digitalWrite(PIN_INFO, 1);
+        delay(1000);
+        digitalWrite(PIN_INFO, 1);
+#endif
+    }
     initApplication();
 #ifdef DEBUG
     digitalWrite(PIN_RUN, 1); // switch RUN-LED ON
 #endif
 }
-
+#endif /* BUSFAIL */

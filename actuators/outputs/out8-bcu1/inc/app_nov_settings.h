@@ -3,7 +3,6 @@
  *
  *  handles non-volatile application specific settings which shall survive a power loss
  *
- *  Created on: 12.11.2020
  *  Copyright (c) 2020 Darthyson <darth@maptrack.de>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -15,24 +14,39 @@
 #define APP_NOV_SETTINGS_H_
 
 #include <sblib/eib.h>
+#include "MemMapperMod.h"
 
 typedef struct
 {
     union
     {
-        byte AppValues[3]; // to access settings in a loop
+        byte AppValues[4]; // to access settings in a loop // TODO make this dynamic, 4 is just stupid !!
         struct
         {
-            byte relaisstate;         // current relais state
-            byte handactuationstate;  // current hand actuation state
-            byte crc;                 // TODO needs implementation of a simple crc check
+            unsigned char relaisstate;         // current relais state
+            unsigned char handactuationstate;  // current hand actuation state
 #ifdef DEBUG
-            byte testBusRestartCounter; //TODO remove after testing
+            unsigned char testBusRestartCounter; //TODO rename or remove after testing
 #endif
         };
     };
-} AppNovSetting;
+} AppNovSettingStruct;
 
-extern AppNovSetting  AppSavedSettings; // holds all application specific settings which should survive a power loss
+class AppNovSetting
+{
+    public:
+        AppNovSetting(unsigned int flashBase, unsigned int flashSize, unsigned int AppValueCacheSize);
+        MemMapperMod* GetMemMapperMod();
+        bool RecallAppData();
+        bool StoreApplData();
+    protected:
+
+    private:
+        AppNovSettingStruct AppSavedSettings; // holds all application specific settings which should survive a power loss
+        MemMapperMod memMapper_;
+        unsigned char crcSettings;
+        unsigned char crc8();
+
+};
 
 #endif /* APP_NOV_SETTINGS_H_ */

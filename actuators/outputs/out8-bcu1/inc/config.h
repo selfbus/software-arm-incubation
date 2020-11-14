@@ -18,7 +18,7 @@
  *
  * set the resulting build name (*.hex, *.axf) under
  * eclipse menu "Project properties->C/C++ Build->Settings->[TAB]Build Artifact->Artifact name"
- * e.g. ${Proj_name}-${num_outputs}-BCU${bcu_type}-${controller_type}-${relay_type}-${inverted}-${hand_actuation}_${sw_version}
+ * e.g. ${Proj_name}-${num_outputs}-BCU${bcu_type}-${controller_type}-${relay_type}-${inverted}-${hand_actuation}-${bus_fail}_${sw_version}
  *
  *
  * build variables available / default value:
@@ -28,10 +28,12 @@
  * inverted = INVERT
  * num_outputs = OUT8
  * relay_type = BI_STABLE
+ * bus_fail = BUSFAIL
  * sw_version = 0.5
  *
  */
 
+#define NO_OF_HAND_PINS 8
 
 /*
  * general application & relays configuration:
@@ -39,20 +41,24 @@
  *      bi-stable relays
  *      zero-detect
  *      hand actuation
+ *      bus fail detection
  */
 
+// #define IO_TEST
+
+#ifdef NDEBUG
+#   undef IO_TEST // make sure this wont be in a release
+#endif
 
 #ifdef OUT8
 #   define NO_OF_CHANNELS 8
 #else
-#   error "symbol OUT8 not defined!" // TODO maybe where is a use-case sometimes for an OUT4/OUT2/OUT1
+#   error "symbol OUT8 not defined!" // maybe where is a use-case sometimes for an OUT4/OUT2/OUT1
 #   define NO_OF_CHANNELS 8
 #endif
 
 // #define BI_STABLE // replaced by build-variable ${relay_type}
 // #define HAND_ACTUATION // replaced by build-variable ${hand_actuation}
-#define NO_OF_HAND_PINS 8
-
 
 // #define ZERO_DETECT // no more supported? at least it's mentioned in a comment from 2014
                        // https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_16A_4TE
@@ -61,7 +67,7 @@
 #endif
 
 #ifdef INVERT
-#   pragma message("INVERT is not implemented.") // TODO sometimes...
+#   pragma message("INVERT is not implemented.") // sometimes...
 #endif
 
 /*
@@ -141,7 +147,7 @@
 #   endif // BI_STABLE
 
 #else
-#   error "symbol OUT8 not defined!" // TODO maybe where is a use-case sometimes for an OUT4/OUT2/OUT1
+#   error "symbol OUT8 not defined!" // maybe where is a use-case sometimes for an OUT4/OUT2/OUT1
 #endif // OUT8
 /*
  * KNX/ETS-specific defines
@@ -149,5 +155,17 @@
 #define MANUFACTURER 0x04   // We are a "Jung 2138.10" device, version 0.1
 #define DEVICETYPE 0x2060
 #define APPVERSION 1
+
+/* this is used nowhere. Why its here ?
+extern "C" const char APP_VERSION[13] = "O08.10  1.00";
+
+const char * getAppVersion()
+{
+    return APP_VERSION;
+}
+
+// volatile const char * v = getAppVersion();
+*/
+
 
 #endif /* CONFIG_H_ */
