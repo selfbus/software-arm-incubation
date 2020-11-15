@@ -45,7 +45,7 @@
 
 // #define IO_TEST
 
-#define NO_OF_HAND_PINS 8 // TODO get rid of this
+#define NO_OF_HAND_PINS 8 // FIXME get rid of this
 
 // #define BI_STABLE // replaced by build-variable ${relay_type}
 // #define HAND_ACTUATION // replaced by build-variable ${hand_actuation}
@@ -53,8 +53,23 @@
 // #define ZERO_DETECT // no more supported? at least it's mentioned in a comment from 2014
                        // https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_16A_4TE
 
+/*
+ *  bus power-failure configuration
+ */
+#define VBUS_AD_CHANNEL AD7
+#define VBUS_THRESHOLD 1.94 // TODO 1.94V @ ADC-Pin of the LPC11xx, 1.94V is just selected for fast testing, needs further investigation
+                            // depend's on used controller e.g.
+                            // 4TE-ARM the voltage divider is R3/R12 (91K0 & 10K0)
+                            // TS_ARM  the voltage divider is R3/R12 (91K0 & 10K0)
 
-#ifdef NDEBUG
+
+
+
+
+/*
+ * below defines normally shouldn't need any changes
+ */
+#ifndef DEBUG
 #   undef IO_TEST // make sure this wont be in a release
 #endif
 
@@ -73,24 +88,11 @@
 #   pragma message("INVERT is not implemented.") // sometimes...
 #endif
 
-/*
- *  bus power-failure configuration
- */
-#define VBUS_AD_CHANNEL AD7
-#define VBUS_THRESHOLD 1.94 // TODO 1.94V @ ADC-Pin of the LPC11xx, 1.94V is just selected for fast testing, needs further investigation
-                            // depend's on used controller e.g.
-                            // 4TE-ARM the voltage divider is R3/R12 (91K0 & 10K0)
-                            // TS_ARM  the voltage divider is R3/R12 (91K0 & 10K0)
-
-/*
- * below defines normally shouldn't need any changes
- */
 #ifdef BI_STABLE
 #   define NO_OF_OUTPUTS (NO_OF_CHANNELS * 2)
 #else
 #   define NO_OF_OUTPUTS (NO_OF_CHANNELS)
 #endif
-
 
 /*
  *  output pins configuration
@@ -116,9 +118,13 @@
             PIN_IO9,  PIN_IO13  //  9, 10 => K5 reset/set
         };
 
-        // TODO check which bi-stable configuration this should be?
-        // looks like a try to implement INVERT functionality
-#       if INVERT
+        /*
+         * TODO check which bi-stable configuration this should be?
+         * looks like a try to implement INVERT functionality
+         * which isn't really needed, cause invert can be done via userEeprom[APP_CLOSER_MODE] (ETS)
+         * and initialisation of relays void Outputs::begin (unsigned int initial, unsigned int inverted)
+         */
+#       if 0
             const int outputPins[NO_OF_OUTPUTS] =
             {
                 PIN_IO3,  PIN_IO2,  //  1,  2 K1 inverted
@@ -161,7 +167,7 @@
 #define DEVICETYPE 0x2060
 #define APPVERSION 1
 
-/* this is used nowhere. Why its here ?
+/* this is used no where. Why its here ?
 extern "C" const char APP_VERSION[13] = "O08.10  1.00";
 
 const char * getAppVersion()

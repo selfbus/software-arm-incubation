@@ -30,7 +30,6 @@ class NonVolatileSetting
         MemMapperMod memMapper_;
         NonVolatileSetting(){};
         unsigned char crc8(unsigned char *data, unsigned int size);
-
 };
 
 #endif /* APP_NOV_SETTINGS_H_ */
