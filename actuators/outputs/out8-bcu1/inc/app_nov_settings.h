@@ -16,36 +16,20 @@
 #include <sblib/eib.h>
 #include "MemMapperMod.h"
 
-typedef struct
-{
-    union
-    {
-        byte AppValues[4]; // to access settings in a loop // TODO make this dynamic, 4 is just stupid !!
-        struct
-        {
-            unsigned char relaisstate;         // current relais state
-            unsigned char handactuationstate;  // current hand actuation state
-#ifdef DEBUG
-            unsigned char testBusRestartCounter; //TODO rename or remove after testing
-#endif
-        };
-    };
-} AppNovSettingStruct;
 
-class AppNovSetting
+class NonVolatileSetting
 {
     public:
-        AppNovSetting(unsigned int flashBase, unsigned int flashSize, unsigned int AppValueCacheSize);
+        NonVolatileSetting(unsigned int flashBase, unsigned int flashSize, unsigned int AppValueCacheSize);
         MemMapperMod* GetMemMapperMod();
-        bool RecallAppData();
-        bool StoreApplData();
+        bool RecallAppData(unsigned char *appdata, unsigned int size);
+        bool StoreApplData(unsigned char *appdata, unsigned int size);
     protected:
 
     private:
-        AppNovSettingStruct AppSavedSettings; // holds all application specific settings which should survive a power loss
         MemMapperMod memMapper_;
-        unsigned char crcSettings;
-        unsigned char crc8();
+        NonVolatileSetting(){};
+        unsigned char crc8(unsigned char *data, unsigned int size);
 
 };
 

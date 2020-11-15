@@ -10,10 +10,8 @@
 
 #include "app_out8.h"
 #include "com_objs.h"
-
 #include <sblib/eib.h>
 #include <sblib/eib/sblib_default_objects.h>
-
 #include "outputs.h"
 
 #ifdef BUSFAIL
@@ -21,16 +19,29 @@
 #    include "app_nov_settings.h"
 #endif
 
-ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
 
-/*
- * from out-cs-bim112/app_main.cpp
- * Der MemMapper von AppNov bekommt einen 256 Byte Bereich ab 0xEA00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.
- * - für die Systemzustände. Diese werden bei Busspannungsausfall und Neustart abgespeichert.
- */
 #ifdef BUSFAIL
-    AppNovSetting AppNov(0xEA00, 0x100, 3);  // flash-storage for application relevant parameters
+    typedef struct
+    {
+        unsigned char relaisstate;         // current relays state
+        unsigned char handactuationstate;  // current hand actuation state
+#       ifdef DEBUG
+            unsigned char testBusRestartCounter; //TODO rename or remove after testing
+#       endif
+    } ApplicationData;
+
+    /*
+     * from out-cs-bim112/app_main.cpp
+     * Der MemMapper von AppNov bekommt einen 256 Byte Bereich ab 0xEA00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.
+     * - für die Systemzustände. Diese werden bei Busspannungsausfall und Neustart abgespeichert.
+     */
+    NonVolatileSetting AppNovSetting(0xEA00, 0x100, 3);  // flash-storage for application relevant parameters
+    ApplicationData AppData;
 #endif
+
+
+
+ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
 
 /*
  * simple IO test
@@ -84,15 +95,14 @@ void setup()
     bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
 
 #ifdef BUSFAIL
-    if (!AppNov.RecallAppData()) // load custom app settings
+    if (!AppNovSetting.RecallAppData((unsigned char*)&AppData, sizeof(ApplicationData))) // load custom app settings
     {
-#ifdef DEBUG
+#   ifdef DEBUG
         digitalWrite(PIN_INFO, 1);
         delay(1000);
-        digitalWrite(PIN_INFO, 1);
-#endif
+        digitalWrite(PIN_INFO, 0);
+#   endif
     }
-
     // enable bus voltage monitoring on PIO1_11 & AD7 with 1.94V threshold
     vBus.enableBusVRefMonitoring(PIN_VBUS, VBUS_AD_CHANNEL, VBUS_THRESHOLD);
 #endif
@@ -119,7 +129,11 @@ void setup()
 #   endif
 #endif
 
+#ifdef BUSFAIL
+    initApplication(AppData.relaisstate);
+#else
     initApplication();
+#endif
 }
 
 /*
@@ -147,22 +161,30 @@ void loop()
 }
 
 #ifdef BUSFAIL
+
+void ResetDefaultApplicationData()
+{
+    AppData.relaisstate = 0x00;
+    AppData.handactuationstate = 0x00;
+}
 /*
  * will be called by the bus_voltage.h ISR which handles the ADC interrupt for the bus voltage.
  */
 void BusVoltageFail()
 {
 #ifdef HAND_ACTUATION
-    // switch off all Handactuation LEDs to save some power
+    // switch all Handactuation LEDs off, to save some power
     handAct.setallLedState(false);
 #endif
 
 #ifdef DEBUG
-    digitalWrite(PIN_RUN, 0); // switch RUN-LED to save some power
+    AppData.testBusRestartCounter++;
+    digitalWrite(PIN_RUN, 0); // switch RUN-LED off, to save some power
     digitalWrite(PIN_INFO, 1);
 #endif
 
-    AppNov.StoreApplData(); // write application settings to flash
+    AppData.relaisstate = getRelaysState();
+    AppNovSetting.StoreApplData((unsigned char*)&AppData, sizeof(ApplicationData)); // write application settings to flash
 
 #ifdef DEBUG
     digitalWrite(PIN_INFO, 0);
@@ -174,15 +196,23 @@ void BusVoltageFail()
  */
 void BusVoltageReturn()
 {
-    if (!AppNov.RecallAppData()) // load custom app settings
+    if (!AppNovSetting.RecallAppData((unsigned char*)&AppData, sizeof(AppData))) // load custom app settings
     {
+        // load default values
+        ResetDefaultApplicationData();
 #ifdef DEBUG
         digitalWrite(PIN_INFO, 1);
         delay(1000);
         digitalWrite(PIN_INFO, 1);
 #endif
     }
+
+#ifdef BUSFAIL
+    initApplication(AppData.relaisstate);
+#else
     initApplication();
+#endif
+
 #ifdef DEBUG
     digitalWrite(PIN_RUN, 1); // switch RUN-LED ON
 #endif

@@ -33,7 +33,6 @@
  *
  */
 
-#define NO_OF_HAND_PINS 8
 
 /*
  * general application & relays configuration:
@@ -46,6 +45,15 @@
 
 // #define IO_TEST
 
+#define NO_OF_HAND_PINS 8 // TODO get rid of this
+
+// #define BI_STABLE // replaced by build-variable ${relay_type}
+// #define HAND_ACTUATION // replaced by build-variable ${hand_actuation}
+
+// #define ZERO_DETECT // no more supported? at least it's mentioned in a comment from 2014
+                       // https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_16A_4TE
+
+
 #ifdef NDEBUG
 #   undef IO_TEST // make sure this wont be in a release
 #endif
@@ -57,11 +65,6 @@
 #   define NO_OF_CHANNELS 8
 #endif
 
-// #define BI_STABLE // replaced by build-variable ${relay_type}
-// #define HAND_ACTUATION // replaced by build-variable ${hand_actuation}
-
-// #define ZERO_DETECT // no more supported? at least it's mentioned in a comment from 2014
-                       // https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_16A_4TE
 #ifdef ZERO_DETECT
 #   pragma message("ZERO-DETECT is untested.")
 #endif
@@ -149,6 +152,8 @@
 #else
 #   error "symbol OUT8 not defined!" // maybe where is a use-case sometimes for an OUT4/OUT2/OUT1
 #endif // OUT8
+
+
 /*
  * KNX/ETS-specific defines
  */

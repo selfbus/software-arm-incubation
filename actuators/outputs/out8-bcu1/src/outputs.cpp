@@ -13,7 +13,7 @@
 #include <sblib/io_pin_names.h>
 
 #ifndef BI_STABLE
-Outputs relays;
+    Outputs relays;
 #endif
 
 const unsigned int zeroDetectSetDelay = 0x0200; //0x0200 Omron G5Q-1A EU 10A set

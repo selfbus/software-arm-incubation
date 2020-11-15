@@ -12,18 +12,19 @@
 
 #include "app_nov_settings.h"
 
-AppNovSetting::AppNovSetting(unsigned int flashBase, unsigned int flashSize, unsigned int AppValueCacheSize)
+NonVolatileSetting::NonVolatileSetting(unsigned int flashBase, unsigned int flashSize, unsigned int CacheSize)
  : memMapper_(flashBase, flashSize)
 {
-    memMapper_.addRange(0x0, AppValueCacheSize);
+    memMapper_.addRange(0x0, CacheSize);
+
 }
 
-MemMapperMod* AppNovSetting::GetMemMapperMod()
+MemMapperMod* NonVolatileSetting::GetMemMapperMod()
 {
     return &memMapper_;
 }
 
-bool AppNovSetting::RecallAppData()
+bool NonVolatileSetting::RecallAppData(unsigned char *appdata, unsigned int size)
 {
     /* TODO from Slack by Mirko
      * Wenn man sich doppelt soviel Blöcke gönnen kann
@@ -32,62 +33,60 @@ bool AppNovSetting::RecallAppData()
      * Die größte Sequenznummer ist dann die gültige Konfiguration.
      */
 
-    byte* StoragePtr;
+    byte *StoragePtr;
     StoragePtr = memMapper_.memoryPtr(0, false);
-    for (unsigned int i = 0; i < sizeof(AppSavedSettings); i++)
+
+    unsigned char* p_save = appdata; // save address of appdata
+    for (unsigned int i = 0; i < size; i++)
     {
-        AppSavedSettings.AppValues[i] = *StoragePtr++;
+        *appdata++ = *StoragePtr++;
     }
+    appdata = p_save; // restore address of appdata
 
     // restore crc from last byte
-    unsigned char crc = *StoragePtr++;
+    unsigned char crc = *StoragePtr;
 
-    return (crc == crc8());
+    return (crc == crc8(appdata, size));
 }
 
-bool AppNovSetting::StoreApplData()
+bool NonVolatileSetting::StoreApplData(unsigned char *appdata, unsigned int size)
 {
     byte* StoragePtr;
     // Kann der Mapper überhaupt die Seite 0 mappen? Checken!
     memMapper_.writeMem(0, 0); // writeMem() aktiviert die passende Speicherseite, entgegen zu memoryPtr()
     StoragePtr = memMapper_.memoryPtr(0, false);
 
-#ifdef DEBUG
-    AppSavedSettings.testBusRestartCounter++; // TODO remove after testing
-#endif
 
-    // calculate simple crc
-    unsigned char crc = crc8();
-
-    for (unsigned int i = 0; i < sizeof(AppSavedSettings); i++)
+    unsigned char* p_save = appdata; // save address of appdata
+    unsigned char crc = crc8(appdata, size); // calculate simple crc
+    for (unsigned int i = 0; i < size; i++)
     {
-        *StoragePtr++ = AppSavedSettings.AppValues[i];
+        *StoragePtr++ = *appdata++;
     }
+    appdata = p_save; // restore address of appdata
     // save crc as last byte
     *StoragePtr++ = crc;
 
-    memMapper_.doFlash(); // Erase time for one sector is 100 ms ± 5%. Programming time for one block of 256
-                          // bytes is 1 ms ± 5%. see manual page 407
-
-    return true;
+    return (memMapper_.doFlash() > 0); // Erase time for one sector is 100 ms ± 5%. Programming time for one block of 256
+                                       // bytes is 1 ms ± 5%. see manual page 407
 }
 
-unsigned char AppNovSetting::crc8()
+unsigned char NonVolatileSetting::crc8(unsigned char *data, unsigned int size)
 {
-   crcSettings = 0;
+   unsigned char crc = 0;
    unsigned char extract;
    unsigned char sum;
-   for(int i=0; i<sizeof(AppSavedSettings.AppValues); i++)
+   for(int i=0; i<size; i++)
    {
-      extract = AppSavedSettings.AppValues[i];
+      extract = *data++;
       for (char tempI = 8; tempI; tempI--)
       {
-         sum = (crcSettings ^ extract) & 0x01;
-         crcSettings >>= 1;
+         sum = (crc ^ extract) & 0x01;
+         crc >>= 1;
          if (sum)
-             crcSettings ^= 0x8C;
+             crc ^= 0x8C;
          extract >>= 1;
       }
    }
-   return crcSettings;
+   return crc;
 }
