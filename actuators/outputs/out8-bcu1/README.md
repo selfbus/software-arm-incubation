@@ -23,7 +23,7 @@ http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?sear
 |K1     |Reset   |IO2       |8             |PIO0_7   |                                |
 |K1     |Set     |IO3       |9             |PIO2_10  |                                |
 |K2     |Reset   |IO5       |13            |PIO0_2   |                                |
-|K2     |Set     |I2C-SDA   |11            |PIO0_5   |why via R2 (3K3) to VCC 3,3V ?? |
+|K2     |Set     |I2C-SDA   |11            |PIO0_5   |why R2 (3K3) to VCC 3,3V ??     |
 |K3     |Reset   |PWM       |3             |PIO3_2   |                                |
 |K3     |Set     |Prog. LED |4             |PIO0_6   |                                |
 |K4     |Reset   |IO1       |7             |PIO2_2   |                                |
@@ -38,7 +38,7 @@ http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?sear
 |K8     |Reset   |UART-TxD  |17            |PIO3_0   |                                |
 |K8     |Set     |IO11      |22            |PIO1_2   |                                |
 |       |        |          |              |         |                                |
-|       |VDD     |          |6             |         |EIB_DC (via R1 680R to VDD)     |
+|       |VDD     |          |6             |         |EIB_DC (R1 680R to VDD)         |
 
 -------------
 
