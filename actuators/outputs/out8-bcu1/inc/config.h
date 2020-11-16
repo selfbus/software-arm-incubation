@@ -76,16 +76,12 @@
 #ifdef OUT8
 #   define NO_OF_CHANNELS 8
 #else
-#   error "symbol OUT8 not defined!" // maybe where is a use-case sometimes for an OUT4/OUT2/OUT1
+#   error "symbol OUT8 not defined!" // may be where is a use-case sometimes for an OUT4/OUT2/OUT1
 #   define NO_OF_CHANNELS 8
 #endif
 
 #ifdef ZERO_DETECT
 #   pragma message("ZERO-DETECT is untested.")
-#endif
-
-#ifdef INVERT
-#   pragma message("INVERT is not implemented.") // sometimes...
 #endif
 
 #ifdef BI_STABLE

@@ -31,7 +31,7 @@ static Timeout channel_timeout[8];
 
 // internal functions
 static void          _switchObjects(void);
-static void          _sendFeedbackObjects(void);
+static void          _sendFeedbackObjects(bool forceSendFeedback = false);
 static void          _handle_logic_function(int objno, unsigned int value);
 static void          _handle_timed_functions(int objno, unsigned int value);
 
@@ -305,11 +305,11 @@ void checkTimeouts(void)
     if(relays.pendingChanges ())  _switchObjects();
 }
 
-static void _sendFeedbackObjects(void)
+static void _sendFeedbackObjects(bool forcesendFeedbackObjects)
 {
     unsigned int changed = relays.pendingChanges ();
 
-    if(changed)
+    if (changed || forcesendFeedbackObjects)
     {   // at least one output has changed,
         // -> update the corresponding feedback objects
         unsigned int i;
@@ -317,7 +317,7 @@ static void _sendFeedbackObjects(void)
         unsigned int invert = userEeprom[APP_REPORT_BACK_INVERT];
         for (i = 0; i < 8; i++)
         {
-            if(changed & mask)
+            if ((changed & mask) || forcesendFeedbackObjects)
             {   // update feedback object
             	unsigned int value = relays.channel(i);
             	if (invert & mask)
@@ -339,19 +339,17 @@ void initApplication(int lastRelayState)
 {
     unsigned int i;
     unsigned int initialChannelActions;
-    int newRelaystate = 0x00;
+    int newRelaystate;
     Outputs::State initialOutputState[NO_OF_CHANNELS];
 
-    // TODO delay the app start by some random seconds, so not all out8-apps will return the same time the bus returns.
-    // delay((rand() % 5)* 1000);
+    delay(1000); // delay((rand() % 5)* 1000); // FIXME delay the app start by some random seconds, so not all out8-apps will return the same time the bus returns.
 
     // polarity of the lock object // TODO does the lock object work on start-up?
     lockPolarity = userEeprom[APP_SPECIAL_POLARITY];
 
     // read & combine initialChannelAction's low & high byte from userEeprom
-    initialChannelActions = (userEeprom[APP_RESTORE_AFTER_PL_HI] << 8) | userEeprom[APP_RESTORE_AFTER_PL_LO];
-
     // 2 bits for each channel: 0x00=LAST_STATE, 0x01=OPEN, 0x02=CLOSED, e.g. initialChannelAction: 0xAAAA Ch1-8 closed; 0x5555 Ch1-8 open; 0x0000 Ch1-8 last state
+    initialChannelActions = (userEeprom[APP_RESTORE_AFTER_PL_HI] << 8) | userEeprom[APP_RESTORE_AFTER_PL_LO];
 
     for (i=0; i < NO_OF_CHANNELS; i++) {
         unsigned int ChannelAction = (initialChannelActions >> (i * 2)) & 0x03;
@@ -363,7 +361,6 @@ void initApplication(int lastRelayState)
         {
             initialOutputState[i] = Outputs::OPEN;
 #ifdef BUSFAIL
-            // Outputs::LAST_STATE doesn't work right now, it sets relays to open, because last state is nowhere saved right now
             if ((lastRelayState >> i) & 0x01)
             {
                 initialOutputState[i] = Outputs::CLOSED;
@@ -371,23 +368,14 @@ void initApplication(int lastRelayState)
 #endif
         }
         // create the RelaysBeginState according to the requested initial outputs states
+        newRelaystate = 0x00;
         if (initialOutputState[i] == Outputs::CLOSED)
             newRelaystate |= 1 << i;
     }
 
     // initialize the relays
     relays.begin(newRelaystate, userEeprom[APP_CLOSER_MODE]);
-
-    // send channel feedback-objects on the bus and set relays to initial output states
-    for (i=0; i < NO_OF_CHANNELS; i++) {
-        byte state = (newRelaystate >> i) & 0x01;
-        objectWrite(i, state);
-        objectWrite(COMOBJ_FEEDBACK1 + i, state);
-        relays.updateChannel(i, state);
-    }
-
-    // TODO check: maybe setting a forced relays.updateOutputs(bool bForcedUpdate) can eliminate the need of using RelaysBeginState
-    // something like relays.updateOutputs(true); // void Outputs::updateOutputs(bool bForcedUpdate = false)
+    _sendFeedbackObjects(true);
     relays.updateOutputs();
 }
 
