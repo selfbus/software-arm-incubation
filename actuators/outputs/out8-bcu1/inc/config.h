@@ -13,10 +13,10 @@
 #include <sblib/io_pin_names.h>
 
 /*
- * defines moved to
+ * #define symbols "moved" to
  * eclipse menu "Project properties->C/C++ Build->Build Variables"
  *
- * set the resulting build name (*.hex, *.axf) under
+ * set the resulting build name (*.hex, *.axf, *.bin) under
  * eclipse menu "Project properties->C/C++ Build->Settings->[TAB]Build Artifact->Artifact name"
  * e.g. ${Proj_name}-${num_outputs}-BCU${bcu_type}-${controller_type}-${relay_type}-${inverted}-${hand_actuation}-${bus_fail}_${sw_version}
  *
@@ -56,11 +56,13 @@
 /*
  *  bus power-failure configuration
  */
-#define VBUS_AD_CHANNEL AD7
-#define VBUS_THRESHOLD 1.94 // TODO 1.94V @ ADC-Pin of the LPC11xx, 1.94V is just selected for fast testing, needs further investigation
-                            // depend's on used controller e.g.
-                            // 4TE-ARM the voltage divider is R3/R12 (91K0 & 10K0)
-                            // TS_ARM  the voltage divider is R3/R12 (91K0 & 10K0)
+#ifdef BUSFAIL
+#   define VBUS_AD_CHANNEL AD7
+#   define VBUS_THRESHOLD 1.94 // TODO 1.94V @ ADC-Pin of the LPC11xx, 1.94V is just selected for fast testing, needs further investigation
+                               // depend's on used controller e.g.
+                               // 4TE-ARM the voltage divider is R3/R12 (91K0 & 10K0)
+                               // TS_ARM  the voltage divider is R3/R12 (91K0 & 10K0)
+#endif
 
 
 
