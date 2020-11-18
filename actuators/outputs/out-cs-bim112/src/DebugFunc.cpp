@@ -10,6 +10,7 @@
  *  published by the Free Software Foundation.
  */
 
+#include <math.h>
 #include <sblib/platform.h>
 #include <config.h>
 #include <AdcIsr.h>
@@ -17,7 +18,6 @@
 #include <RelSpi.h>
 #include <sblib/serial.h>
 #include <DebugFunc.h>
-#include <math.h>
 
 void SerialPrintSetup(void)
 {
