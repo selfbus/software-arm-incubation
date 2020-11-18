@@ -30,12 +30,7 @@
 #       endif
     } ApplicationData;
 
-    /*
-     * from out-cs-bim112/app_main.cpp
-     * Der MemMapper von AppNov bekommt einen 256 Byte Bereich ab 0xEA00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.
-     * - für die Systemzustände. Diese werden bei Busspannungsausfall und Neustart abgespeichert.
-     */
-    NonVolatileSetting AppNovSetting(0xEA00, 0x100, 3);  // flash-storage for application relevant parameters
+    NonVolatileSetting AppNovSetting(0xEA00, 0x100, sizeof(ApplicationData));  // flash-storage for application relevant parameters
     ApplicationData AppData;
 #endif
 

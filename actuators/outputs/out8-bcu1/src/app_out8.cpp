@@ -351,6 +351,7 @@ void initApplication(int lastRelayState)
     // 2 bits for each channel: 0x00=LAST_STATE, 0x01=OPEN, 0x02=CLOSED, e.g. initialChannelAction: 0xAAAA Ch1-8 closed; 0x5555 Ch1-8 open; 0x0000 Ch1-8 last state
     initialChannelActions = (userEeprom[APP_RESTORE_AFTER_PL_HI] << 8) | userEeprom[APP_RESTORE_AFTER_PL_LO];
 
+    newRelaystate = 0x00;
     for (i=0; i < NO_OF_CHANNELS; i++) {
         unsigned int ChannelAction = (initialChannelActions >> (i * 2)) & 0x03;
         if (ChannelAction == 0x01)
@@ -368,7 +369,6 @@ void initApplication(int lastRelayState)
 #endif
         }
         // create the RelaysBeginState according to the requested initial outputs states
-        newRelaystate = 0x00;
         if (initialOutputState[i] == Outputs::CLOSED)
             newRelaystate |= 1 << i;
     }
