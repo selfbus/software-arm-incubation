@@ -12,6 +12,11 @@
 #include "config.h"
 #include <sblib/timeout.h>
 
+#ifndef NO_OF_HAND_PINS
+#   define NO_OF_HAND_PINS NO_OF_CHANNELS //FIXME modules should work without external symbols/variables
+#   pragma message ( "FIXME NO_OF_HAND_PINS not defined!, defaulting to NO_OF_CHANNELS" )
+#endif
+
 extern const int handPins[NO_OF_HAND_PINS];
 
 class HandActuation
