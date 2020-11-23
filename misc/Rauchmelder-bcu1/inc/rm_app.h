@@ -11,6 +11,7 @@
  *
  *  Modified for LPC1115 ARM processor:
  *  Copyright (c) 2017 Oliver Stefan <o.stefan252@googlemail.com>
+ *  Copyright (c) 2020 Stefan Haller
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -20,6 +21,10 @@
 #ifndef rm_app_h
 #define rm_app_h
 
+#include <sblib/ioports.h>
+
+
+
 // OPTIONS
 // Enable to activate device ID checking
 #define DEVICE_ID_CHECK
@@ -28,6 +33,11 @@
 // Current Firmware Version
 #define FW_VER_MAJ  0x02    // Major
 #define FW_VER_MIN  0x42    // Minor
+
+
+// IO Pin assignments
+#define RM_COMM_ENABLE	PIO3_5
+
 
 /**
  * Den Zustand der Alarme bearbeiten.

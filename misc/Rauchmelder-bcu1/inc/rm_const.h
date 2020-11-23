@@ -4,6 +4,7 @@
  *
  *  Modified for LPC1115 ARM processor:
  *  Copyright (c) 2017 Oliver Stefan <o.stefan252@googlemail.com>
+ *  Copyright (c) 2020 Stefan Haller
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -11,15 +12,6 @@
  */
 #ifndef rm_const_h
 #define rm_const_h
-
-// Damit die Eclipse Code Analyse nicht so viele Warnungen anzeigt:
-#ifndef SDCC
-# define __idata
-# define __code
-#endif
-
-// Ein Byte auf der seriellen Schnittstelle ausgeben
-#define DEBUG_WRITE_BYTE(x) { while (!TI); TI = 0; SBUF = (x); }
 
 
 //-----------------------------------------------------------------------------
