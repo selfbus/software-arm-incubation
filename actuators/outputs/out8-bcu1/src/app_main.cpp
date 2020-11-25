@@ -12,7 +12,12 @@
 #include "com_objs.h"
 #include <sblib/eib.h>
 #include <sblib/eib/sblib_default_objects.h>
-#include "outputs.h"
+
+#ifndef BI_STABLE
+#   include "outputs.h"
+#else
+#   include "outputsBiStable.h"
+#endif
 
 #ifdef BUSFAIL
 #    include "bus_voltage.h"
@@ -43,34 +48,70 @@ ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
  */
 void ioTest()
 {
+
 #ifdef IO_TEST
-     // setup LED's
-     const int togglePausems = 500;
-#    ifdef HAND_ACTUATION
-        for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
+
+#   ifdef BI_STABLE
+        // check, maybe we need to wait 4s, cause PIO_SDA is pulled-up to high on LPC-reset causing the relay coil to drain the bus.
+        for (unsigned int i = 0; i < sizeof(outputPins)/sizeof(outputPins[0]); i++)
+        {
+            if (outputPins[i] == PIO_SDA)
+            {
+                delay(4000);
+                break;
+            }
+        }
+#   endif
+
+    // setup LED's
+    const int togglePausems = 500;
+    const int relaySwitchms = 10;  // see src/outputsBiStable.cpp for more info
+
+#   ifdef HAND_ACTUATION
+        for (unsigned int i = 0; i < sizeof(handPins)/sizeof(handPins[0]); i++)
         {
             digitalWrite(handPins[i], 0);
             pinMode(handPins[i], OUTPUT);
         }
-#    endif /* HAND_ACTUATION */
+#   else
+        const int disablePins[9] = {PIN_LT1, PIN_LT2, PIN_LT3, PIN_LT4, PIN_LT5, PIN_LT6, PIN_LT7, PIN_LT8, PIN_LT9};
+        for (unsigned int i = 0; i < sizeof(disablePins)/sizeof(disablePins[0]); i++)
+        {
+            pinMode(disablePins[i], INPUT);
+        }
+#   endif /* HAND_ACTUATION */
 
-     // toggle every channel/LED with a delay of 500ms
-     for (unsigned int i = 0; i < NO_OF_OUTPUTS; i++)
-     {
-         digitalWrite(outputPins[i], 1);   // relay high
-#ifdef HAND_ACTUATION
-         if (i < NO_OF_CHANNELS)
-             digitalWrite(handPins[i], 1); // LED high
-#endif /* HAND_ACTUATION */
-         delay(togglePausems);
-         digitalWrite(outputPins[i], 0);   // relay low
-#ifdef HAND_ACTUATION
-         if (i < NO_OF_CHANNELS)
-             digitalWrite(handPins[i], 0); // LED low
-#endif /* HAND_ACTUATION */
-         delay(togglePausems);
-     }
-#endif
+    // all relay-pins off
+    for (unsigned int i = 0; i < sizeof(outputPins)/sizeof(outputPins[0]); i++)
+    {
+        digitalWrite(outputPins[i], 0);
+        pinMode(outputPins[i], OUTPUT);
+    }
+
+    // initialize relays for ioTest
+    relays.begin(0x00, 0x00);
+    relays.updateOutputs();
+    delay(relaySwitchms);
+    relays.checkPWM();
+    delay(togglePausems);
+
+    // toggle every channel & hand actuation LED with a little delay
+    for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
+    {
+        relays.updateChannel(i, 1);     // relay high/set
+        relays.updateOutputs();         // also sets hand actuation led
+        delay(relaySwitchms);
+        relays.checkPWM();
+
+        delay(togglePausems);
+
+        relays.updateChannel(i, 0);     // relay low/reset
+        relays.updateOutputs();         // also sets hand actuation led
+        delay(relaySwitchms);
+        relays.checkPWM();
+        delay(togglePausems);
+    }
+#endif /* IO_TEST */
 }
 
 /*
@@ -103,7 +144,7 @@ void setup()
 #endif
 
     // Configure the output pins
-    for (int channel = 0; channel < NO_OF_OUTPUTS; ++channel)
+    for (int channel = 0; channel < sizeof(outputPins)/sizeof(outputPins[0]); channel++)
     {
         pinMode(outputPins[channel], OUTPUT);
         digitalWrite(outputPins[channel], 0);
@@ -155,6 +196,12 @@ void loop()
     }
 }
 
+void loop_noapp()
+{
+
+    waitForInterrupt();
+};
+
 #ifdef BUSFAIL
 
 void ResetDefaultApplicationData()
@@ -179,11 +226,19 @@ void BusVoltageFail()
 #endif
 
     AppData.relaisstate = getRelaysState();
-    AppNovSetting.StoreApplData((unsigned char*)&AppData, sizeof(ApplicationData)); // write application settings to flash
-
+    // write application settings to flash
+    if (AppNovSetting.StoreApplData((unsigned char*)&AppData, sizeof(ApplicationData)))
+    {
 #ifdef DEBUG
-    digitalWrite(PIN_INFO, 0);
+        digitalWrite(PIN_INFO, 0);
 #endif
+    }
+    else
+    {
+#ifdef DEBUG
+        digitalWrite(PIN_INFO, 1);
+#endif
+    }
 }
 
 /*
