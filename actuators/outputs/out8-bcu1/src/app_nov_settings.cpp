@@ -15,7 +15,7 @@
 NonVolatileSetting::NonVolatileSetting(unsigned int flashBase, unsigned int flashSize, unsigned int CacheSize)
  : memMapper_(flashBase, flashSize)
 {
-    memMapper_.addRange(0x0, CacheSize);
+    memMapper_.addRange(0x0, flashSize);
 }
 
 MemMapperMod* NonVolatileSetting::GetMemMapperMod()
@@ -55,6 +55,8 @@ bool NonVolatileSetting::StoreApplData(unsigned char *appdata, unsigned int size
     memMapper_.writeMem(0, 0); // writeMem() aktiviert die passende Speicherseite, entgegen zu memoryPtr()
     StoragePtr = memMapper_.memoryPtr(0, false);
 
+    if (StoragePtr == NULL)
+        return 0;
 
     unsigned char* p_save = appdata; // save address of appdata
     unsigned char crc = crc8(appdata, size); // calculate simple crc
