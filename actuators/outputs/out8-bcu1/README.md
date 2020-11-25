@@ -46,16 +46,29 @@ http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?sear
 ### used IO Ports (verwendete IO Ports):
 |Relais#|Function|Selfbus IO|Selfbus 26-pol|ARM Port |Description (Beschreibung)      |
 |:-----:|:------:|:--------:|:------------:|---------|--------------------------------|
-|REL1   |        |IO1       |7             |PIO2_2   |                                |
-|       |        |IO2       |8             |PIO0_7   |                                |
-|       |        |IO3       |9             |PIO2_10  |                                |
-|       |        |IO4       |10            |PIO2_9   |                                |
-|       |        |IO5       |13            |PIO0_2   |                                |
-|       |        |IO6       |14            |PIO0_8   |                                |
-|       |        |IO7       |15            |PIO0_9   |                                |
-|       |        |IO8       |16            |PIO2_11  |                                |
-|       |        |          |              |         |                                |
+|REL 1  |        |IO1       |7             |PIO2_2   |                                |
+|REL 2  |        |IO2       |8             |PIO0_7   |                                |
+|REL 3  |        |IO3       |9             |PIO2_10  |                                |
+|REL 4  |        |IO4       |10            |PIO2_9   |                                |
+|REL 5  |        |IO5       |13            |PIO0_2   |                                |
+|REL 6  |        |IO6       |14            |PIO0_8   |                                |
+|REL 7  |        |IO7       |15            |PIO0_9   |                                |
+|REL 8  |        |IO8       |16            |PIO2_11  |                                |
 |       |        |          |              |         |                                |
 |       |        |          |3             |         |PWM                             |
 
-See inc/config.h for addtional information.
+## optional hand actuation LedTaster_4TE ([PCB](https://github.com/selfbus/hardware/tree/master/Controller/lpc922_4te), [Wiki](https://selfbus.myxwiki.org/xwiki/bin/view/Technik/LedTasterBoard_4TE))
+### used IO Ports (verwendete IO Ports):
+|Function     |Selfbus IO|Selfbus LT|ARM Port |Description (Beschreibung)      |
+|:-----------:|:--------:|:--------:|---------|--------------------------------|
+|LED 1 / Btn 1|PIN_LT1   |1         |PIO2_1   |                                |
+|LED 2 / Btn 2|PIN_LT2   |2         |PIO0_3   |                                |
+|LED 3 / Btn 3|PIN_LT3   |3         |PIO2_4   |                                |
+|LED 4 / Btn 4|PIN_LT4   |4         |PIO2_5   |                                |
+|LED 5 / Btn 5|PIN_LT5   |5         |PIO3_5   |                                |
+|LED 6 / Btn 6|PIN_LT6   |6         |PIO3_4   |                                |
+|LED 7 / Btn 7|PIN_LT7   |7         |PIO1_10  |                                |
+|LED 8 / Btn 8|PIN_LT8   |8         |PIO0_11  |                                |
+|Readback     |PIN_LT9   |9         |PIO2_3   |                                |
+
+See inc/config.h for additional information.
