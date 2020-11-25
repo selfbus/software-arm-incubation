@@ -18,27 +18,27 @@ http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?sear
 
 ## 4TE-ARM Controller ([PCB](https://github.com/selfbus/hardware-incubation/tree/master/Controller/lpc1115_4te), [Wiki](https://selfbus.myxwiki.org/xwiki/bin/view/Technik/Controller_1115_4TE)) + out8_16A (bi-stable relays, bi-stabile relais) ([PCB](https://github.com/selfbus/hardware/tree/master/Apps/out8_16A_1.0), [Wiki](https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/8fach%20Bin%C3%A4rausgang%20230V%2016A%20f%C3%BCr%20LPC1115%20Controller/))
 ### used IO Ports (verwendete IO Ports):
-|Relais#|Function|Selfbus IO|Selfbus 26-pol|ARM Port |Description (Beschreibung)      |
-|:-----:|:------:|:--------:|:------------:|---------|--------------------------------|
-|K1     |Reset   |IO2       |8             |PIO0_7   |                                |
-|K1     |Set     |IO3       |9             |PIO2_10  |                                |
-|K2     |Reset   |IO5       |13            |PIO0_2   |                                |
-|K2     |Set     |I2C-SDA   |11            |PIO0_5   |why R2 (3K3) to VCC 3,3V ??     |
-|K3     |Reset   |PWM       |3             |PIO3_2   |                                |
-|K3     |Set     |Prog. LED |4             |PIO0_6   |                                |
-|K4     |Reset   |IO1       |7             |PIO2_2   |                                |
-|K4     |Set     |IO4       |10            |PIO2_9   |                                |
-|       |        |          |              |         |                                |
-|K5     |Reset   |IO9       |19            |PIO1_0   |                                |
-|K5     |Set     |IO13      |24            |PIO1_5   |                                |
-|K6     |Reset   |IO14      |25            |PIO1_7   |                                |
-|K6     |Set     |IO15      |26            |PIO1_6   |                                |
-|K7     |Reset   |IO10      |20            |PIO1_1   |                                |
-|K7     |Set     |UART-RxD  |18            |PIO3_1   |                                |
-|K8     |Reset   |UART-TxD  |17            |PIO3_0   |                                |
-|K8     |Set     |IO11      |22            |PIO1_2   |                                |
-|       |        |          |              |         |                                |
-|       |VDD     |          |6             |         |EIB_DC (R1 680R to VDD)         |
+|Relais#|Function|Selfbus IO|Selfbus 26-pol|ARM Port |Description (Beschreibung)               |
+|:-----:|:------:|:--------:|:------------:|---------|-----------------------------------------|
+|K1     |Reset   |IO2       |8             |PIO0_7   |                                         |
+|K1     |Set     |IO3       |9             |PIO2_10  |                                         |
+|K2     |Reset   |IO5       |13            |PIO0_2   |                                         |
+|K2     |Set     |I2C-SDA   |11            |PIO0_5   |PIO0_5=open-drain pin: R2 (3K3)-VCC 3,3V |
+|K3     |Reset   |PWM       |3             |PIO3_2   |                                         |
+|K3     |Set     |Prog. LED |4             |PIO0_6   |                                         |
+|K4     |Reset   |IO1       |7             |PIO2_2   |                                         |
+|K4     |Set     |IO4       |10            |PIO2_9   |                                         |
+|       |        |          |              |         |                                         |
+|K5     |Reset   |IO9       |19            |PIO1_0   |                                         |
+|K5     |Set     |IO13      |24            |PIO1_5   |                                         |
+|K6     |Reset   |IO14      |25            |PIO1_7   |                                         |
+|K6     |Set     |IO15      |26            |PIO1_6   |                                         |
+|K7     |Reset   |IO10      |20            |PIO1_1   |                                         |
+|K7     |Set     |UART-RxD  |18            |PIO3_1   |                                         |
+|K8     |Reset   |UART-TxD  |17            |PIO3_0   |                                         |
+|K8     |Set     |IO11      |22            |PIO1_2   |                                         |
+|       |        |          |              |         |                                         |
+|       |VDD     |          |6             |         |EIB_DC (R1 680R to VDD)                  |
 
 -------------
 
@@ -58,4 +58,4 @@ http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?sear
 |       |        |          |              |         |                                |
 |       |        |          |3             |         |PWM                             |
 
-See config.h for addtional information.
+See inc/config.h for addtional information.
