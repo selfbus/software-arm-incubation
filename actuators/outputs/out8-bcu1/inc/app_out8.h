@@ -19,8 +19,8 @@
 #define APP_PIN_STATE_MEMORY         (0x100)
 #define APP_SPECIAL_FUNC_OBJ_1_2     (0x1D8)
 #define APP_SPECIAL_FUNC_OBJ_3_4     (0x1D9)
-#define APP_DELAY_FACTOR_ON          (0x1DA)
-#define APP_DELAY_FACTOR_OFF         (0x1E2)
+#define APP_DELAY_FACTOR_ON          (0x1DA) // Einschaltverzoegerung Faktor (0...127)
+#define APP_DELAY_FACTOR_OFF         (0x1E2) // Ausschaltverzoegerung Faktor (0...127)
 //< 0x00=no timer active, 0x01=timer on object 1 active, 0x03=timer on object 1+2 active
 #define APP_DELAY_ACTIVE             (0x1EA)
 #define APP_DELAY_ACTION             (0x1EB)
@@ -38,7 +38,7 @@
 // 0x01F6-0x01F7 output reaction after bus power restore
 #define APP_RESTORE_AFTER_PL_LO      (0x1F6)
 #define APP_RESTORE_AFTER_PL_HI      (0x1F7)
-#define APP_DELAY_BASE               (0x1F9)
+#define APP_DELAY_BASE               (0x1F9) // Einschalt/Ausschaltverzoegerung Basis
 
 extern const int outputPins[NO_OF_OUTPUTS];
 void objectUpdated(int objno);
