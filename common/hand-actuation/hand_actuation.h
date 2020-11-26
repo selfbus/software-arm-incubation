@@ -35,6 +35,7 @@ protected:
     static const unsigned int DELAY_BETWEEN_BUTTONS = 10;
     static Timeout blinkTimer;
     static bool blinkOnOffState;
+    unsigned int GetHandPinCount();
 
     unsigned int  number;
     unsigned char mask;

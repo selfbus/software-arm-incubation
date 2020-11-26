@@ -30,11 +30,14 @@ HandActuation::HandActuation()
    , _ledState(0)
    , _blinkState(0)
 {
-    for (unsigned int i = 0; i < NO_OF_HAND_PINS; i++)
+    for (unsigned int i = 0; i < GetHandPinCount(); i++)
     {
         pinMode(handPins[i], OUTPUT);
         digitalWrite(handPins[i], false);
     }
+
+    pinMode(HAND_READBACK, PULL_UP);
+
     blinkTimer.start(BLINK_TIME);
 }
 
@@ -43,17 +46,33 @@ int HandActuation::check(void)
     int result = NO_ACTUATION;
     if (_handDelay.expired() || _handDelay.stopped())
     {   // check one input at a time
-#ifdef HAND_DEBUG
-        unsigned int stateOne = 0;
-        unsigned int stateTwo = (_inputState & mask) ? 1 : 0;
-#else
-        unsigned int stateOne = digitalRead(HAND_READBACK);
-        digitalWrite(handPins[number], !digitalRead(handPins[number]));
-        delayMicroseconds(10);
-        unsigned int stateTwo = digitalRead(HAND_READBACK);
-        digitalWrite(handPins[number], !digitalRead(handPins[number]));
-#endif
-        if (stateOne != stateTwo)
+        bool buttonundertestingispressed = false;
+
+        // save led state and turn off the LED for the button we are testing
+        bool lastLEDState = _ledState & (1 << number);
+        if (lastLEDState)
+            digitalWrite(handPins[number], false);
+
+        bool atleastonebuttonpressed = !digitalRead(HAND_READBACK); // read while the LED is off, low=>at least one button is pressed, high=>no button is pressed
+
+        if (atleastonebuttonpressed) // at least one button is pressed, check if its the one we are testing right now (number)
+        {
+            // turn on all LED's, except the one for the button under testing (number)
+            for (unsigned int i = 0; i < GetHandPinCount(); i++)
+                if (i != number) digitalWrite(handPins[i], true);
+
+            buttonundertestingispressed = !digitalRead(HAND_READBACK); // read while all LED's are on, except the one for our button we check right now, low=>button to check is pressed
+
+            // restore LED states
+            for (unsigned int i = 0, bitMask = 0x01; i < GetHandPinCount(); i++, bitMask = bitMask << 1)
+                digitalWrite(handPins[i], _ledState & bitMask);
+        }
+
+        // restore LEDs status for the button under testing
+        if (lastLEDState)
+            digitalWrite(handPins[number], lastLEDState);
+
+        if (buttonundertestingispressed)
         {   // this button is currently pressed
             result = number;
             if (! (_buttonState & mask))
@@ -68,18 +87,20 @@ int HandActuation::check(void)
         }
         number++;
         mask <<= 1;
-        if (number == NO_OF_HAND_PINS)
+        if (number == GetHandPinCount())
         {
             number = 0;
             mask  = 0x1;
         }
         _handDelay.start(DELAY_BETWEEN_BUTTONS);
-    }
+    } // if (_handDelay.expired()
+
+
     if (blinkTimer.expired())
     {
-        unsigned int bitMask = 0x01;
+        unsigned int bitMask = 0x01; // FIXME this should never have worked, bitMask is no where shifted
         blinkTimer.start(BLINK_TIME);
-        for (unsigned int i = 0; i < NO_OF_HAND_PINS; i++)
+        for (unsigned int i = 0; i < GetHandPinCount(); i++)
         {
             if (_blinkState & bitMask)
                 digitalWrite(handPins[i], blinkOnOffState);
@@ -89,8 +110,19 @@ int HandActuation::check(void)
     return result;
 }
 
+ALWAYS_INLINE unsigned int HandActuation::GetHandPinCount()
+{
+    if (sizeof(handPins) > 0)
+        return (sizeof(handPins)/sizeof(handPins[0]));
+    else
+        return -1;
+}
+
 void HandActuation::setLedState(unsigned int led, bool state, bool blink)
 {
+    if (led >= GetHandPinCount())
+        return;
+
     unsigned int mask = 1 << led;
     digitalWrite(handPins[led], state);
     if (state)
@@ -108,7 +140,7 @@ void HandActuation::setLedState(unsigned int led, bool state, bool blink)
 
 void HandActuation::setallLedState(bool state)
 {
-    for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
+    for (unsigned int i = 0; i < GetHandPinCount(); i++)
     {
         setLedState(i, state, false);
     }
