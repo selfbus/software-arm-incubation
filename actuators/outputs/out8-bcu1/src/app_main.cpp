@@ -64,7 +64,7 @@ void ioTest()
 #   endif
 
     // setup LED's
-    const int togglePausems = 500;
+    const int togglePausems = 250;
     const int relaySwitchms = 10;  // see src/outputsBiStable.cpp for more info
 
 #   ifdef HAND_ACTUATION
