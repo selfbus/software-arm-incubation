@@ -30,6 +30,7 @@ struct ObjectValues
 
 // Com-object for special function 1. The com-objects 9-11 are for special function 2-4
 #define COMOBJ_SPECIAL1        8
+#define COMOBJ_SPECIAL4       11
 
 // Feeback com-object for ouput 1. The com-objects 13-19 are for feedback for output 2-8
 #define COMOBJ_FEEDBACK1      12
