@@ -198,7 +198,6 @@ void loop()
 
 void loop_noapp()
 {
-
     waitForInterrupt();
 };
 
@@ -214,31 +213,31 @@ void ResetDefaultApplicationData()
  */
 void BusVoltageFail()
 {
+    //switch off all possible active relay coils, to save some power
+    for (int i = 0; i < sizeof(outputPins)/sizeof(outputPins[0]); i++)
+    {
+        digitalWrite(outputPins[0], 0);
+    }
+
 #ifdef HAND_ACTUATION
-    // switch all Handactuation LEDs off, to save some power
+    // switch all hand actuation LEDs off, to save some power
     handAct.setallLedState(false);
 #endif
 
 #ifdef DEBUG
     AppData.testBusRestartCounter++;
     digitalWrite(PIN_RUN, 0); // switch RUN-LED off, to save some power
-    digitalWrite(PIN_INFO, 1);
 #endif
+
+    pinMode(PIN_INFO, OUTPUT); // even in non DEBUG flash Info LED to display app adata storing
+    digitalWrite(PIN_INFO, 1);
 
     AppData.relaisstate = getRelaysState();
     // write application settings to flash
     if (AppNovSetting.StoreApplData((unsigned char*)&AppData, sizeof(ApplicationData)))
-    {
-#ifdef DEBUG
         digitalWrite(PIN_INFO, 0);
-#endif
-    }
     else
-    {
-#ifdef DEBUG
         digitalWrite(PIN_INFO, 1);
-#endif
-    }
 }
 
 /*
@@ -246,6 +245,7 @@ void BusVoltageFail()
  */
 void BusVoltageReturn()
 {
+    //restore app settings
     if (!AppNovSetting.RecallAppData((unsigned char*)&AppData, sizeof(AppData))) // load custom app settings
     {
         // load default values
