@@ -14,6 +14,7 @@
 #define rm_const_h
 
 
+
 //-----------------------------------------------------------------------------
 // Kommunikations Objekte
 //-----------------------------------------------------------------------------
@@ -37,8 +38,6 @@
 
 // Status Testalarm
 #define OBJ_STAT_TALARM			5
-
-
 
 // Rauchmelder Seriennummer
 #define OBJ_SERIAL				6
@@ -98,6 +97,8 @@
 // Höchstes Com-Objekt das bei Info-Senden gesendet wird.
 #define OBJ_HIGH_INFO_SEND      21
 
+// Maximale Anzahl von ComObjekten pro Rauchmelder-Befehl
+#define MAX_OBJ_CMD  4
 
 //-----------------------------------------------------------------------------
 // Rauchmelder Fehlercodes

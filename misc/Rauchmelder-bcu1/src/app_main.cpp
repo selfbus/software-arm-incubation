@@ -41,9 +41,8 @@ volatile const char * __attribute__((optimize("O0"))) getAppVersion()
  */
 void setup()
 {
-	volatile const char * v = getAppVersion();		// Ensure APP ID is not removed by linker
-	bcu.begin(0x004C, 0x03F2, 0x24); 		//Herstellercode 0x004C = Robert Bosch, Devicetype 1010 (0x03F2), Version 2.4
-
+    volatile const char * v = getAppVersion();		// Ensure APP ID is not removed by linker
+    bcu.begin(0x004C, 0x03F2, 0x24); 		//Herstellercode 0x004C = Robert Bosch, Devicetype 1010 (0x03F2), Version 2.4
 
     //pinMode(PIO_LED, OUTPUT);
     //digitalWrite(PIO_LED, 1);
@@ -52,7 +51,7 @@ void setup()
     //Timeout delay;
     //delay.start(userEeprom.addrTab[0]*20); //aus LPC922 Rauchmelder übernommen
 
-	pinMode(RM_ACTIVITY_PIN, INPUT);		// Status RM Bodenplatte, TODO check if pullup or down here as well
+	pinMode(RM_ACTIVITY_PIN, INPUT);		// Status RM Bodenplatte, no pullup or pulldown configured at this pin to not affect the Rauchmelder
 
     initApplication();
 }
