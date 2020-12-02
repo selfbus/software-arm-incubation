@@ -253,7 +253,7 @@ void BusVoltageReturn()
 #ifdef DEBUG
         digitalWrite(PIN_INFO, 1);
         delay(1000);
-        digitalWrite(PIN_INFO, 1);
+        digitalWrite(PIN_INFO, 0);
 #endif
     }
 
