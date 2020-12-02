@@ -58,7 +58,7 @@
  */
 #ifdef BUSFAIL
 #   define VBUS_AD_CHANNEL AD7
-#   define VBUS_THRESHOLD 1.94 // TODO 1.94V @ ADC-Pin of the LPC11xx, 1.94V is just selected for fast testing, needs further investigation
+#   define VBUS_THRESHOLD 1.94 // FIXME 1.94V @ ADC-Pin of the LPC11xx, 1.94V is just selected for fast testing, needs further investigation
                                // depend's on used controller e.g.
                                // 4TE-ARM the voltage divider is R3/R12 (91K0 & 10K0)
                                // TS_ARM  the voltage divider is R3/R12 (91K0 & 10K0)
