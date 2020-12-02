@@ -77,7 +77,7 @@ unsigned char NonVolatileSetting::crc8(unsigned char *data, unsigned int size)
    unsigned char crc = 0;
    unsigned char extract;
    unsigned char sum;
-   for(int i=0; i<size; i++)
+   for(unsigned int i=0; i<size; i++)
    {
       extract = *data++;
       for (char tempI = 8; tempI; tempI--)

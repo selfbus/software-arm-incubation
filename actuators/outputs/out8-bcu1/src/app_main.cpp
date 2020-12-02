@@ -144,7 +144,7 @@ void setup()
 #endif
 
     // Configure the output pins
-    for (int channel = 0; channel < sizeof(outputPins)/sizeof(outputPins[0]); channel++)
+    for (unsigned int channel = 0; channel < sizeof(outputPins)/sizeof(outputPins[0]); channel++)
     {
         pinMode(outputPins[channel], OUTPUT);
         digitalWrite(outputPins[channel], 0);
@@ -214,7 +214,7 @@ void ResetDefaultApplicationData()
 void BusVoltageFail()
 {
     //switch off all possible active relay coils, to save some power
-    for (int i = 0; i < sizeof(outputPins)/sizeof(outputPins[0]); i++)
+    for (unsigned int i = 0; i < sizeof(outputPins)/sizeof(outputPins[0]); i++)
     {
         digitalWrite(outputPins[0], 0);
     }

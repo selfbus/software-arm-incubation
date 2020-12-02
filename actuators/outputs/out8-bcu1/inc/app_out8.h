@@ -44,7 +44,7 @@ extern const int outputPins[NO_OF_OUTPUTS];
 void objectUpdated(int objno);
 void checkTimeouts(void);
 void initApplication(int lastRelayState = 0x00);
-int  getRelaysState();
+unsigned int  getRelaysState();
 /**
  * The values of the communication objects
  */
