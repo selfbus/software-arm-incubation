@@ -25,14 +25,28 @@
 #include <sblib/eib/com_objects.h>
 #include <sblib/eib/user_memory.h>
 
+
+typedef struct ChannelTimeOutTimer {
+    Timeout On;
+    Timeout Off;
+} ChannelTimeOutTimer;
+
+enum specialFunctionType {sftUnknown = -1, sftLogic = 0, sftBlocking = 1, sftConstrainedLead = 2}; // Verknuepfungsobjekt, Sperrobjekt, Zwangsstellungsobjekt
+enum logicType {ltUnknown = -1, ltOR = 1, ltAND = 2, ltAND_RECIRC = 3};
+enum blockType {blUnknown = -1, blNoAction = 0, blDisable = 1, blEnable = 2};
+
+enum timedFunctionState {tfsUnknown = 0x80, tfsDisabled = 0, tfsOnDelayed = 1, tfsOffDelayed = 2};
+
+
 // state of the application
-static Timeout channel_timeout[NO_OF_CHANNELS];
+static ChannelTimeOutTimer channel_timeout[NO_OF_CHANNELS];
 
 // internal functions
 static void          _switchObjects(void);
 static void          _sendFeedbackObjects(bool forceSendFeedback = false);
-static void          _handle_logic_function(int objno, unsigned int value);
-static void          _handle_timed_functions(const int objno, const unsigned int value, const unsigned int ignoreoutputstate = 0);
+static void          _handle_logic_function(int objno, unsigned int value, const int objno2);
+static unsigned int  _handle_timed_functions(const int objno, const unsigned int value);
+static unsigned int  _init_timed_functions(const int objno, const unsigned int value);
 
 
 #define MSBASE 130
@@ -55,17 +69,27 @@ static const unsigned int  _delayBases[] =
 , 32768 * MS2TICKS(MSBASE)
 };
 
-enum specialFunctionType {sftUnknown = -1, sftLogic = 0, sftBlocking = 1, sftConstrainedLead = 2}; // Verknuepfungsobjekt, Sperrobjekt, Zwangsstellungsobjekt
-enum logicType {ltUnknown = -1, ltOR = 1, ltAND = 2, ltAND_RECIRC = 3};
-enum blockType {blUnknown = -1, blNoAction = 0, blDisable = 1, blEnable = 2};
 
-static void _handle_logic_function(int objno, unsigned int value)
+
+typedef struct TimerConfig {
+    unsigned int timerMode;
+    unsigned int timerDelayAction;
+    unsigned int timerOnFactor;
+    unsigned int timerOffFactor;
+    unsigned int delayMs;
+} TimerConfig;
+
+static void _handle_logic_function(int objno, unsigned int value, const int objno2)
 {
+    return; //FIXME logic is disabled
+
+
     unsigned int lockPolarity = userEeprom[APP_SPECIAL_POLARITY]; // polarity of the lock object
     unsigned int specialFunc;           // special function number (0: no special function)
     specialFunctionType specialFuncTyp; // special function type
     logicType logicFuncTyp;             // type of logic function ( 1: or, 2: and)
-    bool startBlocking;
+    bool startBlocking;                 // true if a blocking is started
+    bool clearedBlocking;               // true if a blocking was cleared
     blockType blockTyp;
     unsigned int logicState;            // state of logic function
              int specialFuncOutput;     // output the special function is belonging to
@@ -137,6 +161,7 @@ static void _handle_logic_function(int objno, unsigned int value)
 
         case sftBlocking: // blocking function
             startBlocking = (objectRead(COMOBJ_SPECIAL1 + specialFunc) ^ (lockPolarity >> objno)) & 0x01;
+            clearedBlocking = false;
             if (startBlocking)
             {
                 // action at start of blocking
@@ -148,10 +173,14 @@ static void _handle_logic_function(int objno, unsigned int value)
                 blockTyp = blockType ((userEeprom[APP_SPECIAL_FUNCTION1 + (specialFunc>>1)])>>((specialFunc&1)*4+2)&0x03);
                 // end blocking, we have to unblock relays
                 if (relays.blocked(objno))
+                {
                     relays.clearBlocked(objno);
+                    clearedBlocking = true;
+                }
             }
 
-            if (!relays.blocked (objno))
+            // change output only on start or end of blocking
+            if (startBlocking || clearedBlocking)
             {
                 switch (blockTyp)
                 {
@@ -168,7 +197,7 @@ static void _handle_logic_function(int objno, unsigned int value)
                 }
             }
 
-            //finally set relays blocked in case of blocking start
+            // finally set relays blocked in case of blocking start
             if (startBlocking)
                 relays.setBlocked(objno);
             break; // case sftBlocking
@@ -182,7 +211,7 @@ static void _handle_logic_function(int objno, unsigned int value)
                 relays.updateChannel(objno, value & 0b01);
             }
             else if (specialObjStates [specialFunc] & 0b10)
-            {   // the contrained lead was just deactivated
+            {   // the constrained lead was just deactivated
                 // restore the output based on the object state
                 relays.updateChannel(objno, objectRead (objno));
             }
@@ -194,58 +223,137 @@ static void _handle_logic_function(int objno, unsigned int value)
     } // for
 }
 
-static void _handle_timed_functions(const int objno, const unsigned int value, const unsigned int ignoreoutputstate)
+static TimerConfig getTimerCfg(const int objno)
 {
-    // check that objno is in a valid range
-    if ((objno < COMOBJ_INPUT1) || (objno >= (COMOBJ_INPUT1+NO_OF_CHANNELS)))
-        return;
+    TimerConfig timercfg;
 
-    unsigned int mask           = 1 << objno;
-    // Set some variables to make next commands better readable
-    unsigned int timerCfg       = userEeprom[APP_DELAY_ACTIVE] & mask;
-    unsigned int timerOffFactor = userEeprom[APP_DELAY_FACTOR_OFF + objno];
-    unsigned int timerOnFactor  = userEeprom[APP_DELAY_FACTOR_ON  + objno];
-    unsigned int outputState    = relays.channel(objno);
-    // Get configured delay base
-    unsigned int delayBaseIdx   = userEeprom[APP_DELAY_BASE + ((objno + 1) >> 1)];
-    unsigned int delayBase;
-
-    // ignoreoutputstate will only be set for initialization/start-up
-    if (ignoreoutputstate)
-        outputState = !value;
+    unsigned int mask         = 1 << objno;
+    unsigned int delayBaseIdx = userEeprom[APP_DELAY_BASE + ((objno + 1) >> 1)];
+    timercfg.timerMode        = userEeprom[APP_DELAY_ACTIVE] & mask;
+    timercfg.timerDelayAction = userEeprom[APP_DELAY_ACTION] & mask;
+    timercfg.timerOffFactor   = userEeprom[APP_DELAY_FACTOR_OFF + objno];
+    timercfg.timerOnFactor    = userEeprom[APP_DELAY_FACTOR_ON  + objno];
 
     if ((objno & 0x01) == 0x00)
-        delayBaseIdx >>= 4;
+        delayBaseIdx >>= 4; // why this shift for channel 2? but it seems to work...
     delayBaseIdx      &= 0x0F;
-    delayBase          = _delayBases[delayBaseIdx];
+    timercfg.delayMs = _delayBases[delayBaseIdx];
 
-    if (!timerCfg) // this is the on/off delay mode
-    {   // Check if a delay is configured for falling edge
-        if (outputState && !value && timerOffFactor)
+    return timercfg;
+}
+
+static unsigned int _init_timed_functions(const int objno, const unsigned int value)
+{
+    unsigned int state = tfsUnknown;
+
+    // check that objno is in a valid range
+    if ((objno < COMOBJ_INPUT1) || (objno >= (sizeof(channel_timeout)/sizeof(channel_timeout[0]))))
+        return tfsUnknown; //FIXME return a error#
+
+    TimerConfig timercfg = getTimerCfg(objno);
+
+    // channel with no on/off delay or timed function mode
+    if (!timercfg.timerOffFactor && !timercfg.timerOnFactor)
+    {
+        channel_timeout[objno].On.stop();
+        channel_timeout[objno].Off.stop();
+        return tfsDisabled;
+    }
+
+    state = tfsDisabled;
+    if (!timercfg.timerMode)
+    {   // this is the on/off delay mode
+        if (!value && timercfg.timerOffFactor ) // channel with off delay
         {
-            channel_timeout[objno].start(delayBase * timerOffFactor);
+            channel_timeout[objno].On.stop();
+            channel_timeout[objno].Off.start(timercfg.delayMs * timercfg.timerOffFactor);
+            state |= tfsOffDelayed;
         }
-        // Check if a delay is configured for raising edge
-        else if (!outputState && value && timerOnFactor)
+
+        else if (value && timercfg.timerOnFactor) // channel with on delay
         {
-            channel_timeout[objno].start(delayBase * timerOnFactor);
+            channel_timeout[objno].Off.stop();
+            channel_timeout[objno].On.start(timercfg.delayMs * timercfg.timerOnFactor);
+            state |= tfsOnDelayed;
         }
-        // for initialization of channels without a on and/or off delay
-        else if (!timerOffFactor && !timerOnFactor && ignoreoutputstate)
+        else
         {
-            channel_timeout[objno].start(1);
+            channel_timeout[objno].On.stop();
+            channel_timeout[objno].Off.stop();
+            state = tfsDisabled;
         }
     }
-    else // this is the timed function mode
+    else
+    {   // this is the timed function mode (stair way mode)
+        if (value)
+        {
+            if (timercfg.timerOffFactor ) // channel with off delay
+            {
+                channel_timeout[objno].Off.start(timercfg.delayMs * timercfg.timerOffFactor);
+                state |= tfsOffDelayed;
+            }
+
+            if (timercfg.timerOnFactor) // channel with on delay
+            {
+                channel_timeout[objno].On.start(timercfg.delayMs * timercfg.timerOnFactor);
+                state |= tfsOnDelayed;
+            }
+        }
+    }
+    return state;
+}
+
+static unsigned int _handle_timed_functions(const int objno, const unsigned int value)
+{
+    // check that objno is in a valid range
+    if ((objno < COMOBJ_INPUT1) || (objno >= (sizeof(channel_timeout)/sizeof(channel_timeout[0]))))
+        return tfsUnknown;
+
+    unsigned int outputState    = relays.channel(objno);
+    TimerConfig timercfg = getTimerCfg(objno);
+
+    // channel with no on/off delay or timed function mode
+    if (!timercfg.timerOffFactor && !timercfg.timerOnFactor)
     {
-        if (!timerOnFactor) // no delay for  on -> switch on the output
+        channel_timeout[objno].On.stop();
+        channel_timeout[objno].Off.stop();
+        return tfsDisabled;
+    }
+
+    unsigned int state = tfsDisabled;
+
+    if (!timercfg.timerMode)
+    {   // this is the on/off delay mode
+        if (!value && timercfg.timerOffFactor) // Check if a delay is configured for falling edge
+        {
+            channel_timeout[objno].On.stop();
+            channel_timeout[objno].Off.start(timercfg.delayMs * timercfg.timerOffFactor);
+            state |= tfsOffDelayed;
+        }
+        else if (value && timercfg.timerOnFactor) // Check if a delay is configured for raising edge
+        {
+            channel_timeout[objno].Off.stop();
+            channel_timeout[objno].On.start(timercfg.delayMs * timercfg.timerOnFactor);
+            state |= tfsOnDelayed;
+        }
+        else
+        {
+            channel_timeout[objno].On.stop();
+            channel_timeout[objno].Off.stop();
+            state = tfsDisabled;
+        }
+    }
+    else // this is the timed function mode (stair way mode)
+    {
+        if (!timercfg.timerOnFactor) // no delay for  on -> switch on the output
         {
             // Check for a timer function without delay factor for raising edge
             if ( !outputState && value)
             {
                 relays.setChannel(objno);
                 objectWrite(objno, (unsigned int) 1);
-                channel_timeout[objno].start (delayBase * timerOffFactor);
+                channel_timeout[objno].Off.start (timercfg.delayMs * timercfg.timerOffFactor);
+                state |= tfsOffDelayed;
             }
         }
         else
@@ -253,25 +361,30 @@ static void _handle_timed_functions(const int objno, const unsigned int value, c
             // Check for a timer function with delay factor for on
             if ( !outputState && value)
             {
-                channel_timeout[objno].start (delayBase * timerOnFactor);
+                channel_timeout[objno].On.start (timercfg.delayMs * timercfg.timerOnFactor);
+                state |= tfsOnDelayed;
             }
 
             // Check for delay factor for off
             if (outputState && value)
             {   // once the output is ON start the OFF delay
-                channel_timeout[objno].start(delayBase * timerOffFactor);
+                channel_timeout[objno].Off.start(timercfg.delayMs * timercfg.timerOffFactor);
+                state |= tfsOffDelayed;
             }
         }
         // check how to handle off telegram while in timer modus
         if (outputState && !value)
         {   // only switch off if APP_DELAY_ACTION the value is equal zero
-            if (! (userEeprom[APP_DELAY_ACTION] & mask))
+            if (!timercfg.timerDelayAction)
             {
                 relays.clearChannel(objno);
                 objectWrite(objno, (unsigned int) 0);
+                channel_timeout[objno].Off.stop();
+                state &= ~tfsOffDelayed;
             }
         }
     }
+    return state;
 }
 
 void objectUpdated(int objno)
@@ -284,15 +397,28 @@ void objectUpdated(int objno)
     if(objno < COMOBJ_SPECIAL1)
     {
         _handle_timed_functions(objno, value);
-        if(channel_timeout[objno].stopped())
+        if (channel_timeout[objno].On.stopped() && channel_timeout[objno].Off.stopped())
         {
             relays.updateChannel(objno, value);
             objectWrite(objno, value);
         }
+        /*
+        if (value && (channel_timeout[objno].On.stopped() || channel_timeout[objno].On.expired()))
+        {
+            relays.updateChannel(objno, value);
+            objectWrite(objno, value);
+        }
+
+        if (!value && (channel_timeout[objno].Off.stopped() || channel_timeout[objno].Off.expired()))
+        {
+            relays.updateChannel(objno, value);
+            objectWrite(objno, value);
+        }
+        */
     }
 
     // handle the logic functions for this channel
-    _handle_logic_function (objno, value);
+    _handle_logic_function (objno, value, objno);
 
     if (relays.pendingChanges())
         _switchObjects();
@@ -308,20 +434,32 @@ void checkTimeouts(void)
     {
         unsigned int number = handStatus & 0xFF;
         if (handStatus & HandActuation::BUTTON_PRESSED)
+        {
+            channel_timeout[number].On.stop();
+            channel_timeout[number].Off.stop();
             relays.toggleChannel(number);
+        }
     }
 #endif
 
     // check if we can enable PWM
     relays.checkPWM();
-    for (objno = 0; objno < COMOBJ_SPECIAL1; ++objno)
+    for (objno = 0; objno < (sizeof(channel_timeout)/sizeof(channel_timeout[0])); ++objno)
     {
-        if (channel_timeout[objno].expired ())
+        if (channel_timeout[objno].Off.expired ())
         {
-            unsigned int obj_value = relays.toggleChannel(objno);
-            objectWrite(objno, obj_value);
-            _handle_timed_functions(objno, obj_value);
-            _handle_logic_function(objno, obj_value);
+            relays.clearChannel(objno);
+            objectWrite(objno, false);
+            _handle_timed_functions(objno, false);
+            _handle_logic_function(objno, false, objno);
+        }
+
+        if (channel_timeout[objno].On.expired ())
+        {
+            relays.setChannel(objno);
+            objectWrite(objno, true);
+            _handle_timed_functions(objno, true);
+            _handle_logic_function(objno, true, objno);
         }
     }
 
@@ -374,7 +512,8 @@ void initApplication(int lastRelayState)
     initialChannelActions = (userEeprom[APP_RESTORE_AFTER_PL_HI] << 8) | userEeprom[APP_RESTORE_AFTER_PL_LO];
 
     newRelaystate = 0x00;
-    for (i=0; i < NO_OF_CHANNELS; i++) {
+    for (i=0; i < (sizeof(initialOutputState)/sizeof(initialOutputState[0])); i++)
+    {
         unsigned int ChannelAction = (initialChannelActions >> (i * 2)) & 0x03;
         if (ChannelAction == 0x01)
             initialOutputState[i] = Outputs::OPEN;
@@ -388,32 +527,38 @@ void initApplication(int lastRelayState)
                 initialOutputState[i] = Outputs::CLOSED;
 #endif
         }
-        // create the RelaysBeginState according to the requested initial outputs states
+        // create the relays begin state according to the requested initial output states
         if (initialOutputState[i] == Outputs::CLOSED)
             newRelaystate |= 1 << i;
     }
 
-    // set the initial relays state
-    relays.begin(newRelaystate, userEeprom[APP_CLOSER_MODE]);
+    // FIXME handle logic function on start-up correctly, maybe read the real-values from bus (requestObjectRead??, sendGroupReadTelegram??)
+    // set all logic objects to false
+    for (i=COMOBJ_SPECIAL1; i <= COMOBJ_SPECIAL4; i++)
+        objectSetValue(i, (unsigned int) 0);
 
-    // set relays according to delayed on/off or timed configuration
-    for (i=COMOBJ_INPUT1; i < (COMOBJ_SPECIAL1); i++)
+    // set all output objects according to configured initial output state
+    for (i=COMOBJ_INPUT1; i < (sizeof(initialOutputState)/sizeof(initialOutputState[0])); i++)
     {
-        if (i >= sizeof(initialOutputState)/sizeof(initialOutputState[0])) // check initialOutputState array bounds
-            break;
         unsigned int value = (initialOutputState[i] == Outputs::CLOSED);
-        _handle_timed_functions(i, value, true); // check for timed functions for the channel
+        objectSetValue(i, value);
+    }
+
+    // only set output , if its not delayed on or in a timed configuration
+    for (i=COMOBJ_INPUT1; i < (sizeof(initialOutputState)/sizeof(initialOutputState[0])); i++)
+    {
+        unsigned int delayed = _init_timed_functions(i, objectRead(i));
+        if ((delayed & tfsOnDelayed) == tfsOnDelayed)  // check for timed functions for the channel
+        {
+            newRelaystate &= ~(1 << i);
+        }
     }
 
     for (i=COMOBJ_SPECIAL1; i <= COMOBJ_SPECIAL4; i++)
-    {
-        objectUpdate(i, (unsigned int) 0); // set all logic objects to false
-        _handle_logic_function (i, 0); // handle the logic functions for the channel
-        // FIXME handle logic function on start-up correctly
-        // maybe read the real-value from the bus (sendGroupReadTelegram)
-        // _handle_logic_function (i, valuefrombus); // handle the logic functions for the channel
-    }
+        _handle_logic_function (i, objectRead(i), i); // handle the logic functions for the channel
 
+    // set the initial relays state
+    relays.begin(newRelaystate, userEeprom[APP_CLOSER_MODE]);
 }
 
 int  getRelaysState()
