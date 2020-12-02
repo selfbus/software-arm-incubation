@@ -11,28 +11,6 @@
 
 #include "outputsBiStable.h"
 
-#define ON_DELAY 10 // Hongfa HFE20-1 24-1HSD-L2(359) datasheet
-                    // says "Pulse Duration ms min. 50ms"
-                    // tested with:
-                    //  5ms,  of 8 relays work //FIXME do the testing!
-                    //  6ms,  of 8 relays work
-                    //  7ms,  of 8 relays work
-                    //  8ms,  of 8 relays work
-                    //  9ms,  of 8 relays work
-                    // 10ms,  of 8 relays work
-
-/*
- * order code Hongfa HFE20-1 24-1HSD-L2(359)
- *    1:      5mm pin
- *   24:     24VDC
- *   1H:     1 Form A
- *    S:      Plastic sealed
- *    D:      W+AgSnO2 Contact
- *   L2:     Double coils latching
- *    -:    Positive polarity
-* (359):  lamp load
- */
-
 #define pinOff(i) (i*2+1)
 #define pinOn(i)  (i*2)
 
