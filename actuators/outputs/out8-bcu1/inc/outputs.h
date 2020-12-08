@@ -17,8 +17,6 @@
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
 
-#include "app_out8.h"
-#include "config.h"
 #ifdef HAND_ACTUATION
 #   include "hand_actuation.h"
 #endif
@@ -27,17 +25,32 @@
 #define PWM_PERIOD  85 // 1.2kHz
 #define PWM_DUTY    22 // 0.25 duty
 
+/*
+ * order code relay Omron G5Q-1A-EU DC24
+ *    1:     1 pole
+ *    A:     SPST-NO
+ *   EU:     high-capacity
+ * DC24:     24V DC rated coil voltage
+ *
+ * according to the datasheet relay must operate @max.75% of rated coil voltage => ~18V
+ * PWM operation: first 100ms 100% of rated voltage (24V) then 30% (7.2V) for holding
+ *
+ * TODO: above PWM settings don't fit the datasheet spec.
+ */
+
+
 class Outputs
 {
 public:
     enum State : byte {OPEN = 0x00, CLOSED = 0x01, LAST_STATE = 0xFF};
-    Outputs() : _relayState(0)
+    Outputs() : _channelcount(0)
+              , _relayState(0)
               , _prevRelayState(0)
               , _inverted(0)
               , _blocked(0)
               {};
 
-    void begin(unsigned int initial, unsigned int inverted);
+    void begin(unsigned int initial, unsigned int inverted, unsigned int channelcount);
     unsigned int pendingChanges(void);
     unsigned int channel(unsigned int channel);
     void updateChannel(unsigned int channel, unsigned int value);
@@ -48,15 +61,18 @@ public:
     void setBlocked(unsigned int channel);
     void clearBlocked(unsigned int channel);
     virtual void checkPWM(void);
-    virtual void updateOutputs(void);
-	void setOutputs(void);
-	void clrOutputs(void);
+    virtual unsigned int updateOutput(unsigned int channel);      // returns true in case a switching action was started which drained the bus
+    virtual void updateOutputs(unsigned int delayms = 0);
+    void setOutputs(void);
+    void clrOutputs(void);
+    unsigned int channelCount();
 
 #ifdef ZERO_DETECT
-	void zeroDetectHandler(void);
+    void zeroDetectHandler(void);
 #endif
 
 protected:
+    unsigned int _channelcount;
     unsigned int _relayState;
     unsigned int _prevRelayState;
     unsigned int _inverted;
@@ -79,7 +95,7 @@ extern Outputs relays;
 
 ALWAYS_INLINE unsigned int Outputs::pendingChanges(void)
 {
-    return _relayState ^ _prevRelayState;
+    return _relayState ^ (_prevRelayState & ((1 << _channelcount) -1));
 }
 
 ALWAYS_INLINE unsigned int Outputs::channel(unsigned int channel)

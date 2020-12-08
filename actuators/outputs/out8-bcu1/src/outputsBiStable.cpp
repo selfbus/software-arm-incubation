@@ -10,40 +10,39 @@
  */
 
 #include "outputsBiStable.h"
+#include "app_out8.h"  // FIXME get rid of outputPins[];
 
-#define pinOff(i) (i*2+1)
-#define pinOn(i)  (i*2)
+#define pinOff(ch) (ch*2+1)
+#define pinOn(ch)  (ch*2)
 
-
-
-void OutputsBiStable::updateOutputs(void)
+unsigned int OutputsBiStable::updateOutput(unsigned int channel)
 {
-    unsigned int mask = 0x01;
-    unsigned int i;
-    unsigned int state   = _relayState ^ _inverted;
-    unsigned int changes = _relayState ^ _prevRelayState;
+    unsigned int mask      = 1 << channel;
+    unsigned int state     = (mask & (_relayState ^ _inverted)) >> channel;
+    unsigned int prevState = (mask & (_prevRelayState ^  _inverted)) >> channel;
+    unsigned int value     = (state ^ prevState) & state;
 
-    for (i = 0; i < NO_OF_CHANNELS; i++, mask <<= 1)
+    if (!(state ^ prevState))
+        return false; // nothing to do
+
+    if (value)
     {
-        if (changes & mask)
-        {
-            if (state & mask)
-            {
-                digitalWrite(outputPins[pinOff(i)], 0);
-                digitalWrite(outputPins[pinOn(i)],  1);
-            }
-            else
-            {
-                digitalWrite(outputPins[pinOn(i)],  0);
-                digitalWrite(outputPins[pinOff(i)], 1);
-            }
-            _pwm_timeout.start(ON_DELAY);
-#ifdef HAND_ACTUATION
-            handAct.setLedState(i, state & mask);
-#endif
-    	}
+        digitalWrite(outputPins[pinOff(channel)], 0);
+        digitalWrite(outputPins[pinOn(channel)],  1);
     }
-    _prevRelayState = _relayState;
+    else
+    {
+        digitalWrite(outputPins[pinOn(channel)],  0);
+        digitalWrite(outputPins[pinOff(channel)], 1);
+    }
+
+    _prevRelayState ^= mask; // toggle the bit of the channel we changed
+    _pwm_timeout.start(ON_DELAY);
+
+#ifdef HAND_ACTUATION
+    handAct.setLedState(channel, value);
+#endif
+    return true;
 }
 
 void OutputsBiStable::checkPWM(void)

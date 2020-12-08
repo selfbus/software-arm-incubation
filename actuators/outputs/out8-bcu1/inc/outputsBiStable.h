@@ -41,9 +41,9 @@
 class OutputsBiStable : public Outputs
 {
 public:
-	OutputsBiStable() : Outputs() {};
+    OutputsBiStable() : Outputs() {};
 
-    virtual void updateOutputs(void);
+    virtual unsigned int updateOutput(unsigned int channel); // returns true in case a switching action was started which drained the bus
     virtual void checkPWM(void);
 };
 
