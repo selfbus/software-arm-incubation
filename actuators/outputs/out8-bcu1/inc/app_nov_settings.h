@@ -20,7 +20,7 @@
 class NonVolatileSetting
 {
     public:
-        NonVolatileSetting(unsigned int flashBase, unsigned int flashSize, unsigned int AppValueCacheSize);
+        NonVolatileSetting(unsigned int flashBase, unsigned int flashSize);
         MemMapperMod* GetMemMapperMod();
         bool RecallAppData(unsigned char *appdata, unsigned int size);
         bool StoreApplData(unsigned char *appdata, unsigned int size);

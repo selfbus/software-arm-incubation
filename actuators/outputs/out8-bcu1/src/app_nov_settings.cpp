@@ -12,7 +12,7 @@
 
 #include "app_nov_settings.h"
 
-NonVolatileSetting::NonVolatileSetting(unsigned int flashBase, unsigned int flashSize, unsigned int CacheSize)
+NonVolatileSetting::NonVolatileSetting(unsigned int flashBase, unsigned int flashSize)
  : memMapper_(flashBase, flashSize)
 {
     memMapper_.addRange(0x0, flashSize);
