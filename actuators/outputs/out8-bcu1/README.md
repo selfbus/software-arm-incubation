@@ -6,14 +6,14 @@ The emulated device is a Jung 2138 KNX switch actuator with 8 digital outputs.
 
 Please use the [Jung 2138 VD database](http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?search=2138&rpp=10) for ETS configuration from this site:
 http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?search=2138&rpp=10
--------------
-german:
+
+deutsch:
 Das ist eine Applikation welche die [SBLib](https://selfbus.org) mit BCU1 Emulation verwendet.
 Das simulierte Gerät ist ein Jung 2138 KNX Schaltaktor mit 8 digitalen Ausgängen.
 
 Zur ETS-Konfiguration die [Jung 2138 VD Produktdatenbank](http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?search=2138&rpp=10) verwenden. Download unter:
 http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?search=2138&rpp=10
--------------
+
 
 
 ## 4TE-ARM Controller ([PCB](https://github.com/selfbus/hardware-incubation/tree/master/Controller/lpc1115_4te), [Wiki](https://selfbus.myxwiki.org/xwiki/bin/view/Technik/Controller_1115_4TE)) + out8_16A (bi-stable relays, bi-stabile relais) ([PCB](https://github.com/selfbus/hardware/tree/master/Apps/out8_16A_1.0), [Wiki](https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/8fach%20Bin%C3%A4rausgang%20230V%2016A%20f%C3%BCr%20LPC1115%20Controller/))
