@@ -21,18 +21,19 @@
 #define ADC_OVERRUN  0x40000000   // ADC overrun
 #define ADC_START_NOW  (1 << 24)  // Start ADC now
 
-#define ADC_RESOLUTION 1024 //10bit
-#define ADC_MAX_VOLTAGE 3.3 // 3.3V VDD on LPC11xx
+#define ADC_RESOLUTION 1023  //10bit
+#define ADC_MAX_VOLTAGE 3300 // 3.3V VDD on LPC11xx
 
 // careful, variables can change any time by the Isr ADC_IRQHandler
-static volatile bool isrCallBusFailed = false; // true then in the isr a Bus fail is detected
-static volatile bool isrCallBusReturn = false; // true then in the isr a Bus return is detected
-static volatile bool isrwaitingADC = false; // true while we wait for an ADC-conversion to complete
-static volatile bool isrbusVoltageFailed = false; // true while bus voltage is to low
-static volatile int isrbusVoltagethreshold = 600; // 1.94V on 10bit (dec. 1024) resolution of the ADC
-static volatile int isrADChannel = AD7; // default AD channel for 4TE & TS_ARM controller
-static volatile short unsigned int isrmeanbusVoltage = 0; // mean bus voltage (not in V, but in 10bit resolution of the ADC)
-static volatile int isrADSampleCount = 0;
+static volatile bool isrCallBusFailed = false;                      // true then the isr detected a bus fail
+static volatile bool isrCallBusReturn = false;                      // true then the isr detected a bus return
+static volatile bool isrwaitingADC = false;                         // true while we wait for an ADC-conversion to complete
+static volatile bool isrbusVoltageFailed = false;                   // true while bus voltage has failed
+static volatile unsigned int isrbusVoltagethresholdFailed = 1800;   // milli-voltage threshold below which a bus failure should be reported
+static volatile unsigned int isrbusVoltagethresholdReturn = 2000;   // milli-voltage threshold above which a bus return should be reported
+static volatile int isrADChannel = AD7;                             // default AD channel for 4TE & TS_ARM controller
+static volatile unsigned int isrmeanbusVoltage = 0;                 // mean bus voltage in milli-volt
+static volatile unsigned int isrADSampleCount = 0;
 
 
 /*
@@ -59,7 +60,6 @@ extern "C" void ADC_IRQHandler(void)
     // Disable interrupt so it won't keep firing
     disableInterrupt(ADC_IRQn);
     unsigned int regVal;
-    bool busVoltageState;
 
     regVal = LPC_ADC->DR[isrADChannel];
 
@@ -67,35 +67,42 @@ extern "C" void ADC_IRQHandler(void)
     {
         LPC_ADC->CR &= 0xf8ffffff;  // Stop ADC
     }
+
     // This bit is 1 if the result of one or more conversions was lost and
     // overwritten before the conversion that produced the result.
-    if (!(regVal & ADC_OVERRUN))
+    if (regVal & ADC_OVERRUN)
+        return;
+
+
+    isrwaitingADC = false;
+    // this should be our ADC read out value
+    regVal = (regVal >> 6) & 0x3ff;
+
+    // convert AD-value to mV
+    regVal = (regVal * ADC_MAX_VOLTAGE) / ADC_RESOLUTION;
+
+    isrADSampleCount++;
+    if (isrADSampleCount > 1)
     {
-        isrwaitingADC = false;
-        // this should be our ADC read out value
-        regVal = (regVal >> 6) & 0x3ff;
-
-        isrADSampleCount++;
-        if (isrADSampleCount > 1)
-        {
-            isrmeanbusVoltage = (isrmeanbusVoltage + regVal) / 2; // calculate mean bus voltage in 10bit resolution of AD
-            isrADSampleCount = 1; // just to prevent overflow of isrADSampleCount, actual count is not rly interesting
-        }
-        else
-        {
-            isrmeanbusVoltage = regVal;
-        }
-
-        busVoltageState = isrmeanbusVoltage < isrbusVoltagethreshold;
-        if (busVoltageState != isrbusVoltageFailed) // bus voltage state changed since last ADC-conversion
-        {
-            if (busVoltageState)
-                isrCallBusFailed = true;
-            else
-                isrCallBusReturn = true;
-        }
-        isrbusVoltageFailed = busVoltageState; // preserve actual bus voltage state
+        isrmeanbusVoltage = (isrmeanbusVoltage + regVal) / 2; // calculate mean bus voltage
+        isrADSampleCount = 1;
     }
+    else
+    {
+        isrmeanbusVoltage = regVal;
+    }
+
+    if (!isrbusVoltageFailed && (isrmeanbusVoltage <= isrbusVoltagethresholdFailed)) // bus voltage failed
+    {
+        isrbusVoltageFailed = true;
+        isrCallBusFailed = true;
+    }
+    else if (isrbusVoltageFailed && (isrmeanbusVoltage > isrbusVoltagethresholdReturn)) // bus voltage returned
+    {
+        isrbusVoltageFailed = false;
+        isrCallBusReturn = true;
+    }
+
 }
 
 /*
@@ -124,11 +131,12 @@ void BusVoltage::resetIsrData()
 /*
  * enable bus voltage monitoring using AD-conversion
  */
-void BusVoltage::enableBusVRefMonitoring(int ADPin, int ADChannel, float thresholdVoltage)
+void BusVoltage::enableBusVRefMonitoring(int ADPin, int ADChannel, unsigned int thresholdVoltageFailed, unsigned int thresholdVoltageReturn)
 {
     ADPin_ = ADPin;
     isrADChannel = ADChannel;
-    isrbusVoltagethreshold = (thresholdVoltage * ADC_RESOLUTION) / ADC_MAX_VOLTAGE; // convert voltage to ADC-resolution
+    isrbusVoltagethresholdFailed = thresholdVoltageFailed;
+    isrbusVoltagethresholdReturn = thresholdVoltageReturn;
     analogBegin();
     pinMode(ADPin_, INPUT_ANALOG); // for TS_ARM & 4TE controller Analog channel 7 (pin PIO1_11)
     resetIsrData();
@@ -194,11 +202,12 @@ void BusVoltage::checkPeriodic()
 /*
  *  returns measured bus voltage in mV, returns -1 in case of invalid measurement
  */
-int BusVoltage::valuemV()
+ALWAYS_INLINE int BusVoltage::valuemV()
 {
     if (isrADSampleCount < 1)
         return -1;
-    return ((isrmeanbusVoltage * ADC_MAX_VOLTAGE) / ADC_RESOLUTION) * 1000; // convert ADC-resolution to milliVolt;
+    else
+        return isrmeanbusVoltage;
 }
 
 bool BusVoltage::failed()

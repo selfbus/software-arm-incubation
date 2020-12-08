@@ -45,7 +45,7 @@
 
 // #define IO_TEST // can be set, to perform a little test of all relays and hand actuation LED's
 
-#define NO_OF_HAND_PINS 8 // FIXME get rid of this
+#define NO_OF_HAND_PINS 8 // FIXME get rid of this NO_OF_HAND_PINS
 
 // #define BI_STABLE // replaced by build-variable ${relay_type}
 // #define HAND_ACTUATION // replaced by build-variable ${hand_actuation}
@@ -57,11 +57,19 @@
  *  bus power-failure configuration
  */
 #ifdef BUSFAIL
+#   define VBUS_AD_PIN PIN_VBUS
 #   define VBUS_AD_CHANNEL AD7
-#   define VBUS_THRESHOLD 1.94 // FIXME 1.94V @ ADC-Pin of the LPC11xx, 1.94V is just selected for fast testing, needs further investigation
-                               // depend's on used controller e.g.
-                               // 4TE-ARM the voltage divider is R3/R12 (91K0 & 10K0)
-                               // TS_ARM  the voltage divider is R3/R12 (91K0 & 10K0)
+
+#   ifndef BI_STABLE
+#      define VBUS_THRESHOLD_FAILED 1800 // FIXME 1.8V @ ADC-Pin of the LPC11xx, 1.8V is just selected for fast testing, needs further investigation
+                                         // depend's on used controller e.g.
+                                         // 4TE-ARM the voltage divider is R3/R12 (91K0 & 10K0)
+                                         // TS_ARM  the voltage divider is R3/R12 (91K0 & 10K0)
+#      define VBUS_THRESHOLD_RETURN 2000 // FIXME 2.0V @ ADC-Pin of the LPC11xx, 2.0V is just selected for fast testing, needs further investigation
+#   else
+#      define VBUS_THRESHOLD_FAILED 1630 // FIXME set correct millivoltage for bi-stable relays
+#      define VBUS_THRESHOLD_RETURN 1760 // FIXME set correct millivoltage for bi-stable relays
+#   endif
 #endif
 
 
