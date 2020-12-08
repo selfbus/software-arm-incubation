@@ -22,9 +22,10 @@ extern const int handPins[NO_OF_HAND_PINS];
 class HandActuation
 {
 public:
-    enum {NO_ACTUATION = -1, BUTTON_PRESSED = 0x100, BUTTON_RELEASED = 0x200};
+    enum ButtonState {NO_ACTUATION = -1, BUTTON_PRESSED = 0x100, BUTTON_RELEASED = 0x200};
     HandActuation();
     int check(void);
+    int getButtonAndState(int& btnNumber, HandActuation::ButtonState& btnState); // returns true in case a button is pressed or was released
     bool ledState(unsigned int led);
     bool blinkState(unsigned int led);
     void setLedState(unsigned int led, bool state, bool blinking = false);

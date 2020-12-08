@@ -110,6 +110,20 @@ int HandActuation::check(void)
     return result;
 }
 
+int HandActuation::getButtonAndState(int& btnNumber, HandActuation::ButtonState& btnState)
+{
+    int result = false;
+    int handStatus = this->check();
+
+    result = (handStatus != HandActuation::NO_ACTUATION);
+    if (result)
+    {
+        btnNumber = handStatus & 0xFF;
+        btnState = HandActuation::ButtonState(handStatus & 0xFF00);
+    }
+    return result;
+}
+
 ALWAYS_INLINE unsigned int HandActuation::GetHandPinCount()
 {
     if (sizeof(handPins) > 0)
