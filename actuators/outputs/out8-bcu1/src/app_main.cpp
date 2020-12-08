@@ -26,16 +26,11 @@
 
 
 #ifdef BUSFAIL
-    typedef struct
-    {
+    typedef struct ApplicationData {
         unsigned char relaisstate;         // current relays state
-        unsigned char handactuationstate;  // current hand actuation state
-#       ifdef DEBUG
-            unsigned char testBusRestartCounter; //TODO rename or remove after testing
-#       endif
     } ApplicationData;
 
-    NonVolatileSetting AppNovSetting(0xEA00, 0x100, sizeof(ApplicationData));  // flash-storage for application relevant parameters
+    NonVolatileSetting AppNovSetting(0xEA00, 0x100);  // flash-storage for application relevant parameters
     ApplicationData AppData;
 #endif
 
@@ -52,7 +47,8 @@ void ioTest()
 #ifdef IO_TEST
 
 #   ifdef BI_STABLE
-        // check, maybe we need to wait 4s, cause PIO_SDA is pulled-up to high on LPC-reset causing the relay coil to drain the bus.
+        const int relaySwitchms = ON_DELAY;  // see inc/outputsBiStable.h for more info
+        // check, maybe we need to wait 4s, cause PIO_SDA is pulled-up to high on ARM-reset causing the relay coil to drain the bus.
         for (unsigned int i = 0; i < sizeof(outputPins)/sizeof(outputPins[0]); i++)
         {
             if (outputPins[i] == PIO_SDA)
@@ -61,12 +57,12 @@ void ioTest()
                 break;
             }
         }
+#   else
+        const int relaySwitchms = PWM_TIMEOUT;  // see inc/outputs.h for more info
 #   endif
 
     // setup LED's
     const int togglePausems = 250;
-    const int relaySwitchms = 10;  // see src/outputsBiStable.cpp for more info
-
 #   ifdef HAND_ACTUATION
         for (unsigned int i = 0; i < sizeof(handPins)/sizeof(handPins[0]); i++)
         {
@@ -89,24 +85,24 @@ void ioTest()
     }
 
     // initialize relays for ioTest
-    relays.begin(0x00, 0x00);
+    relays.begin(0x00, 0x00, NO_OF_CHANNELS);
     relays.updateOutputs();
     delay(relaySwitchms);
     relays.checkPWM();
     delay(togglePausems);
 
     // toggle every channel & hand actuation LED with a little delay
-    for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
+    for (unsigned int i = 0; i < relays.channelCount(); i++)
     {
         relays.updateChannel(i, 1);     // relay high/set
-        relays.updateOutputs();         // also sets hand actuation led
+        relays.updateOutput(i);         // also sets hand actuation led
         delay(relaySwitchms);
         relays.checkPWM();
 
         delay(togglePausems);
 
         relays.updateChannel(i, 0);     // relay low/reset
-        relays.updateOutputs();         // also sets hand actuation led
+        relays.updateOutput(i);         // also sets hand actuation led
         delay(relaySwitchms);
         relays.checkPWM();
         delay(togglePausems);
@@ -128,6 +124,13 @@ void setup()
     digitalWrite(PIN_RUN, 1);
 #endif
 
+    // Configure the output pins
+    for (unsigned int channel = 0; channel < sizeof(outputPins)/sizeof(outputPins[0]); channel++)
+    {
+        pinMode(outputPins[channel], OUTPUT);
+        digitalWrite(outputPins[channel], 0);
+    }
+
     bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
 
 #ifdef BUSFAIL
@@ -139,16 +142,10 @@ void setup()
         digitalWrite(PIN_INFO, 0);
 #   endif
     }
-    // enable bus voltage monitoring on PIO1_11 & AD7 with 1.94V threshold
-    vBus.enableBusVRefMonitoring(PIN_VBUS, VBUS_AD_CHANNEL, VBUS_THRESHOLD);
+    // enable bus voltage monitoring
+    vBus.enableBusVRefMonitoring(VBUS_AD_PIN, VBUS_AD_CHANNEL, VBUS_THRESHOLD_FAILED, VBUS_THRESHOLD_RETURN);
 #endif
 
-    // Configure the output pins
-    for (unsigned int channel = 0; channel < sizeof(outputPins)/sizeof(outputPins[0]); channel++)
-    {
-        pinMode(outputPins[channel], OUTPUT);
-        digitalWrite(outputPins[channel], 0);
-    }
 
     ioTest();
 
@@ -206,29 +203,12 @@ void loop_noapp()
 void ResetDefaultApplicationData()
 {
     AppData.relaisstate = 0x00;
-    AppData.handactuationstate = 0x00;
 }
 /*
  * will be called by the bus_voltage.h ISR which handles the ADC interrupt for the bus voltage.
  */
 void BusVoltageFail()
 {
-    //switch off all possible active relay coils, to save some power
-    for (unsigned int i = 0; i < sizeof(outputPins)/sizeof(outputPins[0]); i++)
-    {
-        digitalWrite(outputPins[0], 0);
-    }
-
-#ifdef HAND_ACTUATION
-    // switch all hand actuation LEDs off, to save some power
-    handAct.setallLedState(false);
-#endif
-
-#ifdef DEBUG
-    AppData.testBusRestartCounter++;
-    digitalWrite(PIN_RUN, 0); // switch RUN-LED off, to save some power
-#endif
-
     pinMode(PIN_INFO, OUTPUT); // even in non DEBUG flash Info LED to display app adata storing
     digitalWrite(PIN_INFO, 1);
 
@@ -238,6 +218,14 @@ void BusVoltageFail()
         digitalWrite(PIN_INFO, 0);
     else
         digitalWrite(PIN_INFO, 1);
+
+    stopApplication();
+
+#ifdef DEBUG
+    digitalWrite(PIN_RUN, 0); // switch RUN-LED off, to save some power
+#endif
+
+
 }
 
 /*
