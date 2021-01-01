@@ -9,8 +9,8 @@ endif()
 if(NOT EXISTS ${CMAKE_TOOLCHAIN_FILE})
     message(FATAL_ERROR "Toolchain file does not exist: " ${CMAKE_TOOLCHAIN_FILE})
 endif()
-
-project(4sense)
+set(NAME 4sense-bcu1)
+project(${NAME})
 
 set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "How to build")
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release)
@@ -36,13 +36,13 @@ if (LOGGING)
     add_definitions(-DLOGGING)
 endif()
 message("SRC: ${SRC}")
-add_executable(4sense.axf ${SRC})
+add_executable(${NAME}.axf ${SRC})
 
-target_link_libraries(4sense.axf
+target_link_libraries(${NAME}.axf
         -nostdlib
         -L"${SBLPC_DIR}/${LIB_BUILD_DIR}"
         -L"${SBLIB_DIR}/${LIB_BUILD_DIR}-bcu1"
-        -Xlinker -Map="4sense.map"
+        -Xlinker -Map="${NAME}.map"
         -Xlinker --gc-sections
         -mcpu=cortex-m0 -mthumb
         -T"${SBLPC_DIR}/LPC1115.ld"
@@ -51,15 +51,16 @@ target_link_libraries(4sense.axf
 # out knx2header target
 # the 2nd and 3rd command is so cmake gets that its been built
 add_custom_command(OUTPUT src/params.h
-        COMMAND knx2header -c ${CMAKE_SOURCE_DIR}/conf.py
+        COMMAND knx2header -c ${CMAKE_SOURCE_DIR}/resources/conf.py
         COMMAND mkdir -p ${CMAKE_BINARY_DIR}/src
         COMMAND cp ${CMAKE_SOURCE_DIR}/src/params.h ${CMAKE_BINARY_DIR}/src/params.h
         DEPENDS conf.py)
 
 # this force builds params.h and a debug version
 add_custom_target(knxheader-dbg
-        COMMAND knx2header -c ${CMAKE_SOURCE_DIR}/conf.py
-        COMMAND knx2header -d -o test.h -t test.cpp -c ${CMAKE_SOURCE_DIR}/conf.py
+        COMMAND knx2header -c ${CMAKE_SOURCE_DIR}/resources/conf.py
+        COMMAND knx2header -d -o ${CMAKE_SOURCE_DIR}/test.h
+        -t ${CMAKE_SOURCE_DIR}/test.cpp -c ${CMAKE_SOURCE_DIR}/resources/conf.py
         )
 
 add_custom_target(knxclean
@@ -69,12 +70,12 @@ add_custom_target(knxclean
         ${CMAKE_SOURCE_DIR}/*.pyc)
 
 add_custom_target(flash
-        COMMAND "${SBLPC_DIR}/flash_link2" "${CMAKE_BINARY_DIR}/4sense.axf" "${MCUX_IDE_BIN}"
-        DEPENDS 4sense.axf)
+        COMMAND "${SBLPC_DIR}/flash_link2" "${CMAKE_BINARY_DIR}/${NAME}.axf" "${MCUX_IDE_BIN}"
+        DEPENDS ${NAME}.axf)
 
 add_custom_target(debug
         COMMAND "${SBLPC_DIR}/debug_link2" "${MCUX_IDE_BIN}"
-        DEPENDS 4sense.axf)
+        DEPENDS ${NAME}.axf)
 
 # redlinkserv -telnetport=3025 3050 3075
 

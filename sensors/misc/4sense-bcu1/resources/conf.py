@@ -7,8 +7,8 @@ xmlIn = 'M-004C_A-0438-06-E129-O004C.xml'
 DBG = 0
 
 # where to write to
-outfile = 'src/params.h'
-outTree = 'params.cpp'
+outfile = '../src/params.h'
+outTree = '../params.cpp'
 
 # whether we want comments
 comments = 1
@@ -36,6 +36,10 @@ treeStart = ''
 
 # end of the tree file
 treeEnd = ''
+
+# List of COM ids to ignore
+# like [12,56,99,...]
+comIgnoreLst = []
 
 # List of ids to ignore everywhere except in the first position
 ignoreLst = [

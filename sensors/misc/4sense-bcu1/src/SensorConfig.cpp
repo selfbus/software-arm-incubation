@@ -7,7 +7,8 @@
 #define PARASITE_POWER  false
 
 // where the sensors are hanging .... "on"
-int sensorPins[] = {PIO3_2, PIO1_1, PIO2_4, PIO2_5};
+//                   IO16    IO14    IO12     IO10
+int sensorPins[] = {PIO1_5, PIO1_2, PIO0_11, PIO0_8};
 
 // a usable alternative over the stupid 130ms
 #define TIME_BASE_MS 125u
@@ -73,9 +74,13 @@ bool SensorConfig::init(int sensorIdx, uint sensorType,
     } else {
         if (sensorType == SENSOR_TYP_TEMPERATURE_HUMIDITY_SENSOR) {
             LOG("#%d cannot do humidity with a DS18 sensor", sensorNum);
+            requestSensorInit();
             return false;
         }
-        if (!ds.m_foundDevices) return false;
+        if (!ds.m_foundDevices) {
+            requestSensorInit();
+            return false;
+        }
         for (int i = 0; i < ds.m_foundDevices; i++) {
             LOG("#%d found a %s device", sensorNum, ds.TypeStr(i));
         }
@@ -90,6 +95,7 @@ bool SensorConfig::init(int sensorIdx, uint sensorType,
     temperature = lastTempTrig = INVALID_DATA;
     LOG("#%d using a temperature offset of %dd°", sensorNum, tempOffset);
     tCom = tempCo;
+    fixRamLoc(tempCo);
 
     if (sensorType == SENSOR_TYP_TEMPERATURE_HUMIDITY_SENSOR) {
         doesHumidity = true;
@@ -101,6 +107,7 @@ bool SensorConfig::init(int sensorIdx, uint sensorType,
         LOG("#%d using a humidity offset of %dpm", sensorNum, humOffset);
         humidity = INVALID_DATA;
         hCom = humCo;
+        fixRamLoc(humCo);
     }
     return true;
 }
@@ -194,7 +201,7 @@ void SensorConfig::sampleValues() {
     uint32_t now = millis();
     if (!converting && convTime < now) {
         if (!isDht) ds.startConversion(0);
-        readTime = convTime + leadTime;
+        readTime = now + leadTime;
         if (schedule) {
             setConvTime(schedule);
         } else {
@@ -202,7 +209,7 @@ void SensorConfig::sampleValues() {
             setConvTime(sendTempFreq);
         }
         converting = true;
-        //LOG("read: %d conv: %d send: %d", readTime, convTime, sendTempTime);
+//        LOG("#%d read: %d conv: %d send: %d", sensorNum, readTime, convTime, sendTempTime);
     }
 }
 
@@ -210,10 +217,18 @@ void SensorConfig::readValues() {
     if (!isActive()) return;
     uint32_t now = millis();
     if (!converting || (readTime >= now)) return;
+    bool success = false;
     if (isDht) {
-        if (!dht.readData()) return;
+        success = dht.readData();
     } else {
-        if (!ds.readResult(0)) return;
+        success = ds.readResult(0);
+    }
+    if (!success) {
+        if (readTime && now > (readTime + 3000)) {
+            LOG("#%d Failed to get reading at %d", sensorNum, readTime);
+            requestSensorInit();
+        }
+        return;
     }
 
     // Check if the last temperature read was OK
@@ -221,6 +236,7 @@ void SensorConfig::readValues() {
 
     if (!isDht && !ds.lastReadOk(0)) {
         LOG("#%d Ignoring invalid reading", sensorNum);
+        requestSensorInit();
         return;
     }
 #ifdef LOGGING

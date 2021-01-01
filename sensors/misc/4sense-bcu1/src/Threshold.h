@@ -21,7 +21,7 @@ private:
 
 public:
     void init(int idx, int sensNum, GRENZWERT_ZUORDNUNG triggerType,
-            uint triggerValue, uint triggerAction, int comObject);
+            uint triggerValue, uint triggerAction, COM comObject);
     void test(float tempValue, float humValue, bool periodic);
 };
 

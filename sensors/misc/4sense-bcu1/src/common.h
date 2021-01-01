@@ -18,6 +18,8 @@
     #define LOG(...) // nada!
 #endif
 
+// number of seconds before we reset
+#define RE_INIT_DELAY   2000
 #define NUM_SENSORS     4
 #ifndef uint
 typedef unsigned int uint;
@@ -27,7 +29,13 @@ typedef unsigned int uint;
 #include "Threshold.h"
 #include "SensorConfig.h"
 
+void fixRamLoc(COM comNo);
+void initSensors();
+#define requestSensorInit() { needSensorInit = true; }
+
 extern SensorConfig configs[NUM_SENSORS];
+extern bool needSensorInit;
+extern uint32_t nextInit;
 
 
 #endif //INC_4SENSE_COMMON_H

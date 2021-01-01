@@ -5,6 +5,18 @@
 #include "common.h"
 
 SensorConfig configs[NUM_SENSORS];
+bool needSensorInit = false;
+uint32_t nextInit = 0;
+
+/**
+ * Works around the fact that the ram location for objects isn't set in the
+ * com table, so they all overwrite each other into the same RM location.
+ * @param comNo each com object gets 2 bytes
+ */
+void fixRamLoc(COM comNo) {
+    uint8_t* l = (uint8_t*)&objectConfig(comNo).dataPtr;
+    *l = comNo * 2;
+}
 
 void initSensor1(SensorConf sc) {
     if (EE_TYPE_SENSOR_1 == SENSOR_TYP_NO_SENSOR) {
@@ -250,6 +262,19 @@ void initSensor4(SensorConf sc) {
                      COM_THRESHOLD_3_TEMPERATURE_THRESHOLD_3_SENSOR_4);
 }
 
+void initSensors() {
+    LOG("\n* * * Init Sensors * * *");
+    // spiffy those puppies
+    memset(&configs[0], 0, sizeof(SensorConfig) * NUM_SENSORS);
+    // so if inits run clean we're fine
+    needSensorInit = false;
+    initSensor1(&configs[0]);
+    initSensor2(&configs[1]);
+    initSensor3(&configs[2]);
+    initSensor4(&configs[3]);
+    nextInit = millis() + RE_INIT_DELAY;
+}
+
 /*
  * Initialize the application.
  */
@@ -259,10 +284,6 @@ void setup() {
 #endif
     bcu.begin(0x4c, 0x438, 0x6); // 4Sense
     LOG("diagnosis on %x", EE_DIAGNOSIS);
-    // spiffy those puppies
-    memset(&configs[0], 0, sizeof(SensorConfig) * NUM_SENSORS);
-    initSensor1(&configs[0]);
-    initSensor2(&configs[1]);
-    initSensor3(&configs[2]);
-    initSensor4(&configs[3]);
+
+    initSensors();
 }

@@ -34,13 +34,14 @@ const char* Threshold::actionString[] = {
 
 void
 Threshold::init(int idx, int sensNum, GRENZWERT_ZUORDNUNG triggerType,
-        uint triggerValue, uint triggerAction, int comObject) {
+        uint triggerValue, uint triggerAction, COM comObject) {
     sensorNum = sensNum;
     thresholdNum = idx + 1;
     type = triggerType;
     action = (uint8_t)triggerAction;
     trigger = triggerValue * .1;
     comObj = comObject;
+    fixRamLoc(comObject);
     currentValue = Value_off;
     LOG("#%d threshold:%d for %s at %d action is %s",
         sensorNum, thresholdNum,

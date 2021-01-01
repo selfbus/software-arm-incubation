@@ -32,7 +32,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1589218430825</id>
+			<id>1595008670851</id>
 			<name></name>
 			<type>10</type>
 			<matcher>
@@ -41,4 +41,10 @@
 			</matcher>
 		</filter>
 	</filteredResources>
+	<variableList>
+		<variable>
+			<name>sbloc</name>
+			<value>file:/d2/hm/mario/data/projects/electronic/mybus</value>
+		</variable>
+	</variableList>
 </projectDescription>
