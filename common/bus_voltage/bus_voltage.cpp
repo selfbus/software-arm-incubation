@@ -39,32 +39,6 @@ static volatile int isrADChannel = AD7;                             // default A
 static volatile unsigned int isrmeanbusVoltage = 0;                 // mean bus voltage in milli-volt
 static volatile unsigned int isrADSampleCount = 0;
 
-
-/*
- * BusVoltageFail() should be overwritten in the apps main
- */
-void BusVoltageFail()
-{
-    waitForInterrupt();
-};
-
-/*
- * BusVoltageReturn() should be overwritten in the apps main
- */
-void BusVoltageReturn()
-{
-    waitForInterrupt();
-};
-
-
-/*
- * convertADmV(int valueAD) should be overwritten in the apps main
- */
-int convertADmV(int valueAD)
- {
-    return valueAD;
- }
-
 /*
  * ISR routine to handle ADC interrupt (parts are copy&paste from sblib/analog_pin.cpp)
  */

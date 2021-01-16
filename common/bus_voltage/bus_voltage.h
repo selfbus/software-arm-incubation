@@ -89,11 +89,23 @@
 #ifndef BUS_VOLTAGE_H_
 #define BUS_VOLTAGE_H_
 
-#define WEAK __attribute__ ((weak))
+/*
+ * implement in your code
+ * This function is called when the bus voltage drops below the thresholdVoltageFailed
+ */
+void BusVoltageFail(); // implement in your app, will be called should be overwritten in the apps main
 
-WEAK void BusVoltageFail();
-WEAK void BusVoltageReturn();
-WEAK int convertADmV(int valueAD);
+/*
+ * implement in your code
+ * This function is called when the bus voltage raises over the thresholdVoltageReturn
+ */
+void BusVoltageReturn();
+
+/*
+ * implement in your code
+ * This function is called to convert AD-values to millivolts
+ */
+int convertADmV(int valueAD);
 
 class BusVoltage
 {
