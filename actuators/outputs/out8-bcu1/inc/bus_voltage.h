@@ -9,42 +9,31 @@
  *
  *  Don't create instances of class BusVoltage, use variable vBus instead
  *
- *  Note: in the KNX-specification a bus fail is defined as a bus voltage drop below 20V with a hysteresis of 1V.
+ *  Notes:
+ *      in the KNX-specification a bus fail is defined as a bus voltage drop below 20V with a hysteresis of 1V.
+ *      4TE-ARM the voltage divider is R3/R12 (91K0 & 10K0)
+ *      TS_ARM  the voltage divider is R3/R12 (91K0 & 10K0)
  *
  *  Usage:
- *      implement & define:
+ *      implement:
  *      --------------------------------------------------------------------------------------------------------------*
- *
- *      #define VBUS_AD_PIN           PIN_VBUS  // ARM-ADC pin for measuring the bus voltage
- *      #define VBUS_AD_CHANNEL       AD7       // ARM-ADC Channel for measuring the bus voltage
- *      #define VBUS_THRESHOLD_FAILED 1940      // milli-voltage threshold below which a bus failure should be reported
- *      #define VBUS_THRESHOLD_RETURN 2000      // milli-voltage threshold above which a bus return should be reported
- *
- *      void BusVoltageFail()       // will be called by the ISR which handles the ADC interrupt for the bus voltage.
- *      void BusVoltageReturn()     // will be called by the ISR which handles the ADC interrupt for the bus voltage.
- *
+ *      void BusVoltageFail()        // will be called by the ISR which handles the ADC interrupt for the bus voltage.
+ *      void BusVoltageReturn()      // will be called by the ISR which handles the ADC interrupt for the bus voltage.
+ *      int convertADmV(int valueAD) // converts measured AD value into milliVoltage
  *      --------------------------------------------------------------------------------------------------------------
  *      e.g. in your app_main.cpp:
- *
- *        #define VBUS_AD_PIN PIN_VBUS
- *        #define VBUS_AD_CHANNEL AD7
- *        #define VBUS_THRESHOLD_FAILED 1800
- *        #define VBUS_THRESHOLD_RETURN 2000
  *
  *        void setup()
  *        {
  *            .... your code ....
- *
  *            // enable bus voltage monitoring
- *            vBus.enableBusVRefMonitoring(VBUS_AD_PIN, VBUS_AD_CHANNEL, VBUS_THRESHOLD_FAILED, VBUS_THRESHOLD_RETURN);
- *
+ *            vBus.enableBusVRefMonitoring(PIN_VBUS, AD7, 20000, 21000);
  *            .... your code ....
  *        }
  *
  *        void loop()
  *        {
  *            .... your code ....
- *
  *            // the bus voltage check, should be done before waitForInterrupt()
  *            vBus.checkPeriodic();
  *            if (bus.idle())
@@ -62,13 +51,39 @@
  *        {
  *            .... your code for a bus return ....
  *        }
- *      --------------------------------
  *
- *  1.94V @ ADC-Pin of the LPC11xx is just selected for fast testing, needs further investigation
- *  depend's on used controller e.g.
- *  4TE-ARM the voltage divider is R3/R12 (91K0 & 10K0)
- *  TS_ARM  the voltage divider is R3/R12 (91K0 & 10K0)
+ *        int convertADmV(int valueAD)
+ *        {
+ *            // converts measured AD value into milliVoltage
  *
+ *            // e.g. for a 4TE-ARM controller:
+ *            // good approximation between 17 & 30V
+ *            if (valueAD > 2150)
+ *                return 30000;
+ *            else if (valueAD < 1546)
+ *                return 0;
+ *            else
+ *                return 0.0198*valueAD*valueAD - 52.104*valueAD + 50375;
+ *
+ *            4TE ARM-Controller coefficients found with following measurements:
+ *            ---------------------
+ *            | Bus mV  ADC-Value |
+ *            ---------------------
+ *            | 30284   2158      |
+ *            | 30006   2150      |
+ *            | 29421   2132      |
+ *            | 27397   2073      |
+ *            | 26270   2035      |
+ *            | 25210   1996      |
+ *            | 24094   1953      |
+ *            | 22924   1903      |
+ *            | 21081   1811      |
+ *            | 20003   1751      |
+ *            | 18954   1683      |
+ *            | 17987   1619      |
+ *            | 17007   1546      |
+ *            ---------------------
+ *        }
  */
 
 #ifndef BUS_VOLTAGE_H_
@@ -78,6 +93,7 @@
 
 WEAK void BusVoltageFail();
 WEAK void BusVoltageReturn();
+WEAK int convertADmV(int valueAD);
 
 class BusVoltage
 {

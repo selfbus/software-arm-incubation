@@ -15,6 +15,10 @@
 #include <sblib/digital_pin.h>
 #include <sblib/analog_pin.h>
 
+#ifdef DEBUG
+#   include <sblib/serial.h>
+#endif
+
 
 // copy&paste from sblib/analog_pin.cpp
 #define ADC_DONE  0x80000000      // ADC conversion complete
@@ -29,8 +33,8 @@ static volatile bool isrCallBusFailed = false;                      // true then
 static volatile bool isrCallBusReturn = false;                      // true then the isr detected a bus return
 static volatile bool isrwaitingADC = false;                         // true while we wait for an ADC-conversion to complete
 static volatile bool isrbusVoltageFailed = false;                   // true while bus voltage has failed
-static volatile unsigned int isrbusVoltagethresholdFailed = 1800;   // milli-voltage threshold below which a bus failure should be reported
-static volatile unsigned int isrbusVoltagethresholdReturn = 2000;   // milli-voltage threshold above which a bus return should be reported
+static volatile int isrbusVoltagethresholdFailed = 23000;   // milli-voltage threshold below which a bus failure should be reported
+static volatile int isrbusVoltagethresholdReturn = 25000;   // milli-voltage threshold above which a bus return should be reported
 static volatile int isrADChannel = AD7;                             // default AD channel for 4TE & TS_ARM controller
 static volatile unsigned int isrmeanbusVoltage = 0;                 // mean bus voltage in milli-volt
 static volatile unsigned int isrADSampleCount = 0;
@@ -52,6 +56,15 @@ void BusVoltageReturn()
     waitForInterrupt();
 };
 
+
+/*
+ * convertADmV(int valueAD) should be overwritten in the apps main
+ */
+int convertADmV(int valueAD)
+ {
+    return valueAD;
+ }
+
 /*
  * ISR routine to handle ADC interrupt (parts are copy&paste from sblib/analog_pin.cpp)
  */
@@ -60,6 +73,7 @@ extern "C" void ADC_IRQHandler(void)
     // Disable interrupt so it won't keep firing
     disableInterrupt(ADC_IRQn);
     unsigned int regVal;
+    int mVBus;
 
     regVal = LPC_ADC->DR[isrADChannel];
 
@@ -92,17 +106,20 @@ extern "C" void ADC_IRQHandler(void)
         isrmeanbusVoltage = regVal;
     }
 
-    if (!isrbusVoltageFailed && (isrmeanbusVoltage <= isrbusVoltagethresholdFailed)) // bus voltage failed
+    mVBus = convertADmV(isrmeanbusVoltage);
+    if (mVBus != -1)
     {
-        isrbusVoltageFailed = true;
-        isrCallBusFailed = true;
+        if (!isrbusVoltageFailed && (mVBus <= isrbusVoltagethresholdFailed)) // bus voltage failed
+        {
+            isrbusVoltageFailed = true;
+            isrCallBusFailed = true;
+        }
+        else if (isrbusVoltageFailed && (mVBus > isrbusVoltagethresholdReturn)) // bus voltage returned
+        {
+            isrbusVoltageFailed = false;
+            isrCallBusReturn = true;
+        }
     }
-    else if (isrbusVoltageFailed && (isrmeanbusVoltage > isrbusVoltagethresholdReturn)) // bus voltage returned
-    {
-        isrbusVoltageFailed = false;
-        isrCallBusReturn = true;
-    }
-
 }
 
 /*
@@ -196,18 +213,18 @@ void BusVoltage::checkPeriodic()
         BusVoltageReturn();
     }
     else
-        startBusVoltageRead();
+         startBusVoltageRead();
 }
 
 /*
  *  returns measured bus voltage in mV, returns -1 in case of invalid measurement
  */
-ALWAYS_INLINE int BusVoltage::valuemV()
+int BusVoltage::valuemV()
 {
     if (isrADSampleCount < 1)
         return -1;
     else
-        return isrmeanbusVoltage;
+        return convertADmV(isrmeanbusVoltage);
 }
 
 bool BusVoltage::failed()

@@ -10,6 +10,10 @@
 
 #include "app_out8.h"
 #include "com_objs.h"
+#include <sblib/timeout.h>
+#include <sblib/eib/com_objects.h>
+#include <sblib/eib/user_memory.h>
+
 
 #ifndef BI_STABLE
 #   include "outputs.h"
@@ -21,9 +25,10 @@
 #   include "hand_actuation.h"
 #endif
 
-#include <sblib/timeout.h>
-#include <sblib/eib/com_objects.h>
-#include <sblib/eib/user_memory.h>
+#ifdef DEBUG_SERIAL
+#   include <sblib/serial.h>
+#endif
+
 
 
 typedef struct ChannelTimeOutTimer {
@@ -558,7 +563,9 @@ void objectUpdated(int objno)
         if (channel_timeout[objno].On.stopped() && channel_timeout[objno].Off.stopped())
         {
             relays.updateChannel(objno, value);
-            objectWrite(objno, value);
+            if (value != objectRead(objno)) // FIXME check if this "if ()" doesn't have other side effects
+                objectWrite(objno, value);  // objectWrite with set ETS update-flags leads to a infinite loop of objectUpdated & objectWrite
+                                            // see https://selfbus.org/forum/viewtopic.php?p=4762#p4762
         }
     }
 
@@ -641,22 +648,46 @@ static void _switchObjects(void)
 
 }
 
+void delayAppStart()
+{
+    const int msMultiplier = 500;
+    unsigned int delayAppStartms = 1;
+#ifndef DEBUG
+    // delay the app start by 0.5-10 seconds, so not all out8-apps will return the same time the bus returns.
+    analogBegin();
+    pinMode(FLOATING_AD_PIN, INPUT_ANALOG);
+    delayAppStartms = analogRead(FLOATING_AD_CHANNEL); // try to read open/floating analog input IO12 /AD5 to get a random number
+    pinMode(FLOATING_AD_PIN, INPUT);
+    delayAppStartms = ((delayAppStartms % 20) +1) * msMultiplier;
+#endif
+
+#ifdef BI_STABLE
+    if (delayAppStartms < (3*msMultiplier))
+        delayAppStartms += 4*msMultiplier; // wait a little bit more, so capacitors can charge and we can switch the relays
+#endif
+
+    for (unsigned int i = 0; i<delayAppStartms; i +=msMultiplier)
+    {
+        delay(msMultiplier);
+        int a = !digitalRead(PIN_RUN);
+        digitalWrite(PIN_RUN, a); // toggle RUN-LED
+    }
+#ifdef DEBUG
+    digitalWrite(PIN_RUN, 1); // switch RUN-LED ON
+#else
+    digitalWrite(PIN_RUN, 0); // switch RUN-LED ON
+#endif
+}
+
 void initApplication(int lastRelayState)
 {
     unsigned int i;
     unsigned int initialChannelActions;
+
     int newRelaystate;
     Outputs::State initialOutputState[NO_OF_CHANNELS];
 
-#ifndef DEBUG
-    delay(1000); // delay((rand() % 5)* 1000); // FIXME delay the app start by some random seconds,
-                                               // so not all out8-apps will return the same time the bus returns.
-                                               // try to read open/floating analog input IO12 /AD5 to get a random number
-#endif
-
-#ifdef BI_STABLE
-    delay(2000); // wait a little bit, so capacitors can charge and we can switch the relays
-#endif
+    delayAppStart();
 
     // read & combine initialChannelAction's low & high byte from userEeprom
     // 2 bits for each channel: 0x00=LAST_STATE, 0x01=OPEN, 0x02=CLOSED, e.g. initialChannelAction: 0xAAAA Ch1-8 closed; 0x5555 Ch1-8 open; 0x0000 Ch1-8 last state
@@ -729,11 +760,6 @@ void initApplication(int lastRelayState)
 
 void stopApplication()
 {
-#ifndef BI_STABLE
-    pinMode(PIN_PWM, OUTPUT);
-    digitalWrite(PIN_PWM, 0);
-#endif
-
     // stop all running timers
     for (unsigned int i = 0; i < (sizeof(channel_timeout)/sizeof(channel_timeout[0])); i++)
     {
@@ -741,11 +767,15 @@ void stopApplication()
       channel_timeout[i].On.stop();
     }
 
+#ifndef BI_STABLE
+    pinMode(PIN_PWM, OUTPUT); //switch off PWM for mono-stable relays
+    digitalWrite(PIN_PWM, 1);
+#endif
+
     //switch off all possible active relay coils, to save some power
     for (unsigned int i = 0; i < sizeof(outputPins)/sizeof(outputPins[0]); i++)
-    {
         digitalWrite(outputPins[0], 0);
-    }
+
 
 #ifdef HAND_ACTUATION
     // switch all hand actuation LEDs off, to save some power

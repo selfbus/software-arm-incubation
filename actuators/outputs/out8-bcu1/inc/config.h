@@ -43,9 +43,10 @@
  *      bus fail detection
  */
 
-// #define IO_TEST // can be set, to perform a little test of all relays and hand actuation LED's
-
 #define NO_OF_HAND_PINS 8 // FIXME get rid of this NO_OF_HAND_PINS
+
+// #define IO_TEST // can be set, to perform a little test of all relays and hand actuation LED's
+// #define DEBUG_SERIAL // can be set, to send some debug messages over the serial port
 
 // #define BI_STABLE // replaced by build-variable ${relay_type}
 // #define HAND_ACTUATION // replaced by build-variable ${hand_actuation}
@@ -61,26 +62,29 @@
 #   define VBUS_AD_CHANNEL AD7
 
 #   ifndef BI_STABLE
-#      define VBUS_THRESHOLD_FAILED 1800 // FIXME 1.8V @ ADC-Pin of the LPC11xx, 1.8V is just selected for fast testing, needs further investigation
-                                         // depend's on used controller e.g.
-                                         // 4TE-ARM the voltage divider is R3/R12 (91K0 & 10K0)
-                                         // TS_ARM  the voltage divider is R3/R12 (91K0 & 10K0)
-#      define VBUS_THRESHOLD_RETURN 2000 // FIXME 2.0V @ ADC-Pin of the LPC11xx, 2.0V is just selected for fast testing, needs further investigation
+#      define VBUS_THRESHOLD_FAILED 24000 // millivoltage for normal relays
+#      define VBUS_THRESHOLD_RETURN 25000
 #   else
-#      define VBUS_THRESHOLD_FAILED 1630 // FIXME set correct millivoltage for bi-stable relays
-#      define VBUS_THRESHOLD_RETURN 1760 // FIXME set correct millivoltage for bi-stable relays
+#      define VBUS_THRESHOLD_FAILED 24500 // some relays don't work reliable below 24V@15ms,
+                                          // datasheet states 19.2V @ 50ms should work for Hongfa HFE20-1 24-1HSD-L2(359), but not with 15ms!
+#      define VBUS_THRESHOLD_RETURN 25500
 #   endif
 #endif
 
-
+/*
+ *  AD-pin used for "random" app start-up delay
+ */
+#define FLOATING_AD_PIN PIN_IO12
+#define FLOATING_AD_CHANNEL AD5
 
 
 
 /*
  * below defines normally shouldn't need any changes
  */
-#ifndef DEBUG
-#   undef IO_TEST // make sure this wont be in a release
+#ifndef DEBUG   // make sure this wont be in a release
+#   undef IO_TEST
+#   undef DEBUG_SERIAL
 #endif
 
 #ifdef OUT8

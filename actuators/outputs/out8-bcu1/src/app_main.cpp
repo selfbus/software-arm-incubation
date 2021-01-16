@@ -12,6 +12,10 @@
 #include "com_objs.h"
 #include <sblib/eib.h>
 #include <sblib/eib/sblib_default_objects.h>
+#include <sblib/analog_pin.h>
+#ifdef BUSFAIL
+#   include <sblib/math.h>
+#endif
 
 #ifndef BI_STABLE
 #   include "outputs.h"
@@ -22,6 +26,10 @@
 #ifdef BUSFAIL
 #    include "bus_voltage.h"
 #    include "app_nov_settings.h"
+#endif
+
+#ifdef DEBUG
+#    include <sblib/serial.h>
 #endif
 
 
@@ -110,6 +118,17 @@ void ioTest()
 #endif /* IO_TEST */
 }
 
+
+#ifdef DEBUG_SERIAL
+void initSerial()
+{
+    serial.setRxPin(PIO2_7);
+    serial.setTxPin(PIO2_8);
+    serial.begin(9600);
+    serial.println("out8 serial debug started");
+}
+#endif
+
 /*
  * Initialize the application.
  */
@@ -146,6 +165,9 @@ void setup()
     vBus.enableBusVRefMonitoring(VBUS_AD_PIN, VBUS_AD_CHANNEL, VBUS_THRESHOLD_FAILED, VBUS_THRESHOLD_RETURN);
 #endif
 
+#ifdef DEBUG_SERIAL
+    initSerial();
+#endif
 
     ioTest();
 
@@ -190,6 +212,10 @@ void loop()
     if (bus.idle())
     {
         waitForInterrupt();
+#ifdef DEBUG_SERIAL
+       serial.print("mV:");
+       serial.println(vBus.valuemV());
+#endif
     }
 }
 
@@ -224,8 +250,6 @@ void BusVoltageFail()
 #ifdef DEBUG
     digitalWrite(PIN_RUN, 0); // switch RUN-LED off, to save some power
 #endif
-
-
 }
 
 /*
@@ -233,6 +257,9 @@ void BusVoltageFail()
  */
 void BusVoltageReturn()
 {
+#ifdef DEBUG
+    digitalWrite(PIN_RUN, 1); // switch RUN-LED ON
+#endif
     //restore app settings
     if (!AppNovSetting.RecallAppData((unsigned char*)&AppData, sizeof(AppData))) // load custom app settings
     {
@@ -250,9 +277,39 @@ void BusVoltageReturn()
 #else
     initApplication();
 #endif
-
-#ifdef DEBUG
-    digitalWrite(PIN_RUN, 1); // switch RUN-LED ON
-#endif
 }
+
+int convertADmV(int valueAD)
+ {
+    // good approximation between 17 & 30V for the 4TE-ARM controller
+    if (valueAD > 2158)
+        return 30000;
+    else if (valueAD < 1546)
+        return 0;
+    else
+        return 0.0198*sq(valueAD) - 52.104*valueAD + 50375;
+
+    /*
+     *  4TE ARM-Controller coefficients found with following measurements:
+     *  ---------------------
+     *  | Bus mV  ADC-Value |
+     *  ---------------------
+     *  | 30284   2158      |
+     *  | 30006   2150      |
+     *  | 29421   2132      |
+     *  | 27397   2073      |
+     *  | 26270   2035      |
+     *  | 25210   1996      |
+     *  | 24094   1953      |
+     *  | 22924   1903      |
+     *  | 21081   1811      |
+     *  | 20003   1751      |
+     *  | 18954   1683      |
+     *  | 17987   1619      |
+     *  | 17007   1546      |
+     *  ---------------------
+     *
+    */
+ }
+
 #endif /* BUSFAIL */
