@@ -32,10 +32,5 @@
 			<type>2</type>
 			<locationURI>PARENT-3-PROJECT_LOC/common/hand-actuation</locationURI>
 		</link>
-		<link>
-			<name>src/memmappermod</name>
-			<type>2</type>
-			<locationURI>PARENT-3-PROJECT_LOC/common/memmappermod</locationURI>
-		</link>
 	</linkedResources>
 </projectDescription>

@@ -18,7 +18,7 @@ NonVolatileSetting::NonVolatileSetting(unsigned int flashBase, unsigned int flas
     memMapper_.addRange(0x0, flashSize);
 }
 
-MemMapperMod* NonVolatileSetting::GetMemMapperMod()
+MemMapper* NonVolatileSetting::GetMemMapper()
 {
     return &memMapper_;
 }

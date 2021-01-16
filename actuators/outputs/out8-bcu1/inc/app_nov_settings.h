@@ -14,20 +14,20 @@
 #define APP_NOV_SETTINGS_H_
 
 #include <sblib/eib.h>
-#include "MemMapperMod.h"
+#include <sblib/mem_mapper.h>
 
 
 class NonVolatileSetting
 {
     public:
         NonVolatileSetting(unsigned int flashBase, unsigned int flashSize);
-        MemMapperMod* GetMemMapperMod();
+        MemMapper* GetMemMapper();
         bool RecallAppData(unsigned char *appdata, unsigned int size);
         bool StoreApplData(unsigned char *appdata, unsigned int size);
     protected:
 
     private:
-        MemMapperMod memMapper_;
+        MemMapper memMapper_;
         NonVolatileSetting(){};
         unsigned char crc8(unsigned char *data, unsigned int size);
 };
