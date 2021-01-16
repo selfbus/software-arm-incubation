@@ -28,7 +28,12 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src/app-common</name>
+			<name>src/bus_voltage</name>
+			<type>2</type>
+			<location>D:/SVN/Selfbus Darthyson/software-arm-incubation/common/bus_voltage</location>
+		</link>
+		<link>
+			<name>src/hand-actuation</name>
 			<type>2</type>
 			<locationURI>PARENT-3-PROJECT_LOC/common/hand-actuation</locationURI>
 		</link>
