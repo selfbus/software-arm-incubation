@@ -134,12 +134,12 @@ void initSerial()
  */
 void setup()
 {
-#ifdef DEBUG
     // first set pin mode for Info & Run LED
     pinMode(PIN_INFO, OUTPUT); // this also sets pin to high/true
     pinMode(PIN_RUN, OUTPUT); // this also sets pin to high/true
-    // then set value
+    // then set values
     digitalWrite(PIN_INFO, 0);
+#ifdef DEBUG
     digitalWrite(PIN_RUN, 1);
 #endif
 
@@ -224,18 +224,21 @@ void loop_noapp()
     waitForInterrupt();
 };
 
-#ifdef BUSFAIL
+
 
 void ResetDefaultApplicationData()
 {
+#ifdef BUSFAIL
     AppData.relaisstate = 0x00;
+#endif
 }
 /*
  * will be called by the bus_voltage.h ISR which handles the ADC interrupt for the bus voltage.
  */
 void BusVoltageFail()
 {
-    pinMode(PIN_INFO, OUTPUT); // even in non DEBUG flash Info LED to display app adata storing
+#ifdef BUSFAIL
+    pinMode(PIN_INFO, OUTPUT); // even in non DEBUG flash Info LED to display app data storing
     digitalWrite(PIN_INFO, 1);
 
     AppData.relaisstate = getRelaysState();
@@ -250,6 +253,7 @@ void BusVoltageFail()
 #ifdef DEBUG
     digitalWrite(PIN_RUN, 0); // switch RUN-LED off, to save some power
 #endif
+#endif
 }
 
 /*
@@ -257,6 +261,7 @@ void BusVoltageFail()
  */
 void BusVoltageReturn()
 {
+#ifdef BUSFAIL
 #ifdef DEBUG
     digitalWrite(PIN_RUN, 1); // switch RUN-LED ON
 #endif
@@ -277,10 +282,12 @@ void BusVoltageReturn()
 #else
     initApplication();
 #endif
+#endif
 }
 
 int convertADmV(int valueAD)
  {
+#ifdef BUSFAIL
     // good approximation between 17 & 30V for the 4TE-ARM controller
     if (valueAD > 2158)
         return 30000;
@@ -310,6 +317,7 @@ int convertADmV(int valueAD)
      *  ---------------------
      *
     */
- }
+#endif
+}
 
-#endif /* BUSFAIL */
+
