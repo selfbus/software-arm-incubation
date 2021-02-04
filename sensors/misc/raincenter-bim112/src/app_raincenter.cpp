@@ -298,6 +298,7 @@ void initApplication(void)
     serial.setTxPin(RC_TX_PIN);
     serial.setRxPin(RC_RX_PIN);
     serial.begin(RAINCENTER_BAUDRATE);
+
     PollState = Idle;
     rcMessageLengthWaitingFor = -1;
     RaincenterPollTimer.start(1);
