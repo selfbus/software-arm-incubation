@@ -42,14 +42,24 @@
  *            }
  *        }
  *
+ *        void loop_noapp()
+ *        {
+ *            .... your code ....
+ *            // check the bus voltage, should be done before waitForInterrupt()
+ *            vBus.checkPeriodic();
+ *            waitForInterrupt();
+ *        }
+ *
  *        void BusVoltageFail()       //  will be called by the ISR in case of bus voltage failure.
  *        {
  *            .... your code for a bus failure ....
+ *            bcu.end();
  *        }
  *
  *        void BusVoltageReturn()     //  will be called by the ISR in case of bus voltage return.
  *        {
  *            .... your code for a bus return ....
+ *            bcu.begin(...);
  *        }
  *
  *        int convertADmV(int valueAD)
@@ -58,12 +68,14 @@
  *
  *            // e.g. for a 4TE-ARM controller:
  *            // good approximation between 17 & 30V
- *            if (valueAD > 2150)
+ *            if (valueAD > 2158)
  *                return 30000;
  *            else if (valueAD < 1546)
  *                return 0;
  *            else
- *                return 0.0198*valueAD*valueAD - 52.104*valueAD + 50375;
+ *                return 0.019812094*sq(valueAD) - // a*x^2
+ *                       52.1039160138*valueAD +   // b*x
+ *                       50375.4168671156;         // c
  *
  *            4TE ARM-Controller coefficients found with following measurements:
  *            ---------------------
@@ -83,6 +95,19 @@
  *            | 17987   1619      |
  *            | 17007   1546      |
  *            ---------------------
+ *        }
+ *
+ *        int convertmVAD(int valuemV)
+ *        {
+ *            // good approximation between 17 & 30V for the 4TE-ARM controller
+ *            if (valuemV >= 30284)
+ *                return 2158;
+ *            else if (valuemV < 17007)
+ *                return 0;
+ *            else
+ *                return -0.0000018353*sq(valuemV) + // a*x^2
+ *                        0.132020974*valuemV -      // b*x
+ *                        161.7265204893;            // c
  *        }
  */
 
@@ -106,6 +131,12 @@ void BusVoltageReturn();
  * This function is called to convert AD-values to millivolts
  */
 int convertADmV(int valueAD);
+
+/*
+ * implement in your code
+ * This function is called to convert millivolts to AD-values
+ */
+int convertmVAD(int valuemV);
 
 class BusVoltage
 {

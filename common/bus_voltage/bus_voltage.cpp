@@ -29,14 +29,14 @@
 #define ADC_MAX_VOLTAGE 3300 // 3.3V VDD on LPC11xx
 
 // careful, variables can change any time by the Isr ADC_IRQHandler
-static volatile bool isrCallBusFailed = false;                      // true then the isr detected a bus fail
-static volatile bool isrCallBusReturn = false;                      // true then the isr detected a bus return
-static volatile bool isrwaitingADC = false;                         // true while we wait for an ADC-conversion to complete
-static volatile bool isrbusVoltageFailed = false;                   // true while bus voltage has failed
-static volatile int isrbusVoltagethresholdFailed = 23000;   // milli-voltage threshold below which a bus failure should be reported
-static volatile int isrbusVoltagethresholdReturn = 25000;   // milli-voltage threshold above which a bus return should be reported
-static volatile int isrADChannel = AD7;                             // default AD channel for 4TE & TS_ARM controller
-static volatile unsigned int isrmeanbusVoltage = 0;                 // mean bus voltage in milli-volt
+static volatile bool isrCallBusFailed = false;             // true then the isr detected a bus fail
+static volatile bool isrCallBusReturn = false;             // true then the isr detected a bus return
+static volatile bool isrwaitingADC = false;                // true while we wait for an ADC-conversion to complete
+static volatile bool isrbusVoltageFailed = false;          // true while bus voltage has failed
+static volatile int isrbusVoltagethresholdFailed = 1903;   // AD-value threshold below which a bus failure should be reported
+static volatile int isrbusVoltagethresholdReturn = 1996;   // AD-value threshold above which a bus return should be reported
+static volatile int isrADChannel = AD7;                    // default AD channel for 4TE & TS_ARM controller
+static volatile  int isrmeanbusVoltage = 0;                // mean bus voltage as AD-value
 static volatile unsigned int isrADSampleCount = 0;
 
 /*
@@ -47,7 +47,6 @@ extern "C" void ADC_IRQHandler(void)
     // Disable interrupt so it won't keep firing
     disableInterrupt(ADC_IRQn);
     unsigned int regVal;
-    int mVBus;
 
     regVal = LPC_ADC->DR[isrADChannel];
 
@@ -80,15 +79,14 @@ extern "C" void ADC_IRQHandler(void)
         isrmeanbusVoltage = regVal;
     }
 
-    mVBus = convertADmV(isrmeanbusVoltage);
-    if (mVBus != -1)
+    if (isrmeanbusVoltage != -1)
     {
-        if (!isrbusVoltageFailed && (mVBus <= isrbusVoltagethresholdFailed)) // bus voltage failed
+        if (!isrbusVoltageFailed && (isrmeanbusVoltage <= isrbusVoltagethresholdFailed)) // bus voltage failed
         {
             isrbusVoltageFailed = true;
             isrCallBusFailed = true;
         }
-        else if (isrbusVoltageFailed && (mVBus > isrbusVoltagethresholdReturn)) // bus voltage returned
+        else if (isrbusVoltageFailed && (isrmeanbusVoltage > isrbusVoltagethresholdReturn)) // bus voltage returned
         {
             isrbusVoltageFailed = false;
             isrCallBusReturn = true;
@@ -126,8 +124,8 @@ void BusVoltage::enableBusVRefMonitoring(int ADPin, int ADChannel, unsigned int 
 {
     ADPin_ = ADPin;
     isrADChannel = ADChannel;
-    isrbusVoltagethresholdFailed = thresholdVoltageFailed;
-    isrbusVoltagethresholdReturn = thresholdVoltageReturn;
+    isrbusVoltagethresholdFailed = convertmVAD(thresholdVoltageFailed);
+    isrbusVoltagethresholdReturn = convertmVAD(thresholdVoltageReturn);
     analogBegin();
     pinMode(ADPin_, INPUT_ANALOG); // for TS_ARM & 4TE controller Analog channel 7 (pin PIO1_11)
     resetIsrData();
