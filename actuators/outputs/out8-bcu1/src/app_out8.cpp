@@ -640,25 +640,22 @@ static void _sendFeedbackObjects(bool forcesendFeedbackObjects)
 static void _switchObjects(void)
 {
     _sendFeedbackObjects();
-#ifdef DEBUG
     relays.updateOutputs();
-#else
-    relays.updateOutputs();
-#endif
-
 }
 
 void delayAppStart()
 {
+    // FIXME floating AD-pin approch doesnt really work
     const int msMultiplier = 500;
     unsigned int delayAppStartms = 1;
 #ifndef DEBUG
+    delay(msMultiplier); // always delay a little bit to let the AD-Pin "float"
     // delay the app start by 0.5-10 seconds, so not all out8-apps will return the same time the bus returns.
     analogBegin();
     pinMode(FLOATING_AD_PIN, INPUT_ANALOG);
     delayAppStartms = analogRead(FLOATING_AD_CHANNEL); // try to read open/floating analog input IO12 /AD5 to get a random number
     pinMode(FLOATING_AD_PIN, INPUT);
-    delayAppStartms = ((delayAppStartms % 20) +1) * msMultiplier;
+    delayAppStartms = (delayAppStartms % 20) * msMultiplier;
 #endif
 
 #ifdef BI_STABLE
@@ -781,6 +778,9 @@ void stopApplication()
     // switch all hand actuation LEDs off, to save some power
     handAct.setallLedState(false);
 #endif
+
+    // finally stop the bcu
+    bcu.end();
 }
 
 unsigned int  getRelaysState()

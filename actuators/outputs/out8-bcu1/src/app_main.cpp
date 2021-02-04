@@ -212,7 +212,7 @@ void loop()
     if (bus.idle())
     {
         waitForInterrupt();
-#ifdef DEBUG_SERIAL
+#if defined DEBUG_SERIAL && BUSFAIL
        serial.print("mV:");
        serial.println(vBus.valuemV());
 #endif
@@ -221,7 +221,17 @@ void loop()
 
 void loop_noapp()
 {
+#ifdef BUSFAIL
+    // check the bus voltage, should be done before waitForInterrupt()
+    vBus.checkPeriodic();
+#endif
     waitForInterrupt();
+
+#if defined DEBUG_SERIAL && BUSFAIL
+       serial.print("mV:");
+       serial.println(vBus.valuemV());
+#endif
+#
 };
 
 
@@ -235,9 +245,9 @@ void ResetDefaultApplicationData()
 /*
  * will be called by the bus_voltage.h ISR which handles the ADC interrupt for the bus voltage.
  */
+#ifdef BUSFAIL
 void BusVoltageFail()
 {
-#ifdef BUSFAIL
     pinMode(PIN_INFO, OUTPUT); // even in non DEBUG flash Info LED to display app data storing
     digitalWrite(PIN_INFO, 1);
 
@@ -253,15 +263,15 @@ void BusVoltageFail()
 #ifdef DEBUG
     digitalWrite(PIN_RUN, 0); // switch RUN-LED off, to save some power
 #endif
-#endif
 }
+#endif // BUSFAIL
 
 /*
  * will be called by the bus_voltage.h ISR which handles the ADC interrupt for the bus voltage.
  */
+#ifdef BUSFAIL
 void BusVoltageReturn()
 {
-#ifdef BUSFAIL
 #ifdef DEBUG
     digitalWrite(PIN_RUN, 1); // switch RUN-LED ON
 #endif
@@ -277,24 +287,24 @@ void BusVoltageReturn()
 #endif
     }
 
-#ifdef BUSFAIL
+    bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
     initApplication(AppData.relaisstate);
-#else
-    initApplication();
-#endif
-#endif
 }
+#endif // BUSFAIL
 
+#ifdef BUSFAIL
 int convertADmV(int valueAD)
  {
-#ifdef BUSFAIL
     // good approximation between 17 & 30V for the 4TE-ARM controller
     if (valueAD > 2158)
         return 30000;
     else if (valueAD < 1546)
         return 0;
     else
-        return 0.0198*sq(valueAD) - 52.104*valueAD + 50375;
+        return 0.019812094*sq(valueAD) - // a*x^2
+               52.1039160138*valueAD +   // b*x
+               50375.4168671156;         // c
+        // return 0.0198*sq(valueAD) - 52.104*valueAD + 50375;
 
     /*
      *  4TE ARM-Controller coefficients found with following measurements:
@@ -317,7 +327,43 @@ int convertADmV(int valueAD)
      *  ---------------------
      *
     */
-#endif
 }
+#endif // BUSFAIL
 
+#ifdef BUSFAIL
+int convertmVAD(int valuemV)
+{
 
+    // good approximation between 17 & 30V for the 4TE-ARM controller
+    if (valuemV >= 30284)
+        return 2158;
+    else if (valuemV < 17007)
+        return 0;
+    else
+        return -0.0000018353*sq(valuemV) + // a*x^2
+                0.132020974*valuemV -      // b*x
+                161.7265204893;            // c
+
+    /*
+     *  4TE ARM-Controller coefficients found with following measurements:
+     *  ---------------------
+     *  | Bus mV  ADC-Value |
+     *  ---------------------
+     *  | 30284   2158      |
+     *  | 30006   2150      |
+     *  | 29421   2132      |
+     *  | 27397   2073      |
+     *  | 26270   2035      |
+     *  | 25210   1996      |
+     *  | 24094   1953      |
+     *  | 22924   1903      |
+     *  | 21081   1811      |
+     *  | 20003   1751      |
+     *  | 18954   1683      |
+     *  | 17987   1619      |
+     *  | 17007   1546      |
+     *  ---------------------
+     *
+    */
+}
+#endif // BUSFAIL
