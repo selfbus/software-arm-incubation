@@ -62,7 +62,8 @@ int HandActuation::check(void)
             // turn on all LED's, except the one for the button under testing (number)
             for (unsigned int i = 0; i < GetHandPinCount(); i++)
                 if (i != number) digitalWrite(handPins[i], true);
-
+            delayMicroseconds(5);   // this delay is needed for compiler settings other then -O0 (Optimize Level None), otherwise detection doesn't work 100%
+                                    // works also with delayMicroseconds(1);
             buttonundertestingispressed = !digitalRead(HAND_READBACK); // read while all LED's are on, except the one for our button we check right now, low=>button to check is pressed
 
             // restore LED states
