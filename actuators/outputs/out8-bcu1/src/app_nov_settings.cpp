@@ -35,6 +35,9 @@ bool NonVolatileSetting::RecallAppData(unsigned char *appdata, unsigned int size
     byte *StoragePtr;
     StoragePtr = memMapper_.memoryPtr(0, false);
 
+    if (StoragePtr == nullptr)
+        return 0;
+
     unsigned char* p_save = appdata; // save address of appdata
     for (unsigned int i = 0; i < size; i++)
     {
@@ -55,7 +58,7 @@ bool NonVolatileSetting::StoreApplData(unsigned char *appdata, unsigned int size
     memMapper_.writeMem(0, 0); // writeMem() aktiviert die passende Speicherseite, entgegen zu memoryPtr()
     StoragePtr = memMapper_.memoryPtr(0, false);
 
-    if (StoragePtr == NULL)
+    if (StoragePtr == nullptr)
         return 0;
 
     unsigned char* p_save = appdata; // save address of appdata

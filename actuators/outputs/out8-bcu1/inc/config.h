@@ -168,10 +168,10 @@
 #       endif
 
         /*
-         * TODO check which bi-stable configuration this should be?
+         * DONE check which bi-stable configuration this should be?
          * looks like a try to implement INVERT functionality
          * which isn't really needed, cause invert can be done via userEeprom[APP_CLOSER_MODE] (ETS)
-         * and initialisation of relays void Outputs::begin (unsigned int initial, unsigned int inverted)
+         * and initialization of relays void Outputs::begin (unsigned int initial, unsigned int inverted)
          */
 #       if 0
             const int outputPins[NO_OF_OUTPUTS] =
@@ -215,17 +215,5 @@
 #define MANUFACTURER 0x04   // We are a "Jung 2138.10" device, version 0.1
 #define DEVICETYPE 0x2060
 #define APPVERSION 1
-
-/* this is used no where. Why its here ?
-extern "C" const char APP_VERSION[13] = "O08.10  1.00";
-
-const char * getAppVersion()
-{
-    return APP_VERSION;
-}
-
-// volatile const char * v = getAppVersion();
-*/
-
 
 #endif /* CONFIG_H_ */
