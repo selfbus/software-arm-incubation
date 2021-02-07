@@ -1597,7 +1597,6 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
-					<stringMacro name="BL" type="VALUE_TEXT" value="BL_HAS_BOOTLOADER_CONFIG"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.0"/>
 				</macros>
 				<externalSettings/>
@@ -1769,6 +1768,7 @@
 		<configuration configurationName="Debug_Updater"/>
 		<configuration configurationName="Debug OUT8 4TE BUSFAIL"/>
 		<configuration configurationName="Debug o8 4t ha"/>
+		<configuration configurationName="Flashstart 0x3000 Debug o8 4t ha"/>
 		<configuration configurationName="Debug OUT8 4TE HAND BI-STABLE BUSFAIL"/>
 		<configuration configurationName="Debug o8 4t bu ha"/>
 		<configuration configurationName="Debug OUT8 4TE HAND BUSFAIL"/>
