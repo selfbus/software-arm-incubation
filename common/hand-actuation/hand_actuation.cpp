@@ -68,12 +68,21 @@ int HandActuation::check(void)
 
             // restore LED states
             for (unsigned int i = 0, bitMask = 0x01; i < GetHandPinCount(); i++, bitMask = bitMask << 1)
-                digitalWrite(handPins[i], _ledState & bitMask);
+            {
+                if (_blinkState & bitMask)
+                    digitalWrite(handPins[i], blinkOnOffState);
+                else
+                    digitalWrite(handPins[i], _ledState & bitMask);
+            }
         }
-
-        // restore LEDs status for the button under testing
-        if (lastLEDState)
-            digitalWrite(handPins[number], lastLEDState);
+        else
+        {
+            // restore LED status for the button under testing
+            if ((_blinkState & (1 << number)))
+                digitalWrite(handPins[number], blinkOnOffState);
+            else
+                digitalWrite(handPins[number], lastLEDState);
+        }
 
         if (buttonundertestingispressed)
         {   // this button is currently pressed
@@ -99,16 +108,15 @@ int HandActuation::check(void)
     } // if (_handDelay.expired()
 
 
-    if (blinkTimer.expired())
+    if (blinkTimer.expired() || blinkTimer.stopped())
     {
-        unsigned int bitMask = 0x01; // FIXME this should never have worked, bitMask is no where shifted
-        blinkTimer.start(BLINK_TIME);
-        for (unsigned int i = 0; i < GetHandPinCount(); i++)
+        for (unsigned int i = 0, bitMask = 0x01; i < GetHandPinCount(); i++, bitMask = bitMask << 1)
         {
             if (_blinkState & bitMask)
                 digitalWrite(handPins[i], blinkOnOffState);
         }
         blinkOnOffState = !blinkOnOffState;
+        blinkTimer.start(BLINK_TIME);
     }
     return result;
 }
