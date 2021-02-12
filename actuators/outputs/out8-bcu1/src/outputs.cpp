@@ -99,7 +99,7 @@ unsigned int Outputs::updateOutput(unsigned int channel)
     }
 
 #ifdef HAND_ACTUATION
-    handAct.setLedState(channel, value);
+    handAct.setLedState(channel, value, false);
 #endif
 
     _prevRelayState ^= mask; // toggle the bit of the channel we changed

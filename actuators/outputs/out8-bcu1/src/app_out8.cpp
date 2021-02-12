@@ -14,7 +14,6 @@
 #include <sblib/eib/com_objects.h>
 #include <sblib/eib/user_memory.h>
 
-
 #ifndef BI_STABLE
 #   include "outputs.h"
 #else
@@ -563,9 +562,8 @@ void objectUpdated(int objno)
         if (channel_timeout[objno].On.stopped() && channel_timeout[objno].Off.stopped())
         {
             relays.updateChannel(objno, value);
-            if (value != objectRead(objno)) // FIXME check if this "if ()" doesn't have other side effects
-                objectWrite(objno, value);  // objectWrite with set ETS update-flags leads to a infinite loop of objectUpdated & objectWrite
-                                            // see https://selfbus.org/forum/viewtopic.php?p=4762#p4762
+            if (value != objectRead(objno)) // objectWrite with set ETS update-flags leads to a infinite loop of objectUpdated & objectWrite
+                objectWrite(objno, value);  // see https://selfbus.org/forum/viewtopic.php?p=4762#p4762
         }
     }
 
@@ -645,7 +643,6 @@ static void _switchObjects(void)
 
 void delayAppStart()
 {
-    // FIXME floating AD-pin approch doesnt really work
     const int msMultiplier = 500;
     unsigned int delayAppStartms = 1;
 #ifndef DEBUG
@@ -653,7 +650,11 @@ void delayAppStart()
     // delay the app start by 0.5-10 seconds, so not all out8-apps will return the same time the bus returns.
     analogBegin();
     pinMode(FLOATING_AD_PIN, INPUT_ANALOG);
-    delayAppStartms = analogRead(FLOATING_AD_CHANNEL); // try to read open/floating analog input IO12 /AD5 to get a random number
+    for (int i = 0; i<10;i++) // this loop is needed so the analog will be more "random"
+    {
+        delayAppStartms = analogRead(FLOATING_AD_CHANNEL); // try to read open/floating analog input IO12 /AD5 to get a random number
+        delay(10);
+    }
     pinMode(FLOATING_AD_PIN, INPUT);
     delayAppStartms = (delayAppStartms % 20) * msMultiplier;
 #endif
