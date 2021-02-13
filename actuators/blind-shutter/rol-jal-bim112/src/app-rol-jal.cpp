@@ -19,10 +19,12 @@
 #include <sblib/io_pin_names.h>
 
 #ifdef HAND_ACTUATION
-#include "hand_actuation.h"
+#   include "hand_actuation.h"
 #endif
 
-//#define MEM_TEST
+#ifdef HAND_ACTUATION
+HandActuation handAct = HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
+#endif
 
 Channel * channels[NO_OF_CHANNELS];
 #ifdef MEM_TEST

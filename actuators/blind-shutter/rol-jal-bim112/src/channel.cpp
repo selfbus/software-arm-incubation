@@ -79,6 +79,10 @@ Channel::Channel(unsigned int number, unsigned int address)
   , targetPosition(-1)
   , savedPosition(-1)
 {
+#ifdef HAND_ACTUATION
+    handAct_ = nullptr;
+#endif
+
     for (unsigned int i = number * 2 ;i <= (number * 2 + 1); i++)
     {
         pinMode(outputPins [i], OUTPUT);
@@ -303,8 +307,11 @@ void Channel::stop(void)
         switchOutputPin(outputPins[number * 2 + 0], OUTPUT_LOW);
         switchOutputPin(outputPins[number * 2 + 1], OUTPUT_LOW);
 #ifdef HAND_ACTUATION
-        handAct.setLedState(number * 2 + 0, 0);
-        handAct.setLedState(number * 2 + 1, 0);
+       if (handAct_ != nullptr)
+       {
+            handAct_->setLedState(number * 2 + 0, 0);
+            handAct_->setLedState(number * 2 + 1, 0);
+       }
 #endif
         state     = PROTECT;
         timeout.start(pauseChangeDir);
@@ -436,7 +443,8 @@ void Channel::_handleState(void)
             PWMDisabled.start(PWM_TIMEOUT); // start timer to reset PWM back to normal pulse width
 
 #ifdef HAND_ACTUATION
-            handAct.setLedState(outNo, 1);
+            if (handAct_ != nullptr)
+                handAct_->setLedState(outNo, 1);
 #endif
             timeout.start(motorOnDelay);
             state = DELAY;
@@ -791,3 +799,10 @@ void Channel::_moveToOneBitPostion()
 {
     moveTo(oneBitPosition);
 }
+
+#ifdef HAND_ACTUATION
+void Channel::setHandActuation(HandActuation* hand)
+{
+    handAct_ = hand;
+}
+#endif
