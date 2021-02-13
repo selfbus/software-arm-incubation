@@ -24,7 +24,7 @@ const unsigned int zeroDetectClrDelay = 0x0240; //0x0220 Omron G5Q-1A EU 10A cle
 #define ZD_RESET ((zeroDetectSetDelay > zeroDetectClrDelay ? zeroDetectSetDelay : zeroDetectClrDelay) + 1)
 
 
-void Outputs::begin (unsigned int initial, unsigned int inverted, unsigned int channelcount)
+void Outputs::begin(unsigned int initial, unsigned int inverted, unsigned int channelcount)
 {
 #ifndef BI_STABLE
     pinMode(PIN_PWM, OUTPUT_MATCH);  // configure digital pin PIO3_2(PWM) to match MAT2 of timer16 #0
@@ -47,6 +47,11 @@ void Outputs::begin (unsigned int initial, unsigned int inverted, unsigned int c
     _relayState     = initial;
     _prevRelayState = (~_relayState) & ((1 << _channelcount) -1);
     _inverted       = inverted;
+
+#ifdef HAND_ACTUATION
+    handAct2_ = nullptr;
+#endif
+
 #ifdef ZERO_DETECT
     _state           = 0; // wait for next required switch
     _port_0_set = _port_0_clr = _port_2_set = _port_2_clr = 0;
@@ -61,6 +66,13 @@ void Outputs::begin (unsigned int initial, unsigned int inverted, unsigned int c
     timer32_0.interrupts();
 #endif
 }
+
+#ifdef HAND_ACTUATION
+void Outputs::setHandActuation(HandActuation* hand)
+{
+    handAct2_ = hand;
+}
+#endif
 
 /*
  * returns true in case a switching action was started which drained the bus
@@ -99,7 +111,8 @@ unsigned int Outputs::updateOutput(unsigned int channel)
     }
 
 #ifdef HAND_ACTUATION
-    handAct.setLedState(channel, value, false);
+    if (handAct2_ != nullptr)
+        handAct2_->setLedState(channel, value, false);
 #endif
 
     _prevRelayState ^= mask; // toggle the bit of the channel we changed

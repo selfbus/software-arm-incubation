@@ -25,7 +25,7 @@ MemMapper* NonVolatileSetting::GetMemMapper()
 
 bool NonVolatileSetting::RecallAppData(unsigned char *appdata, unsigned int size)
 {
-    /* TODO try to optimize flash writing performance as mentioned by Mirko in Slack
+    /* XXX try to optimize flash writing performance as mentioned by Mirko in Slack
      * Wenn man sich doppelt soviel Blöcke gönnen kann
      * könnte man die Backup "Bank" immer schon zu Programmstart löschen.
      * Beim Backup dann eine Sequenznumner + Checksumme schreiben.

@@ -35,9 +35,8 @@
  * according to the datasheet relay must operate @max.75% of rated coil voltage => ~18V
  * PWM operation: first 100ms 100% of rated voltage (24V) then 30% (7.2V) for holding
  *
- * TODO: above PWM settings don't fit the datasheet spec.
+ * XXX: above PWM settings don't fit the datasheet spec.
  */
-
 
 class Outputs
 {
@@ -67,6 +66,10 @@ public:
     void clrOutputs(void);
     unsigned int channelCount();
 
+#ifdef HAND_ACTUATION
+    void setHandActuation(HandActuation* hand);
+#endif
+
 #ifdef ZERO_DETECT
     void zeroDetectHandler(void);
 #endif
@@ -83,6 +86,10 @@ protected:
     unsigned int _port_2_set;
     unsigned int _port_0_clr;
     unsigned int _port_2_clr;
+
+#ifdef HAND_ACTUATION
+    HandActuation* handAct2_;
+#endif
 
 #ifdef ZERO_DETECT
     unsigned int _state;

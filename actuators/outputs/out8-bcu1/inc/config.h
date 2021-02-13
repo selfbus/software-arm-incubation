@@ -43,8 +43,6 @@
  *      bus fail detection
  */
 
-#define NO_OF_HAND_PINS 8 // FIXME get rid of this NO_OF_HAND_PINS
-
 // #define IO_TEST // can be set, to perform a little test of all relays and hand actuation LED's
 // #define DEBUG_SERIAL // can be set, to send some debug messages over the serial port
 
@@ -53,6 +51,20 @@
 
 // #define ZERO_DETECT // no more supported? at least it's mentioned in a comment from 2014
                        // https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_16A_4TE
+
+/*
+ *  hand actuation pin configuration
+ */
+#ifdef HAND_ACTUATION
+#   define NO_OF_HAND_PINS 8
+#   define READBACK_PIN PIN_LT9
+#   define BLINK_TIME 500
+    // LedTaster_4TE_3.54 : links oben = Kanal 1 nach unten aufsteigende Kanalnummer ; rechts oben = Kanal 5 ; nach unten aufsteigende Kanalnummer
+    const unsigned int handPins[NO_OF_HAND_PINS] = { PIN_LT1, PIN_LT2, PIN_LT3, PIN_LT4, PIN_LT5, PIN_LT6, PIN_LT7, PIN_LT8 };
+
+    // for weatherstation-bim112 see commit 870c9801bea5aa616c22fde29c8219e4cb5f28b6
+    // const unsigned int handPins[8] = { PIN_LT5, PIN_LT6, PIN_LT1, PIN_LT2, PIN_LT3, PIN_LT4, PIN_LT7, PIN_LT8 };
+#endif
 
 /*
  *  bus power-failure configuration

@@ -45,6 +45,10 @@ enum timedFunctionState {tfsUnknown = 0x80, tfsDisabled = 0, tfsOnDelayed = 1, t
 // state of the application
 static ChannelTimeOutTimer channel_timeout[NO_OF_CHANNELS];
 
+#ifdef HAND_ACTUATION
+HandActuation handAct = HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
+#endif
+
 // internal functions
 static void          _switchObjects(void);
 static void          _sendFeedbackObjects(bool forceSendFeedback = false);
@@ -751,6 +755,9 @@ void initApplication(int lastRelayState)
 
     // set the initial relays state, this needs to be done as last operation before real
     relays.begin(newRelaystate, userEeprom[APP_CLOSER_MODE], NO_OF_CHANNELS);
+#ifdef HAND_ACTUATION
+    relays.setHandActuation(&handAct);
+#endif
 
     // switch the relays according to newRelaystate and send feedback objects
     _switchObjects();

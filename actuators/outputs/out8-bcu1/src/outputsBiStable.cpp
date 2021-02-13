@@ -40,7 +40,8 @@ unsigned int OutputsBiStable::updateOutput(unsigned int channel)
     _pwm_timeout.start(ON_DELAY);
 
 #ifdef HAND_ACTUATION
-    handAct.setLedState(channel, value);
+    if (handAct2_ != nullptr)
+        handAct2_->setLedState(channel, value);
 #endif
     return true;
 }

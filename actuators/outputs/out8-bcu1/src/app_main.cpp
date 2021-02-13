@@ -146,6 +146,7 @@ void initSerial()
 void setup()
 {
     volatile const char * v = getAppVersion();      // Ensure APP ID is not removed by linker (its needed in the bus updater)
+    v++;                                            // just to avoid compiler warning of unused variable
     // first set pin mode for Info & Run LED
     pinMode(PIN_INFO, OUTPUT); // this also sets pin to high/true
     pinMode(PIN_RUN, OUTPUT); // this also sets pin to high/true
