@@ -103,8 +103,10 @@ int HandActuation::check(void)
         {
             number_ = 0;
             mask_  = 0x1;
+            handDelay_.start(delayAtEndMs); // FIXME test this
         }
-        handDelay_.start(delayBetweenButtonsMs);
+        else
+            handDelay_.start(delayBetweenButtonsMs);
     } // if (_handDelay.expired()
 
 
@@ -171,10 +173,3 @@ void HandActuation::setallLedState(bool state)
 
 Timeout HandActuation::blinkTimer;
 bool    HandActuation::blinkOnOffState = false;
-/*
-#   define NO_OF_HAND_PINS 8
-#   define READBACK_PIN PIN_LT9
-#   define BLINK_TIME 500
-    unsigned int handPins[NO_OF_HAND_PINS] = { PIN_LT1, PIN_LT2, PIN_LT3, PIN_LT4, PIN_LT5, PIN_LT6, PIN_LT7, PIN_LT8 };
-HandActuation handAct = HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
-*/

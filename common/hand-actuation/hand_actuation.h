@@ -26,6 +26,7 @@ public:
 
 protected:
     static const unsigned int delayBetweenButtonsMs = 10;
+    static const unsigned int delayAtEndMs = 100;
     static Timeout blinkTimer;
     static bool blinkOnOffState;
     unsigned int GetHandPinCount();
@@ -43,8 +44,6 @@ protected:
 private:
     HandActuation();
 };
-
-// extern HandActuation handAct;
 
 inline bool HandActuation::ledState(unsigned int led)
 {
