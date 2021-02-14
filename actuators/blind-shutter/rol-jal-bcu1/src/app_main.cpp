@@ -11,11 +11,8 @@
 
 #include <sblib/eib.h>
 #include <sblib/eib/sblib_default_objects.h>
+#include <sblib/io_pin_names.h>
 #include "app-rol-jal.h"
-
-// Digital pin for LED
-#define PIO_INFO PIO2_6
-#define PIO_RUN  PIO3_3
 
 /*
  * Initialize the application.
@@ -24,8 +21,9 @@ void setup()
 {
     bcu.begin(4, 0x2060, 1); // We are a "Jung 2138.10" device, version 0.1
 
-    pinMode(PIO_INFO, OUTPUT);	// Info LED
-    pinMode(PIO_RUN,  OUTPUT);	// Run LED
+    pinMode(PIN_INFO, OUTPUT);	// Info LED
+    pinMode(PIN_RUN,  OUTPUT);	// Run LED
+
     initApplication();
 }
 
