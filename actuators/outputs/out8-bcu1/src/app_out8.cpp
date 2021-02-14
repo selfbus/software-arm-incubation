@@ -264,7 +264,12 @@ logicResult _init_logic_function(const int objno, unsigned int value)
         }
         break; // case sftBlocking
 
-    case sftConstrainedLead: // constrained lead
+    case sftConstrainedLead: /* constrained lead
+                                0x00 no priority, off
+                                0x01 no priority, on
+                                0x02 priority, off
+                                0x03 priority, on
+                             */
         valueConstrainedLead = objectRead (COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber);
         if (valueConstrainedLead & 0b10)
         {   // constrained lead is active for this channel
@@ -320,6 +325,8 @@ static void _handle_logic_function(int objno, unsigned int value)
                 // cleared -> clear also the real object value
                 objectSetValue(sfcfg.specialFuncOutput, false);
                 value = false;
+                channel_timeout[sfcfg.specialFuncOutput].On.stop();
+                channel_timeout[sfcfg.specialFuncOutput].Off.stop();
             }
             else
                 value &= logicState;
@@ -373,7 +380,12 @@ static void _handle_logic_function(int objno, unsigned int value)
             relays.setBlocked(sfcfg.specialFuncOutput);
         break; // case sftBlocking
 
-    case sftConstrainedLead: // constrained lead
+    case sftConstrainedLead: /* constrained lead
+                                0x00 no priority, off
+                                0x01 no priority, on
+                                0x02 priority, off
+                                0x03 priority, on
+                             */
         value = objectRead (COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber);
         if (value & 0b10)
         {   // constrained lead is active for this channel
@@ -383,7 +395,8 @@ static void _handle_logic_function(int objno, unsigned int value)
         else
         {   // the constrained lead was just deactivated
             // restore the output based on the object state
-            relays.updateChannel(sfcfg.specialFuncOutput, objectRead (sfcfg.specialFuncOutput));
+            if ((objno >= COMOBJ_SPECIAL1) && ((objno >= COMOBJ_SPECIAL4)))
+                relays.updateChannel(sfcfg.specialFuncOutput, objectRead (sfcfg.specialFuncOutput));
         }
         break; // case sftConstrainedLead
     }
@@ -560,7 +573,7 @@ void objectUpdated(int objno)
     // get value of object (0=off, 1=on)
     value = objectRead(objno);
     // check if we have a delayed action for this object, only Outputs
-    if(objno < COMOBJ_SPECIAL1)
+    if(objno < COMOBJ_SPECIAL1) // logic objects must be checked here to
     {
         _handle_timed_functions(objno, value);
         if (channel_timeout[objno].On.stopped() && channel_timeout[objno].Off.stopped())
@@ -572,7 +585,7 @@ void objectUpdated(int objno)
     }
 
     // handle the logic functions for this channel
-    _handle_logic_function (objno, value);
+    _handle_logic_function (objno, value);  //FIXME logic can override on/off delays
 
     if (relays.pendingChanges())
         _switchObjects();
@@ -586,10 +599,14 @@ void checkTimeouts(void)
     HandActuation::ButtonState btnState;
     if (handAct.getButtonAndState(btnNumber, btnState))
     {
-        if (btnState ==  HandActuation::BUTTON_PRESSED)
+        if (btnState == HandActuation::BUTTON_PRESSED)
         {
             channel_timeout[btnNumber].On.stop();
             channel_timeout[btnNumber].Off.stop();
+
+            if (relays.blocked(btnNumber))
+                relays.clearBlocked(btnNumber);
+
             relays.toggleChannel(btnNumber);
         }
     }
@@ -608,7 +625,7 @@ void checkTimeouts(void)
             relays.updateChannel(objno, newValue);
             objectWrite(objno, newValue);
             _handle_timed_functions(objno, newValue);
-            _handle_logic_function(objno, newValue);
+            _handle_logic_function(objno, newValue);   //FIXME logic can override on/off delays
         }
     }
 
@@ -716,7 +733,7 @@ void initApplication(int lastRelayState)
             newRelaystate |= 1 << i;
     }
 
-    // TODO handle logic function on start-up correctly, maybe read the real-values from bus (requestObjectRead??, sendGroupReadTelegram??)
+    // XXX handle logic function on start-up correctly, maybe read object values from bus (requestObjectRead??, sendGroupReadTelegram??)
     // set all logic objects to false
     for (i=COMOBJ_SPECIAL1; i <= COMOBJ_SPECIAL4; i++)
         objectSetValue(i, (unsigned int) 0);
@@ -754,7 +771,7 @@ void initApplication(int lastRelayState)
         _handle_logic_function(i, objectRead(i)); // handle the logic functions for the channel
 
     // set the initial relays state, this needs to be done as last operation before real
-    relays.begin(newRelaystate, userEeprom[APP_CLOSER_MODE], NO_OF_CHANNELS);
+    relays.begin(newRelaystate, userEeprom[APP_CLOSER_MODE], NO_OF_CHANNELS, &outputPins[0], NO_OF_OUTPUTS);
 #ifdef HAND_ACTUATION
     relays.setHandActuation(&handAct);
 #endif

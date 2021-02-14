@@ -10,7 +10,6 @@
  */
 
 #include "outputsBiStable.h"
-#include "app_out8.h"  // FIXME get rid of outputPins[];
 
 #define pinOff(ch) (ch*2+1)
 #define pinOn(ch)  (ch*2)
@@ -27,13 +26,13 @@ unsigned int OutputsBiStable::updateOutput(unsigned int channel)
 
     if (value)
     {
-        digitalWrite(outputPins[pinOff(channel)], 0);
-        digitalWrite(outputPins[pinOn(channel)],  1);
+        digitalWrite(outputPins_[pinOff(channel)], 0);
+        digitalWrite(outputPins_[pinOn(channel)],  1);
     }
     else
     {
-        digitalWrite(outputPins[pinOn(channel)],  0);
-        digitalWrite(outputPins[pinOff(channel)], 1);
+        digitalWrite(outputPins_[pinOn(channel)],  0);
+        digitalWrite(outputPins_[pinOff(channel)], 1);
     }
 
     _prevRelayState ^= mask; // toggle the bit of the channel we changed
@@ -50,8 +49,8 @@ void OutputsBiStable::checkPWM(void)
 {
     if (_pwm_timeout.started () && _pwm_timeout.expired ())
     {
-        for (unsigned int i = 0; i < sizeof(outputPins)/sizeof(outputPins[0]); i++)
-            digitalWrite (outputPins[i], 0);
+        for (unsigned int i = 0; i < outputCount(); i++)
+            digitalWrite (outputPins_[i], 0);
     }
 }
 

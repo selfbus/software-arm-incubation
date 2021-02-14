@@ -12,7 +12,6 @@
 #include <sblib/io_pin_names.h>
 
 #include "outputs.h"
-#include "app_out8.h" // FIXME get rid of outputPins[]
 
 #ifndef BI_STABLE
     Outputs relays;
@@ -24,8 +23,10 @@ const unsigned int zeroDetectClrDelay = 0x0240; //0x0220 Omron G5Q-1A EU 10A cle
 #define ZD_RESET ((zeroDetectSetDelay > zeroDetectClrDelay ? zeroDetectSetDelay : zeroDetectClrDelay) + 1)
 
 
-void Outputs::begin(unsigned int initial, unsigned int inverted, unsigned int channelcount)
+void Outputs::begin(unsigned int initial, unsigned int inverted, unsigned int channelcount, const int* Pins, const unsigned int pinCount)
 {
+    outputPins_ = (unsigned int*) Pins;
+    pinCount_ = pinCount;
 #ifndef BI_STABLE
     pinMode(PIN_PWM, OUTPUT_MATCH);  // configure digital pin PIO3_2(PWM) to match MAT2 of timer16 #0
     //pinMode(PIO1_4, OUTPUT);
@@ -98,8 +99,8 @@ unsigned int Outputs::updateOutput(unsigned int channel)
     }
 #endif
 
-    unsigned int pinMask = digitalPinToBitMask(outputPins[channel]);
-    if (digitalPinToPort(outputPins[channel]) != 0)
+    unsigned int pinMask = digitalPinToBitMask(outputPins_[channel]);
+    if (digitalPinToPort(outputPins_[channel]) != 0)
     {
         if (value) _port_2_set |= pinMask;
         else       _port_2_clr |= pinMask;
@@ -139,6 +140,11 @@ void Outputs::updateOutputs(unsigned int delayms)
 unsigned int Outputs::channelCount()
 {
     return _channelcount;
+}
+
+unsigned int Outputs::outputCount()
+{
+    return pinCount_;
 }
 
 #ifdef ZERO_DETECT

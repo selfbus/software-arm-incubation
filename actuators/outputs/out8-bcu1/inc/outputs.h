@@ -16,6 +16,7 @@
 #include <sblib/timer.h>
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
+#include "config.h"
 
 #ifdef HAND_ACTUATION
 #   include "hand_actuation.h"
@@ -49,7 +50,7 @@ public:
               , _blocked(0)
               {};
 
-    void begin(unsigned int initial, unsigned int inverted, unsigned int channelcount);
+    void begin(unsigned int initial, unsigned int inverted, unsigned int channelcount, const int* Pins, const unsigned int pinCount);
     unsigned int pendingChanges(void);
     unsigned int channel(unsigned int channel);
     void updateChannel(unsigned int channel, unsigned int value);
@@ -65,6 +66,7 @@ public:
     void setOutputs(void);
     void clrOutputs(void);
     unsigned int channelCount();
+    unsigned int outputCount();
 
 #ifdef HAND_ACTUATION
     void setHandActuation(HandActuation* hand);
@@ -86,7 +88,8 @@ protected:
     unsigned int _port_2_set;
     unsigned int _port_0_clr;
     unsigned int _port_2_clr;
-
+    unsigned int pinCount_;
+    unsigned int* outputPins_;
 #ifdef HAND_ACTUATION
     HandActuation* handAct2_;
 #endif

@@ -49,8 +49,9 @@
 // #define BI_STABLE // replaced by build-variable ${relay_type}
 // #define HAND_ACTUATION // replaced by build-variable ${hand_actuation}
 
-// #define ZERO_DETECT // no more supported? at least it's mentioned in a comment from 2014
+//#define ZERO_DETECT // no more supported? at least it's mentioned in a comment from 2014
                        // https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_16A_4TE
+                       // PIO_SDA is used for zero-detect
 
 /*
  *  hand actuation pin configuration
@@ -107,7 +108,11 @@
 #endif
 
 #ifdef ZERO_DETECT
-#   pragma message("ZERO-DETECT is untested.")
+#   warning "ZERO-DETECT is untested."
+#endif
+
+#if defined(ZERO_DETECT) && defined(BI_STABLE)
+#   error "ZERO-DETECT and BI_STABLE can not be used together.")
 #endif
 
 #ifdef BI_STABLE

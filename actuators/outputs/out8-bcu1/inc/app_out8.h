@@ -40,7 +40,6 @@
 #define APP_RESTORE_AFTER_PL_HI      (0x1F7)
 #define APP_DELAY_BASE               (0x1F9) // Einschalt/Ausschaltverzoegerung Basis
 
-extern const int outputPins[NO_OF_OUTPUTS];
 void objectUpdated(int objno);
 void checkTimeouts(void);
 void initApplication(int lastRelayState = 0x00);
