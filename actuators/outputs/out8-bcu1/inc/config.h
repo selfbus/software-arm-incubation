@@ -49,7 +49,7 @@
 // #define BI_STABLE // replaced by build-variable ${relay_type}
 // #define HAND_ACTUATION // replaced by build-variable ${hand_actuation}
 
-//#define ZERO_DETECT // no more supported? at least it's mentioned in a comment from 2014
+// #define ZERO_DETECT // no more supported? at least it's mentioned in a comment from 2014
                        // https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_16A_4TE
                        // PIO_SDA is used for zero-detect
 
@@ -69,18 +69,28 @@
 
 /*
  *  bus power-failure configuration
+ *  Use 1% tolerance or better resistors for the voltage divider R3 & R12 on 4TE controller & TS_ARM
+ *  TODO change resistors in schematic to 1%
  */
 #ifdef BUSFAIL
 #   define VBUS_AD_PIN PIN_VBUS
 #   define VBUS_AD_CHANNEL AD7
 
 #   ifndef BI_STABLE
-#      define VBUS_THRESHOLD_FAILED 24000 // millivoltage for normal relays
-#      define VBUS_THRESHOLD_RETURN 25000
+#      define VBUS_THRESHOLD_FAILED 25000 // millivoltage for normal relays
+#      define VBUS_THRESHOLD_RETURN 27000
+       // TODO test these values with 1% resistors for the voltage divider R3 & R12
+// #      define VBUS_THRESHOLD_FAILED 24000 // millivoltage for normal relays
+// #      define VBUS_THRESHOLD_RETURN 25000
 #   else
-#      define VBUS_THRESHOLD_FAILED 24500 // some relays don't work reliable below 24V@15ms,
+#      define VBUS_THRESHOLD_FAILED 25500 // some relays don't work reliable below 24V@15ms,
                                           // datasheet states 19.2V @ 50ms should work for Hongfa HFE20-1 24-1HSD-L2(359), but not with 15ms!
-#      define VBUS_THRESHOLD_RETURN 25500
+#      define VBUS_THRESHOLD_RETURN 27500
+
+       // TODO test these values with 1% resistors for the voltage divider R3 & R12
+// #      define VBUS_THRESHOLD_FAILED 24500 // some relays don't work reliable below 24V@15ms,
+                                          // datasheet states 19.2V @ 50ms should work for Hongfa HFE20-1 24-1HSD-L2(359), but not with 15ms!
+// #      define VBUS_THRESHOLD_RETURN 25500
 #   endif
 #endif
 
@@ -117,8 +127,10 @@
 
 #ifdef BI_STABLE
 #   define NO_OF_OUTPUTS (NO_OF_CHANNELS * 2)
+#   define BETWEEN_CHANNEL_DELAY_MS 100 // pause in ms between to channels relais switching, to avoid bus drainage
 #else
 #   define NO_OF_OUTPUTS (NO_OF_CHANNELS)
+#   define BETWEEN_CHANNEL_DELAY_MS 100 // pause in ms between to channels relais switching, to avoid bus drainage
 #endif
 
 /*
