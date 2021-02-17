@@ -29,18 +29,18 @@ protected:
     static const unsigned int delayAtEndMs = 100;
     static Timeout blinkTimer;
     static bool blinkOnOffState;
-    unsigned int GetHandPinCount();
     unsigned int* handPins_;
     unsigned int pinCount_;
     unsigned int readbackPin_;
     unsigned int blinkTimeMs_;
-
     unsigned int  number_;
     unsigned char mask_;
     unsigned char buttonState_;
     unsigned char ledState_;
     unsigned char blinkState_;
     Timeout handDelay_;
+
+    unsigned int getHandPinCount();
 private:
     HandActuation();
 };

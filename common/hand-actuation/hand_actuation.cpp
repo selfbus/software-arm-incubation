@@ -60,14 +60,14 @@ int HandActuation::check(void)
         if (atleastonebuttonpressed) // at least one button is pressed, check if its the one we are testing right now (number)
         {
             // turn on all LED's, except the one for the button under testing (number)
-            for (unsigned int i = 0; i < GetHandPinCount(); i++)
+            for (unsigned int i = 0; i < getHandPinCount(); i++)
                 if (i != number_) digitalWrite(handPins_[i], true);
             delayMicroseconds(5);   // this delay is needed for compiler settings other then -O0 (Optimize Level None), otherwise detection doesn't work 100%
                                     // works also with delayMicroseconds(1);
             buttonundertestingispressed = !digitalRead(readbackPin_); // read while all LED's are on, except the one for our button we check right now, low=>button to check is pressed
 
             // restore LED states
-            for (unsigned int i = 0, bitMask = 0x01; i < GetHandPinCount(); i++, bitMask = bitMask << 1)
+            for (unsigned int i = 0, bitMask = 0x01; i < getHandPinCount(); i++, bitMask = bitMask << 1)
             {
                 if (blinkState_ & bitMask)
                     digitalWrite(handPins_[i], blinkOnOffState);
@@ -99,11 +99,11 @@ int HandActuation::check(void)
         }
         number_++;
         mask_ <<= 1;
-        if (number_ == GetHandPinCount())
+        if (number_ == getHandPinCount())
         {
             number_ = 0;
             mask_  = 0x1;
-            handDelay_.start(delayAtEndMs); // FIXME test this
+            handDelay_.start(delayAtEndMs);
         }
         else
             handDelay_.start(delayBetweenButtonsMs);
@@ -112,7 +112,7 @@ int HandActuation::check(void)
 
     if (blinkTimer.expired() || blinkTimer.stopped())
     {
-        for (unsigned int i = 0, bitMask = 0x01; i < GetHandPinCount(); i++, bitMask = bitMask << 1)
+        for (unsigned int i = 0, bitMask = 0x01; i < getHandPinCount(); i++, bitMask = bitMask << 1)
         {
             if (blinkState_ & bitMask)
                 digitalWrite(handPins_[i], blinkOnOffState);
@@ -137,14 +137,14 @@ int HandActuation::getButtonAndState(int& btnNumber, HandActuation::ButtonState&
     return result;
 }
 
-ALWAYS_INLINE unsigned int HandActuation::GetHandPinCount()
+ALWAYS_INLINE unsigned int HandActuation::getHandPinCount()
 {
    return pinCount_;
 }
 
 void HandActuation::setLedState(unsigned int led, bool state, bool blink)
 {
-    if (led >= GetHandPinCount())
+    if (led >= getHandPinCount())
         return;
 
     unsigned int mask = 1 << led;
@@ -164,7 +164,7 @@ void HandActuation::setLedState(unsigned int led, bool state, bool blink)
 
 void HandActuation::setallLedState(bool state)
 {
-    for (unsigned int i = 0; i < GetHandPinCount(); i++)
+    for (unsigned int i = 0; i < getHandPinCount(); i++)
     {
         setLedState(i, state, false);
     }
