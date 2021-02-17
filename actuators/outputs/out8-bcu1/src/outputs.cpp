@@ -25,8 +25,8 @@ const unsigned int zeroDetectClrDelay = 0x0240; //0x0220 Omron G5Q-1A EU 10A cle
 
 void Outputs::begin(unsigned int initial, unsigned int inverted, unsigned int channelcount, const int* Pins, const unsigned int pinCount)
 {
-    outputPins_ = (unsigned int*) Pins;
-    pinCount_ = pinCount;
+    _outputPins = (unsigned int*) Pins;
+    _pinCount = pinCount;
 #ifndef BI_STABLE
     pinMode(PIN_PWM, OUTPUT_MATCH);  // configure digital pin PIO3_2(PWM) to match MAT2 of timer16 #0
     //pinMode(PIO1_4, OUTPUT);
@@ -50,7 +50,7 @@ void Outputs::begin(unsigned int initial, unsigned int inverted, unsigned int ch
     _inverted       = inverted;
 
 #ifdef HAND_ACTUATION
-    handAct2_ = nullptr;
+    _handAct = nullptr;
 #endif
 
 #ifdef ZERO_DETECT
@@ -71,7 +71,7 @@ void Outputs::begin(unsigned int initial, unsigned int inverted, unsigned int ch
 #ifdef HAND_ACTUATION
 void Outputs::setHandActuation(HandActuation* hand)
 {
-    handAct2_ = hand;
+    _handAct = hand;
 }
 #endif
 
@@ -99,8 +99,8 @@ unsigned int Outputs::updateOutput(unsigned int channel)
     }
 #endif
 
-    unsigned int pinMask = digitalPinToBitMask(outputPins_[channel]);
-    if (digitalPinToPort(outputPins_[channel]) != 0)
+    unsigned int pinMask = digitalPinToBitMask(_outputPins[channel]);
+    if (digitalPinToPort(_outputPins[channel]) != 0)
     {
         if (value) _port_2_set |= pinMask;
         else       _port_2_clr |= pinMask;
@@ -112,8 +112,8 @@ unsigned int Outputs::updateOutput(unsigned int channel)
     }
 
 #ifdef HAND_ACTUATION
-    if (handAct2_ != nullptr)
-        handAct2_->setLedState(channel, value, false);
+    if (_handAct != nullptr)
+        _handAct->setLedState(channel, value, false);
 #endif
 
     _prevRelayState ^= mask; // toggle the bit of the channel we changed
@@ -132,8 +132,12 @@ void Outputs::updateOutputs(unsigned int delayms)
 {
     for(unsigned int i = 0; i < _channelcount; i++)
     {
-        if (updateOutput(i))
-            delay(delayms);
+        if (updateOutput(i) && pendingChanges() && (delayms > PWM_TIMEOUT))
+        {
+            delay(PWM_TIMEOUT);
+            checkPWM();
+            delay(delayms-PWM_TIMEOUT);
+        }
     }
 }
 
@@ -144,7 +148,7 @@ unsigned int Outputs::channelCount()
 
 unsigned int Outputs::outputCount()
 {
-    return pinCount_;
+    return _pinCount;
 }
 
 #ifdef ZERO_DETECT

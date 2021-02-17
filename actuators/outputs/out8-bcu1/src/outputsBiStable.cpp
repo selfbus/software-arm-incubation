@@ -26,21 +26,21 @@ unsigned int OutputsBiStable::updateOutput(unsigned int channel)
 
     if (value)
     {
-        digitalWrite(outputPins_[pinOff(channel)], 0);
-        digitalWrite(outputPins_[pinOn(channel)],  1);
+        digitalWrite(_outputPins[pinOff(channel)], 0);
+        digitalWrite(_outputPins[pinOn(channel)],  1);
     }
     else
     {
-        digitalWrite(outputPins_[pinOn(channel)],  0);
-        digitalWrite(outputPins_[pinOff(channel)], 1);
+        digitalWrite(_outputPins[pinOn(channel)],  0);
+        digitalWrite(_outputPins[pinOff(channel)], 1);
     }
 
     _prevRelayState ^= mask; // toggle the bit of the channel we changed
     _pwm_timeout.start(ON_DELAY);
 
 #ifdef HAND_ACTUATION
-    if (handAct2_ != nullptr)
-        handAct2_->setLedState(channel, value);
+    if (_handAct != nullptr)
+        _handAct->setLedState(channel, value);
 #endif
     return true;
 }
@@ -50,7 +50,7 @@ void OutputsBiStable::checkPWM(void)
     if (_pwm_timeout.started () && _pwm_timeout.expired ())
     {
         for (unsigned int i = 0; i < outputCount(); i++)
-            digitalWrite (outputPins_[i], 0);
+            digitalWrite (_outputPins[i], 0);
     }
 }
 

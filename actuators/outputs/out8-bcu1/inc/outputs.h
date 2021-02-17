@@ -88,10 +88,10 @@ protected:
     unsigned int _port_2_set;
     unsigned int _port_0_clr;
     unsigned int _port_2_clr;
-    unsigned int pinCount_;
-    unsigned int* outputPins_;
+    unsigned int _pinCount;
+    unsigned int *_outputPins;
 #ifdef HAND_ACTUATION
-    HandActuation* handAct2_;
+    HandActuation *_handAct;
 #endif
 
 #ifdef ZERO_DETECT
