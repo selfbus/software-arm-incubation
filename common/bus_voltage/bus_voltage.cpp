@@ -15,10 +15,6 @@
 #include <sblib/digital_pin.h>
 #include <sblib/analog_pin.h>
 
-#ifdef DEBUG
-#   include <sblib/serial.h>
-#endif
-
 
 // copy&paste from sblib/analog_pin.cpp
 #define ADC_DONE  0x80000000      // ADC conversion complete
@@ -27,6 +23,7 @@
 
 #define ADC_RESOLUTION 1023  //10bit
 #define ADC_MAX_VOLTAGE 3300 // 3.3V VDD on LPC11xx
+#define ADC_AD_SAMPLE_COUNT_MIN 10
 
 // careful, variables can change any time by the Isr ADC_IRQHandler
 static volatile bool isrCallBusFailed = false;             // true then the isr detected a bus fail
@@ -72,14 +69,13 @@ extern "C" void ADC_IRQHandler(void)
     if (isrADSampleCount > 1)
     {
         isrmeanbusVoltage = (isrmeanbusVoltage + regVal) / 2; // calculate mean bus voltage
-        isrADSampleCount = 1;
     }
     else
     {
         isrmeanbusVoltage = regVal;
     }
 
-    if (isrmeanbusVoltage != -1)
+    if (isrADSampleCount >= ADC_AD_SAMPLE_COUNT_MIN)
     {
         if (!isrbusVoltageFailed && (isrmeanbusVoltage <= isrbusVoltagethresholdFailed)) // bus voltage failed
         {
