@@ -28,7 +28,7 @@
 #    include "app_nov_settings.h"
 #endif
 
-#ifdef DEBUG
+#ifdef DEBUG_SERIAL
 #    include <sblib/serial.h>
 #endif
 
@@ -68,7 +68,8 @@ void ioTest()
 #   ifdef BI_STABLE
         const int relaySwitchms = ON_DELAY;  // see inc/outputsBiStable.h for more info
         // check, maybe we need to wait 4s, cause PIO_SDA is pulled-up to high on ARM-reset causing the relay coil to drain the bus.
-        for (unsigned int i = 0; i < sizeof(outputPins)/sizeof(outputPins[0]); i++)
+        const int countOutputPins = sizeof(outputPins)/sizeof(outputPins[0]);
+        for (unsigned int i = 0; i < countOutputPins; i++)
         {
             if (outputPins[i] == PIO_SDA)
             {
@@ -83,7 +84,8 @@ void ioTest()
     // setup LED's
     const int togglePausems = 250;
 #   ifdef HAND_ACTUATION
-        for (unsigned int i = 0; i < sizeof(handPins)/sizeof(handPins[0]); i++)
+        const int countHandPins = sizeof(handPins)/sizeof(handPins[0]);
+        for (unsigned int i = 0; i < countHandPins; i++)
         {
             digitalWrite(handPins[i], 0);
             pinMode(handPins[i], OUTPUT);
@@ -104,7 +106,11 @@ void ioTest()
     }
 
     // initialize relays for ioTest
-    relays.begin(0x00, 0x00, NO_OF_CHANNELS);
+    relays.begin(0x00, 0x00, NO_OF_CHANNELS, &outputPins[0], NO_OF_OUTPUTS);
+#   ifdef HAND_ACTUATION
+        HandActuation handActTestIO = HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
+        relays.setHandActuation(&handActTestIO);
+#   endif
     relays.updateOutputs();
     delay(relaySwitchms);
     relays.checkPWM();
@@ -135,7 +141,7 @@ void initSerial()
 {
     serial.setRxPin(PIO2_7);
     serial.setTxPin(PIO2_8);
-    serial.begin(9600);
+    serial.begin(57600);
     serial.println("out8 serial debug started");
 }
 #endif
@@ -145,7 +151,7 @@ void initSerial()
  */
 void setup()
 {
-    volatile const char * v = getAppVersion();      // Ensure APP ID is not removed by linker (its needed in the bus updater)
+    volatile const char * v = getAppVersion();      // Ensure APP ID is not removed by linker (its used in the bus updater)
     v++;                                            // just to avoid compiler warning of unused variable
     // first set pin mode for Info & Run LED
     pinMode(PIN_INFO, OUTPUT); // this also sets pin to high/true
@@ -164,6 +170,7 @@ void setup()
     }
 
     bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
+    // _bcu.setGroupTelRateLimit(20); // this leads somethimes to repeated telegrams?
 
 #ifdef BUSFAIL
     if (!AppNovSetting.RecallAppData((unsigned char*)&AppData, sizeof(ApplicationData))) // load custom app settings
@@ -175,7 +182,13 @@ void setup()
 #   endif
     }
     // enable bus voltage monitoring
-    vBus.enableBusVRefMonitoring(VBUS_AD_PIN, VBUS_AD_CHANNEL, VBUS_THRESHOLD_FAILED, VBUS_THRESHOLD_RETURN);
+    if (busVoltageMonitor.setupMonitoring(VBUS_AD_PIN, VBUS_AD_CHANNEL, VBUS_ADC_SAMPLE_FREQ,
+                                      VBUS_THRESHOLD_FAILED, VBUS_THRESHOLD_RETURN,
+                                      VBUS_VOLTAGE_FAILTIME_MS, VBUS_VOLTAGE_RETURNTIME_MS,
+                                      &timer32_0, 0))
+    {
+        busVoltageMonitor.enableMonitoring();
+    }
 #endif
 
 #ifdef DEBUG_SERIAL
@@ -218,8 +231,8 @@ void loop()
     // check if any of the timeouts for an output has expire and react on them
     checkTimeouts();
 #ifdef BUSFAIL
-    // check the bus voltage, should be done before waitForInterrupt()
-    vBus.checkPeriodic();
+    // check the bus voltage
+    busVoltageMonitor.checkPeriodic();
 #endif
     // Sleep up to 1 millisecond if there is nothing to do
     if (bus.idle())
@@ -227,7 +240,7 @@ void loop()
         waitForInterrupt();
 #if defined DEBUG_SERIAL && BUSFAIL
        serial.print("mV:");
-       serial.println(vBus.valuemV());
+       serial.println(busVoltageMonitor.valuemV());
 #endif
     }
 }
@@ -235,16 +248,15 @@ void loop()
 void loop_noapp()
 {
 #ifdef BUSFAIL
-    // check the bus voltage, should be done before waitForInterrupt()
-    vBus.checkPeriodic();
+    // check the bus voltage
+    busVoltageMonitor.checkPeriodic();
 #endif
     waitForInterrupt();
 
 #if defined DEBUG_SERIAL && BUSFAIL
        serial.print("mV:");
-       serial.println(vBus.valuemV());
+       serial.println(busVoltageMonitor.valuemV());
 #endif
-#
 };
 
 
@@ -317,10 +329,10 @@ int convertADmV(int valueAD)
         return 0.019812094*sq(valueAD) - // a*x^2
                52.1039160138*valueAD +   // b*x
                50375.4168671156;         // c
-        // return 0.0198*sq(valueAD) - 52.104*valueAD + 50375;
 
+    // TODO values need correction for 1% resistors
     /*
-     *  4TE ARM-Controller coefficients found with following measurements:
+     *  4TE ARM-Controller coefficients found with following measurements (5% resistors):
      *  ---------------------
      *  | Bus mV  ADC-Value |
      *  ---------------------
@@ -357,8 +369,9 @@ int convertmVAD(int valuemV)
                 0.132020974*valuemV -      // b*x
                 161.7265204893;            // c
 
+    // TODO values need correction for 1% resistors
     /*
-     *  4TE ARM-Controller coefficients found with following measurements:
+     *  4TE ARM-Controller coefficients found with following measurements (5% resistors):
      *  ---------------------
      *  | Bus mV  ADC-Value |
      *  ---------------------

@@ -75,13 +75,17 @@
 #ifdef BUSFAIL
 #   define VBUS_AD_PIN PIN_VBUS
 #   define VBUS_AD_CHANNEL AD7
+#   define VBUS_VOLTAGE_FAILTIME_MS 20
+#   define VBUS_VOLTAGE_RETURNTIME_MS 1500
+#   define VBUS_ADC_SAMPLE_FREQ 10000 // ADC sampling frequency in Hz
 
 #   ifndef BI_STABLE
-#      define VBUS_THRESHOLD_FAILED 25000 // millivoltage for normal relays
-#      define VBUS_THRESHOLD_RETURN 27000
+#      define VBUS_THRESHOLD_FAILED 24000 // millivoltage for normal relays
+#      define VBUS_THRESHOLD_RETURN 26000
+
        // TODO test these values with 1% resistors for the voltage divider R3 & R12
-// #      define VBUS_THRESHOLD_FAILED 24000 // millivoltage for normal relays
-// #      define VBUS_THRESHOLD_RETURN 25000
+// #      define VBUS_THRESHOLD_FAILED 23500 // millivoltage for normal relays
+// #      define VBUS_THRESHOLD_RETURN 24500
 #   else
 #      define VBUS_THRESHOLD_FAILED 25500 // some relays don't work reliable below 24V@15ms,
                                           // datasheet states 19.2V @ 50ms should work for Hongfa HFE20-1 24-1HSD-L2(359), but not with 15ms!

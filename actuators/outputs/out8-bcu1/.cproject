@@ -1908,31 +1908,36 @@
 &lt;/TargetConfig&gt;</projectStorage>
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Debug o8 4t bu"/>
 		<configuration configurationName="Debug OUT8 4TE BUSFAIL HAND"/>
-		<configuration configurationName="Debug o8 4t"/>
 		<configuration configurationName="Debug_Updater"/>
-		<configuration configurationName="Debug OUT8 4TE BUSFAIL"/>
 		<configuration configurationName="Debug o8 4t ha"/>
-		<configuration configurationName="Flashstart 0x3000 Debug o8 4t ha"/>
-		<configuration configurationName="Debug OUT8 4TE HAND BI-STABLE BUSFAIL"/>
-		<configuration configurationName="Debug o8 4t bu ha"/>
 		<configuration configurationName="Debug OUT8 4TE HAND BUSFAIL"/>
-		<configuration configurationName="Debug OUT8 4TE HAND">
-			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
-		</configuration>
+		<configuration configurationName="Debug o8 4t bf"/>
 		<configuration configurationName="Debug o8 4t ha bi"/>
-		<configuration configurationName="Release o8 4t bu ha">
-			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
-		</configuration>
-		<configuration configurationName="Release o8 4t ha"/>
+		<configuration configurationName="Debug o8 4t bi"/>
 		<configuration configurationName="Debug OUT8 4TE BUSFAIL HAND BI-STABLE"/>
-		<configuration configurationName="Debug o8 4t bu ha bi"/>
-		<configuration configurationName="Debug OUT8 4TE"/>
+		<configuration configurationName="Release o8 4t bf ha"/>
 		<configuration configurationName="Debug_LPC11UXX"/>
 		<configuration configurationName="Debug OUT8 4TE HAND BI-STABLE"/>
 		<configuration configurationName="Release"/>
 		<configuration configurationName="Debug"/>
+		<configuration configurationName="Debug o8 4t bu"/>
+		<configuration configurationName="Debug o8 4t"/>
+		<configuration configurationName="Debug o8 4t bf ha"/>
+		<configuration configurationName="Debug OUT8 4TE BUSFAIL"/>
+		<configuration configurationName="Flashstart 0x3000 Debug o8 4t ha"/>
+		<configuration configurationName="Debug OUT8 4TE HAND BI-STABLE BUSFAIL"/>
+		<configuration configurationName="Debug o8 4t bu ha"/>
+		<configuration configurationName="Debug OUT8 4TE HAND">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Release o8 4t bu ha">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Release o8 4t ha"/>
+		<configuration configurationName="Debug o8 4t bf ha bi"/>
+		<configuration configurationName="Debug o8 4t bu ha bi"/>
+		<configuration configurationName="Debug OUT8 4TE"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="com.crt.advproject"/>
