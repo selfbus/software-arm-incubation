@@ -7,35 +7,43 @@
  *  it under the terms of the GNU General Public License version 3 as
  *  published by the Free Software Foundation.
  *
- *  Don't create instances of class BusVoltage, use variable vBus instead
+ *  Don't create instances of class BusVoltage, use variable busVoltageMonitor instead
  *
  *  Notes:
  *      in the KNX-specification a bus fail is defined as a bus voltage drop below 20V with a hysteresis of 1V.
- *      4TE-ARM the voltage divider is R3/R12 (91K0 & 10K0)
- *      TS_ARM  the voltage divider is R3/R12 (91K0 & 10K0)
+ *      for 4TE-ARM & TS_ARM the voltage divider is R3 (91K0) and R12 ((10K0)
+ *      use resistors with 1% tolerance better
  *
  *  Usage:
  *      implement:
- *      --------------------------------------------------------------------------------------------------------------*
- *      void BusVoltageFail()        // will be called by the ISR which handles the ADC interrupt for the bus voltage.
- *      void BusVoltageReturn()      // will be called by the ISR which handles the ADC interrupt for the bus voltage.
+ *      -------------------------------------------------------------------------------------------------------------------------------------*
+ *      void BusVoltageFail()        // will be called by busVoltageMonitor.checkPeriodic() in case the ADC-Isr detected a bus voltage fail
+ *      void BusVoltageReturn()      // will be called by busVoltageMonitor.checkPeriodic() in case the ADC-Isr detects a bus voltage return
  *      int convertADmV(int valueAD) // converts measured AD value into milliVoltage
- *      --------------------------------------------------------------------------------------------------------------
+ *      int convertmVAD(int valuemV) // converts milliVoltage into AD value
+ *      -------------------------------------------------------------------------------------------------------------------------------------
  *      e.g. in your app_main.cpp:
  *
  *        void setup()
  *        {
  *            .... your code ....
  *            // enable bus voltage monitoring
- *            vBus.enableBusVRefMonitoring(PIN_VBUS, AD7, 20000, 21000);
+ *            if (busVoltageMonitor.setupMonitoring(PIN_VBUS, AD7, 10000,
+ *                                                  20000, 21000,
+ *                                                  20, 1500,
+ *                                                  &timer32_0, 0))
+ *            {
+ *                busVoltageMonitor.enableMonitoring();
+ *            }
+ *
  *            .... your code ....
  *        }
  *
  *        void loop()
  *        {
  *            .... your code ....
- *            // the bus voltage check, should be done before waitForInterrupt()
- *            vBus.checkPeriodic();
+ *            // the bus voltage check
+ *            busVoltageMonitor.checkPeriodic();
  *            if (bus.idle())
  *            {
  *                waitForInterrupt();
@@ -45,8 +53,8 @@
  *        void loop_noapp()
  *        {
  *            .... your code ....
- *            // check the bus voltage, should be done before waitForInterrupt()
- *            vBus.checkPeriodic();
+ *            // check the bus voltage
+ *            busVoltageMonitor.checkPeriodic();
  *            waitForInterrupt();
  *        }
  *
@@ -114,6 +122,11 @@
 #ifndef BUS_VOLTAGE_H_
 #define BUS_VOLTAGE_H_
 
+#include <sblib/timer.h>
+#include <sblib/ioports.h>
+#include <sblib/io_pin_names.h>
+#include <sblib/timer.h>
+
 /*
  * implement in your code
  * This function is called when the bus voltage drops below the thresholdVoltageFailed
@@ -141,22 +154,50 @@ int convertmVAD(int valuemV);
 class BusVoltage
 {
 public:
-    BusVoltage();
-    void enableBusVRefMonitoring(int ADPin, int ADChannel, unsigned int thresholdVoltageFailed, unsigned int thresholdVoltageReturn);
-    void disableBusVRefMonitoring();
+    enum State : unsigned int {FAILED = 0x00, OK = 0x01, FALLING = 0x10, RISING = 0x11, UNKNOWN = 0xFF};
+    BusVoltage() : _ADPin(PIN_VBUS)
+                 , _ADChannel(AD7)
+                 , _ADSampleFrequency(10000)
+                 , _thresholdVoltageFailed(20000)
+                 , _thresholdVoltageReturn(21000)
+                 , _busVoltageFailTimeMs(20)
+                 , _busVoltageReturnTimeMs(1500)
+                 , _timerMatchChannel(0)
+                 {};
+    unsigned int setupMonitoring(unsigned int ADPin, unsigned int ADChannel, unsigned int ADSampleFrequency,
+                                 unsigned int thresholdVoltageFailed, unsigned int thresholdVoltageReturn,
+                                 unsigned int busVoltageFailTimeMs, unsigned int busVoltageReturnTimeMs,
+                                 Timer *adTimer, unsigned int timerMatchChannel);
+    void enableMonitoring();
+    void disableMonitoring();
     void checkPeriodic();
     bool failed();
     int valuemV(); // returns measured bus voltage in mV (-1 if measurement is invalid)
+
+    unsigned int getBusVoltageFailTimeMs() {return _busVoltageFailTimeMs;}
+    unsigned int getBusVoltageReturnTimeMs() {return _busVoltageReturnTimeMs;}
+    unsigned int getADChannel() {return _ADChannel;}
+    unsigned int _ADCR;
+
 protected:
 
 private:
-    unsigned int ADPin_;
-    bool pendingRead();
-    void startBusVoltageRead();
-    void enableADCIsr(void);
-    void resetIsrData();
+    void adcTimerSetup(void);
+    void analogSetup();
+    void isrSetup();
+
+    unsigned int _ADPin;
+    unsigned int _ADChannel;
+    unsigned int _ADSampleFrequency;
+    unsigned int _thresholdVoltageFailed;
+    unsigned int _thresholdVoltageReturn;
+    unsigned int _busVoltageFailTimeMs;
+    unsigned int _busVoltageReturnTimeMs;
+
+    Timer *_adTimer; // a timer is needed to periodically start the ADC (16 or 32 bit).
+    unsigned int _timerMatchChannel;
 };
 
-extern BusVoltage vBus; // declared in bus_voltage.cpp, use only this instance for access
+extern BusVoltage busVoltageMonitor; // declared in bus_voltage.cpp, use only this instance for access
 
 #endif /* BUS_VOLTAGE_H_ */
