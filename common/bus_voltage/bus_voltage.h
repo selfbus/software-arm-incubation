@@ -174,6 +174,8 @@ public:
     bool failed();
     int valuemV(); // returns measured bus voltage in mV (-1 if measurement is invalid)
 
+    void ADCInterruptHandler(); // This method is called by the ADC interrupt handler. Consider it to be a private method and do not call it.
+
     unsigned int getBusVoltageFailTimeMs() {return _busVoltageFailTimeMs;}
     unsigned int getBusVoltageReturnTimeMs() {return _busVoltageReturnTimeMs;}
     unsigned int getADChannel() {return _ADChannel;}
@@ -197,6 +199,9 @@ private:
     Timer *_adTimer; // a timer is needed to periodically start the ADC (16 or 32 bit).
     unsigned int _timerMatchChannel;
 };
+
+#define ADC_INTERRUPT_HANDLER(handler, busVoltageMonitorObj) \
+    extern "C" void handler() { busVoltageMonitor.ADCInterruptHandler(); }
 
 extern BusVoltage busVoltageMonitor; // declared in bus_voltage.cpp, use only this instance for access
 

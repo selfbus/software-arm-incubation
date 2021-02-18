@@ -34,15 +34,18 @@ static volatile unsigned int isrFailedFirstSysTick = 0;
 static volatile unsigned int isrReturnedFirstSysTick = 0;
 static volatile BusVoltage::State isrBusVoltageState = BusVoltage::UNKNOWN;
 
+// The interrupt handler for the ADC busVoltageMonitor object
+ADC_INTERRUPT_HANDLER(ADC_IRQHandler, busVoltageMonitor);
+
 /*
  * ISR routine to handle ADC interrupt (parts are copy&paste from sblib/analog_pin.cpp)
  */
-extern "C" void ADC_IRQHandler(void)
+void BusVoltage::ADCInterruptHandler()
 {
     // dont remove, otherwise Isr will trigger all the time
-    LPC_ADC->CR = busVoltageMonitor._ADCR | (1 << busVoltageMonitor.getADChannel()); // start by rising edge of the timer
+    LPC_ADC->CR = _ADCR | (1 << _ADChannel); // start by rising edge of the timer
 
-    unsigned int regVal = LPC_ADC->DR[busVoltageMonitor.getADChannel()];
+    unsigned int regVal = LPC_ADC->DR[_ADChannel];
 
     if (!(regVal & ADC_DONE))
         return;
@@ -78,7 +81,7 @@ extern "C" void ADC_IRQHandler(void)
         }
 
         unsigned int timelapsed = millis() - isrFailedFirstSysTick;
-        if ((isrBusVoltageState != BusVoltage::FAILED) && (busVoltageMonitor.getBusVoltageFailTimeMs() <= timelapsed))
+        if ((isrBusVoltageState != BusVoltage::FAILED) && (_busVoltageFailTimeMs <= timelapsed))
         {
             isrCallBusFailed = true;
             isrBusVoltageState = BusVoltage::FAILED;
@@ -96,7 +99,7 @@ extern "C" void ADC_IRQHandler(void)
         }
 
         unsigned int timelapsed = millis() - isrReturnedFirstSysTick;
-        if ((isrBusVoltageState != BusVoltage::OK) && (busVoltageMonitor.getBusVoltageReturnTimeMs() <= timelapsed))
+        if ((isrBusVoltageState != BusVoltage::OK) && (_busVoltageReturnTimeMs <= timelapsed))
         {
             if (isrBusVoltageState != BusVoltage::UNKNOWN)
             {
@@ -251,7 +254,7 @@ int BusVoltage::valuemV()
 
 bool BusVoltage::failed()
 {
-    return (isrBusVoltageState == BusVoltage::FAILED);
+    return (isrBusVoltageState != BusVoltage::OK);
 }
 
 BusVoltage busVoltageMonitor = BusVoltage();
