@@ -17,16 +17,19 @@ class HandActuation
 public:
     enum ButtonState {NO_ACTUATION = -1, BUTTON_PRESSED = 0x100, BUTTON_RELEASED = 0x200};
     HandActuation(const unsigned int* Pins, const unsigned int pinCount, const unsigned int readbackPin, const unsigned int blinkTimeMs);
-    int check(void);
     int getButtonAndState(int& btnNumber, HandActuation::ButtonState& btnState); // returns true in case a button is pressed or was released
     bool ledState(unsigned int led);
     bool blinkState(unsigned int led);
     void setLedState(unsigned int led, bool state, bool blinking = false);
     void setallLedState(bool state);
 
+    unsigned int getDelayBetweenButtonsMs();
+    unsigned int getDelayAtEndMs();
+    void setDelayBetweenButtonsMs(unsigned int newDelayBetweenButtonsMs);
+    void setDelayAtEndMs(unsigned int newDelayAtEndMs);
+
 protected:
-    static const unsigned int delayBetweenButtonsMs = 10;
-    static const unsigned int delayAtEndMs = 100;
+    int check(void);
     static Timeout blinkTimer;
     static bool blinkOnOffState;
     unsigned int* handPins_;
@@ -38,6 +41,8 @@ protected:
     unsigned char buttonState_;
     unsigned char ledState_;
     unsigned char blinkState_;
+    unsigned int delayBetweenButtonsMs_;
+    unsigned int delayAtEndMs_;
     Timeout handDelay_;
 
     unsigned int getHandPinCount();

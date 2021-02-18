@@ -27,6 +27,8 @@ HandActuation::HandActuation(const unsigned int* Pins, const unsigned int pinCou
     , buttonState_(0)
     , ledState_(0)
     , blinkState_(0)
+    , delayBetweenButtonsMs_(10)
+    , delayAtEndMs_(10)
 {
     handPins_ = (unsigned int*) Pins;
     pinCount_ = pinCount;
@@ -103,10 +105,10 @@ int HandActuation::check(void)
         {
             number_ = 0;
             mask_  = 0x1;
-            handDelay_.start(delayAtEndMs);
+            handDelay_.start(delayAtEndMs_);
         }
         else
-            handDelay_.start(delayBetweenButtonsMs);
+            handDelay_.start(delayBetweenButtonsMs_);
     } // if (_handDelay.expired()
 
 
@@ -168,6 +170,26 @@ void HandActuation::setallLedState(bool state)
     {
         setLedState(i, state, false);
     }
+}
+
+unsigned int HandActuation::getDelayBetweenButtonsMs()
+{
+    return delayBetweenButtonsMs_;
+}
+
+unsigned int HandActuation::getDelayAtEndMs()
+{
+    return delayAtEndMs_;
+}
+
+void HandActuation::setDelayBetweenButtonsMs(unsigned int newDelayBetweenButtonsMs)
+{
+    delayBetweenButtonsMs_ = newDelayBetweenButtonsMs;
+}
+
+void HandActuation::setDelayAtEndMs(unsigned int newDelayAtEndMs)
+{
+    delayAtEndMs_ = newDelayAtEndMs;
 }
 
 
