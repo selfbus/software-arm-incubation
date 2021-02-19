@@ -4,7 +4,6 @@
 	<comment></comment>
 	<projects>
 		<project>CMSIS_CORE_LPC11xx</project>
-		<project>sblib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

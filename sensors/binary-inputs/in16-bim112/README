@@ -1,7 +1,7 @@
 ﻿in16-bim1122
 ============
 
-This the implementation of the MDT Binary Input Sensors and Universal Interface (BE-*.01). The SW suppors the 2, 4, 6, 8, and 16 times versions.
+This the implementation of the MDT Binary Input Sensors and Universal Interface (BE-*.01). The SW supports the 2, 4, 6, 8, and 16 times versions.
 
 Es folgende Geräte unterstützt:
 
