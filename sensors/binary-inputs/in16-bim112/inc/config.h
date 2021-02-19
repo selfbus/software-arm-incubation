@@ -12,7 +12,7 @@
 #include <sblib/digital_pin.h>
 #include "app_in.h"
 
-//Input logic level
+//Input logic level (moved to project build variable "inverted")
 //#define INVERT 			    //  ifndef: 0-->1 steigende Flanke ; pull_down
 							    //  ifdef:  0-->1 fallende Flanke ; pull_up
 
