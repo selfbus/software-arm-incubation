@@ -44,7 +44,7 @@ const struct
 	unsigned const char cmdno;      // Zu sendender RM_CMD Befehl
 	unsigned const char objects[MAX_OBJ_CMD];	// Zuordnung der ComObjekte zu den Befehlen
 } CmdTab[RM_CMD_COUNT] =
-{
+{	//CMD	objNr.
 	{ 0x04, {6,  0xFF, 0xFF, 0xFF} },	// RM_CMD_SERIAL
 	{ 0x09, {7,  0xFF, 0xFF, 0xFF} },	// RM_CMD_OPERATING_TIME
 	{ 0x0B, {8,  9,    15,   0xFF} },	// RM_CMD_SMOKEBOX
@@ -859,7 +859,7 @@ void initApplication()
 	pinMode(RM_COMM_ENABLE, OUTPUT);
 	digitalWrite(RM_COMM_ENABLE, 0);	// PIO3_5 low to enable RM serial communication feature
 
-	rm_serial_init(); 	//serielle Schnittstelle für die Kommunikarion mit dem Rauchmelder initialisieren
+	rm_serial_init(); 	//serielle Schnittstelle für die Kommunikation mit dem Rauchmelder initialisieren
 
 	// Enable the timer interrupt
 	enableInterrupt(TIMER_32_0_IRQn);
@@ -874,7 +874,7 @@ void initApplication()
 	timer32_0.matchMode(MAT1, RESET | INTERRUPT);
 
 	// Match MAT1 when the timer reaches this value (in milliseconds)
-	timer32_0.match(MAT1, 500);
+	timer32_0.match(MAT1, 499); // 0-499 = 500ms
 
 	timer32_0.start();
 
@@ -890,9 +890,6 @@ void initApplication()
 	cmdCurrent = RM_CMD_NONE;
 	recvCount = -1;
 
-	// eventTime wird im Zählerinterrupt gesetzt -> warum wurde hier "initialisiert"??
-	//eventTime = eeprom[ADDRTAB + 2] & 127; //ADDRTAB=0x16=22
-
 	alarmBus = 0;
 	alarmLocal = 0;
 
@@ -903,9 +900,9 @@ void initApplication()
 	setTestAlarmBus = 0;
 	ignoreBusAlarm = 0;
 
-	infoSendObjno = OBJ_HIGH_INFO_SEND;
+	infoSendObjno = 0;
 	readCmdno = RM_CMD_COUNT;
-	infoCounter = 1;
+	infoCounter = userEeprom[CONF_INFO_INTERVAL];
 	alarmCounter = 1;
 	TalarmCounter = 1;
 	alarmStatusCounter = 1;
