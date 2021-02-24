@@ -23,24 +23,13 @@
 #define ADC_MAX_VOLTAGE 3405 // 3.405V VDD on LPC11xx
 #define ADC_AD_SAMPLE_COUNT_MIN 100
 
-// careful, variables can be changed any time by the Isr ADC_IRQHandler
-static volatile bool isrCallBusFailed = false;             // true then the isr detected a bus fail
-static volatile bool isrCallBusReturn = false;             // true then the isr detected a bus return
-static volatile int isrbusVoltagethresholdFailed = 1903;   // AD-value threshold below which a bus failure should be reported
-static volatile int isrbusVoltagethresholdReturn = 1996;   // AD-value threshold above which a bus return should be reported
-static volatile int isrmeanbusVoltage = 0;                 // mean bus voltage as AD-value
-static volatile unsigned int isrADSampleCount = 0;
-static volatile unsigned int isrFailedFirstSysTick = 0;
-static volatile unsigned int isrReturnedFirstSysTick = 0;
-static volatile BusVoltage::State isrBusVoltageState = BusVoltage::UNKNOWN;
-
 // The interrupt handler for the ADC busVoltageMonitor object
 ADC_INTERRUPT_HANDLER(ADC_IRQHandler, busVoltageMonitor);
 
 /*
  * ISR routine to handle ADC interrupt (parts are copy&paste from sblib/analog_pin.cpp)
  */
-void BusVoltage::ADCInterruptHandler()
+void BusVoltage::adcInterruptHandler()
 {
     // dont remove, otherwise Isr will trigger all the time
     LPC_ADC->CR = _ADCR | (1 << _ADChannel); // start by rising edge of the timer
@@ -54,7 +43,7 @@ void BusVoltage::ADCInterruptHandler()
         return;
 
 #ifdef DEBUG
-    digitalWrite(PIN_INFO, !digitalRead(PIN_INFO));
+    digitalWrite(PIN_INFO, 1);
 #endif
 
     regVal = (regVal >> 6) & 0x3ff;                       // this is the ADC read out value
@@ -83,8 +72,11 @@ void BusVoltage::ADCInterruptHandler()
         unsigned int timelapsed = millis() - isrFailedFirstSysTick;
         if ((isrBusVoltageState != BusVoltage::FAILED) && (_busVoltageFailTimeMs <= timelapsed))
         {
-            isrCallBusFailed = true;
             isrBusVoltageState = BusVoltage::FAILED;
+            if (_callback != nullptr)
+            {
+                _callback->BusVoltageFail();
+            }
         }
     }
     else if ((isrmeanbusVoltage > isrbusVoltagethresholdReturn)) // bus voltage returning
@@ -103,18 +95,43 @@ void BusVoltage::ADCInterruptHandler()
         {
             if (isrBusVoltageState != BusVoltage::UNKNOWN)
             {
-                isrCallBusReturn = true;
+                isrBusVoltageState = BusVoltage::OK;
+                if (_callback != nullptr)
+                {
+                    _callback->BusVoltageReturn();
+                }
             }
             isrBusVoltageState = BusVoltage::OK;
         }
     }
 #ifdef DEBUG
-    digitalWrite(PIN_INFO, !digitalRead(PIN_INFO));
+    digitalWrite(PIN_INFO, 0);
 #endif
+}
+
+BusVoltage::BusVoltage()
+                : _ADPin(PIN_VBUS)
+                , _ADChannel(AD7)
+                , _ADSampleFrequency(10000)
+                , _thresholdVoltageFailed(20000)
+                , _thresholdVoltageReturn(21000)
+                , _busVoltageFailTimeMs(20)
+                , _busVoltageReturnTimeMs(1500)
+                , _callback(nullptr)
+                , _timerMatchChannel(0)
+                , isrbusVoltagethresholdFailed(1903)
+                , isrbusVoltagethresholdReturn(1996)
+                , isrmeanbusVoltage(0)
+                , isrADSampleCount(0)
+                , isrFailedFirstSysTick(0)
+                , isrReturnedFirstSysTick(0)
+                , isrBusVoltageState(BusVoltage::UNKNOWN)
+{
 }
 
 void BusVoltage::adcTimerSetup(void)
 {
+    // mostly from out-cs-bim112
     // Der Timer ist die eigentliche Zeitbasis der Sampling-Routinen, er startet periodisch den ADC.
     // Die Interrupt-Routine auf ADC-Conversion Done macht dann alles weitere.
     // Es werden die Timer-Funktionen aus Timer.h/.cpp genutzt
@@ -163,8 +180,6 @@ void BusVoltage::isrSetup()
 {
     isrADSampleCount = 0;
     isrmeanbusVoltage = 0;
-    isrCallBusFailed = false;
-    isrCallBusReturn = false;
     isrFailedFirstSysTick = 0;
     isrReturnedFirstSysTick = 0;
     isrBusVoltageState = BusVoltage::UNKNOWN;
@@ -172,14 +187,26 @@ void BusVoltage::isrSetup()
     enableInterrupt(ADC_IRQn);
 }
 
-
-/*
- * setup bus voltage monitoring using AD-conversion
+/**
+ * setup Bus Voltage Monitoring.
+ *
+ * @param ADPin IO-Pin used for bus voltage monitoring.
+ * @param ADChannel AD-Channel correspondending to the IO-Pin
+ * @param ADSampleFrequency AD-conversion frequency in Hz
+ * @param thresholdVoltageFailed Threshold for bus failing in milli-voltage
+ * @param thresholdVoltageReturn Threshold for bus returning in milli-voltage
+ * @param busVoltageFailTimeMs time (milliseconds) bus voltage (milli-voltage) must stay below, to trigger bus failing notification
+ * @param busVoltageReturnTimeMs time (milliseconds) bus voltage (milli-voltage) must stay above, to trigger bus returning notification
+ * @param *adTimer timer used for AD-conversion. Can be timer16_0 or timer32_0 from sblib/timer.h
+ * @param timerMatchChannel timer match channel used for AD-conversion. Can be 0 or 1
+ * @param callback instance of a sub-class of class BusVoltageCallback
+ *
+ * @return non-zero if successful.
  */
-unsigned int BusVoltage::setupMonitoring(unsigned int ADPin, unsigned int ADChannel, unsigned int ADSampleFrequency,
-                                         unsigned int thresholdVoltageFailed, unsigned int thresholdVoltageReturn,
-                                         unsigned int busVoltageFailTimeMs, unsigned int busVoltageReturnTimeMs,
-                                         Timer *adTimer, unsigned int timerMatchChannel)
+unsigned int BusVoltage::setup(unsigned int ADPin, unsigned int ADChannel, unsigned int ADSampleFrequency,
+                               unsigned int thresholdVoltageFailed, unsigned int thresholdVoltageReturn,
+                               unsigned int busVoltageFailTimeMs, unsigned int busVoltageReturnTimeMs,
+                               Timer *adTimer, unsigned int timerMatchChannel, BusVoltageCallback *callback)
 {
     if ((adTimer != &timer16_0) && (adTimer != &timer32_0))
         return 0;
@@ -195,8 +222,18 @@ unsigned int BusVoltage::setupMonitoring(unsigned int ADPin, unsigned int ADChan
     _busVoltageReturnTimeMs = busVoltageReturnTimeMs;
     _adTimer = adTimer;
     _timerMatchChannel = timerMatchChannel;
-    isrbusVoltagethresholdFailed = convertmVAD(_thresholdVoltageFailed);
-    isrbusVoltagethresholdReturn = convertmVAD(_thresholdVoltageReturn);
+    _callback = callback;
+
+    if (_callback != nullptr)
+    {
+        isrbusVoltagethresholdFailed = _callback->convertmVAD(_thresholdVoltageFailed);
+        isrbusVoltagethresholdReturn = _callback->convertmVAD(_thresholdVoltageReturn);
+    }
+    else
+    {
+        isrbusVoltagethresholdFailed = _thresholdVoltageFailed;
+        isrbusVoltagethresholdReturn = _thresholdVoltageReturn;
+    }
 
     return 1;
 }
@@ -204,7 +241,7 @@ unsigned int BusVoltage::setupMonitoring(unsigned int ADPin, unsigned int ADChan
 /*
  * enable bus voltage monitoring using AD-conversion
  */
-void BusVoltage::enableMonitoring()
+void BusVoltage::enable()
 {
     adcTimerSetup();
     analogSetup();
@@ -214,7 +251,7 @@ void BusVoltage::enableMonitoring()
 /*
  * disable bus voltage monitoring
  */
-void BusVoltage::disableMonitoring()
+void BusVoltage::disable()
 {
     clearPendingInterrupt(ADC_IRQn);
     disableInterrupt(ADC_IRQn);
@@ -227,36 +264,29 @@ void BusVoltage::disableMonitoring()
     _adTimer->stop();
 }
 
-void BusVoltage::checkPeriodic()
-{
-    if (isrCallBusFailed) // isr sets isrCallBusFailed to true when it detects a bus fail
-    {
-        isrCallBusFailed = false;
-        BusVoltageFail();
-    }
-    else if (isrCallBusReturn) // isr sets isrCallBusReturn to true when it detects a bus fail
-    {
-        isrCallBusReturn = false;
-        BusVoltageReturn();
-    }
-}
-
 /*
  *  returns measured bus voltage in mV, returns -1 in case of invalid measurement
  */
-int BusVoltage::valuemV()
+int BusVoltage::valueBusVoltagemV()
 {
     if (isrADSampleCount < 1)
         return -1;
+    else if (_callback != nullptr)
+    {
+        return _callback->convertADmV(isrmeanbusVoltage);
+    }
     else
-        return convertADmV(isrmeanbusVoltage);
+        return isrmeanbusVoltage;
 }
 
-bool BusVoltage::failed()
+int BusVoltage::valueBusVoltageAD()
+{
+    return isrmeanbusVoltage;
+}
+
+bool BusVoltage::busFailed()
 {
     return (isrBusVoltageState != BusVoltage::OK);
 }
 
 BusVoltage busVoltageMonitor = BusVoltage();
-
-
