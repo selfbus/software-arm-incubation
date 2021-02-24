@@ -23,10 +23,9 @@ const unsigned int zeroDetectClrDelay = 0x0240; //0x0220 Omron G5Q-1A EU 10A cle
 #define ZD_RESET ((zeroDetectSetDelay > zeroDetectClrDelay ? zeroDetectSetDelay : zeroDetectClrDelay) + 1)
 
 
-void Outputs::begin(unsigned int initial, unsigned int inverted, unsigned int channelcount, const int* Pins, const unsigned int pinCount)
+void Outputs::begin(unsigned int initial, unsigned int inverted, unsigned int channelcount)
 {
-    _outputPins = (unsigned int*) Pins;
-    _pinCount = pinCount;
+
 #ifndef BI_STABLE
     pinMode(PIN_PWM, OUTPUT_MATCH);  // configure digital pin PIO3_2(PWM) to match MAT2 of timer16 #0
     //pinMode(PIO1_4, OUTPUT);
@@ -74,6 +73,17 @@ void Outputs::setHandActuation(HandActuation* hand)
     _handAct = hand;
 }
 #endif
+
+void Outputs::setupOutputs(const int* Pins, const unsigned int pinCount)
+{
+    _outputPins = (unsigned int*) Pins;
+    _pinCount = pinCount;
+    for (unsigned int channel = 0; channel < outputCount(); channel++)
+    {
+        pinMode(outputPins[channel], OUTPUT);
+        digitalWrite(outputPins[channel], 0);
+    }
+}
 
 /*
  * returns true in case a switching action was started which drained the bus

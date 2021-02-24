@@ -70,7 +70,7 @@
 /*
  *  bus power-failure configuration
  *  Use 1% tolerance or better resistors for the voltage divider R3 & R12 on 4TE controller & TS_ARM
- *  TODO change resistors in schematic to 1%
+ *  TODO change resistors R3 & R12 tolerance in schematic to 1%
  */
 #ifdef BUSFAIL
 #   define VBUS_AD_PIN PIN_VBUS
@@ -83,7 +83,7 @@
 #      define VBUS_THRESHOLD_FAILED 24000 // millivoltage for normal relays
 #      define VBUS_THRESHOLD_RETURN 26000
 
-       // TODO test these values with 1% resistors for the voltage divider R3 & R12
+       // TODO test these values with 1% tolerance resistors for the voltage divider R3 & R12
 // #      define VBUS_THRESHOLD_FAILED 23500 // millivoltage for normal relays
 // #      define VBUS_THRESHOLD_RETURN 24500
 #   else
@@ -91,7 +91,7 @@
                                           // datasheet states 19.2V @ 50ms should work for Hongfa HFE20-1 24-1HSD-L2(359), but not with 15ms!
 #      define VBUS_THRESHOLD_RETURN 27500
 
-       // TODO test these values with 1% resistors for the voltage divider R3 & R12
+       // TODO test these values with 1% tolerance resistors for the voltage divider R3 & R12
 // #      define VBUS_THRESHOLD_FAILED 24500 // some relays don't work reliable below 24V@15ms,
                                           // datasheet states 19.2V @ 50ms should work for Hongfa HFE20-1 24-1HSD-L2(359), but not with 15ms!
 // #      define VBUS_THRESHOLD_RETURN 25500

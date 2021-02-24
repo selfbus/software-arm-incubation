@@ -478,7 +478,7 @@ static void _sendFeedbackObjects(bool forcesendFeedbackObjects)
 
 static void _switchObjects(unsigned int delayms)
 {
-    _sendFeedbackObjects(); //FIXME RM wieder reinbringen
+    _sendFeedbackObjects();
     relays.updateOutputs(delayms);
 }
 
@@ -489,11 +489,12 @@ void delayAppStart()
 #ifndef DEBUG
     delay(msMultiplier); // always delay a little bit to let the AD-Pin "float"
     // delay the app start by 0.5-10 seconds, so not all out8-apps will return the same time the bus returns.
-    analogBegin();
+    analogBegin();  // this needs a re-enable of bus voltage monitoring (in app_main.cpp)
     pinMode(FLOATING_AD_PIN, INPUT_ANALOG);
     for (int i = 0; i<10;i++) // this loop is needed so the analog will be more "random"
     {
         delayAppStartms = analogRead(FLOATING_AD_CHANNEL); // try to read open/floating analog input IO12 /AD5 to get a random number
+                                                           // and this needs a re-enable of bus voltage monitoring (in app_main.cpp)
         delay(10);
     }
     pinMode(FLOATING_AD_PIN, INPUT);
@@ -526,10 +527,7 @@ void initApplication(int lastRelayState)
     int newRelaystate;
     Outputs::State initialOutputState[NO_OF_CHANNELS];
 
-    for (i = 0; i < (sizeof(outputPins)/sizeof(outputPins[0])); i++)
-    {
-        digitalWrite(outputPins[i], 0); // switch all outputs off
-    }
+    relays.setupOutputs(&outputPins[0], NO_OF_OUTPUTS);
 
     delayAppStart();
 
@@ -598,9 +596,11 @@ void initApplication(int lastRelayState)
         _handle_logic_function(i, objectRead(i)); // handle the logic functions for the channel
 
     // set the initial relays state, this needs to be done as last operation before real
-    relays.begin(newRelaystate, userEeprom[APP_CLOSER_MODE], NO_OF_CHANNELS, &outputPins[0], NO_OF_OUTPUTS);
+    relays.begin(newRelaystate, userEeprom[APP_CLOSER_MODE], NO_OF_CHANNELS);
 
 #ifdef HAND_ACTUATION
+    handAct.setDelayBetweenButtonsMs(10);
+    handAct.setDelayAtEndMs(10);
     relays.setHandActuation(&handAct);
 #endif
 

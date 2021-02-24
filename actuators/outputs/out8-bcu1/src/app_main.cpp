@@ -8,11 +8,13 @@
  *  published by the Free Software Foundation.
  */
 
-#include "app_out8.h"
-#include "com_objs.h"
 #include <sblib/eib.h>
 #include <sblib/eib/sblib_default_objects.h>
 #include <sblib/analog_pin.h>
+#include "app_main.h"
+#include "app_out8.h"
+#include "com_objs.h"
+
 #ifdef BUSFAIL
 #   include <sblib/math.h>
 #endif
@@ -34,12 +36,9 @@
 
 
 #ifdef BUSFAIL
-    typedef struct ApplicationData {
-        unsigned char relaisstate;         // current relays state
-    } ApplicationData;
-
     NonVolatileSetting AppNovSetting(0xEA00, 0x100);  // flash-storage for application relevant parameters
     ApplicationData AppData;
+    AppCallback callback;
 #endif
 
 
@@ -62,7 +61,6 @@ volatile const char * __attribute__((optimize("O0"))) getAppVersion()
  */
 void ioTest()
 {
-
 #ifdef IO_TEST
 
 #   ifdef BI_STABLE
@@ -83,14 +81,7 @@ void ioTest()
 
     // setup LED's
     const int togglePausems = 250;
-#   ifdef HAND_ACTUATION
-        const int countHandPins = sizeof(handPins)/sizeof(handPins[0]);
-        for (unsigned int i = 0; i < countHandPins; i++)
-        {
-            digitalWrite(handPins[i], 0);
-            pinMode(handPins[i], OUTPUT);
-        }
-#   else
+#   ifndef HAND_ACTUATION
         const int disablePins[9] = {PIN_LT1, PIN_LT2, PIN_LT3, PIN_LT4, PIN_LT5, PIN_LT6, PIN_LT7, PIN_LT8, PIN_LT9};
         for (unsigned int i = 0; i < sizeof(disablePins)/sizeof(disablePins[0]); i++)
         {
@@ -106,7 +97,7 @@ void ioTest()
     }
 
     // initialize relays for ioTest
-    relays.begin(0x00, 0x00, NO_OF_CHANNELS, &outputPins[0], NO_OF_OUTPUTS);
+    relays.begin(0x00, 0x00, NO_OF_CHANNELS);
 #   ifdef HAND_ACTUATION
         HandActuation handActTestIO = HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
         relays.setHandActuation(&handActTestIO);
@@ -135,16 +126,79 @@ void ioTest()
 #endif /* IO_TEST */
 }
 
-
-#ifdef DEBUG_SERIAL
 void initSerial()
 {
+#ifdef DEBUG_SERIAL
     serial.setRxPin(PIO2_7);
     serial.setTxPin(PIO2_8);
     serial.begin(57600);
     serial.println("out8 serial debug started");
-}
 #endif
+}
+
+void printSerialBusVoltage(const unsigned int onEveryTickMs)
+{
+#if defined(DEBUG_SERIAL) && defined(BUSFAIL)
+    if (millis() % onEveryTickMs == 0)
+    {
+        unsigned int valueAD = busVoltageMonitor.valueBusVoltageAD();
+        unsigned int valueADConvertedTwice = callback.convertmVAD(callback.convertADmV(valueAD));
+        unsigned int valuemV = callback.convertADmV(valueAD);
+        int diff = int(valueAD - valueADConvertedTwice);
+        serial.print("AD;");
+        serial.print(valueAD);
+        serial.print(";mV;");
+        serial.print(valuemV);
+        if (diff > 2)
+        {
+            serial.print(";diff;");
+            serial.print(diff);
+        }
+        serial.println();
+    }
+#endif
+}
+
+void startBusVoltageMonitoring()
+{
+#ifdef BUSFAIL
+    if (busVoltageMonitor.setup(VBUS_AD_PIN, VBUS_AD_CHANNEL, VBUS_ADC_SAMPLE_FREQ,
+                                VBUS_THRESHOLD_FAILED, VBUS_THRESHOLD_RETURN,
+                                VBUS_VOLTAGE_FAILTIME_MS, VBUS_VOLTAGE_RETURNTIME_MS,
+                                &timer32_0, 0, &callback))
+    {
+        busVoltageMonitor.enable();
+        while (busVoltageMonitor.busFailed())
+        {
+            delay(1);
+#           ifdef DEBUG
+                digitalWrite(PIN_RUN, !digitalRead(PIN_RUN));
+#           endif
+            printSerialBusVoltage(100);
+        }
+#       ifdef DEBUG
+            digitalWrite(PIN_RUN, 1);
+#       endif
+    }
+#endif
+}
+
+bool recallAppData()
+{
+    bool result = true;
+#ifdef BUSFAIL
+    result = AppNovSetting.RecallAppData((unsigned char*)&AppData, sizeof(ApplicationData)); // load custom application settings
+    if (!result)
+    {
+#   ifdef DEBUG
+        digitalWrite(PIN_INFO, 1);
+        delay(1000);
+        digitalWrite(PIN_INFO, 0);
+#   endif
+    }
+#endif
+    return result;
+}
 
 /*
  * Initialize the application.
@@ -163,39 +217,19 @@ void setup()
 #endif
 
     // Configure the output pins
-    for (unsigned int channel = 0; channel < sizeof(outputPins)/sizeof(outputPins[0]); channel++)
-    {
-        pinMode(outputPins[channel], OUTPUT);
-        digitalWrite(outputPins[channel], 0);
-    }
+    relays.setupOutputs(&outputPins[0], NO_OF_OUTPUTS);
 
-    bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
-    // _bcu.setGroupTelRateLimit(20); // this leads somethimes to repeated telegrams?
-
-#ifdef BUSFAIL
-    if (!AppNovSetting.RecallAppData((unsigned char*)&AppData, sizeof(ApplicationData))) // load custom app settings
-    {
-#   ifdef DEBUG
-        digitalWrite(PIN_INFO, 1);
-        delay(1000);
-        digitalWrite(PIN_INFO, 0);
-#   endif
-    }
-    // enable bus voltage monitoring
-    if (busVoltageMonitor.setupMonitoring(VBUS_AD_PIN, VBUS_AD_CHANNEL, VBUS_ADC_SAMPLE_FREQ,
-                                      VBUS_THRESHOLD_FAILED, VBUS_THRESHOLD_RETURN,
-                                      VBUS_VOLTAGE_FAILTIME_MS, VBUS_VOLTAGE_RETURNTIME_MS,
-                                      &timer32_0, 0))
-    {
-        busVoltageMonitor.enableMonitoring();
-    }
-#endif
-
-#ifdef DEBUG_SERIAL
     initSerial();
-#endif
+
+    // enable bus voltage monitoring
+    startBusVoltageMonitoring();
 
     ioTest();
+
+    bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
+    // _bcu.setGroupTelRateLimit(20); // not rly sure, maybe this leads sometimes to repeated telegrams?
+
+    recallAppData();
 
 #ifndef BI_STABLE
     //pinMode(PIN_IO11, OUTPUT);
@@ -212,6 +246,7 @@ void setup()
 
 #ifdef BUSFAIL
     initApplication(AppData.relaisstate);
+    startBusVoltageMonitoring(); // needs to be called again, because Release version is using analog_pin.h functions from sblib which break our ADC Interrupts
 #else
     initApplication();
 #endif
@@ -230,36 +265,20 @@ void loop()
     }
     // check if any of the timeouts for an output has expire and react on them
     checkTimeouts();
-#ifdef BUSFAIL
-    // check the bus voltage
-    busVoltageMonitor.checkPeriodic();
-#endif
+
     // Sleep up to 1 millisecond if there is nothing to do
     if (bus.idle())
     {
         waitForInterrupt();
-#if defined DEBUG_SERIAL && BUSFAIL
-       serial.print("mV:");
-       serial.println(busVoltageMonitor.valuemV());
-#endif
+        printSerialBusVoltage(500);
     }
 }
 
 void loop_noapp()
 {
-#ifdef BUSFAIL
-    // check the bus voltage
-    busVoltageMonitor.checkPeriodic();
-#endif
     waitForInterrupt();
-
-#if defined DEBUG_SERIAL && BUSFAIL
-       serial.print("mV:");
-       serial.println(busVoltageMonitor.valuemV());
-#endif
+    printSerialBusVoltage(500);
 };
-
-
 
 void ResetDefaultApplicationData()
 {
@@ -267,11 +286,9 @@ void ResetDefaultApplicationData()
     AppData.relaisstate = 0x00;
 #endif
 }
-/*
- * will be called by the bus_voltage.h ISR which handles the ADC interrupt for the bus voltage.
- */
+
 #ifdef BUSFAIL
-void BusVoltageFail()
+void AppCallback::BusVoltageFail()
 {
     pinMode(PIN_INFO, OUTPUT); // even in non DEBUG flash Info LED to display app data storing
     digitalWrite(PIN_INFO, 1);
@@ -289,107 +306,112 @@ void BusVoltageFail()
     digitalWrite(PIN_RUN, 0); // switch RUN-LED off, to save some power
 #endif
 }
-#endif // BUSFAIL
 
-/*
- * will be called by the bus_voltage.h ISR which handles the ADC interrupt for the bus voltage.
- */
-#ifdef BUSFAIL
-void BusVoltageReturn()
+void AppCallback::BusVoltageReturn()
 {
 #ifdef DEBUG
     digitalWrite(PIN_RUN, 1); // switch RUN-LED ON
 #endif
-    //restore app settings
-    if (!AppNovSetting.RecallAppData((unsigned char*)&AppData, sizeof(AppData))) // load custom app settings
+    //restore application settings
+    if (!recallAppData()) // load custom application settings
     {
         // load default values
         ResetDefaultApplicationData();
-#ifdef DEBUG
-        digitalWrite(PIN_INFO, 1);
-        delay(1000);
-        digitalWrite(PIN_INFO, 0);
-#endif
     }
-
     bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
     initApplication(AppData.relaisstate);
 }
-#endif // BUSFAIL
 
-#ifdef BUSFAIL
-int convertADmV(int valueAD)
- {
-    // good approximation between 17 & 30V for the 4TE-ARM controller
-    if (valueAD > 2158)
-        return 30000;
-    else if (valueAD < 1546)
-        return 0;
-    else
-        return 0.019812094*sq(valueAD) - // a*x^2
-               52.1039160138*valueAD +   // b*x
-               50375.4168671156;         // c
-
-    // TODO values need correction for 1% resistors
-    /*
-     *  4TE ARM-Controller coefficients found with following measurements (5% resistors):
-     *  ---------------------
-     *  | Bus mV  ADC-Value |
-     *  ---------------------
-     *  | 30284   2158      |
-     *  | 30006   2150      |
-     *  | 29421   2132      |
-     *  | 27397   2073      |
-     *  | 26270   2035      |
-     *  | 25210   1996      |
-     *  | 24094   1953      |
-     *  | 22924   1903      |
-     *  | 21081   1811      |
-     *  | 20003   1751      |
-     *  | 18954   1683      |
-     *  | 17987   1619      |
-     *  | 17007   1546      |
-     *  ---------------------
-     *
-    */
-}
-#endif // BUSFAIL
-
-#ifdef BUSFAIL
-int convertmVAD(int valuemV)
+int AppCallback::convertADmV(int valueAD)
 {
-
-    // good approximation between 17 & 30V for the 4TE-ARM controller
-    if (valuemV >= 30284)
-        return 2158;
-    else if (valuemV < 17007)
+    // good approximation between 10 & 30V for the 4TE-ARM controller
+    if (valueAD > 2150)
+        return 30000;
+    else if (valueAD < 872)
         return 0;
     else
-        return -0.0000018353*sq(valuemV) + // a*x^2
-                0.132020974*valuemV -      // b*x
-                161.7265204893;            // c
-
-    // TODO values need correction for 1% resistors
+    {
+        double valueADSquared = sq(valueAD);
+        return      0.00000857674926702488*valueADSquared*valueAD + // a*x^3
+                   -0.0310784307851376*valueADSquared +             // b*x^2
+                   47.7234335386816*valueAD +                       // c*x
+               -14253.9303808124;                                   // d
+    }
     /*
-     *  4TE ARM-Controller coefficients found with following measurements (5% resistors):
+     *  4TE ARM-Controller coefficients found with following measurements:
      *  ---------------------
      *  | Bus mV  ADC-Value |
      *  ---------------------
-     *  | 30284   2158      |
-     *  | 30006   2150      |
-     *  | 29421   2132      |
-     *  | 27397   2073      |
-     *  | 26270   2035      |
-     *  | 25210   1996      |
-     *  | 24094   1953      |
-     *  | 22924   1903      |
-     *  | 21081   1811      |
-     *  | 20003   1751      |
-     *  | 18954   1683      |
-     *  | 17987   1619      |
-     *  | 17007   1546      |
+     *  |  9542    872      |
+     *  | 10043    920      |
+     *  | 11047   1017      |
+     *  | 12008   1108      |
+     *  | 13013   1202      |
+     *  | 14012   1293      |
+     *  | 15044   1382      |
+     *  | 16024   1465      |
+     *  | 17024   1545      |
+     *  | 18012   1615      |
+     *  | 19031   1686      |
+     *  | 20044   1749      |
+     *  | 20959   1801      |
+     *  | 22003   1854      |
+     *  | 23001   1901      |
+     *  | 23987   1945      |
+     *  | 24979   1985      |
+     *  | 25999   2022      |
+     *  | 26978   2055      |
+     *  | 28006   2087      |
+     *  | 29009   2115      |
+     *  | 29873   2140      |
+     *  | 30184   2150      |
      *  ---------------------
      *
     */
 }
-#endif // BUSFAIL
+
+int AppCallback::convertmVAD(int valuemV)
+{
+    // good approximation between 10 & 30V for the 4TE-ARM controller
+    if (valuemV >= 30184)
+        return 2150;
+    else if (valuemV < 9542)
+        return 0;
+    else
+
+    return   -0.00000214162532145905*sq(valuemV) + // a*x^2
+              0.146795202310839*valuemV +          // b*x
+           -339.582791686125;                      // c
+    /*
+     *  4TE ARM-Controller coefficients found with following measurements:
+     *  ---------------------
+     *  | Bus mV  ADC-Value |
+     *  ---------------------
+     *  |  9542    872      |
+     *  | 10043    920      |
+     *  | 11047   1017      |
+     *  | 12008   1108      |
+     *  | 13013   1202      |
+     *  | 14012   1293      |
+     *  | 15044   1382      |
+     *  | 16024   1465      |
+     *  | 17024   1545      |
+     *  | 18012   1615      |
+     *  | 19031   1686      |
+     *  | 20044   1749      |
+     *  | 20959   1801      |
+     *  | 22003   1854      |
+     *  | 23001   1901      |
+     *  | 23987   1945      |
+     *  | 24979   1985      |
+     *  | 25999   2022      |
+     *  | 26978   2055      |
+     *  | 28006   2087      |
+     *  | 29009   2115      |
+     *  | 29873   2140      |
+     *  | 30184   2150      |
+     *  ---------------------
+     *
+    */
+}
+#endif /* BUSFAIL */

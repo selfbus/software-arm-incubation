@@ -50,7 +50,8 @@ public:
               , _blocked(0)
               {};
 
-    void begin(unsigned int initial, unsigned int inverted, unsigned int channelcount, const int* Pins, const unsigned int pinCount);
+    virtual void setupOutputs(const int* Pins, const unsigned int pinCount);
+    void begin(unsigned int initial, unsigned int inverted, unsigned int channelcount);
     unsigned int pendingChanges(void);
     unsigned int channel(unsigned int channel);
     void updateChannel(unsigned int channel, unsigned int value);
