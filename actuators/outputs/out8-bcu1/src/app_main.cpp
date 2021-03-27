@@ -249,6 +249,8 @@ void setup()
     startBusVoltageMonitoring(); // needs to be called again, because Release version is using analog_pin.h functions from sblib which break our ADC Interrupts
 #else
     initApplication();
+
+    // TODO check maybe use _bcu.enableGroupTelSend(false);
 #endif
 }
 

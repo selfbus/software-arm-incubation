@@ -203,6 +203,9 @@ static void _handle_logic_function(int objno, unsigned int value)
          break; // sftUnknown
 
     case sftLogic : // logic function (OR/AND/AND with recirculation
+        if ((objno >= COMOBJ_SPECIAL1) && (objno <= COMOBJ_SPECIAL4))// need the value of the actual input 0-7
+            value = objectRead(sfcfg.specialFuncOutput);
+
         // get the logic state for the special function object
         logicState = objectRead(COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber);
         switch (sfcfg.logicFuncTyp)
@@ -234,7 +237,20 @@ static void _handle_logic_function(int objno, unsigned int value)
         default:
             break;
         }
-        relays.updateChannel(sfcfg.specialFuncOutput, value);
+
+
+        // FIXME this doesnt work for a OR
+        if ((value) && (channel_timeout[sfcfg.specialFuncOutput].On.expired()))
+        {
+            channel_timeout[sfcfg.specialFuncOutput].Off.stop();
+            relays.updateChannel(sfcfg.specialFuncOutput, value);
+        }
+        else if ((!value) && (channel_timeout[sfcfg.specialFuncOutput].Off.expired()))
+        {
+            channel_timeout[sfcfg.specialFuncOutput].On.stop();
+            relays.updateChannel(sfcfg.specialFuncOutput, value);
+        }
+
         break; // case sftLogic
 
     case sftBlocking: // blocking function
@@ -388,12 +404,10 @@ static unsigned int _handle_timed_functions(const int objno, const unsigned int 
 
 void objectUpdated(int objno)
 {
-    unsigned int value;
+    unsigned int value = objectRead(objno); // get value of object (0=off, 1=on)
 
-    // get value of object (0=off, 1=on)
-    value = objectRead(objno);
     // check if we have a delayed action for this object, only Outputs
-    if(objno < COMOBJ_SPECIAL1) // logic objects must be checked here to
+    if (objno < COMOBJ_SPECIAL1) // logic objects must be checked here to
     {
         _handle_timed_functions(objno, value);
         if (channel_timeout[objno].On.stopped() && channel_timeout[objno].Off.stopped())
@@ -405,7 +419,7 @@ void objectUpdated(int objno)
     }
 
     // handle the logic functions for this channel
-    _handle_logic_function (objno, value);  //FIXME logic can override on/off delays
+    _handle_logic_function (objno, value);  //FIXME logic will override on/off delays
 
     if (relays.pendingChanges())
         _switchObjects(BETWEEN_CHANNEL_DELAY_MS);
@@ -445,11 +459,12 @@ void checkTimeouts(void)
             relays.updateChannel(objno, newValue);
             objectWrite(objno, newValue);
             _handle_timed_functions(objno, newValue);
-            _handle_logic_function(objno, newValue);   //FIXME logic can override on/off delays
+            _handle_logic_function(objno, newValue);
         }
     }
 
-    if(relays.pendingChanges ())  _switchObjects(BETWEEN_CHANNEL_DELAY_MS);
+    if (relays.pendingChanges())
+        _switchObjects(BETWEEN_CHANNEL_DELAY_MS);
 }
 
 static void _sendFeedbackObjects(bool forcesendFeedbackObjects)
@@ -605,8 +620,7 @@ void initApplication(int lastRelayState)
 #endif
 
     // switch the relays according to newRelaystate and send feedback objects
-    //_switchObjects(BETWEEN_CHANNEL_DELAY_MS);
-    // _switchObjects(1000); //FIXME Busfail&Busreturn Zyklus hier beim schalten
+
     _switchObjects();
 }
 
