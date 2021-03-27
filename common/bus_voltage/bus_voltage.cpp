@@ -243,6 +243,7 @@ unsigned int BusVoltage::setup(unsigned int ADPin, unsigned int ADChannel, unsig
  */
 void BusVoltage::enable()
 {
+    disable();
     adcTimerSetup();
     analogSetup();
     isrSetup();
@@ -261,7 +262,11 @@ void BusVoltage::disable()
     // Disable AHB clock to the ADC.
     LPC_SYSCON->SYSAHBCLKCTRL &= ~(1<<13);
 
-    _adTimer->stop();
+    if (_adTimer != nullptr)
+    {
+        _adTimer->stop();
+    }
+
 }
 
 /*
