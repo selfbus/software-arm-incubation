@@ -11,8 +11,10 @@
 #ifndef IO_CONFIG_H_
 #define IO_CONFIG_H_
 
-#include <sblib/ioports.h>
+#include <sblib/io_pin_names.h>
 
-#define WIND_AD_CHANNEL AD1
+#define WIND_AD_CHANNEL AD1 //AD1 = IO9 = PIO1_0
+#define WIND_AD_PIN PIN_IO9
+
 
 #endif /* IO_CONFIG_H_ */
