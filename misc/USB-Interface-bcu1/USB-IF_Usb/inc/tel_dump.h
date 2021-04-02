@@ -1,7 +1,7 @@
 /*
  *  tel_dump.h - Printing KNX packets as debug output
  *
- *  Copyright (C) 2018 Florian Voelzke <fvoelzke@gmx.de>
+ *  Copyright (C) 2018-2021 Florian Voelzke <fvoelzke@gmx.de>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -14,7 +14,7 @@
 class TelDump
 {
 public:
-	int Dump(bool DirSend, uint8_t* telptr);
+	int Dump(unsigned int time, bool DirSend, unsigned tellen, uint8_t* telptr);
 protected:
 	unsigned linelen;
 	unsigned remlen;
@@ -25,11 +25,9 @@ protected:
 	void DumpHexData(uint8_t tel[], unsigned int start, unsigned int len);
 	void DumpMemData(uint8_t tel[], unsigned int len, unsigned ExtendedOffset, unsigned ItsUserMem = 0);
 	void DumpPropValHeader(uint8_t tel[], unsigned int ExDReq);
+	void DumpLoadAddressTel(uint8_t tel[], unsigned int len);
 	void DbgParseTele(uint8_t tel[], unsigned int len);
+	virtual void OutputFunction(char *line, unsigned int len) = 0;
 };
-
-extern TelDump teldump;
-
-void Split_CdcEnqueue(char* ptr, unsigned len);
 
 #endif /* TEL_DUMP_H_ */
