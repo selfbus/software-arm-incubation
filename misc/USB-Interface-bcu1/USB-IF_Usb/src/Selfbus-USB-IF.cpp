@@ -20,7 +20,7 @@
 #include "busdevice_if.h"
 #include "cdc_dbg.h"
 #include "device_mgnt.h"
-#include "uartif.h"
+#include "UartIf.h"
 #include "ModeSelect.h"
 
 // Code Protection deaktiviert

@@ -1,7 +1,7 @@
 /*
  *  hid_knx.cpp - Processing of the HID packets
  *
- *  Copyright (C) 2018 Florian Voelzke <fvoelzke@gmx.de>
+ *  Copyright (C) 2018-2021 Florian Voelzke <fvoelzke@gmx.de>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -15,10 +15,10 @@
 #include "hid_knx.h"
 #include "string.h"
 #include "busdevice_if.h"
-#include "buffermgr.h"
-#include "tel_dump.h"
+#include "BufferMgr.h"
+#include "tel_dump_usb.h"
 #include "device_mgnt.h"
-#include "genfifo.h"
+#include "GenFifo.h"
 
 KnxHidIf knxhidif;
 
@@ -63,6 +63,34 @@ void KnxHidIf::Set_hUsb(USBD_HANDLE_T h_Usb)
 void HidIfSet_hUsb(USBD_HANDLE_T h_Usb)
 {
   knxhidif.Set_hUsb(h_Usb);
+}
+
+void Split_CdcEnqueue(char* ptr, unsigned len)
+{
+	while (len)
+	{
+		unsigned partlen = len;
+		if (partlen > 64)
+			partlen = 64;
+		int buffno = buffmgr.AllocBuffer();
+		if (buffno < 0)
+			return; // Kein Speicher frei? -> abbrechen
+		uint8_t* partptr = buffmgr.buffptr(buffno);
+		*partptr++ = partlen+3; // Länge
+		*partptr++ = 0; // Checksumme (unbenutzt)
+		*partptr++ = 3; // Kennung für CDC (hier eigentlich unnötig)
+		memcpy(partptr, ptr, partlen);
+		ptr+=partlen;
+		len-=partlen;
+  	if (cdc_txfifo.Push(buffno) != TFifoErr::Ok)
+  	{
+  		int no;
+  		while (cdc_txfifo.Pop(no) == TFifoErr::Ok)
+  		{
+  			buffmgr.FreeBuffer(no);
+  		}
+  	}
+	}
 }
 
 void DumpReport2Cdc(bool DirSend, uint8_t* data)
@@ -358,7 +386,13 @@ void KnxHidIf::KnxIf_Tasks(void)
 					mon = true;
 				}
 				if (mon)
-					teldump.Dump(send, ptr);
+				{
+					unsigned tellen = ptr[0];
+					if ((tellen > 2) && (tellen < 66))
+					{
+						teldump.Dump(systemTime, send, tellen-(2+C_HRH_HeadLen+C_TPH_HeadLen+A_TPB_Data), ptr+2+C_HRH_HeadLen+C_TPH_HeadLen+A_TPB_Data);
+					}
+				}
 			}
 			buffmgr.FreeBuffer(buffno);
 		}

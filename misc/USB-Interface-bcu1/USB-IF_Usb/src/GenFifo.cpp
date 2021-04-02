@@ -11,7 +11,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <GenFifo.h>
-#include "buffermgr.h"
+#include "BufferMgr.h"
 
 GenFifo<int> ser_txfifo;
 GenFifo<int> cdc_txfifo;
