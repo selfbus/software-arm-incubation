@@ -175,7 +175,7 @@ ALWAYS_INLINE void Outputs::checkPWM(void)
 #ifdef ZERO_DETECT
 ALWAYS_INLINE void Outputs::zeroDetectHandler(void)
 {
-	if (_state = 1)
+	if (_state == 1)
 	{
 	    //digitalWrite(PIN_INFO, ! digitalRead(PIN_INFO));	// Info LED
 		timer32_0.start();
