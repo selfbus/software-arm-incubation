@@ -166,6 +166,18 @@ extern "C" void PIOINT0_IRQHandler (void)
 {
     LPC_GPIO_TypeDef* port = gpioPorts[0];
     port->IC  =  1<<5; // clear the interrupt
+    /*
+    * from LPC manual:
+    * The synchronizer between the GPIO and the
+    * NVIC blocks causes a delay of 2 clocks. It is recommended
+    * to add two NOPs after the clear of the interrupt edge
+    * detection logic before the exit of the interrupt service
+    * routine.
+    */
+    // XXX nop needs some testing
+    // __asm volatile ("nop");
+    // __asm volatile ("nop");
+
     relays.zeroDetectHandler();
 }
 
@@ -173,11 +185,11 @@ extern "C" void TIMER32_0_IRQHandler(void)
 {
     if (timer32_0.flags () & 0x01)
     {   // handle SET ports
-    	relays.setOutputs();
+        relays.setOutputs();
     }
     if (timer32_0.flags () & 0x02)
     {   // handle CLR ports
-    	relays.clrOutputs();
+        relays.clrOutputs();
     }
     timer32_0.resetFlags();
     digitalWrite(PIN_INFO, ! digitalRead(PIN_INFO));
