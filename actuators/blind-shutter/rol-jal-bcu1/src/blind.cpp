@@ -10,7 +10,7 @@
 #include <sblib/digital_pin.h>
 #include <sblib/timer.h>
 
-Blind::Blind(unsigned int nummber)
+Blind::Blind(unsigned int number)
   : Channel(number)
   , slatTime(0)
   , slatPosition(0)
@@ -27,6 +27,7 @@ void Blind::stop(void)
 void Blind::startUp(void)
 {
     status = SLAT_OPEN;
+    digitalWrite(outputPins[number * 2 + 1], 0); // FIXME pause between possible direction change
     digitalWrite(outputPins[number * 2 + 0], 1);
     startTime = millis();
     slatStartPosition = slatPosition;
@@ -35,6 +36,7 @@ void Blind::startUp(void)
 void Blind::startDown(void)
 {
     status = SLAT_CLOSE;
+    digitalWrite(outputPins[number * 2 + 0], 0); // FIXME pause between possible direction change
     digitalWrite(outputPins[number * 2 + 1], 1);
     startTime = millis();
     slatStartPosition = slatPosition;

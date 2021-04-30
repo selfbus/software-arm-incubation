@@ -16,7 +16,7 @@
 class Blind: public Channel
 {
 public:
-    Blind(unsigned int nummber);
+    Blind(unsigned int number);
     virtual void startUp(void);
     virtual void startDown(void);
     virtual void stop(void);
