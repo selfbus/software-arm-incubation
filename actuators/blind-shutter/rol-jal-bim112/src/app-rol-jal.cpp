@@ -45,7 +45,8 @@ void objectUpdated(int objno)
     {   // handle global objects
         unsigned char value = objectRead(objno);
         for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
-        {   Channel * chn = channels [i];
+        {
+            Channel * chn = channels [i];
             if (chn && (objno <= 4) && chn->centralEnabled())
             {
                 switch (objno)
@@ -77,6 +78,7 @@ void objectUpdated(int objno)
                 else
                     chn->handleAutomaticFunction(objno - 9, 1, value);
             }
+
         }
     }
 }
@@ -88,6 +90,11 @@ void checkPeriodicFuntions(void)
         Channel * chn = channels[i];
         if (chn)
             chn->periodic();
+    }
+
+    if (PWMDisabled.expired() || PWMDisabled.stopped()) // if (PWMDisabled.started () && PWMDisabled.expired()) // this was never triggered
+    {
+        Channel::startPWM();  // re-enable the PWM
     }
 
 #ifdef HAND_ACTUATION
@@ -118,30 +125,21 @@ void checkPeriodicFuntions(void)
         }
     }
 #endif
-    if (PWMDisabled.started () && PWMDisabled.expired())
-    {
-        // re-enable the PWM
-        timer16_0.match(MAT2, PWM_DUTY_33);
-    }
+
 }
 
 void initApplication(void)
 {
+    Channel::initPWM(PIN_PWM);  // configure digital pin PIO3_2 (PIN_PWM) and timer16_0 for PWM
+
     unsigned int address = currentVersion->baseAddress;
 
-    pinMode(PIN_PWM, OUTPUT_MATCH);  // configure digital pin PIO3_2(PWM) to match MAT2 of timer16 #0
-    //pinMode(PIO1_4, OUTPUT);
-    timer16_0.begin();
-
-    timer16_0.prescaler((SystemCoreClock / 100000) - 1);
-    timer16_0.matchMode(MAT2, SET);  // set the output of PIO3_2 to 1 when the timer matches MAT1
-    timer16_0.match(MAT2, PWM_PERIOD);        // match MAT1 when the timer reaches this value
-    timer16_0.pwmEnable(MAT2);       // enable PWM for match channel MAT1
     for (unsigned int i = 0; i < NO_OF_OUTPUTS; i++)
     {
-        digitalWrite(outputPins[i], 0);
-        pinMode(outputPins[i], OUTPUT);
+        pinMode(outputPins[i], OUTPUT);  // first set pinmode to OUTPUT
+        digitalWrite(outputPins[i], Channel::OUTPUT_LOW);  // then set pin to low, otherwise relays for deactivated shutter/blind channels (in ETS) will switch on
     }
+
     for (unsigned int i = 0; i < NO_OF_CHANNELS; i++, address += EE_CHANNEL_CFG_SIZE)
     {
         switch (userEeprom.getUInt8(address))
