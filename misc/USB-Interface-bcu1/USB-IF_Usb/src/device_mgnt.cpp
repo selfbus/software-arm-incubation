@@ -12,7 +12,7 @@
 #include "chip.h"
 #include "string.h"
 #include "busdevice_if.h"
-#include "buffermgr.h"
+#include "BufferMgr.h"
 #include "cdc_dbg.h"
 #include "knxusb_const.h"
 #include "device_mgnt.h"

@@ -13,8 +13,8 @@
 #include <sblib/platform.h>
 #include <config.h>
 #include <com_objs.h>
-#include <appl.h>
-#include <relay.h>
+#include <Appl.h>
+#include <Relay.h>
 #include <MemMapperMod.h>
 #include <app_main.h>
 #include <AdcIsr.h>

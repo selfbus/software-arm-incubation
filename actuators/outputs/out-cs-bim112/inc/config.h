@@ -84,9 +84,13 @@
  * Wird beispielsweise CHANNELCNT=6 gewählt, so sprechen die ersten 6 Kanäle in der ETS die realen Kanäle an,
  * die letzten zwei sind funktionslos.
  */
-#ifndef TS_ARM_2CH
+#ifdef HW_6CH
 #define CHANNELCNT 6
-#else
+#endif
+#ifdef HW_2CH
+#define CHANNELCNT 2
+#endif
+#ifdef HW_2CH_WO_CS
 #define CHANNELCNT 2
 #endif
 
@@ -109,9 +113,14 @@
  * 30ms Schrack RTX, Omron G5RL
  * 20ms Gruner 704L
  * 50ms HongFa HFE10 and HFE20
+ * 30ms Panasonic ADW
  * Einheit von RELAYPULSEDURATION ist Millisekunden
 */
+#ifdef HW_2CH
+#define RELAYPULSEDURATION 30
+#else
 #define RELAYPULSEDURATION 50
+#endif
 
 //#define RELAYKEEPTASKSTOGETHER // If the switching tasks of one main loop cycle should be executed together
 // Important if the stored energy is not sufficient for switching all relais at once.
@@ -129,7 +138,7 @@
 #define AdcCtrlTmr timer16_0   // A timer is needed to periodically start the ADC (16 or 32 bit).
 // Für das periodische Starten des ADC wird ein eigener Timer benötigt (16 oder 32 bit).
 
-#ifndef TS_ARM_2CH
+#ifndef HW_2CH_WO_CS
 #define CHANALOWRANGE 2        // ADC Kanal Strommessung kleiner Messbereich / ADC channel // DEBUG vorher 0
 #define PIOANALOWRANGE PIO1_1  // Analog input, current measurement low range              // DEBUG        PIO0_11
 
@@ -158,7 +167,7 @@
  * Multiplexer Control pin configuration
  * Multiplexer Ansteuerung Pinkonfiguration
  */
-#ifndef TS_ARM_2CH
+#ifndef HW_2CH_WO_CS
 #define PIOMUXPORT 3
 #define PIOMUX0 PIO3_0    // The analog MUX address select signals must start at bit 0 of the selected port
 #define PIOMUX1 PIO3_1
@@ -188,7 +197,7 @@
 #define RELPWMPRDCH  MAT1      // Relay PWM timer period channel     // DEBUG MAT0
 #define RELPWMDCCH   MAT0      // Relay PWM timer duty cycle channel // DEBUG MAT1
 
-#ifndef TS_ARM_2CH
+#ifndef HW_2CH_WO_CS
 /*
  * SPI-Interface
  */
@@ -216,7 +225,7 @@
 #define REL2OFF		PIO3_0
 #endif
 
-#ifndef TS_ARM_2CH
+#ifndef HW_2CH_WO_CS
 #define PIOPROGBTN PIO2_8  // Programming button for LPC-4TE-TOP  (PROG2  S10)
 #else
 #define PIOPROGBTN PIO2_0  // Programming button for TS-ARM
@@ -230,7 +239,7 @@
  * Die SPI-Ansteuerung erlaubt es, diese als Schieberegister anzuschliessen. In dieser Implementierung wird
  * das nicht benoetigt und nicht unterstuetzt, sie sind direkt am Mikrocontroller angeschlossen.
  */
-#ifndef TS_ARM_2CH
+#ifndef HW_2CH_WO_CS
 #define SPILEDBYTES 0      // Number of the LED driver bytes in the SPI chain
 // Anzahl der LED-Steuerbytes in der SPI-Kette.
 #define SPIBUTTONBYTES 0   // Number of the button readback bytes in the SPI chain
@@ -238,6 +247,7 @@
 
 // Pin definitions for the manual control
 // Pin Definitionen fuer die Handbedienung
+#ifdef HW_6CH
 #define BUTTONLEDCNT  8 // last 2 LEDs used for status signaling
 #define BUTTONLEDCH1  PIO0_11
 #define BUTTONLEDCH2  PIO1_10
@@ -248,6 +258,10 @@
 #define BUTTONLEDCH7  PIO3_5
 #define BUTTONLEDCH8  PIO2_1
 #define BUTTONLEDCOM  PIO2_3
+#endif
+#ifdef HW_2CH
+#define BUTTONLEDCNT  0 // last 2 LEDs used for status signaling
+#endif
 #else
 #define SPILEDBYTES 0      // Number of the LED driver bytes in the SPI chain
 // Anzahl der LED-Steuerbytes in der SPI-Kette.
@@ -330,7 +344,7 @@
 
 #define REF_V 3.397 // Als Referenzspannung für die ADCs wird die Versorgungsspannung benutzt. Der beim Schaltregler eingestellte
                     // Wert ist deutlich höher als 3,3V, fast 3,4V. Wird das nicht eingerechnet, leidet die Genauigkeit
-#ifndef TS_ARM_2CH
+#ifndef HW_2CH_WO_CS
 #define MAXURAIL (REF_V*13) // 44,16V Ein LSB sind dann ca 43mV; Spannungsteiler 36k/3k
 #else
 #define MAXURAIL (REF_V*10.1) // 34,31V Ein LSB sind dann ca 33,5mV; Spannungsteiler 91k/10k
@@ -342,7 +356,7 @@
 #define ADC12VOLTS (unsigned(12.0/MAXURAIL*1023+0.99)) // Der 12V ADC-Wert, aufgerundet
 #define ADC12VOLTSQR (ADC12VOLTS*ADC12VOLTS)           // Der 12V ADC-Wert, aufgerundet
 
-#ifndef TS_ARM_2CH
+#ifndef HW_2CH_WO_CS
 #define ADCRAILVOLTAGELOSS (unsigned(3.5/MAXURAIL*1023+0.5)) // Spannungsverlust durch die Konstantstromladeschaltung
 #define MINURAILINITVOLTAGE (unsigned(15.0/MAXURAIL*1023+0.5)) // Spannung, bis zu der die Speicherkondensatoren aufgeladen sein müssen, bis die Initialisierung startet.
 #define MINUBUSVOLTAGEFALLING (unsigned(14.0/MAXURAIL*1023+0.5)) // Busspannung, unterhalb der jeder Betrieb eingestellt wird.

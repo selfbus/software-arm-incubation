@@ -1,25 +1,18 @@
 /*
  *  tel_dump.cpp - Printing KNX packets as debug output
  *
- *  Copyright (C) 2018 Florian Voelzke <fvoelzke@gmx.de>
+ *  Copyright (C) 2018-2021 Florian Voelzke <fvoelzke@gmx.de>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
  *  published by the Free Software Foundation.
  */
 
-#include <GenFifo.h>
 #include <stdarg.h>
 #include <stdio.h>
-#include "chip.h"
 #include "string.h"
-#include "busdevice_if.h"
-#include "buffermgr.h"
-#include "knxusb_const.h"
 
 #include "tel_dump.h"
-
-TelDump teldump;
 
 void TelDump::PrintPhyAddr(uint8_t dat0, uint8_t dat1)
 {
@@ -137,6 +130,43 @@ void TelDump::DumpPropValHeader(uint8_t tel[], unsigned int ExDReq)
 		search++;
 	}
 	buf_printf("%s\" ", PropDesc[search].text);
+}
+
+void TelDump::DumpLoadAddressTel(uint8_t tel[], unsigned int len)
+{
+	// tel[] zeigt auf die Folgebytes nach 0x01 0x04
+	buf_printf("\r\nLoad control - Object Index: ");
+	switch (tel[0] >> 4) {
+	case 1:
+		buf_printf("Address Table");
+		break;
+	case 2:
+		buf_printf("Association Table");
+		break;
+	case 3:
+		buf_printf("Application");
+		break;
+	default:
+		buf_printf("%i-unknown", tel[0] >> 4);
+	}
+	buf_printf(" - Load State: ");
+	switch (tel[0] & 0xf) {
+	case 1:
+		buf_printf("loading");
+		break;
+	case 2:
+		buf_printf("loaded");
+		break;
+	case 3:
+		buf_printf("load Data");
+		break;
+	case 4:
+		buf_printf("unloaded");
+		break;
+	default:
+		buf_printf("%i-unknown", tel[0] & 0xf);
+	}
+	// TODO weiter ausbauen
 }
 
 void TelDump::DbgParseTele(uint8_t tel[], unsigned int len)
@@ -275,9 +305,13 @@ void TelDump::DbgParseTele(uint8_t tel[], unsigned int len)
 			} else if ((apci & 0x3f0) == 0x240) {
 				buf_printf("Memory Response - ");
 				DumpMemData(tel, dlen-3, ExDReq);
+				if ((tel[8+ExDReq] == 0x01) && (tel[9+ExDReq] == 0x04)) // Address 0x0104
+					DumpLoadAddressTel(tel+ExDReq+10, dlen-3);
 			} else if ((apci & 0x3f0) == 0x280) {
 				buf_printf("Memory Write - ");
 				DumpMemData(tel, dlen-3, ExDReq);
+				if ((tel[8+ExDReq] == 0x01) && (tel[9+ExDReq] == 0x04)) // Address 0x0104
+					DumpLoadAddressTel(tel+ExDReq+10, dlen-3);
 				//} else if (apci == 0x2d0) {
 				// buf_printf("Memory CC Tx - Short - ? ");
 			} else if ((apci & 0x3c0) == 0x180) {
@@ -349,7 +383,7 @@ void TelDump::DbgParseTele(uint8_t tel[], unsigned int len)
 			}
 		}
 	} else {
-		buf_printf("?? Paket too short ??");
+		buf_printf("?? Packet too short ??");
 	}
 	buf_printf("\r\n");
 }
@@ -368,64 +402,24 @@ void TelDump::buf_printf(const char *fmt, ...)
 	}
 }
 
-// Den evtl. langen String in 64 Byte Häppchen splitten und im Cdc-Fifo einreihen
-void Split_CdcEnqueue(char* ptr, unsigned len)
-{
-	while (len)
-	{
-		unsigned partlen = len;
-		if (partlen > 64)
-			partlen = 64;
-		int buffno = buffmgr.AllocBuffer();
-		if (buffno < 0)
-			return; // Kein Speicher frei? -> abbrechen
-		uint8_t* partptr = buffmgr.buffptr(buffno);
-		*partptr++ = partlen+3; // Länge
-		*partptr++ = 0; // Checksumme (unbenutzt)
-		*partptr++ = 3; // Kennung für CDC (hier eigentlich unnötig)
-		memcpy(partptr, ptr, partlen);
-		ptr+=partlen;
-		len-=partlen;
-  	if (cdc_txfifo.Push(buffno) != TFifoErr::Ok)
-  	{
-  		int no;
-  		while (cdc_txfifo.Pop(no) == TFifoErr::Ok)
-  		{
-  			buffmgr.FreeBuffer(no);
-  		}
-  	}
-	}
-}
-
-// Auf was zeigt buffptr? Auf das noch weiter verpackte 64+2 Paket!
-// Dann den Pointer intern anpassen!
-int TelDump::Dump(bool DirSend, uint8_t* buffptr)
+int TelDump::Dump(unsigned int time, bool DirSend, unsigned tellen, uint8_t* buffptr)
 {
 	char line[320];
 	linebuffer = &(line[0]);
 	remlen = sizeof(line)-1;
 
-	if (CdcDeviceMode != TCdcDeviceMode::BusMon)
-		return 0;
-
-	unsigned tellen = buffptr[0];
-	if ((tellen > 2) && (tellen < 66))
+	buf_printf("%ums: ", time);
+	DbgParseTele(buffptr, tellen);
+	if (DirSend)
+		buf_printf("TX: ");
+	else
+		buf_printf("RX: ");
+	for (unsigned i = 0; i < tellen; ++i)
 	{
-		tellen -= 2+C_HRH_HeadLen+C_TPH_HeadLen+A_TPB_Data;
-		buffptr += 2+C_HRH_HeadLen+C_TPH_HeadLen+A_TPB_Data;
-		DbgParseTele(buffptr, tellen);
-		if (DirSend)
-			buf_printf("TX: ");
-		else
-			buf_printf("RX: ");
-		for (unsigned i = 0; i < tellen; ++i)
-		{
-			if (i) buf_printf(" ");
-			buf_printf("%02X", buffptr[i]);
-		}
-		buf_printf("\r\n");
-		Split_CdcEnqueue(&(line[0]), strlen(line));
-		return 1;
+		if (i) buf_printf(" ");
+		buf_printf("%02X", buffptr[i]);
 	}
-	return 0;
+	buf_printf("\r\n");
+	OutputFunction(line, strlen(line));
+	return 1;
 }

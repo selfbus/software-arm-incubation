@@ -44,8 +44,10 @@ ManualCtrl::ManualCtrl() {
 
 void ManualCtrl::StartManualCtrl(void)
 {
- pinMode(BUTTONLEDCOM, OUTPUT);
+#if BUTTONLEDCNT > 0
+	pinMode(BUTTONLEDCOM, OUTPUT);
  digitalWrite(BUTTONLEDCOM, false);
+#endif
 
  button_states = ReadButtons();
  for (int cnt=0; cnt < BUTTONLEDCNT; cnt++)
@@ -109,6 +111,7 @@ unsigned ManualCtrl::DoManualCtrl(void)
 
 unsigned ManualCtrl::ReadButtons(void)
 {
+#if BUTTONLEDCNT > 0
  // Erst LEDs aus und damit Signalknoten entladen
  for (int cnt=0; cnt < BUTTONLEDCNT; cnt++)
  {
@@ -120,10 +123,12 @@ unsigned ManualCtrl::ReadButtons(void)
  {
   pinMode(pins_def[cnt], INPUT);
  }
- digitalWrite(BUTTONLEDCOM, true);
+	digitalWrite(BUTTONLEDCOM, true);
  delayMicroseconds(10);
+#endif
  // Jetzt Taster auslesen
  unsigned int act_buttons=0;
+#if BUTTONLEDCNT > 0
  unsigned int mask=1;
  for (int cnt=0; cnt < BUTTONLEDCNT; cnt++)
  {
@@ -139,6 +144,7 @@ unsigned ManualCtrl::ReadButtons(void)
   pinMode(pins_def[cnt], OUTPUT);
  }
  SetLeds();
+#endif
  return act_buttons;
 }
 

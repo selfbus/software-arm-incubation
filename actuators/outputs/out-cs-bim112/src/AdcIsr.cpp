@@ -18,10 +18,10 @@
  *          Getestet mit -O3
  */
 
+#include <math.h>
 #include <sblib/platform.h>
 #include <config.h>
 #include <AdcIsr.h>
-#include <math.h>
 
 #if (BUFSIZE*8) > 32767
 #error BUFSIZE*8 too great for data type of IsrData.OffsIntegral!

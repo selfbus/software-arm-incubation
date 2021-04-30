@@ -4,6 +4,7 @@
  *
  *  Modified for LPC1115 ARM processor:
  *  Copyright (c) 2017 Oliver Stefan <o.stefan252@googlemail.com>
+ *  Copyright (c) 2020 Stefan Haller
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -12,14 +13,6 @@
 #ifndef rm_const_h
 #define rm_const_h
 
-// Damit die Eclipse Code Analyse nicht so viele Warnungen anzeigt:
-#ifndef SDCC
-# define __idata
-# define __code
-#endif
-
-// Ein Byte auf der seriellen Schnittstelle ausgeben
-#define DEBUG_WRITE_BYTE(x) { while (!TI); TI = 0; SBUF = (x); }
 
 
 //-----------------------------------------------------------------------------
@@ -45,8 +38,6 @@
 
 // Status Testalarm
 #define OBJ_STAT_TALARM			5
-
-
 
 // Rauchmelder Seriennummer
 #define OBJ_SERIAL				6
@@ -106,6 +97,8 @@
 // Höchstes Com-Objekt das bei Info-Senden gesendet wird.
 #define OBJ_HIGH_INFO_SEND      21
 
+// Maximale Anzahl von ComObjekten pro Rauchmelder-Befehl
+#define MAX_OBJ_CMD  4
 
 //-----------------------------------------------------------------------------
 // Rauchmelder Fehlercodes

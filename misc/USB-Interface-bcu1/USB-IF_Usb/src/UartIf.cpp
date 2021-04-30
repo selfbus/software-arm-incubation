@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include "BufferMgr.h"
 #include "knxusb_const.h"
-#include "uartif.h"
+#include "UartIf.h"
 
 UartIf uart;
 

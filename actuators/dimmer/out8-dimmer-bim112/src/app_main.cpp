@@ -16,6 +16,7 @@
 #include <string.h>
 #include <sblib/serial.h>
 #include <sblib/mem_mapper.h>
+#include <sblib/eib/sblib_default_objects.h>
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const HardwareVersion hardwareVersion[] =
@@ -34,22 +35,32 @@ MemMapper memMapper(0xe000, 0xa00, false);
 
 void setup()
 {
+#if defined (__LPC11XX__)
     serial.setRxPin(PIO3_1);
     serial.setTxPin(PIO3_0);
     serial.begin(115200);
     serial.println("Online\n");
+#elif defined (__LPC11UXX__)
+#   error "set correct serial pins for LPCUxxx" // TODO set correct serial pins for LPCUxxx
+#else
+#   error "unknown cpu"
+#endif
 
     memMapper.addRange(0xad00, 0xa00);
 
-
+#if defined (__LPC11XX__)
     bcu.setProgPin(PIO2_11);
     bcu.setProgPinInverted(false);
     bcu.setRxPin(PIO1_8);
     bcu.setTxPin(PIO1_9);
-
+#elif defined (__LPC11UXX__)
+#   error "set correct bcu-pins for LPCUxxx" // TODO set correct bcu-pins for LPCUxxx
+#else
+#   error "unknown cpu"
+#endif
     currentVersion = & hardwareVersion[0];
     bcu.begin(0x0002, 0xa045, 0x0012);
-    bcu.setMemMapper(&memMapper);
+    _bcu.setMemMapper(&memMapper);
     memcpy(userEeprom.order, currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
