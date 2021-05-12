@@ -15,7 +15,7 @@
 Wind::Wind()
  : SensorBase()
 {
-    pinMode(WIND_AD_CHANNEL, INPUT_ANALOG);
+    pinMode(WIND_AD_PIN, INPUT_ANALOG);
 }
 
 void Wind::Initialize(void)

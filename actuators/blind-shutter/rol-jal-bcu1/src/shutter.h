@@ -16,7 +16,7 @@
 class Shutter: public Channel
 {
 public:
-    Shutter(unsigned int nummber);
+    Shutter(unsigned int number);
     virtual void startUp(void);
     virtual void startDown(void);
     virtual void stop(void);

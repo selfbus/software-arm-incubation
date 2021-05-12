@@ -9,9 +9,10 @@
 #include "channel.h"
 #include <sblib/digital_pin.h>
 #include <sblib/timer.h>
+#include <sblib/io_pin_names.h>
 
 const int outputPins[NO_OF_OUTPUTS] =
-    { PIO2_2, PIO0_7, PIO2_10, PIO2_9, PIO0_2, PIO0_8, PIO0_9, PIO2_11 };
+    { PIN_IO1, PIN_IO2, PIN_IO3, PIN_IO4, PIN_IO5, PIN_IO6, PIN_IO7, PIN_IO8 };
 
 Channel::Channel(unsigned int number)
   : number(number)

@@ -12,6 +12,7 @@
 
 #include <sblib/eib.h>
 #include <sblib/serial.h>
+#include <sblib/io_pin_names.h>
 
 #include "rm_com.h"
 #include "rm_const.h"
@@ -40,8 +41,8 @@ unsigned const char hexDigits[] = "0123456789ABCDEF";
  */
 void rm_serial_init()
 {
-	serial.setRxPin(PIO3_1);
-	serial.setTxPin(PIO3_0);
+	serial.setRxPin(PIN_RX);
+	serial.setTxPin(PIN_TX);
 	serial.begin(9600);
 }
 

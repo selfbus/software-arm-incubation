@@ -127,7 +127,7 @@ void setup()
  setUserRamStart(0x3FC);
  appl.RecallAppData(RECALLAPPL_STARTUP);
  manuCtrl.StartManualCtrl();
-#ifdef TS_ARM_2CH
+#ifdef HW_2CH_WO_CS
  //Ausgänge für Relais
  pinMode(REL1ON, OUTPUT);
  pinMode(REL1OFF, OUTPUT);
@@ -267,7 +267,7 @@ void RelayAndSpiProcessing(void)
  {
   LastRelTime = referenceTime;
   relay.DoSwitching(LastRelTime, SpiRelData); // Erzeugt in SpiRelData die aktuellen Ansteuerdaten für die Relais
-#ifndef TS_ARM_2CH
+#ifndef HW_2CH_WO_CS
   relspi.ReadRx(); // Liest die Daten aus dem Empfangspuffer der Schnittstelle
   // Die Anzahl der gelesenen Bytes wird verworfen, die Daten nie abgerufen
   unsigned OneSpiByte;

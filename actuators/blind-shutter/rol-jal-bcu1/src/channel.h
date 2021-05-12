@@ -9,9 +9,7 @@
 #ifndef CHANNEL_H_
 #define CHANNEL_H_
 #include <sblib/types.h>
-
-#define NO_OF_CHANNELS 4
-#define NO_OF_OUTPUTS  (NO_OF_CHANNELS * 2)
+#include "config.h"
 
 extern const int outputPins[NO_OF_OUTPUTS];
 

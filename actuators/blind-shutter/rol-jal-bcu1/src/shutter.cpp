@@ -10,7 +10,7 @@
 #include <sblib/digital_pin.h>
 #include <sblib/timer.h>
 
-Shutter::Shutter(unsigned int nummber)
+Shutter::Shutter(unsigned int number)
   : Channel(number)
 {
 }
@@ -25,6 +25,7 @@ void Shutter::stop(void)
 void Shutter::startUp(void)
 {
     status = UP;
+    digitalWrite(outputPins[number * 2 + 1], 0); // FIXME pause between possible direction change
     digitalWrite(outputPins[number * 2 + 0], 1);
     startTime = millis();
     startPosition = position;
@@ -33,6 +34,7 @@ void Shutter::startUp(void)
 void Shutter::startDown(void)
 {
     status = DOWN;
+    digitalWrite(outputPins[number * 2 + 0], 0); // FIXME pause between possible direction change
     digitalWrite(outputPins[number * 2 + 1], 1);
     startTime = millis();
     startPosition = position;

@@ -1,0 +1,24 @@
+﻿dim4-bim1122
+============
+4 Kanal LED-RGB-Dimmer
+
+MDT AKD-0424V.01 
+
+getestet mit TS-ARM
+PWM-Ausgänge	Kanal 1: PIO3_0  momentan als Debug TX verwendet
+				Kanal 2: PIO3_1
+				Kanal 3: PIO1_1
+				Kanal 4: PIO1_2
+				
+Funktionen z.Zt.:
+-schalten mit Ein- Ausschaltverzögerung
+-Treppenlichtfunktion
+-dimmen absolut
+-dimmen relativ
+-dimmen RGB
+-Sperrobjekt 1&2
+
+-Schalten eines bistabilen Relais an PIO2_3 und PIO1_5 oder eines Triac/SSR an PIO3_2
+
+
+weitere Konfiguration siehe inc/config.h

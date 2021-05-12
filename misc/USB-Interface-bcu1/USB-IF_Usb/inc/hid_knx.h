@@ -1,7 +1,7 @@
 /*
  *  hid_knx.h - Processing of the HID packets
  *
- *  Copyright (C) 2018 Florian Voelzke <fvoelzke@gmx.de>
+ *  Copyright (C) 2018-2021 Florian Voelzke <fvoelzke@gmx.de>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -40,6 +40,8 @@ protected:
 };
 
 extern KnxHidIf knxhidif;
+
+void Split_CdcEnqueue(char* ptr, unsigned len);
 
 extern "C"
 {

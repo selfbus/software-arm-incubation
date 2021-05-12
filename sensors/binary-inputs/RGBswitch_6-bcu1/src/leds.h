@@ -1,3 +1,11 @@
+/*
+ *  Copyright (c) 2018 Oliver Stefan <o.stefan252@gmail.com>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3 as
+ *  published by the Free Software Foundation.
+ */
+
 #ifndef LEDs_H_
 #define LEDs_H_
 

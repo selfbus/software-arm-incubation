@@ -12,7 +12,7 @@
 #include <sblib/digital_pin.h>
 #include "app_in.h"
 
-//Input logic level
+//Input logic level (moved to project build variable "inverted")
 //#define INVERT 			    //  ifndef: 0-->1 steigende Flanke ; pull_down
 							    //  ifdef:  0-->1 fallende Flanke ; pull_up
 
@@ -41,8 +41,8 @@ extern const HardwareVersion * currentVersion;
 const HardwareVersion hardwareVersion[7] =
 {
 { 16, false, 0x0030, 0x20, 0x4574, 0x4868, { 0, 0, 0, 0, 0x00, 0x1E }, "Binary input 16f" },
-{ 8,  false, 0x0030, 0x20, 0x44D4, 0x4650, { 0, 0, 0, 0, 0x01, 0x1E }, "Binary input 8f" },
-{ 4,  false, 0x0030, 0x20, 0x4484, 0x4544, { 0, 0, 0, 0, 0x01, 0x1F }, "Binary input 4f" },
+{ 8,  false, 0x0031, 0x20, 0x44D4, 0x4650, { 0, 0, 0, 0, 0x01, 0x1E }, "Binary input 8f" },
+{ 4,  false, 0x0032, 0x20, 0x4484, 0x4544, { 0, 0, 0, 0, 0x01, 0x1F }, "Binary input 4f" },
 { 6,  true,  0x002C, 0x16, 0x44E4, 0x4602, { 0, 0, 0, 0, 0x06, 0x1E }, "Binary input/LED 6f" },
 { 4,  true,  0x002E, 0x16, 0x44AC, 0x456C, { 0, 0, 0, 0, 0x04, 0x1E }, "Binary input/LED 4f" },
 { 2,  true,  0x002F, 0x16, 0x4474, 0x44D6, { 0, 0, 0, 0, 0x02, 0x1E }, "Binary input/LED 2f" },
@@ -115,29 +115,26 @@ const int inputPins[] =
 	PIO1_2,  //  N ; IO14
 	PIO2_3,  //  O ; IO15
 	PIO1_5,  //  P ; IO16
-
-
 #else
-  PIO2_5, //  A0
-  PIO3_5, //  A1
-  PIO0_7, //  A2
-  PIO2_9, //  A3
+	PIN_IO1,  //  A ; IO1
+	PIN_IO2,  //  B ; IO2
+	PIN_IO3,  //  C ; IO3
+	PIN_IO4,  //  D ; IO4
 
-  PIO1_11, // B0
-  PIO1_4, //  B1
-  PIO1_2, //  B2
-  PIO1_1, //  B3
+	PIN_IO5,  //  E ; IO5
+	PIN_IO6,  //  F ; IO6
+	PIN_IO7,  //  G ; IO7
+	PIN_IO8,  //  H ; IO8
 
-  PIO1_7, //  C0
-  PIO1_6, //  C1
-  PIO1_5, //  C2
-  PIO3_2, //  C3
+	PIN_IO9,  //  I ; IO9
+	PIN_IO10, //  J ; IO10
+	PIN_IO11, //  K ; IO11
+	PIN_IO12, //  L ; IO12
 
-  PIO2_8, //  D0
-  PIO2_7, //  D1
-  PIO2_6, //  D2
-  PIO3_3, //  D3
-
+	PIN_IO13, //  M ; IO13
+	PIN_IO14, //  N ; IO14
+	PIN_IO15, //  O ; IO15
+	PIO_SDA,  //  P ; SDA
 #endif
 };
 

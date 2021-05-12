@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2013-2014 Stefan Taferner <stefan.taferner@gmx.at>
+ *  Copyright (c) 2018 Oliver Stefan <o.stefan252@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -91,7 +91,6 @@ int readIO(int channel)
  */
 void setup()
 {
-    //bcu.begin(4, 0x7054, 2); // We are a "Jung 2118" device, version 0.2
     bcu.begin(76, 0x474, 2); // We are a "Selfbus RGB Taster" device, version 0.2
 
     // onboard LEDs ausschalten
