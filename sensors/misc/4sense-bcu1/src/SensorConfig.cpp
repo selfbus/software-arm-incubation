@@ -17,7 +17,7 @@ int sensorPins[] = {PIO1_5, PIO1_2, PIO0_11, PIO0_8};
 #define DEFAULT_SAMPLE_PERIOD 1000
 
 // easy to read on the bus
-#define INVALID_DATA -999
+#define INVALID_DATA (-999)
 
 // Gaussian filter for temp readings
 uint Filter::getVariance(int num) {
