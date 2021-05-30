@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 #include <sblib/eib.h>
-#include <sblib/i2c/BH1750.h>
+#include <sblib/i2c/bh1750.h>
 
 #ifdef LOGGING
     #include "log/logger.h"
