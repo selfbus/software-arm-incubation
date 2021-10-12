@@ -14,7 +14,7 @@
  * Important: This file should always be compiled with optimizations, otherwhise the ISR will consume too much time!
  *            Tested with -O3
  *
- * Wichtig: Diese Datei muss immer mit Optimierungen übersetzt werden, andernfalls wird die ISR zu viel Zeit benörigen!
+ * Wichtig: Diese Datei muss immer mit Optimierungen übersetzt werden, andernfalls wird die ISR zu viel Zeit benötigen!
  *          Getestet mit -O3
  */
 
