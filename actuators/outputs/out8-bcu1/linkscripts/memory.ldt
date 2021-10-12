@@ -7,7 +7,7 @@ MEMORY
 { 
   /* Define each memory region */
 <#list configMemory as memory>
-  <#if memory.name="MFlash64">
+  <#if memory.name?upper_case?starts_with("MFLASH")>
   ${memory.name} (${memory.linkerMemoryAttributes}) : ORIGIN = ${memory.location}+__APPLICATION_OFFSET, LENGTH = ${memory.size}-__APPLICATION_OFFSET /* ${memory.sizek} (alias ${memory.alias}) */  
   <#else>
   ${memory.name} (${memory.linkerMemoryAttributes}) : ORIGIN = ${memory.location}, LENGTH = ${memory.size} /* ${memory.sizek} (alias ${memory.alias}) */  
@@ -17,7 +17,7 @@ MEMORY
 
   /* Define a symbol for the top of each memory region */
 <#list configMemory as memory>
-  <#if memory.name="MFlash64">
+  <#if memory.name?upper_case?starts_with("MFLASH")>
   __base_${memory.name} = ${memory.location}+__APPLICATION_OFFSET ; /* ${memory.name} */  
   __base_${memory.alias} = ${memory.location}+__APPLICATION_OFFSET ; /* ${memory.alias} */  
   __top_${memory.name} = ${memory.location} + ${memory.size} ; /* ${memory.sizek} */  
