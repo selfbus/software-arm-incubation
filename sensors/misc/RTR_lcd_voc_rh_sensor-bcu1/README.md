@@ -1,4 +1,7 @@
-Raumtemperaturregler Applikation 
+Raumtemperaturregler Applikation
+================================
+
+WORK IN PROGRESS
 
 - Display Ansteuerung (128x64 Pixel) mit Hintergrundbeleuchtung
 - 2 Tasten
