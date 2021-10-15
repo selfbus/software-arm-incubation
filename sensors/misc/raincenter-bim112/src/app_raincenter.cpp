@@ -13,8 +13,6 @@
 #include <sblib/eib.h>
 #include <sblib/timeout.h>
 #include <sblib/serial.h>
-#include <string.h>
-#include <stdio.h>
 
 #include "config.h"
 #include "app_raincenter.h"
@@ -24,14 +22,14 @@
 
 enum ePollState {Idle, PolledParam, ReceivedParam, PolledDisplay, ReceivedDisplay};
 
-static ePollState PollState = Idle;     // holds the actual state of the state machine
-static Timeout SendPeriodicTimer;       // TODO this is just for testing, Timeout Timer to send all objects periodically
-static Timeout RaincenterPollTimer;     // Timeout Timer to cyclic poll the Raincenter
-static Timeout RaincenterDelayTxTimer;  // Timeout Timer to delay serial send messages, because raincenter needs som time between messages send to him
-static RCParameterMessage rcParamMsg;   // holds the last received RCParameterMessage
-static RCDisplayMessage  rcDisplayMsg;  // holds the last receive RCDisplayMessage
-static int rcMessageLengthWaitingFor;   // holds the length of the serial message we are waiting for
-static char CommandWaitingForSend = RC_INVALID_COMMAND; // holds the command which we want send between polling (Pollstate = Idle)
+static ePollState PollState = Idle;     //!< holds the actual state of the state machine
+static Timeout SendPeriodicTimer;       //!< TODO this is just for testing, Timeout Timer to send all objects periodically
+static Timeout RaincenterPollTimer;     //!< Timeout Timer to cyclic poll the Raincenter
+static Timeout RaincenterDelayTxTimer;  //!< Timeout Timer to delay serial send messages, because raincenter needs som time between messages send to him
+static RCParameterMessage rcParamMsg;   //!< holds the last received RCParameterMessage
+static RCDisplayMessage  rcDisplayMsg;  //!< holds the last receive RCDisplayMessage
+static int rcMessageLengthWaitingFor;   //!< holds the length of the serial message we are waiting for
+static char CommandWaitingForSend = RC_INVALID_COMMAND; //!< holds the command which we want send between polling (Pollstate = Idle)
 
 bool Write2Serial(byte ch)
 {
@@ -60,7 +58,7 @@ bool ProcessParameterMsg(const RCParameterMessage* msg)
     if (!rcParamMsg.IsValid())
     {
         // seems like we have restarted, so lets send all objects
-        objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, msg->Level_m3_Calibrated()*10);
+        objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, (unsigned int)msg->Level_m3_Calibrated()*10);
         processed = true;
     }
     else if (rcParamMsg != *msg)
@@ -69,7 +67,7 @@ bool ProcessParameterMsg(const RCParameterMessage* msg)
         // some values have changed, lets send the changed ones
         if (rcParamMsg.Level_m3_Calibrated() != msg->Level_m3_Calibrated())
         {
-            objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, msg->Level_m3_Calibrated()*10);
+            objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, (unsigned int)msg->Level_m3_Calibrated()*10);
             processed = true;
         }
     }
@@ -278,7 +276,7 @@ void checkPeriodic(void)
     // TODO this is just for testing
     if (SendPeriodicTimer.expired())
     {
-        objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, rcParamMsg.Level_m3_Calibrated()*10);
+        objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, (unsigned int)rcParamMsg.Level_m3_Calibrated()*10);
         objectWrite(OBJ_TAPWATER_REFILL_STATUS, rcDisplayMsg.IsSwitchedToTapWater());
         objectWrite(OBJ_TAPWATER_REFILL_AUTOMATIC_STATUS, rcDisplayMsg.AutomaticallySwitchedToTapWater());
         objectWrite(OBJ_TAPWATER_REFILL_MANUAL_STATUS, rcDisplayMsg.ManualSwitchedToTapWater());
