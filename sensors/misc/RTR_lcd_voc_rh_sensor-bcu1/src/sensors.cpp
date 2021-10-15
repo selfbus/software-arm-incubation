@@ -31,6 +31,9 @@ void initSensors(){
 
 	extDS18B20.DS18x20Init(PIO2_5, false); //Data Pin, no parasite mode
 	extDS18B20.Search(1); //externen Sensor suchen
+	if(extDS18B20.m_foundDevices) {
+		extDS18B20.startConversion(0); // fang schon mal an
+	}
 }
 
 void checkTempSensors(void) {
@@ -38,8 +41,12 @@ void checkTempSensors(void) {
 		if(extDS18B20.m_foundDevices == 0){ //beim Start wird der Sonsor manchmal nicht gefunden
 			extDS18B20.Search(1); //externen Sensor erneut suchen
 		}
-		extDS18B20.readTemperature(extDS18B20.m_dsDev);
-		temp.tempExtern = (int)(extDS18B20.m_dsDev[0].last_temperature*100);
+		if (extDS18B20.readResult(0)) {
+			if (extDS18B20.lastReadOk(0)) {
+			temp.tempExtern = (int)(extDS18B20.m_dsDev[0].last_temperature*100);
+			}
+			extDS18B20.startConversion(0); // fuer's naechste Mal
+		}
 	}
 	temp.tempIntern = SHT21.GetTemperature();
 	if(temp.tempIntern == -273){
