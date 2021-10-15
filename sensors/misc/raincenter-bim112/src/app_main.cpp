@@ -12,7 +12,6 @@
 #include <sblib/eib.h>
 #include <sblib/eib/user_memory.h>
 #include <sblib/eib/sblib_default_objects.h>
-#include <string.h> /* for memcpy() */
 #include "config.h"
 #include "app_raincenter.h"
 
@@ -37,15 +36,6 @@ void setup()
     bcu.begin(MANUFACTURER, currentVersion->hardwareVersion[5], 0x28);  // we are a MDT shutter/blind actuator, version 2.8
     memcpy(userEeprom.order, currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
 
-
-    /*
-    currentVersion = &hardwareVersion[HARDWARE_ID];
-    bcu.begin(MANUFACTURER, currentVersion->deviceType, currentVersion->appVersion);
-
-    // FIXME for new memory mapper
-    memcpy(userEeprom.order, currentVersion->hardwareVersion,
-            sizeof(currentVersion->hardwareVersion));
-    */
     initApplication();
 }
 
