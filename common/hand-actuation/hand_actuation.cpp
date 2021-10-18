@@ -63,7 +63,12 @@ int HandActuation::check(void)
         {
             // turn on all LED's, except the one for the button under testing (number)
             for (unsigned int i = 0; i < getHandPinCount(); i++)
-                if (i != number_) digitalWrite(handPins_[i], true);
+            {
+                if (i != number_)
+                {
+                    digitalWrite(handPins_[i], true);
+                }
+            }
             delayMicroseconds(5);   // this delay is needed for compiler settings other then -O0 (Optimize Level None), otherwise detection doesn't work 100%
                                     // works also with delayMicroseconds(1);
             buttonundertestingispressed = !digitalRead(readbackPin_); // read while all LED's are on, except the one for our button we check right now, low=>button to check is pressed
@@ -190,6 +195,27 @@ void HandActuation::setDelayBetweenButtonsMs(unsigned int newDelayBetweenButtons
 void HandActuation::setDelayAtEndMs(unsigned int newDelayAtEndMs)
 {
     delayAtEndMs_ = newDelayAtEndMs;
+}
+
+void HandActuation::testIO(const unsigned int* testPins, const unsigned int pinCount, const unsigned int blinkTimeMs)
+{
+    if (blinkTimer.expired() || blinkTimer.stopped())
+    {
+        for (unsigned int j = 0; j < pinCount; j++)
+        {
+            if (j == 0)
+            {
+                // toggle first pin high/low or low/high
+                digitalWrite(testPins[j], !digitalRead(testPins[j]));
+            }
+            else
+            {
+                // all other pins "follow" first pin state
+                digitalWrite(testPins[j], digitalRead(testPins[0]));
+            }
+        }
+        blinkTimer.start(blinkTimeMs);
+    }
 }
 
 

@@ -131,7 +131,7 @@ void initSerial()
 #ifdef DEBUG_SERIAL
     serial.setRxPin(PIO2_7);
     serial.setTxPin(PIO2_8);
-    serial.begin(57600);
+    serial.begin(115200);
     serial.println("out8 serial debug started");
 #endif
 }
@@ -149,12 +149,10 @@ void printSerialBusVoltage(const unsigned int onEveryTickMs)
         serial.print(valueAD);
         serial.print(";mV;");
         serial.print(valuemV);
-        if (diff > 2)
-        {
-            serial.print(";diff;");
-            serial.print(diff);
-        }
+        serial.print(";diff;");
+        serial.print(diff);
         serial.println();
+        delay(1); // makes sure that printSerialBusVoltage(...) is not called twice on the same SysTick
     }
 #endif
 }
@@ -254,10 +252,10 @@ void setup()
 #endif
 }
 
-/*
- * The main processing loop.
+/**
+ * @brief The main processing loop. Will be called by the Selfbus sblib main().
  */
-void loop()
+void loop(void)
 {
     int objno;
     // Handle updated communication objects
@@ -276,11 +274,21 @@ void loop()
     }
 }
 
-void loop_noapp()
+/**
+ * @brief Will be called by the Selfbus sblib main(), while no application is loaded
+ *        In case we have a HAND_ACTUATION all LED's will blink at 2*BLINK_TIME (~1Hz) to indicate this state
+ */
+void loop_noapp(void)
 {
+#ifdef HAND_ACTUATION
+    if (!bcu.programmingMode())
+    {
+        HandActuation::testIO(&handPins[0], NO_OF_HAND_PINS, BLINK_TIME);
+    }
+#endif
     waitForInterrupt();
     printSerialBusVoltage(500);
-};
+}
 
 void ResetDefaultApplicationData()
 {
@@ -333,11 +341,11 @@ int AppCallback::convertADmV(int valueAD)
         return 0;
     else
     {
-        double valueADSquared = sq(valueAD);
-        return      0.00000857674926702488*valueADSquared*valueAD + // a*x^3
-                   -0.0310784307851376*valueADSquared +             // b*x^2
-                   47.7234335386816*valueAD +                       // c*x
-               -14253.9303808124;                                   // d
+        float valueADSquared = sq(valueAD);
+        return      0.00000857674926702488f*valueADSquared*valueAD + // a*x^3
+                   -0.0310784307851376f*valueADSquared +             // b*x^2
+                   47.7234335386816f*valueAD +                       // c*x
+               -14253.9303808124f;                                   // d
     }
     /*
      *  4TE ARM-Controller coefficients found with following measurements:
@@ -381,9 +389,9 @@ int AppCallback::convertmVAD(int valuemV)
         return 0;
     else
 
-    return   -0.00000214162532145905*sq(valuemV) + // a*x^2
-              0.146795202310839*valuemV +          // b*x
-           -339.582791686125;                      // c
+    return   -0.00000214162532145905f*sq(valuemV) + // a*x^2
+              0.146795202310839f*valuemV +          // b*x
+           -339.582791686125f;                      // c
     /*
      *  4TE ARM-Controller coefficients found with following measurements:
      *  ---------------------

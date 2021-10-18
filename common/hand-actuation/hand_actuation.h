@@ -28,6 +28,16 @@ public:
     void setDelayBetweenButtonsMs(unsigned int newDelayBetweenButtonsMs);
     void setDelayAtEndMs(unsigned int newDelayAtEndMs);
 
+    /**
+     * @brief Simple test of the hand actuation pins.
+     *        This test toggles the pins, waits blinkTimeMs and toggles the pins again.
+     *
+     * @param testPins     Array of pins to test
+     * @param pinCount     Number of pins in testPins
+     * @param blinkTimeMs  Time in milliseconds the test should take
+     */
+    static void testIO(const unsigned int* testPins, const unsigned int pinCount, const unsigned int blinkTimeMs);
+
 protected:
     int check(void);
     static Timeout blinkTimer;
