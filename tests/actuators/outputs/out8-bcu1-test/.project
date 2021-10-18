@@ -28,9 +28,14 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>src/out8-inc</name>
+			<type>2</type>
+			<locationURI>PARENT-4-PROJECT_LOC/actuators/outputs/out8-bcu1/inc</locationURI>
+		</link>
+		<link>
 			<name>src/out8-src</name>
 			<type>2</type>
-			<locationURI>$%7BPARENT-4-PROJECT_LOC%7D/actuators/outputs/out8-bcu1/src</locationURI>
+			<locationURI>PARENT-4-PROJECT_LOC/actuators/outputs/out8-bcu1/src</locationURI>
 		</link>
 		<link>
 			<name>src/out8-src/hand-actuation</name>
