@@ -280,7 +280,7 @@ void loop(void)
  */
 void loop_noapp(void)
 {
-#ifdef HAND_ACTUATION
+#if defined(IO_TEST) && defined(HAND_ACTUATION)
     if (!bcu.programmingMode())
     {
         HandActuation::testIO(&handPins[0], NO_OF_HAND_PINS, BLINK_TIME);
