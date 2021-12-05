@@ -9,6 +9,7 @@
  *  published by the Free Software Foundation.
  */
 
+#include <string.h>
 #include <sblib/eib.h>
 #include <sblib/eib/user_memory.h>
 #include <sblib/eib/sblib_default_objects.h>
