@@ -225,6 +225,12 @@ void setup()
     ioTest();
 
     bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
+#ifdef DEBUG_SERIAL
+    int physicalAddress = bus.ownAddress();
+    serial.print("physical address: ", (physicalAddress >> 12) & 0x0F, DEC);
+    serial.print(".", (physicalAddress >> 8) & 0x0F, DEC);
+    serial.println(".", physicalAddress & 0xFF, DEC);
+#endif
     // _bcu.setGroupTelRateLimit(20); // not rly sure, maybe this leads sometimes to repeated telegrams?
 
     recallAppData();
@@ -247,6 +253,7 @@ void setup()
     startBusVoltageMonitoring(); // needs to be called again, because Release version is using analog_pin.h functions from sblib which break our ADC Interrupts
 #else
     initApplication();
+
 
     // TODO check maybe use _bcu.enableGroupTelSend(false);
 #endif
