@@ -1,0 +1,1152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" CreatedBy="KNX MT" ToolVersion="5.1.255.16695" xmlns="http://knx.org/xml/project/14">
+	<ManufacturerData>
+		<Manufacturer RefId="M-013A">
+			<ApplicationPrograms>
+				<ApplicationProgram Id="M-013A_A-0005-64-8861" ApplicationNumber="1" ApplicationVersion="1" ProgramType="ApplicationProgram" MaskVersion="MV-0701" Name="Multi-Sensor-Aktor" LoadProcedureStyle="ProductProcedure" PeiType="1" DefaultLanguage="de-DE" DynamicTableManagement="false" Linkable="false" MinEtsVersion="4.0">
+					<Static>
+						<Code>
+							<AbsoluteSegment Id="M-013A_A-0005-64-8861_AS-4000" Size="513" Address="16384" />
+							<AbsoluteSegment Id="M-013A_A-0005-64-8861_AS-4201" Size="511" Address="16897" />
+							<AbsoluteSegment Id="M-013A_A-0005-64-8861_AS-0700" Size="82" Address="1792" />
+							<AbsoluteSegment Id="M-013A_A-0005-64-8861_AS-4400" Size="519" Address="17408">
+								<Data>gAcAAAAAAAbE3wAGxd8ABsffAAbL3wAGzd8ABs7fAAbQ3wAG1N8ABtbfAAbX3wAG2d8ABt3fAAbf3wAG4N8ABuLfAAbm3wAG6N8ABunfAAbr3wAG798ABvHfAAby3wAG9N8ABvjfAAb63wAG+98ABv3fAAcB3wAHA98ABwTfAAcG3wAHCt8ABwzfAAcN3wAHD98ABxPfAAcV3wAHFt8ABxjfAAcc3wAHHt8ABx/fAAch3wAHJd8AByffAAco3wAHKt8ABy7fAAcw3wAHMd8ABzPfAAc33wAHOd8ABzrfAAc83wAHQN8AB0LfAAdD3wAHRd8AB0nfAAdL3wAHTN8AB07fAAdS3wAHVN8AB1XfAAdX3wAHW98AB13fAAde3wAHYN8AB2TfAAdm3wAHZ98AB2nfAAdt3wAHb98AB3DfAAdy3wAHdt8AB3jfAAd53wAHe98AB3/fAAeB3wAHgt8AB4TfAAeI3wAHit8AB4vfAAeN3wAHkd8AB5PfAAeU3wAHlt8AB5rfAAec3wAHnd8AB5/fAAej3wAHpd8AB6bfAAeo3wAHrN8AB67fAAev3wAHsd8AB7XfAAe33wAHuN8AB7rfAAe+3wAHwN8AB8HfAAfD3wAHx98AB8nfAAfK3wAHzN8AB9DfAAfS3wAH098AB9XfAAfZ3wAH298AB9zfAAfe3wAH4t8A</Data>
+							</AbsoluteSegment>
+							<AbsoluteSegment Id="M-013A_A-0005-64-8861_AS-0752" Size="1" MemoryType="RAM" Address="1874" />
+							<AbsoluteSegment Id="M-013A_A-0005-64-8861_AS-4700" Size="1010" MemoryType="EEPROM" Address="18176" />
+						</Code>
+						<ParameterTypes>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-OnOff" Name="OnOff">
+								<TypeRestriction Base="Value" SizeInBit="1">
+									<Enumeration Text="inaktiv" Value="0" Id="M-013A_A-0005-64-8861_PT-OnOff_EN-0" />
+									<Enumeration Text="aktiv" Value="1" Id="M-013A_A-0005-64-8861_PT-OnOff_EN-1" />
+								</TypeRestriction>
+							</ParameterType>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-String.5F30Byte" Name="String_30Byte">
+								<TypeText SizeInBit="240" />
+							</ParameterType>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-PinFunktion" Name="PinFunktion">
+								<TypeRestriction Base="Value" SizeInBit="8">
+									<Enumeration Text="Eingang Floating" Value="0" Id="M-013A_A-0005-64-8861_PT-PinFunktion_EN-0" />
+									<Enumeration Text="Eingang Pullup" Value="1" Id="M-013A_A-0005-64-8861_PT-PinFunktion_EN-1" />
+									<Enumeration Text="Eingang Pulldown" Value="2" Id="M-013A_A-0005-64-8861_PT-PinFunktion_EN-2" />
+									<Enumeration Text="Ausgang" Value="3" Id="M-013A_A-0005-64-8861_PT-PinFunktion_EN-3" />
+									<Enumeration Text="DHT11" Value="4" Id="M-013A_A-0005-64-8861_PT-PinFunktion_EN-4" />
+									<Enumeration Text="DHT22" Value="5" Id="M-013A_A-0005-64-8861_PT-PinFunktion_EN-5" />
+									<Enumeration Text="PWM" Value="6" Id="M-013A_A-0005-64-8861_PT-PinFunktion_EN-6" />
+								</TypeRestriction>
+							</ParameterType>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-Time16" Name="Zeit">
+								<TypeNumber SizeInBit="16" Type="unsignedInt" minInclusive="0" maxInclusive="65536" />
+							</ParameterType>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-Time8" Name="Zeit">
+								<TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="0" maxInclusive="255" />
+							</ParameterType>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-SCK0" Name="SCK0">
+								<TypeRestriction Base="Value" SizeInBit="8">
+									<Enumeration Text="PIO0_6" Value="0" Id="M-013A_A-0005-64-8861_PT-SCK0_EN-0" />
+									<Enumeration Text="PIO2_11" Value="1" Id="M-013A_A-0005-64-8861_PT-SCK0_EN-1" />
+								</TypeRestriction>
+							</ParameterType>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-SCK1" Name="SCK1">
+								<TypeRestriction Base="Value" SizeInBit="8">
+									<Enumeration Text="PIO2_1" Value="0" Id="M-013A_A-0005-64-8861_PT-SCK1_EN-0" />
+									<Enumeration Text="PIO3_2" Value="1" Id="M-013A_A-0005-64-8861_PT-SCK1_EN-1" />
+								</TypeRestriction>
+							</ParameterType>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-MISO1" Name="MISO1">
+								<TypeRestriction Base="Value" SizeInBit="8">
+									<Enumeration Text="PIO1_10" Value="0" Id="M-013A_A-0005-64-8861_PT-MISO1_EN-0" />
+									<Enumeration Text="PIO2_2" Value="1" Id="M-013A_A-0005-64-8861_PT-MISO1_EN-1" />
+								</TypeRestriction>
+							</ParameterType>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-BH1750Count" Name="Anzahl BH1750">
+								<TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="0" maxInclusive="2" />
+							</ParameterType>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-CCS811Count" Name="Anzahl CCS811">
+								<TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="0" maxInclusive="2" />
+							</ParameterType>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-RFM69Count" Name="Anzahl RFM69">
+								<TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="0" maxInclusive="3" />
+							</ParameterType>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-PCA9555DCount" Name="Anzahl PCA9555D">
+								<TypeNumber SizeInBit="8" Type="unsignedInt" minInclusive="0" maxInclusive="8" />
+							</ParameterType>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-OnOffToggleNothing" Name="An, Aus, Umschalten, keine Aktion">
+								<TypeRestriction Base="Value" SizeInBit="8">
+									<Enumeration Text="keine Aktion" Value="0" Id="M-013A_A-0005-64-8861_PT-OnOffToggleNothing_EN-0" />
+									<Enumeration Text="Aus" Value="1" Id="M-013A_A-0005-64-8861_PT-OnOffToggleNothing_EN-1" />
+									<Enumeration Text="An" Value="2" Id="M-013A_A-0005-64-8861_PT-OnOffToggleNothing_EN-2" />
+									<Enumeration Text="Umschalten" Value="3" Id="M-013A_A-0005-64-8861_PT-OnOffToggleNothing_EN-3" />
+								</TypeRestriction>
+							</ParameterType>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-Blink" Name="Blinken">
+								<TypeRestriction Base="Value" SizeInBit="8">
+									<Enumeration Text="Nie" Value="0" Id="M-013A_A-0005-64-8861_PT-Blink_EN-0" />
+									<Enumeration Text="wenn AUS" Value="1" Id="M-013A_A-0005-64-8861_PT-Blink_EN-1" />
+									<Enumeration Text="wenn AN" Value="2" Id="M-013A_A-0005-64-8861_PT-Blink_EN-2" />
+									<Enumeration Text="Immer" Value="3" Id="M-013A_A-0005-64-8861_PT-Blink_EN-3" />
+									<Enumeration Text="Eigenes Objekt" Value="4" Id="M-013A_A-0005-64-8861_PT-Blink_EN-4" />
+									<Enumeration Text="Eigenes Objekt und AUS" Value="5" Id="M-013A_A-0005-64-8861_PT-Blink_EN-5" />
+									<Enumeration Text="Eigenes Objekt und AN" Value="6" Id="M-013A_A-0005-64-8861_PT-Blink_EN-6" />
+								</TypeRestriction>
+							</ParameterType>
+							<ParameterType Id="M-013A_A-0005-64-8861_PT-TemperatureOffset" Name="Temperaturoffset">
+								<TypeFloat Encoding="DPT 9" minInclusive="-5" maxInclusive="5" Increment="0.05" />
+							</ParameterType>
+						</ParameterTypes>
+						<Parameters>
+							<Parameter Id="M-013A_A-0005-64-8861_P-1" Name="SPI0" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="SPI 0 aktiv" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="0" BitOffset="7" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-2" Name="SPI1" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="SPI 1 aktiv" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="0" BitOffset="6" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-3" Name="I2C" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="I²C aktiv" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="0" BitOffset="5" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-4" Name="1-Wire" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="1-Wire aktiv" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="0" BitOffset="4" />
+							</Parameter>
+
+							<Parameter Id="M-013A_A-0005-64-8861_P-10" Name="SCK0" ParameterType="M-013A_A-0005-64-8861_PT-SCK0" Text="Pin SCK0" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="1" BitOffset="0" />
+							</Parameter>
+
+							<Parameter Id="M-013A_A-0005-64-8861_P-20" Name="SCK1" ParameterType="M-013A_A-0005-64-8861_PT-SCK1" Text="Pin SCK1" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="2" BitOffset="0" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-21" Name="MISO" ParameterType="M-013A_A-0005-64-8861_PT-MISO1" Text="Pin MISO1" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="3" BitOffset="0" />
+							</Parameter>
+
+							<Parameter Id="M-013A_A-0005-64-8861_P-30" Name="BH1750Count" ParameterType="M-013A_A-0005-64-8861_PT-BH1750Count" Text="Anzahl BH1750" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="4" BitOffset="0" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-31" Name="CCS811Count" ParameterType="M-013A_A-0005-64-8861_PT-CCS811Count" Text="Anzahl CCS811" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="5" BitOffset="0" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-32" Name="DS3231" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="DS3231" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="6" BitOffset="0" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-33" Name="iAQCore" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="iAQ-Core" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="7" BitOffset="0" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-34" Name="SHT2x" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="SHT2x" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="8" BitOffset="0" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-35" Name="PCA9555D" ParameterType="M-013A_A-0005-64-8861_PT-PCA9555DCount" Text="Anzahl PCA9555D" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="9" BitOffset="0" />
+							</Parameter>
+
+							<Parameter Id="M-013A_A-0005-64-8861_P-40" Name="RFM69Count" ParameterType="M-013A_A-0005-64-8861_PT-RFM69Count" Text="Anzahl RFM69" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="10" BitOffset="0" />
+							</Parameter>
+
+							<Parameter Id="M-013A_A-0005-64-8861_P-101" Name="PIO0_2" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO0_2" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="11" BitOffset="7" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-102" Name="PIO0_3" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO0_3" Value="0" >
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="11" BitOffset="6" />
+							</Parameter>
+							<Union SizeInBit="1">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="11" BitOffset="5" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-203" Name="PIO0_4Off" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Access="None" Value="0" Offset="0" BitOffset="0" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-103" Name="PIO0_4" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO0_4" Value="0" Offset="0" BitOffset="0" />
+							</Union>
+							<Union SizeInBit="1">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="11" BitOffset="4" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-204" Name="PIO0_5Off" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Access="None" Value="0" Offset="0" BitOffset="0" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-104" Name="PIO0_5" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO0_5" Value="0" Offset="0" BitOffset="0" />
+							</Union>
+							<Union SizeInBit="1">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="11" BitOffset="3" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-205" Name="PIO0_6Off" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Access="None" Value="0" Offset="0" BitOffset="0" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-105" Name="PIO0_6" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO0_6" Value="0" Offset="0" BitOffset="0" />
+							</Union>
+							<Parameter Id="M-013A_A-0005-64-8861_P-106" Name="PIO0_7" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO0_7" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="11" BitOffset="2" />
+							</Parameter>
+							<Union SizeInBit="1">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="11" BitOffset="1" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-207" Name="PIO0_8Off" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Access="None" Value="0" Offset="0" BitOffset="0" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-107" Name="PIO0_8" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO0_8" Value="0" Offset="0" BitOffset="0" />
+							</Union>
+							<Union SizeInBit="1">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="11" BitOffset="0" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-208" Name="PIO0_9Off" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Access="None" Value="0" Offset="0" BitOffset="0" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-108" Name="PIO0_9" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO0_9" Value="0" Offset="0" BitOffset="0" />
+							</Union>
+							<Parameter Id="M-013A_A-0005-64-8861_P-109" Name="PIO0_11" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO0_11" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="12" BitOffset="7" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-110" Name="PIO1_0" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO1_0" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="12" BitOffset="6" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-111" Name="PIO1_1" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO1_1" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="12" BitOffset="5" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-112" Name="PIO1_2" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO1_2" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="12" BitOffset="4" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-113" Name="PIO1_5" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO1_5" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="12" BitOffset="3" />
+							</Parameter>
+							<Union SizeInBit="1">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="12" BitOffset="2" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-214" Name="PIO1_10Off" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Access="None" Value="0" Offset="0" BitOffset="0" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-114" Name="PIO1_10" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO1_10" Value="0" Offset="0" BitOffset="0" />
+							</Union>
+							<Parameter Id="M-013A_A-0005-64-8861_P-115" Name="PIO2_0" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO2_0" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="12" BitOffset="1" />
+							</Parameter>
+							<Union SizeInBit="1">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="12" BitOffset="0" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-216" Name="PIO2_1Off" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Access="None" Value="0" Offset="0" BitOffset="0" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-116" Name="PIO2_1" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO2_1" Value="0" Offset="0" BitOffset="0" />
+							</Union>
+							<Union SizeInBit="1">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="13" BitOffset="7" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-217" Name="PIO2_2Off" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Access="None" Value="0" Offset="0" BitOffset="0" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-117" Name="PIO2_2" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO2_2" Value="0" Offset="0" BitOffset="0" />
+							</Union>
+							<Union SizeInBit="1">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="13" BitOffset="6" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-218" Name="PIO2_3Off" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Access="None" Value="0" Offset="0" BitOffset="0" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-118" Name="PIO2_3" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO2_3" Value="0" Offset="0" BitOffset="0" />
+							</Union>
+							<Parameter Id="M-013A_A-0005-64-8861_P-119" Name="PIO2_4" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO2_4" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="13" BitOffset="5" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-120" Name="PIO2_5" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO2_5" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="13" BitOffset="4" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-121" Name="PIO2_6" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO2_6" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="13" BitOffset="3" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-122" Name="PIO2_7" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO2_7" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="13" BitOffset="2" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-123" Name="PIO2_8" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO2_8" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="13" BitOffset="1" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-124" Name="PIO2_9" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO2_9" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="13" BitOffset="0" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-125" Name="PIO2_10" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO2_10" Value="0" >
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="14" BitOffset="7" />
+							</Parameter>
+							<Union SizeInBit="1">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="14" BitOffset="6" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-226" Name="PIO2_11Off" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Access="None" Value="0" Offset="0" BitOffset="0" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-126" Name="PIO2_11" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO2_11" Value="0" Offset="0" BitOffset="0" />
+							</Union>
+							<Parameter Id="M-013A_A-0005-64-8861_P-127" Name="PIO3_0" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO3_0" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="14" BitOffset="5" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-128" Name="PIO3_1" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO3_1" Value="0">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="14" BitOffset="4" />
+							</Parameter>
+							<Union SizeInBit="1">
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="14" BitOffset="3" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-229" Name="PIO3_2Off" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Access="None" Value="0" Offset="0" BitOffset="0" />
+								<Parameter Id="M-013A_A-0005-64-8861_UP-129" Name="PIO3_2" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO3_2" Value="0" Offset="0" BitOffset="0" />/>
+							</Union>
+							<Parameter Id="M-013A_A-0005-64-8861_P-130" Name="PIO3_3" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO3_3" Value="0" >
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="14" BitOffset="2" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-131" Name="PIO3_4" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO3_4" Value="0" >
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="14" BitOffset="1" />
+							</Parameter>
+							<Parameter Id="M-013A_A-0005-64-8861_P-132" Name="PIO3_5" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="PIO3_5" Value="0" >
+								<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="14" BitOffset="0" />
+							</Parameter>
+
+						</Parameters>
+						<ParameterRefs>
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-1_R-1" RefId="M-013A_A-0005-64-8861_P-1" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-2_R-2" RefId="M-013A_A-0005-64-8861_P-2" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-3_R-3" RefId="M-013A_A-0005-64-8861_P-3" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-4_R-4" RefId="M-013A_A-0005-64-8861_P-4" />
+
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-10_R-10" RefId="M-013A_A-0005-64-8861_P-10" />
+
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-20_R-20" RefId="M-013A_A-0005-64-8861_P-20" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-21_R-21" RefId="M-013A_A-0005-64-8861_P-21" />
+
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-30_R-30" RefId="M-013A_A-0005-64-8861_P-30" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-31_R-31" RefId="M-013A_A-0005-64-8861_P-31" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-32_R-32" RefId="M-013A_A-0005-64-8861_P-32" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-33_R-33" RefId="M-013A_A-0005-64-8861_P-33" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-34_R-34" RefId="M-013A_A-0005-64-8861_P-34" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-35_R-35" RefId="M-013A_A-0005-64-8861_P-35" />
+
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-40_R-40" RefId="M-013A_A-0005-64-8861_P-40" />
+
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-101_R-101" RefId="M-013A_A-0005-64-8861_P-101" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-102_R-102" RefId="M-013A_A-0005-64-8861_P-102" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-103_R-103" RefId="M-013A_A-0005-64-8861_UP-103" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-104_R-104" RefId="M-013A_A-0005-64-8861_UP-104" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-105_R-105" RefId="M-013A_A-0005-64-8861_UP-105" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-106_R-106" RefId="M-013A_A-0005-64-8861_P-106" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-107_R-107" RefId="M-013A_A-0005-64-8861_UP-107" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-108_R-108" RefId="M-013A_A-0005-64-8861_UP-108" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-109_R-109" RefId="M-013A_A-0005-64-8861_P-109" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-110_R-110" RefId="M-013A_A-0005-64-8861_P-110" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-111_R-111" RefId="M-013A_A-0005-64-8861_P-111" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-112_R-112" RefId="M-013A_A-0005-64-8861_P-112" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-113_R-113" RefId="M-013A_A-0005-64-8861_P-113" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-114_R-114" RefId="M-013A_A-0005-64-8861_UP-114" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-115_R-115" RefId="M-013A_A-0005-64-8861_P-115" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-116_R-116" RefId="M-013A_A-0005-64-8861_UP-116" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-117_R-117" RefId="M-013A_A-0005-64-8861_UP-117" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-118_R-118" RefId="M-013A_A-0005-64-8861_UP-118" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-119_R-119" RefId="M-013A_A-0005-64-8861_P-119" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-120_R-120" RefId="M-013A_A-0005-64-8861_P-120" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-121_R-121" RefId="M-013A_A-0005-64-8861_P-121" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-122_R-122" RefId="M-013A_A-0005-64-8861_P-122" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-123_R-123" RefId="M-013A_A-0005-64-8861_P-123" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-124_R-124" RefId="M-013A_A-0005-64-8861_P-124" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-125_R-125" RefId="M-013A_A-0005-64-8861_P-125" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-126_R-126" RefId="M-013A_A-0005-64-8861_UP-126" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-127_R-127" RefId="M-013A_A-0005-64-8861_P-127" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-128_R-128" RefId="M-013A_A-0005-64-8861_P-128" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-129_R-129" RefId="M-013A_A-0005-64-8861_UP-129" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-130_R-130" RefId="M-013A_A-0005-64-8861_P-130" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-131_R-131" RefId="M-013A_A-0005-64-8861_P-131" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_P-132_R-132" RefId="M-013A_A-0005-64-8861_P-132" />
+
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-203_R-203" RefId="M-013A_A-0005-64-8861_UP-203" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-204_R-204" RefId="M-013A_A-0005-64-8861_UP-204" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-205_R-205" RefId="M-013A_A-0005-64-8861_UP-205" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-207_R-207" RefId="M-013A_A-0005-64-8861_UP-207" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-208_R-208" RefId="M-013A_A-0005-64-8861_UP-208" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-214_R-214" RefId="M-013A_A-0005-64-8861_UP-214" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-216_R-216" RefId="M-013A_A-0005-64-8861_UP-216" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-217_R-217" RefId="M-013A_A-0005-64-8861_UP-217" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-218_R-218" RefId="M-013A_A-0005-64-8861_UP-218" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-226_R-226" RefId="M-013A_A-0005-64-8861_UP-226" />
+							<ParameterRef Id="M-013A_A-0005-64-8861_UP-229_R-229" RefId="M-013A_A-0005-64-8861_UP-229" />
+						</ParameterRefs>
+						<ComObjectTable CodeSegment="M-013A_A-0005-64-8861_AS-4400" Offset="0">
+						</ComObjectTable>
+						<ComObjectRefs>
+						</ComObjectRefs>
+						<AddressTable CodeSegment="M-013A_A-0005-64-8861_AS-4000" Offset="0" MaxEntries="255" />
+						<AssociationTable CodeSegment="M-013A_A-0005-64-8861_AS-4201" Offset="0" MaxEntries="255" />
+						<LoadProcedures>
+							<LoadProcedure>
+								<LdCtrlConnect />
+								<LdCtrlCompareProp InlineData="00000000004800000000" ObjIdx="0" PropId="78" />
+								<LdCtrlUnload LsmIdx="1" />
+								<LdCtrlUnload LsmIdx="2" />
+								<LdCtrlUnload LsmIdx="3" />
+								<LdCtrlLoad LsmIdx="1" />
+								<LdCtrlAbsSegment LsmIdx="1" SegType="0" Address="16384" Size="513" Access="255" MemType="3" SegFlags="128" />
+								<LdCtrlTaskSegment LsmIdx="1" Address="16384" />
+								<LdCtrlLoadCompleted LsmIdx="1" />
+								<LdCtrlLoad LsmIdx="2" />
+								<LdCtrlAbsSegment LsmIdx="2" SegType="0" Address="16897" Size="511" Access="255" MemType="3" SegFlags="128" />
+								<LdCtrlTaskSegment LsmIdx="2" Address="16897" />
+								<LdCtrlLoadCompleted LsmIdx="2" />
+								<LdCtrlLoad LsmIdx="3" />
+								<LdCtrlAbsSegment LsmIdx="3" SegType="0" Address="1792" Size="82" Access="0" MemType="2" SegFlags="0" />
+								<LdCtrlAbsSegment LsmIdx="3" SegType="1" Address="1874" Size="1" Access="0" MemType="2" SegFlags="0" />
+								<LdCtrlAbsSegment LsmIdx="3" SegType="0" Address="17408" Size="519" Access="255" MemType="3" SegFlags="128" />
+								<LdCtrlAbsSegment LsmIdx="3" SegType="0" Address="18176" Size="1010" Access="255" MemType="3" SegFlags="128" />
+								<LdCtrlTaskSegment LsmIdx="3" Address="17408" />
+								<LdCtrlLoadCompleted LsmIdx="3" />
+								<LdCtrlRestart />
+								<LdCtrlDisconnect />
+							</LoadProcedure>
+						</LoadProcedures>
+						<Options LegacyAllowPartialDownloadIfAp2Mismatch="true" Comparable="true" Reconstructable="true" DownloadInvisibleParameters="Background" />
+					</Static>
+					<ModuleDefs>
+						<ModuleDef Id="M-013A_A-0005-64-8861_MD-1" Name="PortPinSimple">
+							<Arguments>
+								<Argument Id="M-013A_A-0005-64-8861_MD-1_A-1" Name="ParamOffsBase" Allocates="6" />
+								<Argument Id="M-013A_A-0005-64-8861_MD-1_A-2" Name="ObjNumberBase" Allocates="6" />
+								<Argument Id="M-013A_A-0005-64-8861_MD-1_A-3" Name="PortPin" Type="Text" />
+							</Arguments>
+							<Static>
+								<Parameters>
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-1" Name="DescriptionTextObject_0" ParameterType="M-013A_A-0005-64-8861_PT-String.5F30Byte" Text="Beschreibung" Value="" />
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-2" Name="Funktion" ParameterType="M-013A_A-0005-64-8861_PT-PinFunktion" Text="Funktion" Value="0" Offset="0" BitOffset="0" >
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="0" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-10" Name="DHTPrepare" ParameterType="M-013A_A-0005-64-8861_PT-Time16" SuffixText="s" Text="Lüfterphase vor Temperaturmessung" Value="60" Offset="1" BitOffset="0" />
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-110" Name="DHTPrepare" ParameterType="M-013A_A-0005-64-8861_PT-Time16" SuffixText="s" Text="FanStored" Value="15360" Offset="1" BitOffset="0" Access="None">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="1" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-11" Name="DHTPause" ParameterType="M-013A_A-0005-64-8861_PT-Time16" SuffixText="s" Text="Wartezeit nach Lüfter" Value="15" Offset="3" BitOffset="0" />
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-111" Name="DHTPause" ParameterType="M-013A_A-0005-64-8861_PT-Time16" SuffixText="s" Text="AfterFanWaitStored" Value="3840" Offset="3" BitOffset="0" Access="None">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="3" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-12" Name="DHTCycle" ParameterType="M-013A_A-0005-64-8861_PT-Time16" SuffixText="s" Text="Wartezeit zwischen Messungen" Value="225" Offset="5" BitOffset="0" />
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-112" Name="DHTCycle" ParameterType="M-013A_A-0005-64-8861_PT-Time16" SuffixText="s" Text="DelayForMeasureStored" Value="57600" Offset="5" BitOffset="0" Access="None">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="5" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-13" Name="DHTOffset" ParameterType="M-013A_A-0005-64-8861_PT-TemperatureOffset" SuffixText="°C" Text="Temperaturoffset" Value="0" Offset="7" BitOffset="0" />
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-113" Name="DHTOffset" ParameterType="M-013A_A-0005-64-8861_PT-TemperatureOffset" SuffixText="°C" Text="Temperaturoffset" Value="0" Offset="7" BitOffset="0" Access="None" >
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="7" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-20" Name="InDebounceTime" ParameterType="M-013A_A-0005-64-8861_PT-Time8" SuffixText="ms" Text="Debouncing-Zeit" Value="20" Offset="9" BitOffset="0">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="9" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-21" Name="InLO" ParameterType="M-013A_A-0005-64-8861_PT-OnOffToggleNothing" Text="Aktion bei HIGH-Pegel" Value="2" Offset="10" BitOffset="0">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="10" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-22" Name="InHI" ParameterType="M-013A_A-0005-64-8861_PT-OnOffToggleNothing" Text="Aktion bei LOW-Pegel" Value="1" Offset="11" BitOffset="0">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="11" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-23" Name="InLOLong" ParameterType="M-013A_A-0005-64-8861_PT-OnOffToggleNothing" Text="Aktion bei langem HIGH-Pegel" Value="0" Offset="12" BitOffset="0">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="12" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-24" Name="InHILong" ParameterType="M-013A_A-0005-64-8861_PT-OnOffToggleNothing" Text="Aktion bei langem LOW-Pegel" Value="0" Offset="13" BitOffset="0">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="13" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-25" Name="InShortOnLong" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="Kurzes Objekt auch bei langer Aktion auslösen" Value="0" Offset="14" BitOffset="0">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="14" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-26" Name="InLongPressTime" ParameterType="M-013A_A-0005-64-8861_PT-Time16" SuffixText="ms" Text="Mindestzeit langer Tastendruck" Value="200" Offset="15" BitOffset="0" />
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-126" Name="InLongPressTime" ParameterType="M-013A_A-0005-64-8861_PT-Time16" Value="12800" Offset="1" BitOffset="0" Access="None">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="1" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-30" Name="OutInvert" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="Ausgang invertieren" Value="0" Offset="17" BitOffset="0">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="17" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-31" Name="OutBlink" ParameterType="M-013A_A-0005-64-8861_PT-Blink" Text="Blinken" Value="0" Offset="18" BitOffset="0">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="18" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-32" Name="OutBlinkTimeOn" ParameterType="M-013A_A-0005-64-8861_PT-Time16" Text="Blinken Zeit AN" SuffixText="ms" Value="500" Offset="19" BitOffset="0" />
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-132" Name="OutBlinkTimeOn" ParameterType="M-013A_A-0005-64-8861_PT-Time16" Value="62465" Offset="19" BitOffset="0" Access="None">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="19" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-33" Name="OutBlinkTimeOff" ParameterType="M-013A_A-0005-64-8861_PT-Time16" Text="Blinken Zeit AUS" SuffixText="ms" Value="500" Offset="21" BitOffset="0" />
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-133" Name="OutBlinkTimeOff" ParameterType="M-013A_A-0005-64-8861_PT-Time16" Value="62465" Offset="21" BitOffset="0" Access="None">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="21" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+
+									<Parameter Id="M-013A_A-0005-64-8861_MD-1_P-40" Name="PWMInvert" ParameterType="M-013A_A-0005-64-8861_PT-OnOff" Text="Ausgang invertieren" Value="0" Offset="23" BitOffset="0">
+										<Memory CodeSegment="M-013A_A-0005-64-8861_AS-4700" Offset="23" BitOffset="0" BaseOffset="M-013A_A-0005-64-8861_MD-1_A-1" />
+									</Parameter>
+								</Parameters>
+								<ParameterRefs>
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-1_R-1" RefId="M-013A_A-0005-64-8861_MD-1_P-1" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-2_R-2" RefId="M-013A_A-0005-64-8861_MD-1_P-2" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-10_R-10" RefId="M-013A_A-0005-64-8861_MD-1_P-10" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-110_R-110" RefId="M-013A_A-0005-64-8861_MD-1_P-110" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-11_R-11" RefId="M-013A_A-0005-64-8861_MD-1_P-11" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-111_R-111" RefId="M-013A_A-0005-64-8861_MD-1_P-111" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-11_R-0" RefId="M-013A_A-0005-64-8861_MD-1_P-11" Value="0" Access="None" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-111_R-0" RefId="M-013A_A-0005-64-8861_MD-1_P-111" Value="0" Access="None" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-12_R-12" RefId="M-013A_A-0005-64-8861_MD-1_P-12" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-112_R-112" RefId="M-013A_A-0005-64-8861_MD-1_P-112" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-13_R-13" RefId="M-013A_A-0005-64-8861_MD-1_P-13" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-113_R-113" RefId="M-013A_A-0005-64-8861_MD-1_P-113" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-20_R-20" RefId="M-013A_A-0005-64-8861_MD-1_P-20" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-21_R-21" RefId="M-013A_A-0005-64-8861_MD-1_P-21" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-22_R-22" RefId="M-013A_A-0005-64-8861_MD-1_P-22" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-23_R-23" RefId="M-013A_A-0005-64-8861_MD-1_P-23" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-24_R-24" RefId="M-013A_A-0005-64-8861_MD-1_P-24" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-25_R-25" RefId="M-013A_A-0005-64-8861_MD-1_P-25" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-26_R-26" RefId="M-013A_A-0005-64-8861_MD-1_P-26" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-126_R-126" RefId="M-013A_A-0005-64-8861_MD-1_P-126" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-30_R-30" RefId="M-013A_A-0005-64-8861_MD-1_P-30" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-31_R-31" RefId="M-013A_A-0005-64-8861_MD-1_P-31" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-32_R-32" RefId="M-013A_A-0005-64-8861_MD-1_P-32" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-132_R-132" RefId="M-013A_A-0005-64-8861_MD-1_P-132" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-33_R-33" RefId="M-013A_A-0005-64-8861_MD-1_P-33" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-133_R-133" RefId="M-013A_A-0005-64-8861_MD-1_P-133" />
+									<ParameterRef Id="M-013A_A-0005-64-8861_MD-1_P-40_R-40" RefId="M-013A_A-0005-64-8861_MD-1_P-40" />
+								</ParameterRefs>
+								<ParameterCalculations>
+									<ParameterCalculation Id="M-013A_A-0005-64-44E6_MD-1_PC-1" Language="JavaScript" Name="ByteSwapper">
+										<RLTransformation>
+											p10 = ((p110 &amp; 0xFF) &lt;&lt; 8) | (p110 &gt;&gt; 8);
+											p11 = ((p111 &amp; 0xFF) &lt;&lt; 8) | (p111 &gt;&gt; 8);
+											p12 = ((p112 &amp; 0xFF) &lt;&lt; 8) | (p112 &gt;&gt; 8);
+											p13 = ((p113 &amp; 0xFF) &lt;&lt; 8) | (p113 &gt;&gt; 8);
+											p26 = ((p126 &amp; 0xFF) &lt;&lt; 8) | (p126 &gt;&gt; 8);
+											p32 = ((p132 &amp; 0xFF) &lt;&lt; 8) | (p132 &gt;&gt; 8);
+											p33 = ((p133 &amp; 0xFF) &lt;&lt; 8) | (p133 &gt;&gt; 8);
+										</RLTransformation>
+										<LRTransformation>
+											p110 = ((p10 &amp; 0xFF) &lt;&lt; 8) | (p10 &gt;&gt; 8);
+											p111 = ((p11 &amp; 0xFF) &lt;&lt; 8) | (p11 &gt;&gt; 8);
+											p112 = ((p12 &amp; 0xFF) &lt;&lt; 8) | (p12 &gt;&gt; 8);
+											p113 = ((p13 &amp; 0xFF) &lt;&lt; 8) | (p13 &gt;&gt; 8);
+											p126 = ((p26 &amp; 0xFF) &lt;&lt; 8) | (p26 &gt;&gt; 8);
+											p132 = ((p32 &amp; 0xFF) &lt;&lt; 8) | (p32 &gt;&gt; 8);
+											p133 = ((p33 &amp; 0xFF) &lt;&lt; 8) | (p33 &gt;&gt; 8);
+										</LRTransformation>
+										<LParameters>
+											<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-10_R-10" AliasName="p10" />
+											<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-11_R-11" AliasName="p11" />
+											<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-12_R-12" AliasName="p12" />
+											<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-13_R-13" AliasName="p13" />
+											<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-26_R-26" AliasName="p26" />
+											<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-32_R-32" AliasName="p32" />
+											<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-33_R-33" AliasName="p33" />
+										</LParameters>
+										<RParameters>
+											<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-110_R-110" AliasName="p110" />
+											<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-111_R-111" AliasName="p111" />
+											<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-112_R-112" AliasName="p112" />
+											<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-113_R-113" AliasName="p113" />
+											<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-126_R-126" AliasName="p126" />
+											<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-132_R-132" AliasName="p132" />
+											<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-133_R-133" AliasName="p133" />
+										</RParameters>
+									</ParameterCalculation>
+								</ParameterCalculations>
+								<ComObjects>
+									<ComObject Id="M-013A_A-0005-64-8861_MD-1_O-2-0" Name="Ein/Ausgang/PWM" Text="Ein/Ausgang/PWM" Number="0" FunctionText="Ein/Ausgang/PWM" ObjectSize="1 Bit" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Enabled" ReadOnInitFlag="Enabled" DatapointType="DPST-1-1" BaseNumber="M-013A_A-0005-64-8861_MD-1_A-2" />
+									<ComObject Id="M-013A_A-0005-64-8861_MD-1_O-2-1" Name="Temperatur 16bit" Text="PIO3_0_Temperature16" Number="1" FunctionText="Temperatur 16-Bit" ObjectSize="2 Bytes" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-9-1" BaseNumber="M-013A_A-0005-64-8861_MD-1_A-2" />
+									<ComObject Id="M-013A_A-0005-64-8861_MD-1_O-2-2" Name="Temperatur 32bit" Text="PIO3_0_Temperature32" Number="2" FunctionText="Temperatur 32-Bit" ObjectSize="4 Bytes" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-14-68" BaseNumber="M-013A_A-0005-64-8861_MD-1_A-2" />
+									<ComObject Id="M-013A_A-0005-64-8861_MD-1_O-2-3" Name="Luftfeuchte" Text="PIO3_0_Luftfeuchte" Number="3" FunctionText="Luftfeuchte" ObjectSize="2 Bytes" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-9-7" BaseNumber="M-013A_A-0005-64-8861_MD-1_A-2" />
+								</ComObjects>
+								<ComObjectRefs>
+									<ComObjectRef Id="M-013A_A-0005-64-8861_MD-1_O-2-0_R-0" RefId="M-013A_A-0005-64-8861_MD-1_O-2-0" FunctionText="Eingang" ObjectSize="1 Bit" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Enabled" ReadOnInitFlag="Enabled" DatapointType="DPST-1-1" Text="{{0}}" TextParameterRefId="M-013A_A-0005-64-8861_MD-1_P-1_R-1" />
+									<ComObjectRef Id="M-013A_A-0005-64-8861_MD-1_O-2-0_R-1" RefId="M-013A_A-0005-64-8861_MD-1_O-2-0" FunctionText="Ausgang" ObjectSize="1 Bit" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-1-1" Text="{{0}}" TextParameterRefId="M-013A_A-0005-64-8861_MD-1_P-1_R-1" />
+									<ComObjectRef Id="M-013A_A-0005-64-8861_MD-1_O-2-0_R-2" RefId="M-013A_A-0005-64-8861_MD-1_O-2-0" FunctionText="Lüfter" ObjectSize="1 Bit" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-1-1" Text="{{0}}" TextParameterRefId="M-013A_A-0005-64-8861_MD-1_P-1_R-1" />
+									<ComObjectRef Id="M-013A_A-0005-64-8861_MD-1_O-2-0_R-4" RefId="M-013A_A-0005-64-8861_MD-1_O-2-0" FunctionText="PWM" ObjectSize="1 Byte" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-1-1" Text="{{0}}" TextParameterRefId="M-013A_A-0005-64-8861_MD-1_P-1_R-1" />
+
+									<ComObjectRef Id="M-013A_A-0005-64-8861_MD-1_O-2-1_R-0" RefId="M-013A_A-0005-64-8861_MD-1_O-2-1" FunctionText="Eingang lang" ObjectSize="1 Bit" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-9-1" Text="{{0}}" TextParameterRefId="M-013A_A-0005-64-8861_MD-1_P-1_R-1" />
+									<ComObjectRef Id="M-013A_A-0005-64-8861_MD-1_O-2-1_R-1" RefId="M-013A_A-0005-64-8861_MD-1_O-2-1" FunctionText="Blinken" ObjectSize="1 Bit" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-1-1" Text="{{0}}" TextParameterRefId="M-013A_A-0005-64-8861_MD-1_P-1_R-1" />
+									<ComObjectRef Id="M-013A_A-0005-64-8861_MD-1_O-2-1_R-2" RefId="M-013A_A-0005-64-8861_MD-1_O-2-1" FunctionText="Temperatur (16 Bit)" ObjectSize="2 Bytes" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-9-1" Text="{{0}}" TextParameterRefId="M-013A_A-0005-64-8861_MD-1_P-1_R-1" />
+
+									<ComObjectRef Id="M-013A_A-0005-64-8861_MD-1_O-2-2_R-2" RefId="M-013A_A-0005-64-8861_MD-1_O-2-2" FunctionText="Temperatur (32 Bit)" ObjectSize="4 Bytes" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-14-68" Text="{{0}}" TextParameterRefId="M-013A_A-0005-64-8861_MD-1_P-1_R-1" />
+
+									<ComObjectRef Id="M-013A_A-0005-64-8861_MD-1_O-2-3_R-2" RefId="M-013A_A-0005-64-8861_MD-1_O-2-3" FunctionText="Luftfeuchte" ObjectSize="2 Bytes" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-9-7" Text="{{0}}" TextParameterRefId="M-013A_A-0005-64-8861_MD-1_P-1_R-1" />
+								</ComObjectRefs>
+							</Static>
+							<Dynamic>
+								<Channel Id="M-013A_A-0005-64-8861_MD-1_CH-1" Name="ComObjs" Text="{{PortPin}}: {{0}}" Number="1" TextParameterRefId="M-013A_A-0005-64-8861_MD-1_P-1_R-1">
+									<choose ParamRefId="M-013A_A-0005-64-8861_MD-1_P-2_R-2">
+										<when test="0 1 2">
+											<ComObjectRefRef RefId="M-013A_A-0005-64-8861_MD-1_O-2-0_R-0" />
+											<choose ParamRefId="M-013A_A-0005-64-8861_MD-1_P-23_R-23">
+												<when test="0">
+													<choose ParamRefId="M-013A_A-0005-64-8861_MD-1_P-24_R-24">
+														<when test="1">
+															<ComObjectRefRef RefId="M-013A_A-0005-64-8861_MD-1_O-2-1_R-0" />
+														</when>
+													</choose>
+												</when>
+												<when test="1">
+													<ComObjectRefRef RefId="M-013A_A-0005-64-8861_MD-1_O-2-1_R-0" />
+												</when>
+											</choose>
+										</when>
+										<when test="3">
+											<ComObjectRefRef RefId="M-013A_A-0005-64-8861_MD-1_O-2-0_R-1" />
+											<choose ParamRefId="M-013A_A-0005-64-8861_MD-1_P-31_R-31">
+												<when test=">3">
+													<ComObjectRefRef RefId="M-013A_A-0005-64-8861_MD-1_O-2-1_R-1" />
+												</when>
+											</choose>
+										</when>
+										<when test="4 5">
+											<choose ParamRefId="M-013A_A-0005-64-8861_MD-1_P-10_R-10">
+												<when test=">0">
+													<ComObjectRefRef RefId="M-013A_A-0005-64-8861_MD-1_O-2-0_R-2" />
+												</when>
+											</choose>
+											<ComObjectRefRef RefId="M-013A_A-0005-64-8861_MD-1_O-2-1_R-2" />
+											<ComObjectRefRef RefId="M-013A_A-0005-64-8861_MD-1_O-2-2_R-2" />
+											<ComObjectRefRef RefId="M-013A_A-0005-64-8861_MD-1_O-2-3_R-2" />
+										</when>
+										<when test="6">
+											<ComObjectRefRef RefId="M-013A_A-0005-64-8861_MD-1_O-2-0_R-4" />
+										</when>
+									</choose>
+								</Channel>
+								<ChannelIndependentBlock>
+									<ParameterBlock Id="M-013A_A-0005-64-44E6_MD-1_PB-1" Name="pCommon" Text="{{PortPin}}: {{0}}" TextParameterRefId="M-013A_A-0005-64-8861_MD-1_P-1_R-1">
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-1_R-1" />
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-2_R-2" />
+										<choose ParamRefId="M-013A_A-0005-64-8861_MD-1_P-2_R-2">
+											<when test="0 1 2">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-20_R-20" />
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-21_R-21" />
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-22_R-22" />
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-23_R-23" />
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-24_R-24" />
+												<choose ParamRefId="M-013A_A-0005-64-8861_MD-1_P-23_R-23">
+													<when test="0">
+														<choose ParamRefId="M-013A_A-0005-64-8861_MD-1_P-24_R-24">
+															<when test="1">
+																<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-25_R-25" />
+																<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-26_R-26" />
+																<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-126_R-126" />
+															</when>
+														</choose>
+													</when>
+													<when test="1">
+														<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-25_R-25" />
+														<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-26_R-26" />
+														<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-126_R-126" />
+													</when>
+												</choose>
+											</when>
+											<when test="3">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-30_R-30" />
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-31_R-31" />
+												<choose ParamRefId="M-013A_A-0005-64-8861_MD-1_P-31_R-31">
+													<when test=">0">
+														<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-32_R-32" />
+														<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-33_R-33" />
+														<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-132_R-132" />
+														<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-133_R-133" />
+													</when>
+												</choose>
+											</when>
+											<when test="4 5">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-10_R-10" />
+												<choose ParamRefId="M-013A_A-0005-64-8861_MD-1_P-10_R-10">
+													<when test="!=0">
+														<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-11_R-11" />
+														<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-111_R-111" />
+													</when>
+													<when test="0">
+														<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-11_R-0" Access="None" Value="0" />
+														<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-111_R-0" Access="None" Value="0" />
+													</when>
+												</choose>
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-12_R-12" />
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-110_R-110" />
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-112_R-112" />
+											</when>
+											<when test="6">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_MD-1_P-40_R-40" />
+											</when>
+										</choose>
+									</ParameterBlock>
+								</ChannelIndependentBlock>
+							</Dynamic>
+						</ModuleDef>
+					</ModuleDefs>
+					<Dynamic>
+						<ChannelIndependentBlock>
+							<ParameterBlock Id="M-013A_A-0005-64-8861_PB-1" Name="General" Text="Globale Einstellungen">
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-1_R-1" />
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-2_R-2" />
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-3_R-3" />
+							</ParameterBlock>
+							<choose ParamRefId="M-013A_A-0005-64-8861_P-1_R-1">
+								<when test="1">
+									<ParameterBlock Id="M-013A_A-0005-64-8861_PB-2" Name="SPI0" Text="SPI 0">
+										<ParameterSeparator Id="M-013A_A-0005-64-8861_PS-1" Text="MOSI0 -> PIO0_9" />
+										<ParameterSeparator Id="M-013A_A-0005-64-8861_PS-2" Text="MISO0 -> PIO0_8" />
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-10_R-10" />
+									</ParameterBlock>
+								</when>
+							</choose>
+							<choose ParamRefId="M-013A_A-0005-64-8861_P-2_R-2">
+								<when test="1">
+									<ParameterBlock Id="M-013A_A-0005-64-8861_PB-3" Name="SPI1" Text="SPI 1">
+										<ParameterSeparator Id="M-013A_A-0005-64-8861_PS-3" Text="MOSI1 -> PIO2_3" />
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-21_R-21" />
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-20_R-20" />
+									</ParameterBlock>
+								</when>
+							</choose>
+							<choose ParamRefId="M-013A_A-0005-64-8861_P-3_R-3">
+								<when test="1">
+									<ParameterBlock Id="M-013A_A-0005-64-8861_PB-4" Name="I2C" Text="I2C">
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-30_R-30" />
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-31_R-31" />
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-32_R-32" />
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-33_R-33" />
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-34_R-34" />
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-35_R-35" />
+									</ParameterBlock>
+								</when>
+							</choose>
+							<ParameterBlock Id="M-013A_A-0005-64-8861_PB-6" Name="Port0" Text="Port 0">
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-101_R-101"/>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-102_R-102"/>
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-3_R-3">
+									<when test="0">
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-103_R-103"/>
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-104_R-104"/>
+									</when>
+									<when test="1">
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-203_R-203"/>
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-204_R-204"/>
+									</when>
+								</choose>
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-1_R-1">
+									<when test="0">
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-105_R-105"/>
+									</when>
+									<when test="1">
+										<choose ParamRefId="M-013A_A-0005-64-8861_P-10_R-10">
+											<when test="0">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-205_R-205" Access="none" Value="0" />
+											</when>
+											<when test="1">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-105_R-105"/>
+											</when>
+										</choose>
+									</when>
+								</choose>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-106_R-106"/>
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-1_R-1">
+									<when test="0">
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-107_R-107"/>
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-108_R-108"/>
+									</when>
+									<when test="1">
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-207_R-207"/>
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-208_R-208"/>
+									</when>
+								</choose>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-109_R-109"/>
+
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-101_R-101">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-1" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO0_2">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="50" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="1" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-1_A-3" Value="PIO0_2" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-102_R-102">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-2" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO0_3">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="80" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="5" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-2_A-3" Value="PIO0_3" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_UP-103_R-103">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-3" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO0_4">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="110" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="9" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-3_A-3" Value="PIO0_4" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_UP-104_R-104">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-4" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO0_5">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="140" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="13" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-4_A-3" Value="PIO0_5" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_UP-105_R-105">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-5" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO0_6">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="170" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="17" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-5_A-3" Value="PIO0_6" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-106_R-106">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-6" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO0_7">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="200" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="21" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-6_A-3" Value="PIO0_7" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_UP-107_R-107">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-7" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO0_8">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="230" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="25" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-7_A-3" Value="PIO0_8" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_UP-108_R-108">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-8" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO0_9">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="260" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="29" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-8_A-3" Value="PIO0_9" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-109_R-109">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-9" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO0_11">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="290" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="33" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-9_A-3" Value="PIO0_11" />
+										</Module>
+									</when>
+								</choose>
+							</ParameterBlock>
+							<ParameterBlock Id="M-013A_A-0005-64-8861_PB-7" Name="Port1" Text="Port 1">
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-110_R-110"/>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-111_R-111"/>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-112_R-112"/>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-113_R-113"/>
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-2_R-2">
+									<when test="0">
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-114_R-114"/>
+									</when>
+									<when test="1">
+										<choose ParamRefId="M-013A_A-0005-64-8861_P-21_R-21">
+											<when test="0">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-214_R-214" Access="none" Value="0" />
+											</when>
+											<when test="1">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-114_R-114"/>
+											</when>
+										</choose>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-110_R-110">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-10" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO1_0">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="320" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="37" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-10_A-3" Value="PIO1_0" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-111_R-111">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-11" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO1_1">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="350" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="41" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-11_A-3" Value="PIO1_1" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-112_R-112">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-12" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO1_2">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="380" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="45" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-12_A-3" Value="PIO1_2" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-113_R-113">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-13" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO1_5">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="410" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="49" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-13_A-3" Value="PIO1_5" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_UP-114_R-114">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-14" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO1_10">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="440" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="53" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-14_A-3" Value="PIO1_10" />
+										</Module>
+									</when>
+								</choose>
+							</ParameterBlock>
+							<ParameterBlock Id="M-013A_A-0005-64-8861_PB-8" Name="Port2" Text="Port 2">
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-115_R-115"/>
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-2_R-2">
+									<when test="0">
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-116_R-116"/>
+									</when>
+									<when test="1">
+										<choose ParamRefId="M-013A_A-0005-64-8861_P-20_R-20">
+											<when test="0">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-216_R-216" Access="none" Value="0" />
+											</when>
+											<when test="1">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-116_R-116"/>
+											</when>
+										</choose>
+									</when>
+								</choose>
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-2_R-2">
+									<when test="0">
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-117_R-117"/>
+									</when>
+									<when test="1">
+										<choose ParamRefId="M-013A_A-0005-64-8861_P-21_R-21">
+											<when test="0">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-117_R-117"/>
+											</when>
+											<when test="1">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-217_R-217" Access="none" Value="0" />
+											</when>
+										</choose>
+									</when>
+								</choose>
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-2_R-2">
+									<when test="0">
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-118_R-118"/>
+									</when>
+									<when test="1">
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-218_R-218"/>
+									</when>
+								</choose>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-119_R-119"/>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-120_R-120"/>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-121_R-121"/>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-122_R-122"/>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-123_R-123"/>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-124_R-124"/>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-125_R-125"/>
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-1_R-1">
+									<when test="0">
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-126_R-126"/>
+									</when>
+									<when test="1">
+										<choose ParamRefId="M-013A_A-0005-64-8861_P-10_R-10">
+											<when test="0">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-126_R-126"/>
+											</when>
+											<when test="1">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-226_R-226" Access="None" Value="0" />
+											</when>
+										</choose>
+									</when>
+								</choose>
+
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-115_R-115">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-15" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO2_0">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="470" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="57" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-15_A-3" Value="PIO2_0" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_UP-116_R-116">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-16" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO2_1">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="500" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="61" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-16_A-3" Value="PIO2_1" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_UP-117_R-117">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-17" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO2_2">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="530" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="65" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-17_A-3" Value="PIO2_2" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_UP-118_R-118">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-18" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO2_3">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="560" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="69" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-18_A-3" Value="PIO2_3" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-119_R-119">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-19" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO2_4">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="590" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="73" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-19_A-3" Value="PIO2_4" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-120_R-120">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-20" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO2_5">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="620" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="77" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-20_A-3" Value="PIO2_5" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-121_R-121">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-21" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO2_6">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="650" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="81" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-21_A-3" Value="PIO2_6" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-122_R-122">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-22" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO2_7">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="680" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="85" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-22_A-3" Value="PIO2_7" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-123_R-123">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-23" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO2_8">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="710" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="89" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-23_A-3" Value="PIO2_8" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-124_R-124">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-24" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO2_9">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="740" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="93" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-24_A-3" Value="PIO2_9" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-125_R-125">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-25" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO2_10">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="770" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="97" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-25_A-3" Value="PIO2_10" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_UP-126_R-126">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-26" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO2_11">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="800" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="101" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-26_A-3" Value="PIO2_11" />
+										</Module>
+									</when>
+								</choose>
+							</ParameterBlock>
+							<ParameterBlock Id="M-013A_A-0005-64-8861_PB-9" Name="Port3" Text="Port 3">
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-127_R-127"/>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-128_R-128"/>
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-2_R-2">
+									<when test="0">
+										<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-129_R-129"/>
+									</when>
+									<when test="1">
+										<choose ParamRefId="M-013A_A-0005-64-8861_P-20_R-20">
+											<when test="0">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-129_R-129"/>
+											</when>
+											<when test="1">
+												<ParameterRefRef RefId="M-013A_A-0005-64-8861_UP-229_R-229" Access="none" Value="0" />
+											</when>
+										</choose>
+									</when>
+								</choose>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-130_R-130"/>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-131_R-131"/>
+								<ParameterRefRef RefId="M-013A_A-0005-64-8861_P-132_R-132"/>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-127_R-127">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-27" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO3_0">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="830" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="105" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-27_A-3" Value="PIO3_0" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-128_R-128">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-28" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO3_1">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="860" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="109" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-28_A-3" Value="PIO3_1" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_UP-129_R-129">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-29" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO3_2">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="890" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="113" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-29_A-3" Value="PIO3_2" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-130_R-130">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-30" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO3_3">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="920" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="117" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-30_A-3" Value="PIO3_3" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-131_R-131">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-31" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO3_4">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="950" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="121" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-31_A-3" Value="PIO3_4" />
+										</Module>
+									</when>
+								</choose>
+
+								<choose ParamRefId="M-013A_A-0005-64-8861_P-132_R-132">
+									<when test="1">
+										<Module Id="M-013A_A-0005-64-8861_MD-1_M-32" RefId="M-013A_A-0005-64-8861_MD-1" Name="PIO3_5">
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-1" Value="980" />
+											<NumericArg RefId="M-013A_A-0005-64-8861_MD-1_A-2" Value="125" />
+											<TextArg RefId="M-013A_A-0005-64-8861_MD-1_A-3" Id="M-013A_A-0005-64-8861_MD-1_M-32_A-3" Value="PIO3_5" />
+										</Module>
+									</when>
+								</choose>
+							</ParameterBlock>
+						</ChannelIndependentBlock>
+					</Dynamic>
+				</ApplicationProgram>
+			</ApplicationPrograms>
+			<Languages>
+				<Language Identifier="de-DE">
+					<TranslationUnit RefId="M-013A_A-0005-64-8861">
+					</TranslationUnit>
+				</Language>
+			</Languages>
+		</Manufacturer>
+	</ManufacturerData>
+</KNX>
