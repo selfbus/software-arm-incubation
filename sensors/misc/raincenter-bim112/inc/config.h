@@ -70,7 +70,7 @@ const HardwareVersion hardwareVersion[] =
 #define REPOLL_INTERVAL_MS 1500
 
 
-#define RAINCENTER_TX_DELAY_SEND_MS 100 // time in ms the raincenter doesnt react to serial commands after it send a response
+#define RAINCENTER_TX_DELAY_SEND_MS 100 // time in ms the raincenter doesn't react to serial commands after it send a response
 #define TX_FLASH_MS 50 // time in ms TX-Led is flashing
 #define RX_FLASH_MS 50 // time in ms RX-Led is flashing
 #define RX_FLASH_OK_MS RX_FLASH_MS + 1000 // time in ms RX-Led is active to display correct received values
@@ -87,15 +87,7 @@ const HardwareVersion hardwareVersion[] =
     PIO3_1 IO7 RX
 */
 
-#if defined(DEMOBOARD_OM13087)
-    // LEDs
-    #define BLUE_LED PIO0_9  // DEMOBOARD_OM13087 Onboard Blue-Led (Pin5)
-    #define RX_LED PIO0_8    // DEMOBOARD_OM13087 Onboard Green-Led (Pin6)
-    #define TX_LED PIO0_7    // DEMOBOARD_OM13087 Onboard Red-Led (Pin11)
-    //serial port
-    #define RC_TX_PIN PIN_IO14 // DEMOBOARD_OM13087 Pin9 (PIO1_7)
-    #define RC_RX_PIN PIN_IO15 // DEMOBOARD_OM13087 Pin10 (PIO1_6)
-#elif defined(TS_ARM)
+#if defined(TS_ARM)
     // LEDs
     #define RX_LED PIN_IO1 // TS_ARM IO1 PAD (PIO2_2)
     #define TX_LED PIN_IO7 // TS_ARM IO2 PAD (PIO0_9)
@@ -111,10 +103,7 @@ const HardwareVersion hardwareVersion[] =
     #define RC_RX_PIN PIN_IO15 // PIO1_6
 #endif
 
-#if defined(DEMOBOARD_OM13087)
-    #define LED_ON 0
-    #define LED_OFF 1
-#elif defined(TS_ARM)
+#if defined(TS_ARM)
     #define LED_ON 0
     #define LED_OFF 1
 #else
