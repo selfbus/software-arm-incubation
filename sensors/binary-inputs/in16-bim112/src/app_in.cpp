@@ -46,15 +46,14 @@ void objectUpdated(int objno)
 
     // Logic input objects
     int logicObjStart = channels/2 * 10;
-    int logicObjEnd = logicObjStart + MAX_LOGIC*3;
-    if (objno >= logicObjStart && objno <= logicObjEnd)
+    for (int i = 0; i < MAX_LOGIC; i++)
     {
-        for (unsigned int i = 0; i < MAX_LOGIC; i++)
+        if (objno == logicObjStart + i*3 || objno == logicObjStart + 1 + i*3 )
         {
-            if (logicConfig[i])
-            {
-                logicConfig[i]->objectUpdated(objno);
-            }
+        	if (logicConfig[i])
+        	{
+        		logicConfig[i]->objectUpdated(objno);
+        	}
         }
     }
 

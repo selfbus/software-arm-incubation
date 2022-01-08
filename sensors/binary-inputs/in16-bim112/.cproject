@@ -8,7 +8,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="BI16"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.01"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.02"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -59,7 +59,7 @@
 								<option id="com.crt.advproject.cpp.specs.1384701524" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.optimization.flags.368519924" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-Os" valueType="string"/>
 								<option id="com.crt.advproject.cpp.exe.debug.option.debugging.level.2096573266" name="Debug Level" superClass="com.crt.advproject.cpp.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.default" valueType="enumerated"/>
-								<option id="com.crt.advproject.cpp.fpu.667213996" superClass="com.crt.advproject.cpp.fpu" useByScannerDiscovery="true"/>
+								<option id="com.crt.advproject.cpp.fpu.667213996" name="Floating point" superClass="com.crt.advproject.cpp.fpu" useByScannerDiscovery="true"/>
 								<inputType id="com.crt.advproject.compiler.cpp.input.1790996662" superClass="com.crt.advproject.compiler.cpp.input"/>
 							</tool>
 							<tool id="com.crt.advproject.gcc.exe.debug.940025323" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug">
@@ -784,7 +784,7 @@
 								<option id="com.crt.advproject.cpp.specs.662040555" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.optimization.flags.1941194949" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-Os" valueType="string"/>
 								<option id="com.crt.advproject.cpp.exe.debug.option.debugging.level.1876868270" name="Debug Level" superClass="com.crt.advproject.cpp.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.default" valueType="enumerated"/>
-								<option id="com.crt.advproject.cpp.fpu.1071943690" superClass="com.crt.advproject.cpp.fpu"/>
+								<option id="com.crt.advproject.cpp.fpu.1071943690" superClass="com.crt.advproject.cpp.fpu" useByScannerDiscovery="true"/>
 								<inputType id="com.crt.advproject.compiler.cpp.input.1174001306" superClass="com.crt.advproject.compiler.cpp.input"/>
 							</tool>
 							<tool id="com.crt.advproject.gcc.exe.debug.285098767" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug">
@@ -929,7 +929,7 @@
 								<option id="com.crt.advproject.cpp.specs.463519428" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.optimization.flags.2115101273" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-Os" valueType="string"/>
 								<option id="com.crt.advproject.cpp.exe.debug.option.debugging.level.513300865" name="Debug Level" superClass="com.crt.advproject.cpp.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.default" valueType="enumerated"/>
-								<option id="com.crt.advproject.cpp.fpu.1785764481" superClass="com.crt.advproject.cpp.fpu"/>
+								<option id="com.crt.advproject.cpp.fpu.1785764481" superClass="com.crt.advproject.cpp.fpu" useByScannerDiscovery="true"/>
 								<inputType id="com.crt.advproject.compiler.cpp.input.1351755293" superClass="com.crt.advproject.compiler.cpp.input"/>
 							</tool>
 							<tool id="com.crt.advproject.gcc.exe.debug.209090377" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug">
@@ -1904,6 +1904,7 @@
 		<configuration configurationName="Release BI8 TS_ARM inverted"/>
 		<configuration configurationName="Release BI4 TS_ARM inverted"/>
 		<configuration configurationName="Release BI16 TS_ARM inverted"/>
+		<configuration configurationName="Flashstart 0x3000 Release BI8 TS_ARM"/>
 		<configuration configurationName="Release BI8 TS_ARM"/>
 		<configuration configurationName="Debug_LPC11Uxx"/>
 		<configuration configurationName="Debug">
