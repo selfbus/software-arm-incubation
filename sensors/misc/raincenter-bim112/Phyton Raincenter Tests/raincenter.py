@@ -6,10 +6,12 @@
 # Selfbus Raincenter Simulator by Darthyson
 # created: August 16, 2020
 
-import os, sys, serial, keyboard, time
 from time import sleep
+
+import keyboard
+import serial
+
 from rc_protocol import *
-from threading import Timer
 
 CMD_READ_PARAMETER = b'p'
 CMD_READ_DISPLAY = 'w'
@@ -19,15 +21,17 @@ CMD_SET_B = 'b'
 PAUSE_LONG = 2.0
 PAUSE = 0.1
 
-#def TimerTimeOut():
+
+# def TimerTimeOut():
 #   print('TimerTimeOut')
 #   if len(telegram) > 0:
 #       print('removed following bytes from inque' +telegram.hex())
 #   telegram = []
 
-class raincenter(object):
+class Raincenter(object):
     def __init__(self):
-        self.ser = serial.Serial("COM1", baudrate = 2400, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=1)
+        self.ser = serial.Serial("COM1", baudrate=2400, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,
+                                 bytesize=serial.EIGHTBITS, timeout=1)
         print("Selfbus Raincenter Simulator using COM-Port: {0:s}".format(self.ser.name))
         print("")
         print("Keys:")
@@ -39,24 +43,26 @@ class raincenter(object):
         print("s = set parameters (not implemented)")
         print("q = quit")
         print("")
-    def SendDisplayCommand(self):
+
+    def sendDisplayCommand(self):
         self.SendCommand(rcDisplayMessage.msgIdentifier)
-        #Timer(1, self.SendDisplayCommand(), ()).start()
-        #Timer(1, self.SendDisplayCommand(), self).start()
+        # Timer(1, self.SendDisplayCommand(), ()).start()
+        # Timer(1, self.SendDisplayCommand(), self).start()
+
     def SendParameterCommand(self):
         self.SendCommand(rcParameterMessage.msgIdentifier)
-        
+
     def SendCommand(self, command):
         self.ser.write(command)
-        #Timer(5, TimerTimeOut, telegram).start()
-        #self.ser.write(0x00)
-        #print(command)
-        #sleep(PAUSE_LONG)
+        # Timer(5, TimerTimeOut, telegram).start()
+        # self.ser.write(0x00)
+        # print(command)
+        # sleep(PAUSE_LONG)
 
     def Excecute(self):
         telegram = bytearray()
-        self.SendDisplayCommand()
-        #Timer(1, self.SendDisplayCommand(), self).start()
+        self.sendDisplayCommand()
+        # Timer(1, self.SendDisplayCommand(), self).start()
         while self.ser.is_open:
             bytesToRead = self.ser.inWaiting()
             if bytesToRead > 0:
@@ -66,10 +72,10 @@ class raincenter(object):
                 if (msg):
                     msg.Decode()
                     print(msg.ToInformationText(True, True))
-                    #print (len(telegram))
+                    # print (len(telegram))
                     telegram = []
-                    
-                    
+
+
             else:
                 sleep(0.01)
             # Check if a key was pressed
@@ -79,7 +85,7 @@ class raincenter(object):
                 sleep(0.1)
             elif keyboard.is_pressed('w'):
                 print('w Key was pressed, requesting Display-Data')
-                self.SendDisplayCommand()
+                self.sendDisplayCommand()
                 sleep(0.1)
             elif keyboard.is_pressed('p'):
                 print('p Key was pressed, requesting Parameter-Data')
@@ -96,7 +102,7 @@ class raincenter(object):
             elif keyboard.is_pressed('s'):
                 print('s Key was pressed, Setting Parameters for Raincenter...NOT YET IMPLEMENTED')
                 print(rcSetParameterMessage.msgTeleExample)
-                #self.SendCommand(rcSetParameterMessage.msgTeleExample)
+                # self.SendCommand(rcSetParameterMessage.msgTeleExample)
                 sleep(0.1)
             elif keyboard.is_pressed('q'):
                 print('q Key was pressed, exiting...')
@@ -104,5 +110,6 @@ class raincenter(object):
             else:
                 sleep(0.01)
 
-test = raincenter()
+
+test = Raincenter()
 test.Excecute()
