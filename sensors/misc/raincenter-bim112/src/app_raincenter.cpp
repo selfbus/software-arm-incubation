@@ -24,8 +24,8 @@ enum ePollState {Idle, PolledParam, ReceivedParam, PolledDisplay, ReceivedDispla
 
 static ePollState PollState = Idle;     //!< holds the actual state of the state machine
 static Timeout SendPeriodicTimer;       //!< TODO this is just for testing, Timeout Timer to send all objects periodically
-static Timeout RaincenterPollTimer;     //!< Timeout Timer to cyclic poll the Raincenter
-static Timeout RaincenterDelayTxTimer;  //!< Timeout Timer to delay serial send messages, because raincenter needs som time between messages send to him
+static Timeout RaincenterPollTimer;     //!< Timeout Timer to cyclic poll the raincenter
+static Timeout RaincenterDelayTxTimer;  //!< Timeout Timer to delay serial send messages, because raincenter needs some time between messages send to him
 static RCParameterMessage rcParamMsg;   //!< holds the last received RCParameterMessage
 static RCDisplayMessage  rcDisplayMsg;  //!< holds the last receive RCDisplayMessage
 static int rcMessageLengthWaitingFor;   //!< holds the length of the serial message we are waiting for

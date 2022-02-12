@@ -1752,11 +1752,11 @@ void Appl::OneCurrThresholdFct(int chno, float IMeas, int fctno)
  if (fctno == 0)
  { // Erste Schwellwertfunktion
   if (ReadChConfigByte(chno, APP_CURRTHSCAL1_O) & APP_CURRTHSCAL1_M)
-   ScalVal = 0.01;
+   ScalVal = 0.01f;
   else
-   ScalVal = 0.1;
+   ScalVal = 0.1f;
  } else { // Zweite Schwellwertfunktion
-  ScalVal = 0.1;
+  ScalVal = 0.1f;
  }
  float ThVal = ScalVal * ReadChConfigByte(chno, APP_CURRTH1_O+(APP_CURRTH2_O-APP_CURRTH1_O)*fctno);
  byte HystCnf = ReadChConfigByte(chno, APP_CURRHYST1_O+(APP_CURRTH2_O-APP_CURRTH1_O)*fctno) & APP_CURRHYST1_M;
@@ -1764,9 +1764,9 @@ void Appl::OneCurrThresholdFct(int chno, float IMeas, int fctno)
   return;
  float Hyst;
  if (HystCnf == 3)
-  Hyst = 0.0015;
+  Hyst = 0.0015f;
  else
-  Hyst = 0.0125*HystCnf;
+  Hyst = 0.0125f*HystCnf;
  bool ObjUpdate = false;
  int ObjVal = 0;
  if (IMeas > (ThVal+Hyst)) // Überschreitung oberer Hysteresepunkt
@@ -1867,7 +1867,7 @@ void Appl::CurrentFunctions(unsigned referenceTime)
    {
     if (!SendStatus) // Bei Startup versenden
      SendStatus = IniAppRun;
-    float DeltaI = 0.025*IConf;
+    float DeltaI = 0.025f*IConf;
     if (abs(IMeas - ChannelStates[chno].CFLastSentValue) > DeltaI)
     { // Der Stromwert hat sich deutlich geändert
      SendStatus = true;

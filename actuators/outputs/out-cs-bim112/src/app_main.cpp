@@ -38,9 +38,6 @@ bool NextState = false;
 AppOperatingStates AppOperatingState;
 bool NoAppWasRunning = false;
 
-// The last 2 Bytes of the Serial Number are now the Version number: 0x01 0x01 = V1.1
-const byte SerialNumber[] = { 0x12, 0x34, 0x56, 0x00, 0x01, 0x01 };
-
 /* Es gibt verschiedene Systemzustände, in denen Teile oder die ganze Funktionalität abgeschaltet ist:
  * - direkt nach dem Systemstart
  *   + keine Objektverarbeitung
@@ -117,7 +114,7 @@ void setup()
  _bcu.setMemMapper((MemMapper *)&memMapper); // Der BCU wird hier der modifizierte MemMapper bekanntgemacht
  _bcu.setUsrCallback((UsrCallback *)&usrCallback);
  _bcu.enableGroupTelSend(false);
- memcpy(userEeprom.serial, SerialNumber, sizeof(SerialNumber));
+
  // 12 Bytes der Aktorkonfiguration werden ab 0x4B00 geschrieben. Das liegt bloederweise
  // genau jenseits des USER-EEPROM. Also mappen wir virtuellen Speicherbereich dorthin.
  memMapper.addRange(0x4b00, 0x100);

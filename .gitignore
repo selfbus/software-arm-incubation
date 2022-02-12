@@ -15,3 +15,6 @@ sblib-tests/sblib-results-Results.xml
 __pycache__
 .DS_Store
 ._.DS_Store
+
+# IDE files
+.idea

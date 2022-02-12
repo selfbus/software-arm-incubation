@@ -312,7 +312,7 @@ void analogSetup(void)
  IsrData.NewData = false;
 }
 
-extern "C" void ADC_IRQHandler (void)
+extern "C" __attribute__((optimize("O3"))) void ADC_IRQHandler (void)
 {
 #ifdef PIODBGISRFLAG
  digitalWrite(PIODBGISRFLAG, true);
@@ -515,15 +515,15 @@ void AdcIsrCurrFilt(void)
    IsrData.CurrSqrVals[ChIdx][0] =
      (float)IsrData.RegSqr[(ChIdx << 1)+1] *
      Square((float)IsrData.GainCorr[(ChIdx << 1)+1]) *
-     Square(MAXCURRLOWRANGE/512/32768);
+     Square((float)MAXCURRLOWRANGE/512/32768);
   } else { // High-Range benutzen
    IsrData.CurrSqrVals[ChIdx][0] =
      (float)IsrData.RegSqr[ChIdx << 1] *
      Square((float)IsrData.GainCorr[ChIdx << 1]) *
-     Square(MAXCURRHIGHRANGE/512/32768);
+     Square((float)MAXCURRHIGHRANGE/512/32768);
   }
   ChCurr += IsrData.CurrSqrVals[ChIdx][0];
-  IsrData.CurrentVal[ChIdx] = sqrt(ChCurr * (0.25 / (float)BUFSIZE)); // Strom in A
+  IsrData.CurrentVal[ChIdx] = sqrt(ChCurr * (0.25f / (float)BUFSIZE)); // Strom in A
  }
 }
 

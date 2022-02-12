@@ -6,10 +6,12 @@
 # Selfbus Raincenter Simulator by Darthyson
 # created: September 25, 2020
 
-import os, sys, serial, keyboard, time
 from time import sleep
+
+import keyboard
+import serial
+
 from rc_protocol import *
-from threading import Timer
 
 CMD_READ_PARAMETER = b'p'
 CMD_READ_DISPLAY = 'w'
@@ -18,6 +20,7 @@ CMD_SET_B = 'b'
 
 PAUSE_LONG = 2.0
 PAUSE = 0.1
+
 
 class raincenter_sim(object):
     def __init__(self):
@@ -40,6 +43,7 @@ class raincenter_sim(object):
         print("m = AutomaticallySwitchedToTapWater")
         print("w = WaterExchangeActive")
         print("")
+
     def SendDisplayCommand(self):
         self.SendCommand(rcDisplayMessage.msgIdentifier)
 
