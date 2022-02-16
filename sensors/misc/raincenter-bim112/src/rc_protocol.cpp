@@ -147,7 +147,7 @@ bool RCParameterMessage::Decode(byte * msg, int msg_len)
         {
             case cylindrical:
             {
-                _Level_m3_Calibrated = float(_LevelCalibrated_cm) / 100 * _ReservoirArea_m2;
+                _Level_m3_Calibrated = (float)_LevelCalibrated_cm / 100.0f * _ReservoirArea_m2;
                 break;
             }
             case spherical:
@@ -165,7 +165,7 @@ bool RCParameterMessage::Decode(byte * msg, int msg_len)
                 break;
             }
         }
-        _Level_m3_Calibrated = ((int)(_Level_m3_Calibrated * 10.0f)) / 10.0f;
+        _Level_m3_Calibrated = round(_Level_m3_Calibrated * 10.0f) / 10.0f;
         _IsValid = true;
     }
     return _IsValid;

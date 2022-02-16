@@ -16,19 +16,15 @@
 #include "config.h"
 #include "app_raincenter.h"
 
-APP_VERSION("SBrain  ", "0", "30");
-
-const HardwareVersion * currentVersion;
+APP_VERSION("SBrain  ", "0", "31");
 
 /**
  * Application setup
  */
 void setup()
 {
-    currentVersion = &hardwareVersion[HARDWARE_ID];
-    bcu.begin(MANUFACTURER, currentVersion->hardwareVersion[5], 0x28);  // we are a MDT shutter/blind actuator, version 2.8
-    memcpy(userEeprom.order, currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
-
+    bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
+    memcpy(userEeprom.order, &hardwareVersion[0], sizeof(hardwareVersion));
     initApplication();
 }
 
@@ -49,4 +45,9 @@ void loop()
     // Sleep up to 1 millisecond if there is nothing to do
     if (bus.idle())
         waitForInterrupt();
+}
+
+void loop_noapp()
+{
+
 }

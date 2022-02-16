@@ -50,7 +50,7 @@ bool Write2Serial(byte ch)
 
 bool ProcessParameterMsg(const RCParameterMessage* msg)
 {
-    // objectWrite(OBJ_CALIBRATED_FILL_LEVEL_m3, msg->Level_m3_Calibrated()*10);
+    // objectWrite(OBJ_CALIBRATED_FILL_LEVEL_m3, msg->level_m3_CalibratedToDPT());
     // return false;
 
     bool processed = false;
@@ -58,7 +58,7 @@ bool ProcessParameterMsg(const RCParameterMessage* msg)
     if (!rcParamMsg.IsValid())
     {
         // seems like we have restarted, so lets send all objects
-        objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, (unsigned int)msg->Level_m3_Calibrated()*10);
+        objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, msg->level_m3_CalibratedToDPT());
         processed = true;
     }
     else if (rcParamMsg != *msg)
@@ -67,7 +67,7 @@ bool ProcessParameterMsg(const RCParameterMessage* msg)
         // some values have changed, lets send the changed ones
         if (rcParamMsg.Level_m3_Calibrated() != msg->Level_m3_Calibrated())
         {
-            objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, (unsigned int)msg->Level_m3_Calibrated()*10);
+            objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, msg->level_m3_CalibratedToDPT());
             processed = true;
         }
     }
@@ -140,7 +140,7 @@ bool ProcessDisplayMsg(const RCDisplayMessage* msg)
 bool RunPollStateMachine(int SerialBytesAvailable)
 {
     bool result = false;
-    static byte * rx;
+    static byte *rx;
 
     if ((SerialBytesAvailable > 0) && (rcMessageLengthWaitingFor > 0) && (SerialBytesAvailable >= rcMessageLengthWaitingFor))
     {
@@ -151,7 +151,7 @@ bool RunPollStateMachine(int SerialBytesAvailable)
         RCMessage* msg;
 
         msg = RCMessage::GetRCMessageFromTelegram(&rx[0], SerialBytesAvailable);
-        if (msg != NULL)
+        if (msg != nullptr)
         {
             switch (msg->type())
             {
@@ -276,7 +276,7 @@ void checkPeriodic(void)
     // TODO this is just for testing
     if (SendPeriodicTimer.expired())
     {
-        objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, (unsigned int)rcParamMsg.Level_m3_Calibrated()*10);
+        objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, rcParamMsg.level_m3_CalibratedToDPT());
         objectWrite(OBJ_TAPWATER_REFILL_STATUS, rcDisplayMsg.IsSwitchedToTapWater());
         objectWrite(OBJ_TAPWATER_REFILL_AUTOMATIC_STATUS, rcDisplayMsg.AutomaticallySwitchedToTapWater());
         objectWrite(OBJ_TAPWATER_REFILL_MANUAL_STATUS, rcDisplayMsg.ManualSwitchedToTapWater());
