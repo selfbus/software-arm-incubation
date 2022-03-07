@@ -323,8 +323,14 @@ void TelDump::DbgParseTele(uint8_t tel[], unsigned int len)
 			} else if (apci == 0x340) {
 				buf_printf("Mask Version Response 0x%04X", (tel[8+ExDReq] << 8) | tel[9+ExDReq]);
 			} else if (apci == 0x380) {
-				buf_printf("Restart! ");
+				buf_printf("Basic restart! ");
 				DumpHexData(tel, 8+ExDReq, dlen-1);
+            } else if (apci == 0x381) {
+                buf_printf("Master Reset! ");
+                DumpHexData(tel, 8+ExDReq, dlen-1); // check if this Dump is correct
+            } else if (apci == 0x3A1) {
+                buf_printf("Master Reset Response -  ");
+                DumpHexData(tel, 8+ExDReq, dlen-1); // check if this Dump is correct
 			} else if (apci == 0x3d5) {
 				buf_printf("Prop Value Read - ");
 				DumpPropValHeader(tel, ExDReq);

@@ -14,3 +14,7 @@ Tasterinterface 2-fach/LED V1.6			BE-02001.01
 Tasterinterface 2-fach V1.6			BE-02230.01
 
 weitere Konfiguration siehe inc/config.h
+
+Changelog:
+V1.01 erste
+V1.02 Bugfix Logikfunktionen 2 bis 4:  externe Objekte keine Funktion
