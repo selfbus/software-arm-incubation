@@ -1,0 +1,40 @@
+= 4Volt
+
+This project is a copy of the 4sense project. It implements 4 basic voltage sensors using the onboard ADC and some trimming pots.
+Since i was not able to find a KNX device that measures voltage, i stuck with the 4sense database and highjacked the temperature sensor as a voltage sensor and the temperature offset to indicate the target voltage of the ADC channel.
+
+
+== Status
+
+Currently the implementation is geared towards measuring the voltage of a 12V car battery. All sensors are implemented and tested for basic voltage reading using DPT9.
+None of the threshold code has been tested as i'm not using it.
+
+
+== Hardware
+
+I currently use the compact UP module soldered onto a perf board.
+There i use the following voltage divider to measure a 12V battery.
+
+`12V -> 47K -> 10K trimmer -> 15k ->  GND`
+
+The center outlet of the trimmer goes into the ADC. This connection is permanent and draws ~2mW power.
+
+== Calibration
+
+Each channel needs to be calibrated so it reports the proper voltage. Here's how this is done:
+
+* Set the target voltage to half the voltage given as the temperature offset of the sensor.
+* Optionally tweak the calibration pot until the voltage is at 3V.
+* With the sending interval at 0.5 seconds, fine tune it until the reported mV reading matches the actual voltage.
+
+== Building
+
+I use cmake for building, but a sparsely maintained MCUxpresso project is there
+as i use that occasionally for stepping through code.
+There is a logging facility which uses the ARM serial port, so no semihosting is
+needed. Specifying `-DLOGGING` for cmake or adding `LOGGING` to the C++ Preprocessor
+settings in Eclipse will activate it.
+
+This project is based on, but not necessarily requires my version of sblib, as i AFAIR only made changes to the ds18x20
+and onewire classes. It should be built with `-DSERIAL_WRITE_DIRECT` if logging
+is to succeed.
