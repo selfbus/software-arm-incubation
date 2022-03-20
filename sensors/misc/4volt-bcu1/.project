@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>4sense</name>
+	<name>4volt-bcu1</name>
 	<comment></comment>
 	<projects>
+		<project>CMSIS_CORE_LPC11xx</project>
+		<project>sblib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
