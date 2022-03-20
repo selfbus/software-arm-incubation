@@ -16,5 +16,8 @@ __pycache__
 .DS_Store
 ._.DS_Store
 
+# Build folders
+cmake-build*
+
 # IDE files
 .idea

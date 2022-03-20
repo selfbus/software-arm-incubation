@@ -3,7 +3,7 @@
 	<name>test-in16-bim112</name>
 	<comment></comment>
 	<projects>
-		<project>sblib-cpp-test</project>
+		<project>sblib-test</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
