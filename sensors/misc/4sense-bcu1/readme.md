@@ -1,6 +1,9 @@
 # 4Sense
-This project aims replace the old [Selfbus](https://selfbus.myxwiki.org/xwiki/bin/view/Main/) LPC922 based 
+This project aims replace the old [Selfbus](https://selfbus.org/wiki/) LPC922 based 
 [4Sense](https://selfbus.myxwiki.org/xwiki/bin/view/Geräte/Sensoren/4Sense_Temp_Feuchte) project with its ARM counter part.
+
+## Downloads
+[KNX product database](https://github.com/selfbus/software/raw/master/4sense/Releases/4Sense_V28B19.vd1)
 
 ## Status
 Currently the implementation has most functionality of the DS18x20 series Temperature 
