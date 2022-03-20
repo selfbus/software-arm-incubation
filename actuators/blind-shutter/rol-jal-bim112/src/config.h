@@ -10,7 +10,6 @@
 #define CONFIG_H_
 
 #include <sblib/types.h>
-#include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 
 typedef struct
