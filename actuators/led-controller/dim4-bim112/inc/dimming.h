@@ -36,10 +36,10 @@ private:
 	bool isOnOneCycle = true;	// genau 1 mal true wenn der Kanal seit dem letzten Aufruf eingeschaltet wurde
 	bool isOffOneCycle = true;	// genau 1 mal true wenn der Kanal seit dem letzten Aufruf ausgeschaltet wurde
 	unsigned int dimStartTime;			// Systemzeit in ms zu Dimmbeginn
-	unsigned int dimStartValue;			// Helligkeit zu Dimmbeginn 0-MAXOUTPUTVALUE
-	unsigned int dimDestinationValue;	// Zielhelligkeit 0-MAXOUTPUTVALUE
+	float dimStartValue;			// Helligkeit zu Dimmbeginn 0-MAXOUTPUTVALUE
+	float dimDestinationValue;	// Zielhelligkeit 0-MAXOUTPUTVALUE
 	unsigned int dimSpeed;				// Dimmgeschwindigkeit 0-100% in ms
-	unsigned int actualDimValue = 0;		// momentaner Dimmwert 0-MAXOUTPUTVALUE
+	float actualDimValue = 0;		// momentaner Dimmwert 0-MAXOUTPUTVALUE
 	unsigned int lastDimValue = 255;		// lezter Ziel-Dimmwert 1-255 (nach Reset 255)
 };
 

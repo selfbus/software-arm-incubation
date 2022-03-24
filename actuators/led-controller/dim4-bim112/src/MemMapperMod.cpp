@@ -9,7 +9,7 @@
  *  it under the terms of the GNU General Public License version 3 as
  *  published by the Free Software Foundation.
  */
-
+/*
 #include <sblib/eib.h>
 #include <MemMapperMod.h>
 
@@ -62,3 +62,4 @@ bool MemMapperMod::isMapped(int virtAddress)
   else
    return false;
 }
+*/

@@ -80,30 +80,33 @@ void pwmout::begin(int ch) {
 }
 
 void pwmout::setpwm(int value) {
-	if (value < 0 || value > MAXOUTPUTVALUE) {
-		return;
+	if (value < 0)
+	{
+		value = 0;
 	}
+
+	if (value > MAXOUTPUTVALUE)
+	{
+		value = MAXOUTPUTVALUE;
+	}
+
 	if (isactive) {
 		switch (channel) {
 			//int val = value*pwmmax/MAXVALUE;
 			case 0:
 				//timer16_0.match(MAT0, pwmmax-(value*pwmmax/MAXOUTPUTVALUE));      // match MAT0 when the timer reaches this value
-				return;
 				break;
 			case 1:
 				timer16_0.match(MAT1, pwmmax-(value*pwmmax/MAXOUTPUTVALUE));      // match MAT1 when the timer reaches this value
-				return;
 				break;
 			case 2:
 				timer32_1.match(MAT0, pwmmax-(value*pwmmax/MAXOUTPUTVALUE));      // match MAT0 when the timer reaches this value
-				return;
 				break;
 			case 3:
 				timer32_1.match(MAT1, pwmmax-(value*pwmmax/MAXOUTPUTVALUE));      // match MAT1 when the timer reaches this value
-				return;
 				break;
 			default:
-				return;
+				break;
 		}
 	}
 }

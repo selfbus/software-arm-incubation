@@ -16,7 +16,7 @@
  *    Page 0 (addr 0..255) is used for the page with access restrictions
  *  - Creates a dummy memory from 0x4B20 upwards
  */
-
+/*
 #ifndef MEMMAPPERMOD_H_
 #define MEMMAPPERMOD_H_
 
@@ -31,25 +31,25 @@ public:
   * to virtAdress <= 255 to implement a local storage which can not be accessed from the bus.
   * To access the local storage, other functions has to be used.
   */
- virtual int writeMemPtr(int virtAddress, byte *data, int length);
+ //virtual int writeMemPtr(int virtAddress, byte *data, int length);
 
  /*
   * If virtAddress > 255, MemMapper::readMemPtr() is called. This function forbids access
   * to virtAdress <= 255 to implement a local storage which can not be accessed from the bus.
   * To access the local storage, other functions has to be used.
   */
-virtual int readMemPtr(int virtAddress, byte *data, int length, bool forceFlash =
-         false);
+//virtual int readMemPtr(int virtAddress, byte *data, int length, bool forceFlash =
+  //       false);
 
 /*
  * If virtAddress > 255, MemMapper::isMapped() is called. This function forbids access
  * to virtAdress <= 255 to implement a local storage which can not be accessed from the bus.
   * To access the local storage, other functions has to be used.
  */
-virtual bool isMapped(int virtAddress);
+/*virtual bool isMapped(int virtAddress);
 
 protected:
  byte fakemem[32];
 };
-
-#endif /* MEMMAPPERMOD_H_ */
+*/
+//#endif /* MEMMAPPERMOD_H_ */

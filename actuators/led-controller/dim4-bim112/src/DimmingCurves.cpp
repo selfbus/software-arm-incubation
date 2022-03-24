@@ -39,7 +39,7 @@ void setOutput(int ch, int value) {
 			outputValue = value*value*0.0001;		//TODO anpassen bei MAXOUTPUTVALUE<>10000
 			break;
 		case 2:		//halb-logarithmisch
-			outputValue = 0.0000000000009*pow(value, 4)+0.1*value;		//TODO anpassen bei MAXOUTPUTVALUE<>10000
+			outputValue = 0.0000000000009f*(value * value * value * value) + 0.1f*value;		//TODO anpassen bei MAXOUTPUTVALUE<>10000
 			break;
 		default:	//case 7:    linear
 			outputValue = value;

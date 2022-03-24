@@ -190,23 +190,8 @@ void handleHSVAbsDimmingObject(int objectValue) {
 	objectValue >>= 8;
 	unsigned char hVal = objectValue & 0xFF;
 	storedHueValue = hVal;		// Farbwert speichern
-	serial.print(hVal);				// TODO
-	serial.print(' ');
-	serial.print(sVal);
-	serial.print(' ');
-	serial.print(vVal);
-	serial.print(' ');
-	serial.print(' ');
 	unsigned char rVal, gVal, bVal;
 	hsv2rgb(hVal, sVal, vVal, rVal, gVal, bVal);
-	serial.print(rVal);
-	serial.print(' ');
-	serial.print(gVal);
-	serial.print(' ');
-	serial.print(bVal);
-	serial.print(' ');
-	serial.print(' ');
-	serial.print(' ');
 	dimming[0].start(rVal, userEeprom.getUInt16(APP_RGB_ABS_SPEED));
 	dimming[1].start(gVal, userEeprom.getUInt16(APP_RGB_ABS_SPEED));
 	dimming[2].start(bVal, userEeprom.getUInt16(APP_RGB_ABS_SPEED));
@@ -292,17 +277,23 @@ void handleBlocking2Object(int objectValue, int channel) {
 //Objekte Ende
 //*****************************************************
 
+int lastTransmit[4] { 0,0,0,0 };
 void handleBusReturn(int channel){
 	//Schaltrückmeldeobjekt & Kanalstatus vergleichen und senden
-	if (objectRead(channel * OFSCHANNELOBJECTS + OBJ_STAT_SWITCH) != dimming[channel].getswitchstatus()) {
+	if (objectRead(channel * OFSCHANNELOBJECTS + OBJ_STAT_SWITCH) != dimming[channel].getswitchstatus())
+	{
 		objectWrite(channel * OFSCHANNELOBJECTS + OBJ_STAT_SWITCH, dimming[channel].getswitchstatus());
 	}
 
-	if (dimming[channel].finished) {
+	if (dimming[channel].finished || (dimming[channel].getIsDimming() && lastTransmit[channel] + 1000 < millis()))
+	{
+		lastTransmit[channel] = millis();
 		objectWrite(channel * OFSCHANNELOBJECTS + OBJ_STAT_DIM,
 				dimming[channel].getactualdimvalue());
-		if (!dimming[0].getIsDimming() && !dimming[1].getIsDimming()
-				&& !dimming[2].getIsDimming()) {// Wert nur senden wenn alle 3 Kanäle fertig sind
+		if (!dimming[0].getIsDimming()
+				&& !dimming[1].getIsDimming()
+				&& !dimming[2].getIsDimming())
+		{// Wert nur senden wenn alle 3 Kanäle fertig sind
 			unsigned int rgbValue = (dimming[0].getactualdimvalue() << 16)
 							| (dimming[1].getactualdimvalue() << 8)
 							| dimming[2].getactualdimvalue();

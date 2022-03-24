@@ -11,6 +11,7 @@
 #include "com_objs.h"
 #include <sblib/core.h>
 #include <sblib/timeout.h>
+#include <sblib/eib.h>
 
 extern dimming dimming[];
 Timeout RelayTimeout;
