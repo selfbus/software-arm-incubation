@@ -7,9 +7,12 @@
 #ifndef DEVICECONFIG_H_
 #define DEVICECONFIG_H_
 
-#include "PortConfig.h"
-
-#define NUM_PORTS 32
+enum BusSwitch
+{
+	BusSwitchSPI0 = 0x01,
+	BusSwitchSPI1 = 0x02,
+	BusSwitchI2C = 0x04
+};
 
 #pragma pack(1)
 struct DeviceConfig
@@ -26,8 +29,6 @@ struct DeviceConfig
 	byte PCA9555DCount;
 	byte RFM69Count;
 	uint32_t PortsEnable;
-	byte unused[35];
-	PortConfig ports[NUM_PORTS];
 };
 #pragma pack()
 

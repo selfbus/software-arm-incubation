@@ -7,22 +7,22 @@
 #ifndef GENERICITEM_H_
 #define GENERICITEM_H_
 
-#include <PortConfig.h>
-
 class GenericItem
 {
 public:
-	GenericItem(BcuBase* bcu, int port, int firstComIndex, PortConfig* config, GenericItem* nextItem) : nextItem(nextItem), bcu(bcu), port(port), firstComIndex(firstComIndex), config(config) {};
+	GenericItem(BcuBase* bcu, byte firstComIndex, GenericItem* nextItem) : nextItem(nextItem), bcu(bcu), firstComIndex(firstComIndex) {}
 
-	virtual void Loop(int updatedObjNo) = 0;
+	virtual void Loop(uint32_t now, int updatedObjNo) = 0;
+	virtual void Irq(void* item, byte newValue) {}
 	GenericItem* GetNextItem() { return nextItem; };
+
+	virtual int ConfigLength() = 0;
+	virtual int ComObjCount() = 0;
 
 protected:
 	GenericItem* nextItem;
 	BcuBase* bcu;
-	int port;
-	int firstComIndex;
-	PortConfig* config;
+	byte firstComIndex;
 };
 
 #endif /* GENERICITEM_H_ */

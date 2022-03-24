@@ -9,22 +9,27 @@
 
 #include <sblib/eib/bcu_base.h>
 #include <sblib/sensors/dht.h>
-#include <GenericItem.h>
-#include <PortConfig.h>
+#include <GenericPin.h>
+#include <DHTPinConfig.h>
 
-class DHTItem : public GenericItem
+class DHTPin : public GenericPin
 {
 public:
-	DHTItem(BcuBase* bcu, int port, int firstComIndex, PortConfig* config, GenericItem* nextItem);
-	~DHTItem() = default;
+	DHTPin(BcuBase* bcu, int port, byte firstComIndex, DHTPinConfig* config, bool dht11);
+	~DHTPin() = default;
 
-	virtual void Loop(int updatedObjectNo);
+	byte GetState(uint32_t now, byte updatedObjectNo);
+
+	int ConfigLength() { return sizeof(DHTPinConfig); }
+	int ComObjCount() { return 4; }
 
 protected:
-	unsigned int nextAction = 0;
+	uint32_t nextAction = 0;
 	byte state = 0;
 	DHT dht;
 	float offset;
+	DHTPinConfig* config;
+	int port;
 };
 
 
