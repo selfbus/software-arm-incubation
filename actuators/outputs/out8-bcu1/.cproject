@@ -141,7 +141,18 @@
 							<inputType id="com.crt.advproject.compiler.cpp.input.1294119964" superClass="com.crt.advproject.compiler.cpp.input"/>
 						</tool>
 					</fileInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.171796999" name="/" resourcePath="inc">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.421558403" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.1762357838" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.1122049352"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.709696505" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.940025323"/>
+							<tool id="com.crt.advproject.gas.exe.debug.188101714" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.292197425"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.1439191487" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.1065922419"/>
+							<tool id="com.crt.advproject.link.exe.debug.1138348293" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.102488546"/>
+							<tool id="com.crt.advproject.tool.debug.debug.1903157952" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.835162839"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -281,7 +292,18 @@
 							<tool id="com.crt.advproject.tool.debug.release.1311514933" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.release"/>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="com.crt.advproject.config.exe.release.189047520.1711198152" name="/" resourcePath="inc">
+						<toolChain id="com.crt.advproject.toolchain.exe.release.1187331578" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.release" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.release.2026386067" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.release.757977556"/>
+							<tool id="com.crt.advproject.gcc.exe.release.1490121660" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.release.1354999183"/>
+							<tool id="com.crt.advproject.gas.exe.release.348983734" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.release.685272905"/>
+							<tool id="com.crt.advproject.link.cpp.exe.release.1342725649" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.release.219874695"/>
+							<tool id="com.crt.advproject.link.exe.release.1022038629" name="MCU Linker" superClass="com.crt.advproject.link.exe.release.797546949"/>
+							<tool id="com.crt.advproject.tool.debug.release.752821679" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.release.1311514933"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -425,7 +447,18 @@
 							<inputType id="com.crt.advproject.compiler.cpp.input.1216713500" superClass="com.crt.advproject.compiler.cpp.input"/>
 						</tool>
 					</fileInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.861398447.1826890974" name="/" resourcePath="inc">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.1782840730" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.915614290" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.66801062"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.570369453" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1903861492"/>
+							<tool id="com.crt.advproject.gas.exe.debug.1324357054" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.358086868"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.687123363" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.414818098"/>
+							<tool id="com.crt.advproject.link.exe.debug.202608415" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.2099664913"/>
+							<tool id="com.crt.advproject.tool.debug.debug.1468110401" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.2017206607"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -573,7 +606,18 @@
 							<inputType id="com.crt.advproject.compiler.cpp.input.914276559" superClass="com.crt.advproject.compiler.cpp.input"/>
 						</tool>
 					</fileInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.2109895191.1181593940" name="/" resourcePath="inc">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.1545415733" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.1985763398" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.1363714930"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.1637764436" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1121905612"/>
+							<tool id="com.crt.advproject.gas.exe.debug.239011660" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.2047840809"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.919899327" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.845403081"/>
+							<tool id="com.crt.advproject.link.exe.debug.1106660407" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.932410341"/>
+							<tool id="com.crt.advproject.tool.debug.debug.146878665" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.2114363105"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -719,7 +763,18 @@
 							<inputType id="com.crt.advproject.compiler.cpp.input.14313567" superClass="com.crt.advproject.compiler.cpp.input"/>
 						</tool>
 					</fileInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.2109895191.1175912006.932269453" name="/" resourcePath="inc">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.919541969" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.1627821987" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.1279885585"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.1500350700" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.5681688"/>
+							<tool id="com.crt.advproject.gas.exe.debug.130489186" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.1066292508"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.822481534" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.1502930516"/>
+							<tool id="com.crt.advproject.link.exe.debug.1684539795" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.82202748"/>
+							<tool id="com.crt.advproject.tool.debug.debug.991731288" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.936408985"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -866,7 +921,18 @@
 							<inputType id="com.crt.advproject.compiler.cpp.input.1064483548" superClass="com.crt.advproject.compiler.cpp.input"/>
 						</tool>
 					</fileInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.2109895191.1175912006.254763734.885510480" name="/" resourcePath="inc">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.1061826901" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.1772121682" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.1517001898"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.2090693803" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.79333425"/>
+							<tool id="com.crt.advproject.gas.exe.debug.1686224527" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.1063814436"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.366263942" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.917036009"/>
+							<tool id="com.crt.advproject.link.exe.debug.1127727743" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.1425666607"/>
+							<tool id="com.crt.advproject.tool.debug.debug.835779861" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.611020184"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -1012,7 +1078,18 @@
 							<inputType id="com.crt.advproject.compiler.cpp.input.92185249" superClass="com.crt.advproject.compiler.cpp.input"/>
 						</tool>
 					</fileInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.888440921.318171968" name="/" resourcePath="inc">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.769276249" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.2063481088" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.1848266358"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.1624109513" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.990034585"/>
+							<tool id="com.crt.advproject.gas.exe.debug.2031231779" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.537741072"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.2094873206" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.189112734"/>
+							<tool id="com.crt.advproject.link.exe.debug.652932653" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.339125739"/>
+							<tool id="com.crt.advproject.tool.debug.debug.1037515118" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.187845015"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -1154,7 +1231,18 @@
 							<tool id="com.crt.advproject.tool.debug.debug.2102545887" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug"/>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.888440921.1620068050.1937999440" name="/" resourcePath="inc">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.101270628" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.1558400125" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.91349131"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.766416293" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.904107979"/>
+							<tool id="com.crt.advproject.gas.exe.debug.49893369" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.449448992"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.1113799247" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.694507890"/>
+							<tool id="com.crt.advproject.link.exe.debug.410500006" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.749463638"/>
+							<tool id="com.crt.advproject.tool.debug.debug.34310904" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.2102545887"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -1296,7 +1384,18 @@
 							<tool id="com.crt.advproject.tool.debug.debug.1254377316" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug"/>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.984667403.1319715935" name="/" resourcePath="inc">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.1320039657" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.2090735135" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.1762767651"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.835053311" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1649045879"/>
+							<tool id="com.crt.advproject.gas.exe.debug.1510747348" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.2089939073"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.6534233" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.1601770276"/>
+							<tool id="com.crt.advproject.link.exe.debug.1140418162" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.224141587"/>
+							<tool id="com.crt.advproject.tool.debug.debug.1439455593" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.1254377316"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -1438,7 +1537,18 @@
 							<tool id="com.crt.advproject.tool.debug.debug.1279142673" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug"/>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.888440921.1620068050.1535897543.532014622" name="/" resourcePath="inc">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.1538997538" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.259105737" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.1357080126"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.1780585315" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.635777723"/>
+							<tool id="com.crt.advproject.gas.exe.debug.606029544" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.2055327239"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.385180239" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.1572178724"/>
+							<tool id="com.crt.advproject.link.exe.debug.110738441" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.1901296430"/>
+							<tool id="com.crt.advproject.tool.debug.debug.740561912" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.1279142673"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -1580,7 +1690,18 @@
 							<tool id="com.crt.advproject.tool.debug.debug.1675440010" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug"/>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.888440921.1620068050.1625367490.1490668533" name="/" resourcePath="inc">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.1246150351" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.1092615251" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.648722888"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.121640385" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1425653892"/>
+							<tool id="com.crt.advproject.gas.exe.debug.657387570" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.825172677"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.1227272015" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.2082013198"/>
+							<tool id="com.crt.advproject.link.exe.debug.506232832" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.1756804882"/>
+							<tool id="com.crt.advproject.tool.debug.debug.232378084" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.1675440010"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -1726,7 +1847,18 @@
 							<inputType id="com.crt.advproject.compiler.cpp.input.776350082" superClass="com.crt.advproject.compiler.cpp.input"/>
 						</tool>
 					</fileInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.888440921.867825780.1450309794" name="/" resourcePath="inc">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.646539913" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.551883184" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.1002858368"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.1098701768" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1937356172"/>
+							<tool id="com.crt.advproject.gas.exe.debug.1689676101" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.2069415932"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.1515879852" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.1567185609"/>
+							<tool id="com.crt.advproject.link.exe.debug.1864027110" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.159158532"/>
+							<tool id="com.crt.advproject.tool.debug.debug.1023637973" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.1720666111"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -1868,7 +2000,18 @@
 							<tool id="com.crt.advproject.tool.debug.debug.1494802149" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug"/>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.888440921.1620068050.1535897543.849277512.426812483" name="/" resourcePath="inc">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.2032828111" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.23692603" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.443582633"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.593232800" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1702540025"/>
+							<tool id="com.crt.advproject.gas.exe.debug.22373428" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.1223843193"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.1425587436" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.1832494477"/>
+							<tool id="com.crt.advproject.link.exe.debug.422584180" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.52742452"/>
+							<tool id="com.crt.advproject.tool.debug.debug.1752431139" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.1494802149"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -2010,7 +2153,18 @@
 							<tool id="com.crt.advproject.tool.debug.debug.1064954337" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug"/>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.888440921.1620068050.1535897543.849277512.513457091.28191580" name="/" resourcePath="inc">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.1382737827" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.68077831" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.198639866"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.1774873583" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1649581528"/>
+							<tool id="com.crt.advproject.gas.exe.debug.1018920336" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.2119101110"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.771871861" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.114016505"/>
+							<tool id="com.crt.advproject.link.exe.debug.377109309" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.435773787"/>
+							<tool id="com.crt.advproject.tool.debug.debug.468372249" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.1064954337"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
@@ -2050,6 +2204,7 @@
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Debug OUT8 4TE BUSFAIL HAND"/>
+		<configuration configurationName="Flashstart 0x6000 Release o8 4t ha"/>
 		<configuration configurationName="Debug_Updater"/>
 		<configuration configurationName="Debug o8 4t ha"/>
 		<configuration configurationName="Flashstart 0x3000 Release o8 4t ha"/>
