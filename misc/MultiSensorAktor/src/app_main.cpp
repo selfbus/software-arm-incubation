@@ -17,6 +17,7 @@
 #include <PCA9555DItem.h>
 #include <CCS811Item.h>
 #include <ARMPinItem.h>
+#include <SHT2xItem.h>
 
 extern "C" const char APP_VERSION[13] = "MSA 0.1";
 
@@ -100,6 +101,13 @@ BcuBase* setup()
     	for (int i = 0; i < deviceConfig->CCS811Count; i++)
     	{
     		firstItem = new CCS811Item(&bcu, nextComObj, (CCS811Config*)configPos, firstItem);
+    		nextComObj += firstItem->ComObjCount();
+    		configPos += firstItem->ConfigLength();
+    	}
+
+    	if (deviceConfig->SHT2xCount)
+    	{
+    		firstItem = new SHT2xItem(&bcu, nextComObj, (SHT2xConfig*)configPos, firstItem);
     		nextComObj += firstItem->ComObjCount();
     		configPos += firstItem->ConfigLength();
     	}

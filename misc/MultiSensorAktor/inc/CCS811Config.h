@@ -1,8 +1,7 @@
 /*
- * CCS811Config.h
- *
- *  Created on: 17.12.2021
- *      Author: dridders
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3 as
+ *  published by the Free Software Foundation.
  */
 
 #ifndef CCS811CONFIG_H_

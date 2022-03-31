@@ -4,15 +4,19 @@
  *  published by the Free Software Foundation.
  */
 
-#include <DHTPin.h>
+#include <SHT2xItem.h>
+#include <sblib/i2c.h>
+#include <sblib/timer.h>
 
-DHTPin::DHTPin(BcuBase* bcu, int port, byte firstComIndex, DHTPinConfig *config, bool dht11) : GenericPin(bcu, firstComIndex), dht(DHT()), config(config), port(port)
+extern int portPins[32];
+
+SHT2xItem::SHT2xItem(BcuBase* bcu, byte firstComIndex, SHT2xConfig *config, GenericItem* nextItem) : GenericItem(bcu, firstComIndex, nextItem), config(config), sht2x(SHT2xClass()), nextAction(0)
 {
-	dht.DHTInit(port, dht11 ? DHT11 : DHT22);
+	sht2x.Init();
 	offset = config->Offset * 0.01;
-};
+}
 
-byte DHTPin::GetState(uint32_t now, byte updatedOjectNo)
+void SHT2xItem::Loop(uint32_t now, int updatedObjectNo)
 {
 	if (now >= nextAction || (now + (config->PreFan + config->PreMeasure + config->Delay) * 1000) < nextAction)
 	{
@@ -43,22 +47,13 @@ byte DHTPin::GetState(uint32_t now, byte updatedOjectNo)
 			state++;
 			break;
 		default:
-			if (dht.readData(false))
-			{
-				float ftemp = dht.ConvertTemperature(CELCIUS) + offset;
-				int16_t temp = (int16_t)(ftemp * 100);
-				uint16_t hum = (uint16_t)(dht._lastHumidity * 100);
-				bcu->comObjects->objectWriteFloat(firstComIndex + 1, temp);
-				bcu->comObjects->objectWrite(firstComIndex + 2, (byte*)&ftemp);
-				bcu->comObjects->objectWriteFloat(firstComIndex + 3, hum);
-				nextAction = now + (config->Delay * 1000);
-			}else
-			{
-				bcu->comObjects->objectWriteFloat(firstComIndex + 1, 0);
-				float ftemp = 0;
-				bcu->comObjects->objectWrite(firstComIndex + 2, (byte*)&ftemp);
-				bcu->comObjects->objectWriteFloat(firstComIndex + 3, 0);
-			}
+			int16_t temp = (int16_t)(sht2x.GetTemperature() * 100);
+			float ftemp = temp * 0.01f + offset;
+			uint16_t hum = (uint16_t)(sht2x.GetHumidity());
+			bcu->comObjects->objectWriteFloat(firstComIndex + 1, temp);
+			bcu->comObjects->objectWrite(firstComIndex + 2, (byte*)&ftemp);
+			bcu->comObjects->objectWriteFloat(firstComIndex + 3, hum);
+			nextAction = now + (config->Delay * 1000);
 			state = 0;
 			break;
 		}
@@ -69,5 +64,6 @@ byte DHTPin::GetState(uint32_t now, byte updatedOjectNo)
 			nextAction = 0xFFFFFFFF;
 		}
 	}
-	return 0;
+	return;
 }
+
