@@ -183,7 +183,7 @@ void processDataConnectedRequest()
     switch (apci)
     {
     case APCI_DEVICEDESCRIPTOR_READ_PDU:
-        int version = bcu.maskVersion();
+        int version = bcu.getMaskVersion();
         serial.write(FT_ACK);
         ftFrameOut[11] = 0x63; // DRL 3 bytes
         ftFrameOut[12] = APCI_DEVICEDESCRIPTOR_RESPONSE_PDU >> 8;
@@ -214,8 +214,8 @@ void processVariableFrame()
         case PEI_Identify_req:
             serial.write(FT_ACK);
             ftFrameOut[5]  = PEI_Identify_con;
-            ftFrameOut[6]  = bus.ownAddress() >> 8;
-            ftFrameOut[7]  = bus.ownAddress();
+            ftFrameOut[6]  = bcu.ownAddress() >> 8;
+            ftFrameOut[7]  = bcu.ownAddress();
             ftFrameOut[8]  = 0x00;
             ftFrameOut[9]  = 0x01;
             ftFrameOut[10] = 0x00;
