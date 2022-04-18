@@ -12,7 +12,7 @@ SensorConfig configs[NUM_SENSORS];
  * @param comNo each com object gets 2 bytes
  */
 void fixRamLoc(COM comNo) {
-    uint8_t* l = (uint8_t*)&objectConfig(comNo).dataPtr;
+    uint8_t* l = (uint8_t*)&objectConfig(comNo)->dataPtr;
     *l = comNo * 2;
 }
 
