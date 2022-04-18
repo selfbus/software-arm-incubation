@@ -11,6 +11,7 @@
 #include "weatherstation.h"
 #include <sblib/analog_pin.h>
 #include <sblib/digital_pin.h>
+#include <sblib/eib.h> ///\todo BAD, but needed for userEeprom.getUInt8
 
 Wind::Wind()
  : SensorBase()

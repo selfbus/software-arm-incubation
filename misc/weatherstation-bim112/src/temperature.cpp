@@ -7,6 +7,8 @@
  *  it under the terms of the GNU General Public License version 3 as
  *  published by the Free Software Foundation.
  */
+
+#include <sblib/eib.h> ///\todo BAD, but needed for userEeprom.getUInt8
 #include "temperature.h"
 #include "weatherstation.h"
 

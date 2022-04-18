@@ -23,13 +23,7 @@
 #include "wind.h"
 #include "temperature.h"
 
-extern "C" const char APP_VERSION[13] = "WS 0.1";
-
-const char * getAppVersion()
-{
-    return APP_VERSION;
-}
-
+APP_VERSION("SBWS    ", "0", "01")
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const unsigned char hardwareVersion[] =
@@ -57,10 +51,8 @@ static Temperature temperature;
 
 void setup()
 {
-    volatile char v = getAppVersion()[0];
-    v++;
     bcu.begin(131, hardwareVersion[5], 0x13);  // we are a MDT weather station, version 1.3
-    memcpy(userEeprom.order, hardwareVersion, sizeof(hardwareVersion));
+    memcpy(userEeprom.order(), hardwareVersion, sizeof(hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
