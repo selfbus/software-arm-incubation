@@ -165,7 +165,7 @@ Channel::Channel(unsigned int number, unsigned int address)
     objectSetValue(firstObjNo + COM_OBJ_POS_VALID, 0);
 }
 
-void Channel::objectUpdate(unsigned int objno)
+void Channel::objectUpdateCh(unsigned int objno)
 {
     unsigned int fct = objno - firstObjNo;
     unsigned int value = objectRead(objno);

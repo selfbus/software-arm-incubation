@@ -9,6 +9,7 @@
 #include <shutter.h>
 #include <sblib/digital_pin.h>
 #include <sblib/timer.h>
+#include <sblib/eib.h>
 
 Shutter::Shutter(unsigned int number, unsigned int address)
   : Channel(number, address)

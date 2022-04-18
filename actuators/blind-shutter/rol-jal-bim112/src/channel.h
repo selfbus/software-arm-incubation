@@ -155,7 +155,7 @@ public:
     bool automaticBEnabled();
     bool isBlocking();
     unsigned short currentPosition(void);
-    virtual void objectUpdate(unsigned int objno);
+    virtual void objectUpdateCh(unsigned int objno);
             void startUp(void);
             void startDown(void);
             void stop(void);
