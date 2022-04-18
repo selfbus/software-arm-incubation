@@ -311,7 +311,7 @@ void EmiKnxIf::EmiIf_Tasks(void)
           if (destAddr == 0 || indexOfAddr(destAddr) >= 0)
               processTel = true;
       }
-      else if (destAddr == bus.ownAddress())
+      else if (destAddr == bcu.ownAddress())
       {
         processTel = true;
       }
