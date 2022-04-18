@@ -25,7 +25,7 @@ void objectUpdated(int objno)
         unsigned int channel = (objno - 13) / 20;
         Channel * chn = channels [channel];
         if (chn)
-            chn->objectUpdate(objno);
+            chn->objectUpdateCh(objno);
     }
     else
     {   // handle global objects

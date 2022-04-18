@@ -113,7 +113,7 @@ Channel::Channel(unsigned int number, unsigned int address)
     timeout.start (pauseChangeDir);
 }
 
-void Channel::objectUpdate(unsigned int objno)
+void Channel::objectUpdateCh(unsigned int objno)
 {
     unsigned int fct = objno - firstObjNo;
     unsigned int value = objectRead(objno);

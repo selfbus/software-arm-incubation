@@ -16,7 +16,6 @@
 #include <string.h>
 #include <sblib/serial.h>
 #include <sblib/mem_mapper.h>
-#include <sblib/eib/sblib_default_objects.h>
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const HardwareVersion hardwareVersion[] =
@@ -25,14 +24,13 @@ const HardwareVersion hardwareVersion[] =
 
 const HardwareVersion * currentVersion;
 
-/*
- * Initialize the application.
- */
-
 Timeout timeout;
 
 MemMapper memMapper(0xe000, 0xa00, false);
 
+/**
+ * Initialize the application.
+ */
 void setup()
 {
 #if defined (__LPC11XX__)
@@ -61,7 +59,7 @@ void setup()
     currentVersion = & hardwareVersion[0];
     bcu.begin(0x0002, 0xa045, 0x0012);
     _bcu.setMemMapper(&memMapper);
-    memcpy(userEeprom.order, currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
+    memcpy(userEeprom.order(), currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
@@ -69,7 +67,7 @@ void setup()
 	timeout.start(1);
 }
 
-/*
+/**
  * The main processing loop.
  */
 void loop()
