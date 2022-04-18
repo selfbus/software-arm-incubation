@@ -160,7 +160,7 @@
 									<listOptionValue builtIn="false" value="sblib-test"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.987832604" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/Debug_BIM112}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/Debug}&quot;"/>
 								</option>
 								<option defaultValue="true" id="gnu.cpp.link.option.shared.261186139" name="Shared (-shared)" superClass="gnu.cpp.link.option.shared" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1127269438" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">

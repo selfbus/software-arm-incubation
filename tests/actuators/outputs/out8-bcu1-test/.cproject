@@ -53,7 +53,7 @@
 									<listOptionValue builtIn="false" value="sblib-test"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.1020283133" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/Debug_BCU1}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/Debug}&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1549431331" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-m32 " valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1223253920" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
