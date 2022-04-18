@@ -13,9 +13,6 @@
 #define CONFIG_H_
 
 #include <sblib/io_pin_names.h>
-#include <sblib/digital_pin.h>
-
-
 
 /*
  *
@@ -52,7 +49,7 @@ const unsigned char hardwareVersion[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x29}; /
 
 #define RAINCENTER_BAUDRATE 2400
 #define SENDPERIODIC_INTERVAL_MS 60000 // TODO send period every 60s can't be the final solution, needs to be configured via ETS
-#define POLL_INTERVAL_MS 5000
+#define POLL_INTERVAL_MS 2000
 #define REPOLL_INTERVAL_MS 1500
 
 

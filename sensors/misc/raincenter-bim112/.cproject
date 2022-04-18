@@ -6,7 +6,7 @@
 				<macros>
 					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.3"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.4"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -30,7 +30,7 @@
 								<option id="com.crt.advproject.cpp.specs.797551032" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.arch.758441952" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.163598376" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="${bcu_type}"/>
+									<listOptionValue builtIn="false" value="NO_OOP_MACROS"/>
 									<listOptionValue builtIn="false" value="${controller_type}"/>
 									<listOptionValue builtIn="false" value="DEBUG"/>
 									<listOptionValue builtIn="false" value="__NEWLIB__"/>
@@ -136,7 +136,7 @@
 				<macros>
 					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.3"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.4"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -160,7 +160,7 @@
 								<option id="com.crt.advproject.cpp.specs.1838768769" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.arch.125424550" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.1228151182" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="${bcu_type}"/>
+									<listOptionValue builtIn="false" value="NO_OOP_MACROS"/>
 									<listOptionValue builtIn="false" value="${controller_type}"/>
 									<listOptionValue builtIn="false" value="NDEBUG"/>
 									<listOptionValue builtIn="false" value="__NEWLIB__"/>
@@ -271,7 +271,7 @@
 				<macros>
 					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.3"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.4"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -295,7 +295,7 @@
 								<option id="com.crt.advproject.cpp.specs.2138007715" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.arch.861684842" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.717751800" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="${bcu_type}"/>
+									<listOptionValue builtIn="false" value="NO_OOP_MACROS"/>
 									<listOptionValue builtIn="false" value="${controller_type}"/>
 									<listOptionValue builtIn="false" value="DEBUG"/>
 									<listOptionValue builtIn="false" value="__NEWLIB__"/>
@@ -403,7 +403,7 @@
 				<macros>
 					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.3"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.4"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -427,7 +427,7 @@
 								<option id="com.crt.advproject.cpp.specs.1752982021" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.arch.1836936329" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.1099348775" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="${bcu_type}"/>
+									<listOptionValue builtIn="false" value="NO_OOP_MACROS"/>
 									<listOptionValue builtIn="false" value="${controller_type}"/>
 									<listOptionValue builtIn="false" value="DEBUG"/>
 									<listOptionValue builtIn="false" value="__NEWLIB__"/>
@@ -535,7 +535,7 @@
 				<macros>
 					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.3"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.4"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -559,7 +559,7 @@
 								<option id="com.crt.advproject.cpp.specs.301888179" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.arch.115512737" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.1930459667" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="${bcu_type}"/>
+									<listOptionValue builtIn="false" value="NO_OOP_MACROS"/>
 									<listOptionValue builtIn="false" value="${controller_type}"/>
 									<listOptionValue builtIn="false" value="NDEBUG"/>
 									<listOptionValue builtIn="false" value="__NEWLIB__"/>
@@ -670,7 +670,7 @@
 				<macros>
 					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.3"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.4"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -694,7 +694,7 @@
 								<option id="com.crt.advproject.cpp.specs.92130157" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.arch.64539090" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.757948779" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="${bcu_type}"/>
+									<listOptionValue builtIn="false" value="NO_OOP_MACROS"/>
 									<listOptionValue builtIn="false" value="${controller_type}"/>
 									<listOptionValue builtIn="false" value="DEBUG"/>
 									<listOptionValue builtIn="false" value="__NEWLIB__"/>

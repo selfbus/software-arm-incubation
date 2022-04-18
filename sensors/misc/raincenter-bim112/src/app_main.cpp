@@ -9,23 +9,21 @@
  *  published by the Free Software Foundation.
  */
 
-#include <string.h>
-#include <sblib/eib.h>
-#include <sblib/eib/user_memory.h>
-#include <sblib/eib/sblib_default_objects.h>
+#include <cstring>
 #include "config.h"
 #include "app_raincenter.h"
 
-APP_VERSION("SBrain  ", "0", "31");
+APP_VERSION("SBrain  ", "0", "40");
 
 /**
  * Application setup
  */
-void setup()
+BcuBase* setup()
 {
     bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
-    memcpy(userEeprom.order(), &hardwareVersion[0], sizeof(hardwareVersion));
+    memcpy(bcu.userEeprom->order(), &hardwareVersion[0], sizeof(hardwareVersion));
     initApplication();
+    return (&bcu);
 }
 
 /**
@@ -35,7 +33,7 @@ void loop()
 {
     int objno;
     // Handle updated communication objects
-    while ((objno = nextUpdatedObject()) >= 0)
+    while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
         objectUpdated(objno);
     }
@@ -43,7 +41,7 @@ void loop()
     checkPeriodic();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
+    if (bcu.bus->idle())
         waitForInterrupt();
 }
 
