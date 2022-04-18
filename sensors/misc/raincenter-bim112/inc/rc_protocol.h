@@ -155,6 +155,7 @@ public:
     int LevelMeasuredcm() const {return _LevelMeasured_cm;}
     int LevelCalibratedcm() const {return _LevelCalibrated_cm;}
     float Level_m3_Calibrated() const {return _Level_m3_Calibrated;}
+    unsigned int level_m3_CalibratedToDPT() const {return (unsigned int)(_Level_m3_Calibrated*10);}
 protected:
     int _WaterExchangePeriod_days;
     int _TapWaterSwitchOnHeight_cm;

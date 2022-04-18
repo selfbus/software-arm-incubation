@@ -19,10 +19,12 @@
 #include <sblib/io_pin_names.h>
 
 #ifdef HAND_ACTUATION
-#include "hand_actuation.h"
+#   include "hand_actuation.h"
 #endif
 
-//#define MEM_TEST
+#ifdef HAND_ACTUATION
+HandActuation handAct = HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
+#endif
 
 Channel * channels[NO_OF_CHANNELS];
 #ifdef MEM_TEST
@@ -98,16 +100,17 @@ void checkPeriodicFuntions(void)
     }
 
 #ifdef HAND_ACTUATION
-    int handStatus = handAct.check();
-    if (handStatus != HandActuation::NO_ACTUATION)
+    int btnNumber;
+    HandActuation::ButtonState btnState;
+
+    if (handAct.getButtonAndState(btnNumber, btnState))
     {
-        unsigned int number = handStatus & 0xFF;
-        Channel * chn = channels [number / 2];
-        if ((chn != 0) && (handStatus & HandActuation::BUTTON_PRESSED))
+        Channel * chn = channels [btnNumber / 2];
+        if ((chn != nullptr) && (chn->isHandModeAllowed()))
         {
-            if (chn->isHandModeAllowed())
+            if (btnState == HandActuation::BUTTON_PRESSED)
             {
-                if (number & 0x01)
+                if (btnNumber & 0x01)
                 {
                     if (chn->isRunning() == Channel::DOWN)
                         chn->stop();
@@ -125,7 +128,6 @@ void checkPeriodicFuntions(void)
         }
     }
 #endif
-
 }
 
 void initApplication(void)
@@ -149,5 +151,11 @@ void initApplication(void)
         default :
             channels [i] = 0;
         }
+#ifdef HAND_ACTUATION
+        if (channels[i] != nullptr)
+        {
+            channels[i]->setHandActuation(&handAct);
+        }
+#endif
     }
 }

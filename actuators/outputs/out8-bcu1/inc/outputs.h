@@ -12,28 +12,46 @@
 #ifndef _outputs_h_
 #define _outputs_h_ 1
 
-#include "app_out8.h"
-#include "config.h"
-#include "hand_actuation.h"
 #include <sblib/timeout.h>
 #include <sblib/timer.h>
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
+#include "config.h"
+
+#ifdef HAND_ACTUATION
+#   include "hand_actuation.h"
+#endif
 
 #define PWM_TIMEOUT 20 // ms
 #define PWM_PERIOD  85 // 1.2kHz
 #define PWM_DUTY    22 // 0.25 duty
 
+/*
+ * order code relay Omron G5Q-1A-EU DC24
+ *    1:     1 pole
+ *    A:     SPST-NO
+ *   EU:     high-capacity
+ * DC24:     24V DC rated coil voltage
+ *
+ * according to the datasheet relay must operate @max.75% of rated coil voltage => ~18V
+ * PWM operation: first 100ms 100% of rated voltage (24V) then 30% (7.2V) for holding
+ *
+ * XXX: above PWM settings don't fit the datasheet spec.
+ */
+
 class Outputs
 {
 public:
-    Outputs() : _relayState(0)
+    enum State : byte {OPEN = 0x00, CLOSED = 0x01, LAST_STATE = 0xFF};
+    Outputs() : _channelcount(0)
+              , _relayState(0)
               , _prevRelayState(0)
               , _inverted(0)
               , _blocked(0)
               {};
 
-    void begin(unsigned int initial, unsigned int inverted);
+    virtual void setupOutputs(const int* Pins, const unsigned int pinCount);
+    void begin(unsigned int initial, unsigned int inverted, unsigned int channelcount);
     unsigned int pendingChanges(void);
     unsigned int channel(unsigned int channel);
     void updateChannel(unsigned int channel, unsigned int value);
@@ -44,15 +62,23 @@ public:
     void setBlocked(unsigned int channel);
     void clearBlocked(unsigned int channel);
     virtual void checkPWM(void);
-    virtual void updateOutputs(void);
-	void setOutputs(void);
-	void clrOutputs(void);
+    virtual unsigned int updateOutput(unsigned int channel);      // returns true in case a switching action was started which drained the bus
+    virtual void updateOutputs(unsigned int delayms = 0);
+    void setOutputs(void);
+    void clrOutputs(void);
+    unsigned int channelCount();
+    unsigned int outputCount();
+
+#ifdef HAND_ACTUATION
+    void setHandActuation(HandActuation* hand);
+#endif
 
 #ifdef ZERO_DETECT
-	void zeroDetectHandler(void);
+    void zeroDetectHandler(void);
 #endif
 
 protected:
+    unsigned int _channelcount;
     unsigned int _relayState;
     unsigned int _prevRelayState;
     unsigned int _inverted;
@@ -63,6 +89,11 @@ protected:
     unsigned int _port_2_set;
     unsigned int _port_0_clr;
     unsigned int _port_2_clr;
+    unsigned int _pinCount;
+    unsigned int *_outputPins;
+#ifdef HAND_ACTUATION
+    HandActuation *_handAct;
+#endif
 
 #ifdef ZERO_DETECT
     unsigned int _state;
@@ -75,7 +106,7 @@ extern Outputs relays;
 
 ALWAYS_INLINE unsigned int Outputs::pendingChanges(void)
 {
-    return _relayState ^ _prevRelayState;
+    return _relayState ^ (_prevRelayState & ((1 << _channelcount) -1));
 }
 
 ALWAYS_INLINE unsigned int Outputs::channel(unsigned int channel)
@@ -144,7 +175,7 @@ ALWAYS_INLINE void Outputs::checkPWM(void)
 #ifdef ZERO_DETECT
 ALWAYS_INLINE void Outputs::zeroDetectHandler(void)
 {
-	if (_state = 1)
+	if (_state == 1)
 	{
 	    //digitalWrite(PIN_INFO, ! digitalRead(PIN_INFO));	// Info LED
 		timer32_0.start();

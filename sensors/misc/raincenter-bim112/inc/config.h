@@ -43,24 +43,10 @@
 #define OBJ_TAPWATER_REFILL_AUTOMATIC_STATUS 25
 #define OBJ_TAPWATER_REFILL_MANUAL_STATUS 26
 
-
-typedef struct
-{
-    unsigned int noOfChannels;  //!> how many channels are supported with this hardware
-    unsigned short baseAddress; //!> Base address of the config parameters
-    byte hardwareVersion[6];    //!> The hardware identification number
-} HardwareVersion;
-
-extern const HardwareVersion * currentVersion;
-
-// Hardware version. Must match the product_serial_number in the VD's table hw_product
-const HardwareVersion hardwareVersion[] =
-{ {4, 0x4578, { 0, 0, 0, 0, 0x0, 0x29 }}
-, {8, 0x46B8, { 0, 0, 0, 0, 0x0, 0x28 }}
-};
-
-#define MANUFACTURER 0x83       // MDT
-#define HARDWARE_ID 0
+#define MANUFACTURER 0x83 //!< Manufacturer MDT
+#define DEVICETYPE   0x29 //!< Device Type JAL-0410.01 Shutter Actuator 4-fold, 4TE, 230VAC, 10A
+#define APPVERSION   0x28 //!< Application Version
+const unsigned char hardwareVersion[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x29}; //!< The hardware identification number
 
 #define LED_STARTUP_DISPLAY 1000
 

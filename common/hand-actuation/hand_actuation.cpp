@@ -1,5 +1,6 @@
 /*
  *  Copyright (c) 2015 Martin Glueck <martin@mangari.org>
+ *                2021 Darthyson <darth@maptrack.de>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -11,101 +12,212 @@
 #include <sblib/timer.h>
 #include <sblib/io_pin_names.h>
 
-const int handPins[NO_OF_HAND_PINS] =
-	// Pinbelegung für Hardware ???
-//  { PIN_LT5, PIN_LT6, PIN_LT1, PIN_LT2, PIN_LT3, PIN_LT4, PIN_LT7, PIN_LT8 };
-
-	// LedTaster_4TE_3.54 : links oben = Kanal 1 nach unten aufsteigende Kanalnummer ; rechts oben = Kanal 5 ; nach unten aufsteigende Kanalnummer
-    { PIN_LT1, PIN_LT2, PIN_LT3, PIN_LT4, PIN_LT5, PIN_LT6, PIN_LT7, PIN_LT8 };
-
-#define HAND_READBACK PIN_LT9
-#define BLINK_TIME 500
-
 HandActuation::HandActuation()
-   : number(0)
-   , mask(0x01)
-   , _buttonState(0)
-   , _ledState(0)
-   , _blinkState(0)
+   : number_(0)
+   , mask_(0x01)
+   , buttonState_(0)
+   , ledState_(0)
+   , blinkState_(0)
 {
-    for (unsigned int i = 0; i < NO_OF_HAND_PINS; i++)
+}
+
+HandActuation::HandActuation(const unsigned int* Pins, const unsigned int pinCount, const unsigned int readbackPin, const unsigned int blinkTimeMs)
+    : number_(0)
+    , mask_(0x01)
+    , buttonState_(0)
+    , ledState_(0)
+    , blinkState_(0)
+    , delayBetweenButtonsMs_(10)
+    , delayAtEndMs_(10)
+{
+    handPins_ = (unsigned int*) Pins;
+    pinCount_ = pinCount;
+    for (unsigned int i = 0; i < pinCount; i++)
     {
-        pinMode(handPins[i], OUTPUT);
-        digitalWrite(handPins[i], false);
+        pinMode(Pins[i], OUTPUT);
+        digitalWrite(Pins[i], false);
     }
-    blinkTimer.start(BLINK_TIME);
+
+    readbackPin_ = readbackPin;
+    pinMode(readbackPin_, PULL_UP);
+
+    blinkTimeMs_ = blinkTimeMs;
+    blinkTimer.start(blinkTimeMs_);
 }
 
 int HandActuation::check(void)
 {
     int result = NO_ACTUATION;
-    if (_handDelay.expired() || _handDelay.stopped())
+    if (handDelay_.expired() || handDelay_.stopped())
     {   // check one input at a time
-#ifdef HAND_DEBUG
-        unsigned int stateOne = 0;
-        unsigned int stateTwo = (_inputState & mask) ? 1 : 0;
-#else
-        unsigned int stateOne = digitalRead(HAND_READBACK);
-        digitalWrite(handPins[number], !digitalRead(handPins[number]));
-        delayMicroseconds(10);
-        unsigned int stateTwo = digitalRead(HAND_READBACK);
-        digitalWrite(handPins[number], !digitalRead(handPins[number]));
-#endif
-        if (stateOne != stateTwo)
+        bool buttonundertestingispressed = false;
+
+        // save led state and turn off the LED for the button we are testing
+        bool lastLEDState = ledState_ & (1 << number_);
+        if (lastLEDState)
+            digitalWrite(handPins_[number_], false);
+
+        bool atleastonebuttonpressed = !digitalRead(readbackPin_); // read while the LED is off, low=>at least one button is pressed, high=>no button is pressed
+
+        if (atleastonebuttonpressed) // at least one button is pressed, check if its the one we are testing right now (number)
+        {
+            // turn on all LED's, except the one for the button under testing (number)
+            for (unsigned int i = 0; i < getHandPinCount(); i++)
+            {
+                if (i != number_)
+                {
+                    digitalWrite(handPins_[i], true);
+                }
+            }
+            delayMicroseconds(5);   // this delay is needed for compiler settings other then -O0 (Optimize Level None), otherwise detection doesn't work 100%
+                                    // works also with delayMicroseconds(1);
+            buttonundertestingispressed = !digitalRead(readbackPin_); // read while all LED's are on, except the one for our button we check right now, low=>button to check is pressed
+
+            // restore LED states
+            for (unsigned int i = 0, bitMask = 0x01; i < getHandPinCount(); i++, bitMask = bitMask << 1)
+            {
+                if (blinkState_ & bitMask)
+                    digitalWrite(handPins_[i], blinkOnOffState);
+                else
+                    digitalWrite(handPins_[i], ledState_ & bitMask);
+            }
+        }
+        else
+        {
+            // restore LED status for the button under testing
+            if ((blinkState_ & (1 << number_)))
+                digitalWrite(handPins_[number_], blinkOnOffState);
+            else
+                digitalWrite(handPins_[number_], lastLEDState);
+        }
+
+        if (buttonundertestingispressed)
         {   // this button is currently pressed
-            result = number;
-            if (! (_buttonState & mask))
+            result = number_;
+            if (! (buttonState_ & mask_))
                 // this button was not pressed before
                 result |= BUTTON_PRESSED;
-            _buttonState |= mask;
+            buttonState_ |= mask_;
         }
-        else if (_buttonState & mask)
+        else if (buttonState_ & mask_)
         {
-            result = number | BUTTON_RELEASED;
-            _buttonState &= ~mask;
+            result = number_ | BUTTON_RELEASED;
+            buttonState_ &= ~mask_;
         }
-        number++;
-        mask <<= 1;
-        if (number == NO_OF_HAND_PINS)
+        number_++;
+        mask_ <<= 1;
+        if (number_ == getHandPinCount())
         {
-            number = 0;
-            mask  = 0x1;
+            number_ = 0;
+            mask_  = 0x1;
+            handDelay_.start(delayAtEndMs_);
         }
-        _handDelay.start(DELAY_BETWEEN_BUTTONS);
-    }
-    if (blinkTimer.expired())
+        else
+            handDelay_.start(delayBetweenButtonsMs_);
+    } // if (_handDelay.expired()
+
+
+    if (blinkTimer.expired() || blinkTimer.stopped())
     {
-        unsigned int bitMask = 0x01;
-        blinkTimer.start(BLINK_TIME);
-        for (unsigned int i = 0; i < NO_OF_HAND_PINS; i++)
+        for (unsigned int i = 0, bitMask = 0x01; i < getHandPinCount(); i++, bitMask = bitMask << 1)
         {
-            if (_blinkState & bitMask)
-                digitalWrite(handPins[i], blinkOnOffState);
+            if (blinkState_ & bitMask)
+                digitalWrite(handPins_[i], blinkOnOffState);
         }
         blinkOnOffState = !blinkOnOffState;
+        blinkTimer.start(blinkTimeMs_);
     }
     return result;
 }
 
+int HandActuation::getButtonAndState(int& btnNumber, HandActuation::ButtonState& btnState)
+{
+    int result = false;
+    int handStatus = this->check();
+
+    result = (handStatus != HandActuation::NO_ACTUATION);
+    if (result)
+    {
+        btnNumber = handStatus & 0xFF;
+        btnState = HandActuation::ButtonState(handStatus & 0xFF00);
+    }
+    return result;
+}
+
+ALWAYS_INLINE unsigned int HandActuation::getHandPinCount()
+{
+   return pinCount_;
+}
+
 void HandActuation::setLedState(unsigned int led, bool state, bool blink)
 {
+    if (led >= getHandPinCount())
+        return;
+
     unsigned int mask = 1 << led;
-    digitalWrite(handPins[led], state);
+    digitalWrite(handPins_[led], state);
     if (state)
     {
-        _ledState |= mask;
+        ledState_ |= mask;
         if (blink)
-            _blinkState |= mask;
+            blinkState_ |= mask;
     }
     else
     {
-        _ledState   &= ~mask;
-        _blinkState &= ~mask;
+        ledState_   &= ~mask;
+        blinkState_ &= ~mask;
     }
 }
 
-#ifdef HAND_ACTUATION
-HandActuation handAct = HandActuation();
+void HandActuation::setallLedState(bool state)
+{
+    for (unsigned int i = 0; i < getHandPinCount(); i++)
+    {
+        setLedState(i, state, false);
+    }
+}
+
+unsigned int HandActuation::getDelayBetweenButtonsMs()
+{
+    return delayBetweenButtonsMs_;
+}
+
+unsigned int HandActuation::getDelayAtEndMs()
+{
+    return delayAtEndMs_;
+}
+
+void HandActuation::setDelayBetweenButtonsMs(unsigned int newDelayBetweenButtonsMs)
+{
+    delayBetweenButtonsMs_ = newDelayBetweenButtonsMs;
+}
+
+void HandActuation::setDelayAtEndMs(unsigned int newDelayAtEndMs)
+{
+    delayAtEndMs_ = newDelayAtEndMs;
+}
+
+void HandActuation::testIO(const unsigned int* testPins, const unsigned int pinCount, const unsigned int blinkTimeMs)
+{
+    if (blinkTimer.expired() || blinkTimer.stopped())
+    {
+        for (unsigned int j = 0; j < pinCount; j++)
+        {
+            if (j == 0)
+            {
+                // toggle first pin high/low or low/high
+                digitalWrite(testPins[j], !digitalRead(testPins[j]));
+            }
+            else
+            {
+                // all other pins "follow" first pin state
+                digitalWrite(testPins[j], digitalRead(testPins[0]));
+            }
+        }
+        blinkTimer.start(blinkTimeMs);
+    }
+}
+
+
 Timeout HandActuation::blinkTimer;
 bool    HandActuation::blinkOnOffState = false;
-#endif
