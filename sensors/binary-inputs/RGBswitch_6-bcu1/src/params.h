@@ -9,6 +9,7 @@
 #ifndef params_h
 #define params_h
 
+#include <sblib/types.h>
 #include <sblib/timeout.h>
 #include <sblib/debounce.h>
 
