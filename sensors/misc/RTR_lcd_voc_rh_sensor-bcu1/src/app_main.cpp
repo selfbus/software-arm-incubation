@@ -1,8 +1,4 @@
 /**
-
-
-
-/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
  *  published by the Free Software Foundation.
@@ -18,8 +14,7 @@
  * entfernen der aktivierung des externen temp sensors aus der VD -> 2 Versionen in VD
  */
 
-
-#include <sblib/eib/sblib_default_objects.h>
+#include <sblib/eibBCU1.h>
 #include <sblib/core.h>
 #include <sblib/ioports.h>
 #include <sblib/spi.h>
@@ -50,6 +45,7 @@ int blinkPin = PIO0_7;
 Timeout timeout[NUM_TIMED_VALUES];
 
 ExtEeprom extEeprom;
+BCU1 bcu;
 
 /*
 * Der MemMapper bekommt einen 1kB Bereich ab 0xEA00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.
@@ -61,7 +57,7 @@ ExtEeprom extEeprom;
 /*
  * Initialize the application.
  */
-void setup() {
+BcuBase* setup() {
 
 #if EINHEIZKREIS
 	bcu.begin(76, 0x474, 2);  // we are a MDT temperatur controller, version 1.2
@@ -71,7 +67,7 @@ void setup() {
 
 //	pinMode(blinkPin, OUTPUT);
 
-//	memcpy(userEeprom.order, hardwareVersion, sizeof(hardwareVersion));
+//	memcpy(userEeprom.order(), hardwareVersion, sizeof(hardwareVersion));
 
 	// Enable the serial port with 19200 baud, no parity, 1 stop bit
 #ifdef _DEBUG__
@@ -126,6 +122,7 @@ void setup() {
 	BacklightOnFlag = true;
 
 	debounceTime = 10;// userEeprom[EE_TIMING_PARAMS_BASE + 3]; //TODO: checken ob Parameter benötigt wird!
+	return &bcu;
 }
 
 bool LCDdrawFlag = false; //a helper to get more runs through the complete loop
@@ -158,7 +155,7 @@ void loop() {
 	handlePeriodicInputs();
 
 	// Handle updated communication objects
-	while ((objno = nextUpdatedObject()) >= 0)
+	while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
 	{
 		objectUpdated(objno);
 	}
