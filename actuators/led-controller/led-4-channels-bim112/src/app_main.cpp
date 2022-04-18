@@ -8,16 +8,7 @@
  *  published by the Free Software Foundation.
  */
 
-#define NEW_LIB
-
 #include <sblib/eib.h>
-#ifdef NEW_LIB
-#include <sblib/eib/sblib_default_objects.h>
-#define BCU_ACCESS(x) bcu->x
-#else
-#define BCU_ACCESS(x) bcu.x
-#endif
-
 #include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 #include <sblib/timeout.h>
@@ -25,13 +16,7 @@
 #include "individual_channel.h"
 #include "led-controller.h"
 
-extern "C" const char APP_VERSION[13] = "LED 0.1";
-
-const char * getAppVersion()
-{
-    return APP_VERSION;
-}
-
+APP_VERSION("SBLED   ", "0", "01");
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const unsigned char hardwareVersion[] =
@@ -55,15 +40,15 @@ static Channel * channels[4];
  */
 void setup()
 {
-    volatile char v = getAppVersion()[0];
-    v++;
-    BCU_ACCESS(begin)(131, hardwareVersion[5], 0x13);  // we are a MDT weather station, version 1.3
-    memcpy(userEeprom.order, hardwareVersion, sizeof(hardwareVersion));
+    bcu.begin(0x83, hardwareVersion[5], 0x13);  // we are a MDT weather station, version 1.3
+    memcpy(userEeprom.order(), hardwareVersion, sizeof(hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
-    if (BCU_ACCESS(applicationRunning) ())
+    if (bcu.applicationRunning())
+    {
         initApplication();
+    }
 }
 
 /*
@@ -94,7 +79,7 @@ void initApplication(void)
     switch (userEeprom.getUInt8 (0x470E))
     {
     case 0x00 : // 4 seperate channels for dimming
-        channles [0] =initChannel(0);
+        initChannel(0);
         initChannel(1);
         initChannel(2);
         initChannel(3);
