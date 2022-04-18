@@ -1,6 +1,5 @@
 
 #include "common.h"
-#include <sblib/eib/sblib_default_objects.h>
 #include <cstring>
 
 const unsigned char hardwareVersion[] =
@@ -30,7 +29,7 @@ void setup() {
     initLogger();
 #endif
     bcu.begin(0x83, hardwareVersion[5], 0x11); // rain
-    memcpy(userEeprom.order, hardwareVersion, sizeof(hardwareVersion));
+    memcpy(userEeprom.order(), hardwareVersion, sizeof(hardwareVersion));
 
     if (EE_STARTUP_TIMEOUT <= 60) {
         startTime = millis() + (EE_STARTUP_TIMEOUT * 1000);
