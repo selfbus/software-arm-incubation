@@ -48,7 +48,7 @@ void setup()
     // XXX read some ID pins to determine which version is attached
 
     // FIXME for new memory mapper
-    memcpy(userEeprom.order, currentVersion->hardwareVersion,
+    memcpy(userEeprom.order(), currentVersion->hardwareVersion,
             sizeof(currentVersion->hardwareVersion));
     initApplication();
 }
