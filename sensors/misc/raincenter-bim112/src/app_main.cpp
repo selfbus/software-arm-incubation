@@ -38,7 +38,7 @@ void setup()
     v++;                                            // just to avoid compiler warning of unused variable
     currentVersion = &hardwareVersion[HARDWARE_ID];
     bcu.begin(MANUFACTURER, currentVersion->hardwareVersion[5], 0x28);  // we are a MDT shutter/blind actuator, version 2.8
-    memcpy(userEeprom.order, currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
+    memcpy(userEeprom.order(), currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
 
     initApplication();
 }
