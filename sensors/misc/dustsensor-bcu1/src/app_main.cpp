@@ -14,8 +14,6 @@
 #include <sblib/eib.h>
 #include <sblib/eib/sblib_default_objects.h>
 
-
-#include <math.h>
 #include <sblib/internal/iap.h>
 #include <sblib/ioports.h>
 #include <sblib/spi.h>

@@ -1,0 +1,35 @@
+= 4Lux
+
+This project is a copy of the https://github.com/mariosk8s/software-arm-incubation/tree/master/sensors/misc/4sense-bcu1[4sense] project. It implements 1 basic light sensors using a BU1750 board.
+Since i was too lazy to look for a KNX device that measures light, i stuck with the 4sense database and highjacked the first temperature sensor as a light sensor.
+
+
+== Status
+
+As mentioned above only 1 sensor is implemented, since we only have one I2C bus and really only one address.
+
+The sensor operates only when using *DPT9* and it will then use
+----
+High Resolution Mode 2 - (0.5 lx precision, 120ms measurement time)
+----
+Measurement times are dynamic based on https://github.com/claws/BH1750/blob/master/examples/BH1750autoadjust/BH1750autoadjust.ino.
+
+This means
+
+----
+lux > 40000 ==> MTreg =  32
+lux < 40000 ==> MTreg =  69  (default)
+lux <    10 ==> MTreg = 138
+----
+
+== Building
+
+I use cmake for building, but a sparsely maintained MCUxpresso project is there
+as i use that occasionally for stepping through code.
+
+This project is based on my version of sblib and it uses Oliver Stefans ported i2c_lpcopen I2C driver as well as my ported BH1750 driver from  https://github.com/claws/BH1750/.
+
+There is a logging facility which uses the ARM serial port, so no semihosting is
+needed. Specifying `-DLOGGING` for cmake or adding `LOGGING` to the C++ Preprocessor
+settings in Eclipse will activate it.
+For logging to succeed, sblib should be built with `-DSERIAL_WRITE_DIRECT`.
