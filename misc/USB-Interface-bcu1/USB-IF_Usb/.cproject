@@ -182,6 +182,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc_chip_11uxx_lib/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc_chip_11uxx_lib/inc/usbd}&quot;"/>
 								</option>
+								<option id="com.crt.advproject.cpp.fpu.1874485985" name="Floating point" superClass="com.crt.advproject.cpp.fpu" useByScannerDiscovery="true"/>
+								<option id="com.crt.advproject.cpp.lto.1739302956" superClass="com.crt.advproject.cpp.lto" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="com.crt.advproject.cpp.exe.release.option.debugging.level.108959027" superClass="com.crt.advproject.cpp.exe.release.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<inputType id="com.crt.advproject.compiler.cpp.input.1798730369" superClass="com.crt.advproject.compiler.cpp.input"/>
 							</tool>
 							<tool id="com.crt.advproject.gcc.exe.release.1695911391" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.release">
@@ -208,6 +211,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc_chip_11uxx_lib/inc/usbd}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/nxp/libeeprom-v3}&quot;"/>
 								</option>
+								<option id="com.crt.advproject.gcc.lto.1068917461" superClass="com.crt.advproject.gcc.lto" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="com.crt.advproject.gcc.exe.release.option.debugging.level.1013340191" superClass="com.crt.advproject.gcc.exe.release.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.none" valueType="enumerated"/>
 								<inputType id="com.crt.advproject.compiler.input.1347774358" superClass="com.crt.advproject.compiler.input"/>
 							</tool>
 							<tool id="com.crt.advproject.gas.exe.release.2127090299" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.release">
@@ -256,6 +261,8 @@
 								<option id="com.crt.advproject.link.memory.data.cpp.1593756967" name="Global data placement" superClass="com.crt.advproject.link.memory.data.cpp" useByScannerDiscovery="false" value="Default" valueType="string"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="com.crt.advproject.link.memory.sections.cpp.723451872" name="Extra linker script input sections" superClass="com.crt.advproject.link.memory.sections.cpp" useByScannerDiscovery="false" valueType="stringList"/>
 								<option id="com.crt.advproject.link.cpp.multicore.slave.523970945" name="Multicore configuration" superClass="com.crt.advproject.link.cpp.multicore.slave" useByScannerDiscovery="false"/>
+								<option id="com.crt.advproject.link.cpp.lto.317443495" superClass="com.crt.advproject.link.cpp.lto" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="com.crt.advproject.link.cpp.lto.optmization.level.1336453214" superClass="com.crt.advproject.link.cpp.lto.optmization.level" useByScannerDiscovery="false" value="link.cpp.optimization.level.size" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.347938378" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
