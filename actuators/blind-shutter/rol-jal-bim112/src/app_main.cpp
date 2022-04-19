@@ -9,23 +9,16 @@
  */
 
 #include <config.h>
-#include <sblib/eib.h>
-#include <sblib/eib/sblib_default_objects.h>
 #include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 #include "app-rol-jal.h"
-#include <string.h>
+#include <cstring>
 
 #ifdef HAND_ACTUATION
 #   include "hand_actuation.h"
 #endif
 
-///\todo Replace APP_VERSION[20] and getAppVersion with new sblib macro APP_VERSION("SBrol   ", "1", "01");
-volatile const char __attribute__((used)) APP_VERSION[20] = "!AVP!@:SBrol   1.01";
-volatile const char * __attribute__((optimize("O0"))) getAppVersion()
-{
-    return APP_VERSION;
-}
+APP_VERSION("SBrol   ", "1", "10")
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const HardwareVersion hardwareVersion[] =
@@ -42,16 +35,13 @@ Timeout timeout;
 /**
  * This function is called by the Selfbus's library main when the processor is started or reset.
  */
-void setup()
+BcuBase* setup()
 {
     ///\todo read some ID pins to determine which version is attached
 
     currentVersion = & hardwareVersion[0];
-    volatile const char * v = getAppVersion();      // Ensure APP ID is not removed by linker (its used in the bus updater)
-    v++;                                            // just to avoid compiler warning of unused variable
-
     bcu.begin(131, currentVersion->hardwareVersion[5], 0x28);  // we are a MDT shutter/blind actuator, version 2.8
-    memcpy(userEeprom.order(), currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
+    memcpy(bcu.userEeprom->order(), currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
@@ -66,6 +56,7 @@ void setup()
 
     initApplication();
 	timeout.start(1);
+	return (&bcu);
 }
 
 /**
@@ -75,7 +66,7 @@ void loop()
 {
     int objno;
     // Handle updated communication objects
-    while ((objno = nextUpdatedObject()) >= 0)
+    while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
         objectUpdated(objno);
     }
@@ -83,7 +74,7 @@ void loop()
     checkPeriodicFuntions();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
+    if (bcu.bus->idle())
         waitForInterrupt();
 }
 

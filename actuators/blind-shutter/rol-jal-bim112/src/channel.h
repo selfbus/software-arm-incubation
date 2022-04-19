@@ -12,6 +12,7 @@
 #include <sblib/types.h>
 #include <sblib/timeout.h>
 #include <sblib/timer.h>
+#include <sblib/eibMASK0701.h>
 
 #ifdef HAND_ACTUATION
 #   include "hand_actuation.h"
@@ -23,6 +24,7 @@
 #define NO_OF_SCENES    8
 #define NO_OF_ALARMS    4
 
+extern MASK0701 bcu;
 extern const int outputPins[NO_OF_OUTPUTS];
 extern Timeout PWMDisabled;
 
