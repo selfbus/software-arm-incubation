@@ -14,6 +14,7 @@
 
 #include "config.h"
 #include "com_objs.h"
+#include <sblib/eibBCU1.h>
 
 // EEPROM addresses
 #define APP_PIN_STATE_MEMORY         (0x100)
@@ -49,6 +50,8 @@ unsigned int  getRelaysState();
  * The values of the communication objects
  */
 extern ObjectValues& objectValues;
+
+extern BCU1 bcu;
 
 
 #endif /* APP_OUT8_H_ */

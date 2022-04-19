@@ -12,7 +12,7 @@
 #include "com_objs.h"
 #include <sblib/timeout.h>
 #include <sblib/eib/com_objects.h>
-#include <sblib/eib/user_memory.h>
+
 
 #ifndef BI_STABLE
 #   include "outputs.h"
@@ -36,6 +36,7 @@ enum logicResult {lrUnchanged = 0, lrSetOn = 1, lrSetOff = 2};
 enum blockType {blUnknown = -1, blNoAction = 0, blDisable = 1, blEnable = 2};
 enum timedFunctionState {tfsUnknown = 0x80, tfsDisabled = 0, tfsOnDelayed = 1, tfsOffDelayed = 2};
 
+BCU1 bcu;
 
 // state of the application
 static ChannelTimeOutTimer channel_timeout[NO_OF_CHANNELS];
@@ -122,7 +123,7 @@ SpecialFunctionConfig getSpecialFunctionConfig(const int objno)
     {
         sfobjno = objno - COMOBJ_SPECIAL1;
         // "APP_SPECIAL_CONNECT" range 1..8, object number range for outputs is 0..7, thats why -1
-        outputobjnoSearching  = (userEeprom[APP_SPECIAL_CONNECT + (sfobjno >> 1)] >> ((sfobjno & 1) * 4) & 0x0F) - 1;
+        outputobjnoSearching  = ((*(bcu.userEeprom))[APP_SPECIAL_CONNECT + (sfobjno >> 1)] >> ((sfobjno & 1) * 4) & 0x0F) - 1;
         // output for special function in range 0..7, otherwise return
         if ((outputobjnoSearching < COMOBJ_INPUT1) || (outputobjnoSearching > (COMOBJ_INPUT1 + NO_OF_CHANNELS)))
         {
@@ -139,24 +140,24 @@ SpecialFunctionConfig getSpecialFunctionConfig(const int objno)
     for (specialFunc = 0; specialFunc < 4; specialFunc++)
     {
         // "APP_SPECIAL_FUNC_OBJ_1_2" range 1..8, object number range for outputs is 0..7, thats why -1
-        outputobjno  = (userEeprom[APP_SPECIAL_FUNC_OBJ_1_2 + (specialFunc >> 1)] >> ((specialFunc & 1) * 4) & 0x0F) - 1;
+        outputobjno  = ((*(bcu.userEeprom))[APP_SPECIAL_FUNC_OBJ_1_2 + (specialFunc >> 1)] >> ((specialFunc & 1) * 4) & 0x0F) - 1;
         if (outputobjno != outputobjnoSearching)
             continue;
 
         sfcfg.specialFuncOutput = outputobjno;
         sfcfg.specialFuncNumber = specialFunc;
         // we have a special function, see which type it is
-        sfcfg.Mode = specialFunctionType (userEeprom[APP_SPECIAL_FUNC_MODE] >> (sfcfg.specialFuncNumber * 2) & 0x03);
+        sfcfg.Mode = specialFunctionType ((*(bcu.userEeprom))[APP_SPECIAL_FUNC_MODE] >> (sfcfg.specialFuncNumber * 2) & 0x03);
 
         switch (sfcfg.Mode)
         {
         case sftLogic : // logic function (OR/AND/AND with recirculation;
-            sfcfg.logicFuncTyp = logicType (userEeprom[APP_SPECIAL_LOGIC_MODE] >> (sfcfg.specialFuncNumber * 2) & 0x03);
+            sfcfg.logicFuncTyp = logicType ((*(bcu.userEeprom))[APP_SPECIAL_LOGIC_MODE] >> (sfcfg.specialFuncNumber * 2) & 0x03);
             break;
         case sftBlocking: // blocking function
-            sfcfg.blockTypeStart = blockType ((userEeprom[APP_SPECIAL_FUNCTION1 + (sfcfg.specialFuncNumber>>1)])>>((sfcfg.specialFuncNumber&1)*4)&0x03);
-            sfcfg.blockTypeEnd = blockType ((userEeprom[APP_SPECIAL_FUNCTION1 + (sfcfg.specialFuncNumber>>1)])>>((sfcfg.specialFuncNumber&1)*4+2)&0x03);
-            sfcfg.lockPolarity = (userEeprom[APP_SPECIAL_POLARITY] >> sfcfg.specialFuncNumber) & 0x01; // polarity of the lock object
+            sfcfg.blockTypeStart = blockType (((*(bcu.userEeprom))[APP_SPECIAL_FUNCTION1 + (sfcfg.specialFuncNumber>>1)])>>((sfcfg.specialFuncNumber&1)*4)&0x03);
+            sfcfg.blockTypeEnd = blockType (((*(bcu.userEeprom))[APP_SPECIAL_FUNCTION1 + (sfcfg.specialFuncNumber>>1)])>>((sfcfg.specialFuncNumber&1)*4+2)&0x03);
+            sfcfg.lockPolarity = ((*(bcu.userEeprom))[APP_SPECIAL_POLARITY] >> sfcfg.specialFuncNumber) & 0x01; // polarity of the lock object
             break;
         case sftConstrainedLead: // constrained lead
             break;
@@ -173,11 +174,11 @@ static TimerConfig getTimerCfg(const int objno)
     TimerConfig timercfg;
 
     unsigned int mask         = 1 << objno;
-    unsigned int delayBaseIdx = userEeprom[APP_DELAY_BASE + ((objno + 1) >> 1)];
-    timercfg.timerMode        = userEeprom[APP_DELAY_ACTIVE] & mask;
-    timercfg.timerDelayAction = userEeprom[APP_DELAY_ACTION] & mask;
-    timercfg.timerOffFactor   = userEeprom[APP_DELAY_FACTOR_OFF + objno];
-    timercfg.timerOnFactor    = userEeprom[APP_DELAY_FACTOR_ON  + objno];
+    unsigned int delayBaseIdx = (*(bcu.userEeprom))[APP_DELAY_BASE + ((objno + 1) >> 1)];
+    timercfg.timerMode        = (*(bcu.userEeprom))[APP_DELAY_ACTIVE] & mask;
+    timercfg.timerDelayAction = (*(bcu.userEeprom))[APP_DELAY_ACTION] & mask;
+    timercfg.timerOffFactor   = (*(bcu.userEeprom))[APP_DELAY_FACTOR_OFF + objno];
+    timercfg.timerOnFactor    = (*(bcu.userEeprom))[APP_DELAY_FACTOR_ON  + objno];
 
     if ((objno & 0x01) == 0x00)
         delayBaseIdx >>= 4; // why this shift for channel 2? but it seems to work...
@@ -204,10 +205,10 @@ static void _handle_logic_function(int objno, unsigned int value)
 
     case sftLogic : // logic function (OR/AND/AND with recirculation
         if ((objno >= COMOBJ_SPECIAL1) && (objno <= COMOBJ_SPECIAL4))// need the value of the actual input 0-7
-            value = objectRead(sfcfg.specialFuncOutput);
+            value = bcu.comObjects->objectRead(sfcfg.specialFuncOutput);
 
         // get the logic state for the special function object
-        logicState = objectRead(COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber);
+        logicState = bcu.comObjects->objectRead(COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber);
         switch (sfcfg.logicFuncTyp)
         {
         case ltOR : // or
@@ -226,7 +227,7 @@ static void _handle_logic_function(int objno, unsigned int value)
             {
                 // if the logic part of the and connection has been
                 // cleared -> clear also the real object value
-                objectSetValue(sfcfg.specialFuncOutput, false);
+                bcu.comObjects->objectSetValue(sfcfg.specialFuncOutput, false);
                 value = false;
                 channel_timeout[sfcfg.specialFuncOutput].On.stop();
                 channel_timeout[sfcfg.specialFuncOutput].Off.stop();
@@ -254,7 +255,7 @@ static void _handle_logic_function(int objno, unsigned int value)
         break; // case sftLogic
 
     case sftBlocking: // blocking function
-        startBlocking = (objectRead(COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber) ^ (sfcfg.lockPolarity)) & 0x01;
+        startBlocking = (bcu.comObjects->objectRead(COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber) ^ (sfcfg.lockPolarity)) & 0x01;
         endBlocking = false;
         if (startBlocking)
         {
@@ -301,7 +302,7 @@ static void _handle_logic_function(int objno, unsigned int value)
                              // 0x01 no priority, on
                              // 0x02 priority, off
                              // 0x03 priority, on
-        value = objectRead (COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber);
+        value = bcu.comObjects->objectRead (COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber);
         if (value & 0b10)
         {   // constrained lead is active for this channel
             // set the value of the special com object as output state
@@ -311,7 +312,7 @@ static void _handle_logic_function(int objno, unsigned int value)
         {   // the constrained lead was just deactivated
             // restore the output based on the object state
             if ((objno >= COMOBJ_SPECIAL1) && ((objno >= COMOBJ_SPECIAL4)))
-                relays.updateChannel(sfcfg.specialFuncOutput, objectRead (sfcfg.specialFuncOutput));
+                relays.updateChannel(sfcfg.specialFuncOutput, bcu.comObjects->objectRead (sfcfg.specialFuncOutput));
         }
         break; // case sftConstrainedLead
     }
@@ -366,7 +367,7 @@ static unsigned int _handle_timed_functions(const int objno, const unsigned int 
             if ( !outputState && value)
             {
                 relays.setChannel(objno);
-                objectWrite(objno, (unsigned int) 1);
+                bcu.comObjects->objectWrite(objno, (unsigned int) 1);
                 channel_timeout[objno].Off.start (timercfg.delayMs * timercfg.timerOffFactor);
                 state |= tfsOffDelayed;
             }
@@ -393,7 +394,7 @@ static unsigned int _handle_timed_functions(const int objno, const unsigned int 
             if (!timercfg.timerDelayAction)
             {
                 relays.clearChannel(objno);
-                objectWrite(objno, (unsigned int) 0);
+                bcu.comObjects->objectWrite(objno, (unsigned int) 0);
                 channel_timeout[objno].Off.stop();
                 state &= ~tfsOffDelayed;
             }
@@ -404,7 +405,7 @@ static unsigned int _handle_timed_functions(const int objno, const unsigned int 
 
 void objectUpdated(int objno)
 {
-    unsigned int value = objectRead(objno); // get value of object (0=off, 1=on)
+    unsigned int value = bcu.comObjects->objectRead(objno); // get value of object (0=off, 1=on)
 
     // check if we have a delayed action for this object, only Outputs
     if (objno < COMOBJ_SPECIAL1) // logic objects must be checked here to
@@ -413,8 +414,8 @@ void objectUpdated(int objno)
         if (channel_timeout[objno].On.stopped() && channel_timeout[objno].Off.stopped())
         {
             relays.updateChannel(objno, value);
-            if (value != objectRead(objno)) // objectWrite with set ETS update-flags leads to a infinite loop of objectUpdated & objectWrite
-                objectWrite(objno, value);  // see https://selfbus.org/forum/viewtopic.php?p=4762#p4762
+            if (value != bcu.comObjects->objectRead(objno)) // objectWrite with set ETS update-flags leads to a infinite loop of objectUpdated & objectWrite
+                bcu.comObjects->objectWrite(objno, value);  // see https://selfbus.org/forum/viewtopic.php?p=4762#p4762
         }
     }
 
@@ -457,7 +458,7 @@ void checkTimeouts(void)
         {
             unsigned int newValue = (onTimedout == true);
             relays.updateChannel(objno, newValue);
-            objectWrite(objno, newValue);
+            bcu.comObjects->objectWrite(objno, newValue);
             _handle_timed_functions(objno, newValue);
             _handle_logic_function(objno, newValue);
         }
@@ -476,7 +477,7 @@ static void _sendFeedbackObjects(bool forcesendFeedbackObjects)
         // -> update the corresponding feedback objects
         unsigned int i;
         unsigned int mask = 0x01;
-        unsigned int invert = userEeprom[APP_REPORT_BACK_INVERT];
+        unsigned int invert = (*(bcu.userEeprom))[APP_REPORT_BACK_INVERT];
         for (i = 0; i < 8; i++)
         {
             if ((changed & mask) || forcesendFeedbackObjects)
@@ -484,7 +485,7 @@ static void _sendFeedbackObjects(bool forcesendFeedbackObjects)
             	unsigned int value = relays.channel(i);
             	if (invert & mask)
             		value ^= 0x01;
-                objectWrite(COMOBJ_FEEDBACK1 + i, value);
+            	bcu.comObjects->objectWrite(COMOBJ_FEEDBACK1 + i, value);
             }
             mask <<= 1;
         }
@@ -548,7 +549,7 @@ void initApplication(int lastRelayState)
 
     // read & combine initialChannelAction's low & high byte from userEeprom
     // 2 bits for each channel: 0x00=LAST_STATE, 0x01=OPEN, 0x02=CLOSED, e.g. initialChannelAction: 0xAAAA Ch1-8 closed; 0x5555 Ch1-8 open; 0x0000 Ch1-8 last state
-    initialChannelActions = (userEeprom[APP_RESTORE_AFTER_PL_HI] << 8) | userEeprom[APP_RESTORE_AFTER_PL_LO];
+    initialChannelActions = ((*(bcu.userEeprom))[APP_RESTORE_AFTER_PL_HI] << 8) | (*(bcu.userEeprom))[APP_RESTORE_AFTER_PL_LO];
 
     newRelaystate = 0x00;
     for (i=0; i < (sizeof(initialOutputState)/sizeof(initialOutputState[0])); i++)
@@ -573,13 +574,13 @@ void initApplication(int lastRelayState)
 
     // set all logic objects to false
     for (i=COMOBJ_SPECIAL1; i <= COMOBJ_SPECIAL4; i++)
-        objectSetValue(i, (unsigned int) 0);
+        bcu.comObjects->objectSetValue(i, (unsigned int) 0);
 
     // set all output objects according to configured initial output state
     for (i=COMOBJ_INPUT1; i < (sizeof(initialOutputState)/sizeof(initialOutputState[0])); i++)
     {
         unsigned int value = (initialOutputState[i] == Outputs::CLOSED);
-        objectSetValue(i, value);
+        bcu.comObjects->objectSetValue(i, value);
     }
 
     /*
@@ -608,10 +609,10 @@ void initApplication(int lastRelayState)
     */
     // check logic functions, maybe channels need to be blocked
     for (i=COMOBJ_INPUT1; i < (sizeof(initialOutputState)/sizeof(initialOutputState[0])); i++)
-        _handle_logic_function(i, objectRead(i)); // handle the logic functions for the channel
+        _handle_logic_function(i, bcu.comObjects->objectRead(i)); // handle the logic functions for the channel
 
     // set the initial relays state, this needs to be done as last operation before real
-    relays.begin(newRelaystate, userEeprom[APP_CLOSER_MODE], NO_OF_CHANNELS);
+    relays.begin(newRelaystate, (*(bcu.userEeprom))[APP_CLOSER_MODE], NO_OF_CHANNELS);
 
 #ifdef HAND_ACTUATION
     handAct.setDelayBetweenButtonsMs(10);

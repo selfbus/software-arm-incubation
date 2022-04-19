@@ -10,6 +10,7 @@
  *  published by the Free Software Foundation.
  */
 
+#include <sblib/types.h>
 #include "app_nov_settings.h"
 
 NonVolatileSetting::NonVolatileSetting(unsigned int flashBase, unsigned int flashSize)

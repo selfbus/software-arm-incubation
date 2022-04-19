@@ -8,8 +8,6 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/eib.h>
-#include <sblib/eib/sblib_default_objects.h>
 #include <sblib/analog_pin.h>
 #include "app_main.h"
 #include "app_out8.h"
@@ -43,7 +41,7 @@
 
 
 
-ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
+ObjectValues& objectValues = *(ObjectValues*) (bcu.userRam->userRamData + UR_COM_OBJ_VALUE0);
 
 // create APP_VERSION, its used in the bus updater magic string is !AVP!@:
 // from Rauchmelder-bcu1 (app_main.cpp):
@@ -201,7 +199,7 @@ bool recallAppData()
 /*
  * Initialize the application.
  */
-void setup()
+BcuBase* setup()
 {
     volatile const char * v = getAppVersion();      // Ensure APP ID is not removed by linker (its used in the bus updater)
     v++;                                            // just to avoid compiler warning of unused variable
@@ -254,9 +252,9 @@ void setup()
 #else
     initApplication();
 
-
     // TODO check maybe use _bcu.enableGroupTelSend(false);
 #endif
+    return (&bcu);
 }
 
 /**
@@ -266,7 +264,7 @@ void loop(void)
 {
     int objno;
     // Handle updated communication objects
-    while ((objno = nextUpdatedObject()) >= 0)
+    while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
         objectUpdated(objno);
     }
@@ -274,7 +272,7 @@ void loop(void)
     checkTimeouts();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
+    if (bcu.bus->idle())
     {
         waitForInterrupt();
         printSerialBusVoltage(500);

@@ -22,14 +22,13 @@
  *
  *
  * build variables available / default value:
- * bcu_type = 10
  * controller_type = TE4
  * hand_actuation = HAND_ACTUATION
  * inverted = INVERT
  * num_outputs = OUT8
  * relay_type = BI_STABLE
  * bus_fail = BUSFAIL
- * sw_version = 0.5
+ * sw_version = 0.51
  *
  */
 
