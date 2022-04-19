@@ -25,13 +25,12 @@ public:
 
 protected:
 	OutputPinConfig* config;
-
-	uint32_t blinkActionTime = 0;
-	bool lastState = false;
-	bool blink = false;
-	bool blinkState = false;
-	bool blinkObjState = false;
 	bool sw = false;
+	bool blinkObjState = false;
+	bool blinkState = false;
+	bool blink = false;
+	bool lastState = false;
+	uint32_t blinkActionTime = 0;
 
 	void setType();
 };

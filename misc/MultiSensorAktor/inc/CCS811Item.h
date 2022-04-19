@@ -25,10 +25,10 @@ public:
 
 protected:
 	CCS811Config *config;
+    CCS811Class ccs811;
 	uint32_t nextAction = 0;
 	byte state = 0;
 	bool configured = false;
-	CCS811Class ccs811;
 };
 
 #endif /* CCS811ITEM_H_ */

@@ -24,9 +24,9 @@ public:
 
 protected:
 	SHT2xConfig *config;
+    SHT2xClass sht2x;
 	uint32_t nextAction = 0;
 	byte state = 0;
-	SHT2xClass sht2x;
 	float offset;
 };
 

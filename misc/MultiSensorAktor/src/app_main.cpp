@@ -19,15 +19,7 @@
 #include <ARMPinItem.h>
 #include <SHT2xItem.h>
 
-extern "C" const char APP_VERSION[13] = "MSA 0.1";
-
-#pragma comment(linker, "/include:getAppVersion")
-extern "C" __attribute__ ((noinline))  __attribute__ ((used)) const char * getAppVersion()
-{
-    return APP_VERSION;
-}
-
-
+APP_VERSION("MSA     ", "0", "10")
 #define CONFIG_ADDRESS 0x4800
 
 MASK0701 bcu = MASK0701();
@@ -86,7 +78,7 @@ BcuBase* setup()
 
     }
 
-    if (deviceConfig->BusSwitches && BusSwitchI2C)
+    if (deviceConfig->BusSwitches & BusSwitchI2C)
     {
     	i2c_lpcopen_init();
     	Chip_I2C_SetClockRate(I2C0, 400000);
