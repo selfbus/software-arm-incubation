@@ -16,13 +16,12 @@
 #include "shutter.h"
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
+#include "hand_actuation.h"
 
-#ifdef HAND_ACTUATION
-#   include "hand_actuation.h"
-#endif
-
-#ifdef HAND_ACTUATION
-HandActuation handAct = HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
+#ifndef HAND_ACTUATION
+    HandActuation* handAct = nullptr;
+#else
+    HandActuation* handAct = new HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
 #endif
 
 Channel * channels[NO_OF_CHANNELS];
@@ -84,6 +83,40 @@ void objectUpdated(int objno)
     }
 }
 
+void checkHandActuation(void)
+{
+    int btnNumber;
+    HandActuation::ButtonState btnState;
+    bool processHandActuation = (handAct->getButtonAndState(btnNumber, btnState)); // changed a button its state?
+    processHandActuation &= (btnState == HandActuation::BUTTON_PRESSED); // was a button pressed?
+
+    if (!processHandActuation)
+    {
+        return;
+    }
+
+    Channel * chn = channels [btnNumber / 2];
+    if ((chn == nullptr) || (!chn->isHandModeAllowed())) // is a channel associated with the pressed button?
+    {
+        return;
+    }
+
+    if (btnNumber & 0x01)
+    {
+        if (chn->isRunning() == Channel::DOWN)
+            chn->stop();
+        else
+            chn->startDown();
+    }
+    else
+    {
+        if (chn->isRunning() == Channel::UP)
+            chn->stop();
+        else
+            chn->startUp();
+    }
+}
+
 void checkPeriodicFuntions(void)
 {
     for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
@@ -97,36 +130,10 @@ void checkPeriodicFuntions(void)
     {
         Channel::startPWM();  // re-enable the PWM
     }
-
-#ifdef HAND_ACTUATION
-    int btnNumber;
-    HandActuation::ButtonState btnState;
-
-    if (handAct.getButtonAndState(btnNumber, btnState))
+    if (handAct != nullptr)
     {
-        Channel * chn = channels [btnNumber / 2];
-        if ((chn != nullptr) && (chn->isHandModeAllowed()))
-        {
-            if (btnState == HandActuation::BUTTON_PRESSED)
-            {
-                if (btnNumber & 0x01)
-                {
-                    if (chn->isRunning() == Channel::DOWN)
-                        chn->stop();
-                    else
-                        chn->startDown();
-                }
-                else
-                {
-                    if (chn->isRunning() == Channel::UP)
-                        chn->stop();
-                    else
-                        chn->startUp();
-                }
-            }
-        }
+        checkHandActuation();
     }
-#endif
 }
 
 void initApplication(void)
@@ -150,11 +157,10 @@ void initApplication(void)
         default :
             channels [i] = 0;
         }
-#ifdef HAND_ACTUATION
+
         if (channels[i] != nullptr)
         {
-            channels[i]->setHandActuation(&handAct);
+            channels[i]->setHandActuation(handAct);
         }
-#endif
     }
 }

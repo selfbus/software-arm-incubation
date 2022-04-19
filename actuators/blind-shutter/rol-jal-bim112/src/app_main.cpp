@@ -14,10 +14,6 @@
 #include "app-rol-jal.h"
 #include <cstring>
 
-#ifdef HAND_ACTUATION
-#   include "hand_actuation.h"
-#endif
-
 APP_VERSION("SBrol   ", "1", "10")
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
@@ -86,5 +82,11 @@ void loop_noapp()
     // no application is loaded, make sure that all relays are off
     pinMode(PIN_PWM, OUTPUT);  // configure PWM Pin as output when application is not loaded
     digitalWrite(PIN_PWM, 1);  // set PWM Pin to high so all relays will be off
+#ifdef HAND_ACTUATION
+    if (!bcu.programmingMode())
+    {
+        HandActuation::testIO(&handPins[0], NO_OF_HAND_PINS, BLINK_TIME);
+    }
+#endif
 }
 

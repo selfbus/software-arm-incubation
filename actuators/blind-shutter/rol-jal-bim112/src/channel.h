@@ -13,10 +13,7 @@
 #include <sblib/timeout.h>
 #include <sblib/timer.h>
 #include <sblib/eibMASK0701.h>
-
-#ifdef HAND_ACTUATION
-#   include "hand_actuation.h"
-#endif
+#include "hand_actuation.h"
 
 #define NO_OF_CHANNELS 4
 #define NO_OF_OUTPUTS  (NO_OF_CHANNELS * 2)
@@ -176,9 +173,7 @@ public:
             void handleMove(unsigned int value);
             void handleStep(unsigned int value);
             bool isHandModeAllowed();
-#ifdef HAND_ACTUATION
             void setHandActuation(HandActuation* hand);
-#endif
 
 protected:
             void _handleState(void);
@@ -249,10 +244,7 @@ protected:
              short savedPosition;    //!< position before an automatic commands was triggered
     Timeout        timeout;
     Timeout        Blocking;         //!< active while the "cooldown" of an recently high switched OutputPin is blocking other channels from doing the same
-
-#ifdef HAND_ACTUATION
     HandActuation* handAct_;
-#endif
 };
 
 inline unsigned int Channel::isRunning(void)

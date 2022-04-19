@@ -13,10 +13,6 @@
 #include <string.h>
 #include <blind.h>
 
-#ifdef HAND_ACTUATION
-#    include "hand_actuation.h"
-#endif
-
 MASK0701 bcu = MASK0701();
 
 const int outputPins[NO_OF_OUTPUTS] =
@@ -79,11 +75,8 @@ Channel::Channel(unsigned int number, unsigned int address)
   , startPosition(-1)
   , targetPosition(-1)
   , savedPosition(-1)
+  , handAct_(nullptr)
 {
-#ifdef HAND_ACTUATION
-    handAct_ = nullptr;
-#endif
-
     for (unsigned int i = number * 2 ;i <= (number * 2 + 1); i++)
     {
         pinMode(outputPins [i], OUTPUT);
@@ -801,9 +794,7 @@ void Channel::_moveToOneBitPostion()
     moveTo(oneBitPosition);
 }
 
-#ifdef HAND_ACTUATION
 void Channel::setHandActuation(HandActuation* hand)
 {
     handAct_ = hand;
 }
-#endif
