@@ -7,23 +7,12 @@
  */
 
 #include "app_in.h"
-//#include "debug.h"
+#include "debug.h"
 #include <sblib/eib.h>
-#include <sblib/eib/user_memory.h>
-#include <sblib/eib/sblib_default_objects.h>
-#include <string.h> /* for memcpy() */
+#include <cstring> /* for memcpy() */
 #include "config.h"
 
-// create APP_VERSION, its used in the bus updater magic string is !AVP!@:
-// from Rauchmelder-bcu1 (app_main.cpp):
-volatile const char __attribute__((used)) APP_VERSION[20] = "!AVP!@:SBin16  1.01";
-// disable optimization seems to be the only way to ensure that this is not being removed by the linker
-// to keep the variable, we need to declare a function that uses it
-// alternatively, the link script may be modified by adding KEEP to the section
-volatile const char * __attribute__((optimize("O0"))) getAppVersion()
-{
-    return APP_VERSION;
-}
+APP_VERSION("SBin16  ", "1", "10")
 
 const HardwareVersion * currentVersion;
 
@@ -32,8 +21,6 @@ const HardwareVersion * currentVersion;
  */
 void setup()
 {
-    volatile const char * v = getAppVersion();      // Ensure APP ID is not removed by linker (its used in the bus updater)
-    v++;                                            // just to avoid compiler warning of unused variable
     //bcu.setProgPin(PIN_PROG);
 #ifndef __LPC11UXX__
     //bcu.setProgPinInverted(false);
