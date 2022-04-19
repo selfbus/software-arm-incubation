@@ -12,17 +12,11 @@
 #include <sblib/timer.h>
 #include <sblib/io_pin_names.h>
 
-HandActuation::HandActuation()
-   : number_(0)
-   , mask_(0x01)
-   , buttonState_(0)
-   , ledState_(0)
-   , blinkState_(0)
-{
-}
-
 HandActuation::HandActuation(const unsigned int* Pins, const unsigned int pinCount, const unsigned int readbackPin, const unsigned int blinkTimeMs)
-    : number_(0)
+    : pinCount_(pinCount)
+    , readbackPin_(readbackPin)
+    , blinkTimeMs_(blinkTimeMs)
+    , number_(0)
     , mask_(0x01)
     , buttonState_(0)
     , ledState_(0)
@@ -31,17 +25,14 @@ HandActuation::HandActuation(const unsigned int* Pins, const unsigned int pinCou
     , delayAtEndMs_(10)
 {
     handPins_ = (unsigned int*) Pins;
-    pinCount_ = pinCount;
-    for (unsigned int i = 0; i < pinCount; i++)
+    for (unsigned int i = 0; i < getHandPinCount(); i++)
     {
-        pinMode(Pins[i], OUTPUT);
-        digitalWrite(Pins[i], false);
+        pinMode(handPins_[i], OUTPUT);
+        digitalWrite(handPins_[i], false);
     }
 
-    readbackPin_ = readbackPin;
     pinMode(readbackPin_, PULL_UP);
 
-    blinkTimeMs_ = blinkTimeMs;
     blinkTimer.start(blinkTimeMs_);
 }
 
@@ -50,16 +41,16 @@ int HandActuation::check(void)
     int result = NO_ACTUATION;
     if (handDelay_.expired() || handDelay_.stopped())
     {   // check one input at a time
-        bool buttonundertestingispressed = false;
+        bool buttonUnderTestingIsPressed = false;
 
         // save led state and turn off the LED for the button we are testing
         bool lastLEDState = ledState_ & (1 << number_);
         if (lastLEDState)
             digitalWrite(handPins_[number_], false);
 
-        bool atleastonebuttonpressed = !digitalRead(readbackPin_); // read while the LED is off, low=>at least one button is pressed, high=>no button is pressed
+        bool atLeastOneButtonPressed = !digitalRead(readbackPin_); // read while the LED is off, low=>at least one button is pressed, high=>no button is pressed
 
-        if (atleastonebuttonpressed) // at least one button is pressed, check if its the one we are testing right now (number)
+        if (atLeastOneButtonPressed) // at least one button is pressed, check if its the one we are testing right now (number)
         {
             // turn on all LED's, except the one for the button under testing (number)
             for (unsigned int i = 0; i < getHandPinCount(); i++)
@@ -71,7 +62,7 @@ int HandActuation::check(void)
             }
             delayMicroseconds(5);   // this delay is needed for compiler settings other then -O0 (Optimize Level None), otherwise detection doesn't work 100%
                                     // works also with delayMicroseconds(1);
-            buttonundertestingispressed = !digitalRead(readbackPin_); // read while all LED's are on, except the one for our button we check right now, low=>button to check is pressed
+            buttonUnderTestingIsPressed = !digitalRead(readbackPin_); // read while all LED's are on, except the one for our button we check right now, low=>button to check is pressed
 
             // restore LED states
             for (unsigned int i = 0, bitMask = 0x01; i < getHandPinCount(); i++, bitMask = bitMask << 1)
@@ -91,7 +82,7 @@ int HandActuation::check(void)
                 digitalWrite(handPins_[number_], lastLEDState);
         }
 
-        if (buttonundertestingispressed)
+        if (buttonUnderTestingIsPressed)
         {   // this button is currently pressed
             result = number_;
             if (! (buttonState_ & mask_))
@@ -130,9 +121,9 @@ int HandActuation::check(void)
     return result;
 }
 
-int HandActuation::getButtonAndState(int& btnNumber, HandActuation::ButtonState& btnState)
+bool HandActuation::getButtonAndState(int& btnNumber, HandActuation::ButtonState& btnState)
 {
-    int result = false;
+    bool result = false;
     int handStatus = this->check();
 
     result = (handStatus != HandActuation::NO_ACTUATION);
@@ -195,6 +186,16 @@ void HandActuation::setDelayBetweenButtonsMs(unsigned int newDelayBetweenButtons
 void HandActuation::setDelayAtEndMs(unsigned int newDelayAtEndMs)
 {
     delayAtEndMs_ = newDelayAtEndMs;
+}
+
+bool HandActuation::ledState(unsigned int led)
+{
+    return ledState_ & (1 << led) ? true : false;
+}
+
+bool HandActuation::blinkState(unsigned int led)
+{
+    return blinkState_ & (1 << led) ? true : false;
 }
 
 void HandActuation::testIO(const unsigned int* testPins, const unsigned int pinCount, const unsigned int blinkTimeMs)
