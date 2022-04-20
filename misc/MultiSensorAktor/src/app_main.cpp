@@ -47,8 +47,7 @@ BcuBase* setup()
 {
     bcu.begin(0x13A, 0x02, 1);
 
-    memcpy(bcu.userEeprom->order(), hardwareVersion,
-            sizeof(hardwareVersion));
+    bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
 
     pinMode(PIO_LED, OUTPUT);
     digitalWrite(PIO_LED, 1);

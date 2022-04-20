@@ -8,11 +8,6 @@
 
 #include <Appl.h>
 #include <sblib/eib.h>
-#include <sblib/eib/user_memory.h>
-#include <sblib/eib/sblib_default_objects.h>
-#include <string.h> /* for memcpy() */
-//#include "MemMapperMod.h"
-//#include <sblib/usr_callback.h>
 #include "config.h"
 #include <sblib/serial.h>  //debugging only
 
@@ -28,10 +23,7 @@ void setup()
 	serial.begin(115200);		//debugging only
 	currentVersion = &hardwareVersion[HARDWARE_ID];
 	bcu.begin(MANUFACTURER, currentVersion->deviceType, currentVersion->appVersion);
-
-
-    memcpy(userEeprom.order(), currentVersion->hardwareVersion,
-            sizeof(currentVersion->hardwareVersion));
+    bcu.setHardwareType(currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
     initApplication();
 }
 

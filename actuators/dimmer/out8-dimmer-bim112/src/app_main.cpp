@@ -13,7 +13,6 @@
 #include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 #include "app-out8-dimmer.h"
-#include <string.h>
 #include <sblib/serial.h>
 #include <sblib/mem_mapper.h>
 
@@ -58,8 +57,8 @@ void setup()
 #endif
     currentVersion = & hardwareVersion[0];
     bcu.begin(0x0002, 0xa045, 0x0012);
-    _bcu.setMemMapper(&memMapper);
-    memcpy(userEeprom.order(), currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
+    bcu.setMemMapper(&memMapper);
+    bcu.setHardwareType(currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED

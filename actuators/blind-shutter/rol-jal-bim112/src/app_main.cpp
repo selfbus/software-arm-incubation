@@ -12,7 +12,6 @@
 #include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 #include "app-rol-jal.h"
-#include <cstring>
 
 APP_VERSION("SBrol   ", "1", "10")
 
@@ -37,7 +36,7 @@ BcuBase* setup()
 
     currentVersion = & hardwareVersion[0];
     bcu.begin(131, currentVersion->hardwareVersion[5], 0x28);  // we are a MDT shutter/blind actuator, version 2.8
-    memcpy(bcu.userEeprom->order(), currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
+    bcu.setHardwareType(currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED

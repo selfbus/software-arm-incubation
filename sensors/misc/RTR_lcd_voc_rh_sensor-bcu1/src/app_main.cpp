@@ -67,7 +67,7 @@ BcuBase* setup() {
 
 //	pinMode(blinkPin, OUTPUT);
 
-//	memcpy(userEeprom.order(), hardwareVersion, sizeof(hardwareVersion));
+//	bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
 
 	// Enable the serial port with 19200 baud, no parity, 1 stop bit
 #ifdef _DEBUG__

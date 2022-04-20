@@ -12,7 +12,6 @@
 #include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 #include <sblib/timeout.h>
-#include <string.h>
 #include "individual_channel.h"
 #include "led-controller.h"
 
@@ -41,7 +40,7 @@ static Channel * channels[4];
 void setup()
 {
     bcu.begin(0x83, hardwareVersion[5], 0x13);  // we are a MDT weather station, version 1.3
-    memcpy(userEeprom.order(), hardwareVersion, sizeof(hardwareVersion));
+    bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED

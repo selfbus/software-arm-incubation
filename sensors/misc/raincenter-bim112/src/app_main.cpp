@@ -9,7 +9,6 @@
  *  published by the Free Software Foundation.
  */
 
-#include <cstring>
 #include "config.h"
 #include "app_raincenter.h"
 
@@ -21,7 +20,7 @@ APP_VERSION("SBrain  ", "0", "40");
 BcuBase* setup()
 {
     bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
-    memcpy(bcu.userEeprom->order(), &hardwareVersion[0], sizeof(hardwareVersion));
+    bcu.setHardwareType(&hardwareVersion[0], sizeof(hardwareVersion));
     initApplication();
     return (&bcu);
 }

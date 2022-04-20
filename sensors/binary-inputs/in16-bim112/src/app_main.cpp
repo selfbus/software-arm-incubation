@@ -9,7 +9,6 @@
 #include "app_in.h"
 #include "debug.h"
 #include <sblib/eib.h>
-#include <cstring> /* for memcpy() */
 #include "config.h"
 
 APP_VERSION("SBin16  ", "1", "10")
@@ -30,13 +29,11 @@ void setup()
 
     //debug_init();
 	currentVersion = &hardwareVersion[HARDWARE_ID];
-    bcu.begin(MANUFACTURER, currentVersion->deviceType, currentVersion->appVersion);
+	bcu.setHardwareType(currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
+	bcu.begin(MANUFACTURER, currentVersion->deviceType, currentVersion->appVersion);
 
     // XXX read some ID pins to determine which version is attached
 
-    // FIXME for new memory mapper
-    memcpy(userEeprom.order(), currentVersion->hardwareVersion,
-            sizeof(currentVersion->hardwareVersion));
     initApplication();
 }
 

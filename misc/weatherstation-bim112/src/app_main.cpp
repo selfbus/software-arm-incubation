@@ -16,7 +16,6 @@
 #include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 #include <sblib/timeout.h>
-#include <string.h>
 #include "weatherstation.h"
 #include "brightness_sensor.h"
 #include "dusk.h"
@@ -52,7 +51,7 @@ static Temperature temperature;
 void setup()
 {
     bcu.begin(131, hardwareVersion[5], 0x13);  // we are a MDT weather station, version 1.3
-    memcpy(userEeprom.order(), hardwareVersion, sizeof(hardwareVersion));
+    bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
