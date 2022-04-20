@@ -11,7 +11,7 @@
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
 #include <string.h>
-#include <blind.h>
+#include <blind.h> ///\todo Blind is a child class of Channel, something is here wrong
 
 MASK0701 bcu = MASK0701();
 

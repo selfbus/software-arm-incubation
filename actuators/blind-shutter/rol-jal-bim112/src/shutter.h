@@ -16,6 +16,7 @@
 class Shutter: public Channel
 {
 public:
+    Shutter() = delete;
     Shutter(unsigned int number, unsigned int address);
 };
 
