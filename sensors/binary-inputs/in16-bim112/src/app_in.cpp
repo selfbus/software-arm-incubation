@@ -38,7 +38,7 @@ void objectUpdated(int objno)
 	{
 		int channel = objno / 5;
 		int channelObjno = objno - (channel * 5);
-		if (channelObjno == 4)
+		if ((channelObjno == 4) && (channelConfig[channel] != nullptr))
 		{ // change of the lock object
 		    channelConfig[channel]->setLock(objectRead(objno));
 		}
