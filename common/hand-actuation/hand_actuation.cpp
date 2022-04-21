@@ -12,7 +12,7 @@
 #include <sblib/timer.h>
 #include <sblib/io_pin_names.h>
 
-HandActuation::HandActuation(const unsigned int* Pins, const unsigned int pinCount, const unsigned int readbackPin, const unsigned int blinkTimeMs)
+HandActuation::HandActuation(const unsigned int* pins, const unsigned int pinCount, const unsigned int readbackPin, const unsigned int blinkTimeMs)
     : pinCount_(pinCount)
     , readbackPin_(readbackPin)
     , blinkTimeMs_(blinkTimeMs)
