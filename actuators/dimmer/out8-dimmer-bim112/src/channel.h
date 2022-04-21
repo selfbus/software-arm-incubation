@@ -4,6 +4,7 @@
 
 #include <sblib/types.h>
 #include <sblib/timeout.h>
+#include "hand_actuation.h"
 
 #define NO_OF_CHANNELS 4
 #define NO_OF_OUTPUTS  (NO_OF_CHANNELS * 2)
@@ -157,6 +158,7 @@ protected:
              short targetPosition;   //!< requested target position
              short savedPosition;    //!< position before an automatic commands was triggered
     Timeout        timeout;
+    HandActuation* handAct_;
 };
 
 inline unsigned int Channel::isRunning(void)

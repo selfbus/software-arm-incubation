@@ -15,7 +15,9 @@
 #include <sblib/eib.h>
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
+#include "hand_actuation.h"
 
+HandActuation* handAct = new HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
 Channel * channels[NO_OF_CHANNELS];
 
 void objectUpdated(int objno)

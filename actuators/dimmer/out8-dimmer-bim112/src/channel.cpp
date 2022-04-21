@@ -35,6 +35,7 @@ Channel::Channel(unsigned int number, unsigned int address)
   , startPosition(-1)
   , targetPosition(-1)
   , savedPosition(-1)
+  , handAct_(nullptr)
 {
     for (unsigned int i = number * 2 ;i <= (number * 2 + 1); i++)
     {
@@ -210,10 +211,10 @@ void Channel::stop(void)
     {
         digitalWrite(outputPins[number * 2 + 0], 0);
         digitalWrite(outputPins[number * 2 + 1], 0);
-#ifdef HAND_ACTUATION
-        handAct.setLedState(number * 2 + 0, 0);
-        handAct.setLedState(number * 2 + 1, 0);
-#endif
+
+        handAct_->setLedState(number * 2 + 0, 0);
+        handAct_->setLedState(number * 2 + 1, 0);
+
         state     = PROTECT;
         timeout.start(pauseChangeDir);
     }
@@ -266,9 +267,9 @@ void Channel::_handleState(void)
             digitalWrite(outputPins[outNo], 1);
             timer16_0.match(MAT2, PWM_PERIOD);// disable the PWM
             PWMDisabled.start(PWM_TIMEOUT);
-#ifdef HAND_ACTUATION
-            handAct.setLedState(outNo, 1);
-#endif
+
+            handAct_->setLedState(outNo, 1);
+
             timeout.start(motorOnDelay);
             state = DELAY;
         }
