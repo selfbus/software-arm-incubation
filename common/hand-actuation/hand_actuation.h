@@ -17,9 +17,16 @@ class HandActuation
 public:
     enum ButtonState {NO_ACTUATION = -1, BUTTON_PRESSED = 0x100, BUTTON_RELEASED = 0x200};
     HandActuation() = delete;
-    HandActuation(const unsigned int* Pins, const unsigned int pinCount, const unsigned int readbackPin, const unsigned int blinkTimeMs);
+    HandActuation(const unsigned int* pins, const unsigned int pinCount, const unsigned int readbackPin, const unsigned int blinkTimeMs);
     ~HandActuation() = default;
-    // returns true in case a button is pressed or was released
+
+    /**
+     * Checks whether a button is pressed or was released
+     *
+     * @param btnNumber Button which is pressed or was release
+     * @param btnState  Button state (pressed or released)
+     * @return True in case a button is pressed or was released, otherwise false
+     */
     bool getButtonAndState(int& btnNumber, HandActuation::ButtonState& btnState);
     bool ledState(unsigned int led);
     bool blinkState(unsigned int led);
