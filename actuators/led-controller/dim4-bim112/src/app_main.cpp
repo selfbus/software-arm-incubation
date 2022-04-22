@@ -8,8 +8,8 @@
 
 #include <Appl.h>
 #include <sblib/eib.h>
-#include "config.h"
 #include <sblib/serial.h>  //debugging only
+#include "config.h"
 
 const HardwareVersion * currentVersion;
 unsigned int pwmmax;		//  je nach Parametrierung PWM_MAX_600 oder PWM_MAX_1000

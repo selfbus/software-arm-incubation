@@ -10,7 +10,6 @@
 #include <Appl.h>
 #include <sblib/eib.h>
 #include <sblib/timeout.h>
-#include <string.h>
 #include <com_objs.h>
 #include <config.h>
 #include "pwmout.h"
