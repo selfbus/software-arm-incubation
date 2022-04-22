@@ -11,7 +11,6 @@
 #ifndef BRIGHTNESS_SENSOR_H_
 #define BRIGHTNESS_SENSOR_H_
 
-#include <sblib/eib.h>
 #include "sensor_base.h"
 #include "weatherstation.h"
 #include "threshold.h"

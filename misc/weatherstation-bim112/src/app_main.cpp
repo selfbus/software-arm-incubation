@@ -8,11 +8,7 @@
  *  published by the Free Software Foundation.
  */
 
-
-#include <sblib/eib.h>
 #include <sblib/analog_pin.h>
-#include <sblib/eib/sblib_default_objects.h>
-
 #include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 #include <sblib/timeout.h>
@@ -48,7 +44,7 @@ static Temperature temperature;
  * Initialize the application.
  */
 
-void setup()
+BcuBase* setup()
 {
     bcu.begin(131, hardwareVersion[5], 0x13);  // we are a MDT weather station, version 1.3
     bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
@@ -58,6 +54,7 @@ void setup()
     analogBegin();
     if (bcu.applicationRunning ())
         initApplication();
+    return (&bcu);
 }
 
 /*
@@ -67,7 +64,7 @@ void loop()
 {
     int objno;
     // Handle updated communication objects
-    while ((objno = nextUpdatedObject()) >= 0)
+    while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
         objectUpdated(objno);
     }
@@ -75,13 +72,13 @@ void loop()
     checkPeriodicFuntions();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
+    if (bcu.bus->idle())
         waitForInterrupt();
 }
 
 void initApplication(void)
 {
-	monitorTime = userEeprom.getUInt8(0x4507);
+	monitorTime = bcu.userEeprom->getUInt8(0x4507);
 	if (monitorTime < 40)
 	{   // value from the EEPROM is in hours -> convert them into milliseconds
 		monitorTime *= 3600000;
@@ -95,14 +92,14 @@ void initApplication(void)
 
 	for (unsigned int i = 0; i < 3; i++)
 	{
-	    if (userEeprom.getUInt8(0x450B + i))
+	    if (bcu.userEeprom->getUInt8(0x450B + i))
 	        brightness[i].Initialize(i);
 	}
-    if (userEeprom.getUInt8(0x4508))
+    if (bcu.userEeprom->getUInt8(0x4508))
         dusk.Initialize();
-    if (userEeprom.getUInt8(0x4509))
+    if (bcu.userEeprom->getUInt8(0x4509))
         wind.Initialize();
-    if (userEeprom.getUInt8(0x450A))
+    if (bcu.userEeprom->getUInt8(0x450A))
         temperature.Initialize();
 }
 
@@ -120,7 +117,7 @@ void checkPeriodicFuntions(void)
 	// handle the alive status message
 	if (monitorTime && monitorDelay.expired())
 	{
-		objectWrite(COM_OBJ_STATUS, 1);
+		bcu.comObjects->objectWrite(COM_OBJ_STATUS, 1);
 		monitorDelay.start (monitorTime);
 	}
 

@@ -8,7 +8,8 @@
  *  published by the Free Software Foundation.
  */
 #include "sensor_base.h"
-#include <sblib/eib.h>
+
+MASK0701 bcu = MASK0701();
 
 SensorBase::SensorBase()
 : sendMode (0)
@@ -52,17 +53,17 @@ void SensorBase::_handleNewValue(unsigned int newValue)
     if (requestSend)
     {
         lastSentValue = newValue;
-        objectWrite(objNo, newValue);
+        bcu.comObjects->objectWrite(objNo, newValue);
         if (sendMode & 0x04)
             cyclicSend.start(cyclePeriod);
     }
     else
-        objectSetValue (objNo, newValue);
+        bcu.comObjects->objectSetValue (objNo, newValue);
 }
 
 unsigned int SensorBase::timeConversionMinSec(unsigned int address)
 {
-    unsigned int result = userEeprom.getUInt8(address);
+    unsigned int result = bcu.userEeprom->getUInt8(address);
     if (result < 80)
         // the time is in minutes
         result *= 1000*60;

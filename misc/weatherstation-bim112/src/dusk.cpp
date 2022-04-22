@@ -9,7 +9,6 @@
  */
 #include "dusk.h"
 #include "weatherstation.h"
-#include <sblib/eib.h>
 
 Dusk::Dusk()
 : SensorBase()
@@ -19,14 +18,14 @@ Dusk::Dusk()
 void Dusk::Initialize(void)
 {
     this->InitializeSensor
-        ( userEeprom.getUInt8(0x4577)
+        ( bcu.userEeprom->getUInt8(0x4577)
         , COM_OBJ_DUSK
         , 0x4578
-        , userEeprom.getUInt8(0x4579)
+        , bcu.userEeprom->getUInt8(0x4579)
         );
     cycleDayPeriod = timeConversionMinSec(0x459A);
     cyclicDaySend.start(cycleDayPeriod);
-    unsigned int dayNightCfg = userEeprom.getUInt8(0x457A);
+    unsigned int dayNightCfg = bcu.userEeprom->getUInt8(0x457A);
     if (dayNightCfg)
     {
         unsigned int objValueInvert = 0;
@@ -37,11 +36,11 @@ void Dusk::Initialize(void)
         dayNight.objNumber          = COM_OBJ_DUSK_SHUTTER_UP_DOWN;
         dayNight.blockObjNo         = COM_OBJ_DUSK_SHUTTER_BLOCK;
         // day limit
-        dayNight.upperLimit         = userEeprom.getUInt8(0x457B);
+        dayNight.upperLimit         = bcu.userEeprom->getUInt8(0x457B);
         dayNight.upperLimitTime     = timeConversionMinSec(0x45A8);
         dayNight.sendLimitExceeded  = 1; // send "1"
         // night limit
-        dayNight.lowerLimit         = userEeprom.getUInt8(0x457C);
+        dayNight.lowerLimit         = bcu.userEeprom->getUInt8(0x457C);
         dayNight.lowerLimitTime     = timeConversionMinSec(0x45A9);
         dayNight.sendLowerDeviation = 2; // send "0"
     }

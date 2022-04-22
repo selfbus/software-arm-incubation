@@ -11,6 +11,9 @@
 #define SENSOR_BASE_H_
 
 #include <sblib/timeout.h>
+#include <sblib/eibMASK0701.h>
+
+extern MASK0701 bcu;
 
 class SensorBase
 {
