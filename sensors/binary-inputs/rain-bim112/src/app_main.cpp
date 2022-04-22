@@ -27,7 +27,7 @@ void setup() {
 #if LOGGING
     initLogger();
 #endif
-    bcu.begin(0x83, hardwareVersion[5], 0x11); // rain
+    bcu.begin(0x83, hardwareVersion[5], 0x11); // MDT SCN-RS1R1.01 rain sensor
     bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
 
     if (EE_STARTUP_TIMEOUT <= 60) {
