@@ -9,7 +9,7 @@
  */
 
 #include <config.h>
-#include <sblib/eib.h>
+#include <sblib/eibMASK0701.h>
 #include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 #include "app-out8-dimmer.h"
@@ -34,13 +34,15 @@ MemMapper memMapper(0xb000, 0x3f00, false);
 /**
  * Initialize the application.
  */
-void setup()
+BcuBase* setup()
 {
 #if defined (__LPC11XX__)
-    serial.setRxPin(PIO3_1);
-    serial.setTxPin(PIO3_0);
+    serial.setRxPin(PIO2_7); // 4TE ID-SEL
+    serial.setTxPin(PIO2_8); // 4TE ID-SEL
+    // serial.setRxPin(PIO3_1); // GNAX and TS_ARM
+    // serial.setTxPin(PIO3_0); // GNAX and TS_ARM
     serial.begin(115200);
-    serial.println("Online\n");
+    serial.println("out8-dimmer-bim112 online");
 #elif defined (__LPC11UXX__)
 #   error "set correct serial pins for LPCUxxx" // TODO set correct serial pins for LPCUxxx
 #else
@@ -73,7 +75,7 @@ void setup()
 #else
 #   error "unknown cpu"
 #endif // __LPC11XX__
-    currentVersion = & hardwareVersion[0];
+    currentVersion = &hardwareVersion[0];
     bcu.begin(0x0002, 0xa045, 0x0012); // ABB SD/S8.16.1 Switch/Dim Actuator, 8-fold, MDRC
     bcu.setMemMapper(&memMapper);
     bcu.setHardwareType(currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
@@ -82,6 +84,7 @@ void setup()
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
     initApplication();
 	timeout.start(1);
+	return (&bcu);
 }
 
 /**
@@ -91,7 +94,7 @@ void loop()
 {
     int objno;
     // Handle updated communication objects
-    while ((objno = nextUpdatedObject()) >= 0)
+    while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
         objectUpdated(objno);
     }
@@ -99,7 +102,7 @@ void loop()
     checkPeriodicFuntions();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
+    if (bcu.bus->idle())
         waitForInterrupt();
     if (timeout.started() && timeout.expired())
     {

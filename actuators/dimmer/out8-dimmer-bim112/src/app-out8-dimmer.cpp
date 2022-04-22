@@ -31,7 +31,7 @@ void objectUpdated(int objno)
     }
     else
     {   // handle global objects
-        unsigned char value = objectRead(objno);
+        unsigned char value = bcu.comObjects->objectRead(objno);
         for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
         {   Channel * chn = channels [i];
             if (chn && (objno <= 4) && chn->centralEnabled())
@@ -86,7 +86,7 @@ void initApplication(void)
     }
     for (unsigned int i = 0; i < NO_OF_CHANNELS; i++, address += EE_CHANNEL_CFG_SIZE)
     {
-        switch (userEeprom.getUInt8(address))
+        switch (bcu.userEeprom->getUInt8(address))
         {
 //        case 0: channels [i] = new Blind(i, address); break;
 //        case 1: channels [i] = new Shutter(i, address); break;

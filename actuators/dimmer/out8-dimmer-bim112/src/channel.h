@@ -4,7 +4,11 @@
 
 #include <sblib/types.h>
 #include <sblib/timeout.h>
+#include <sblib/eibMASK0701.h>
 #include "hand_actuation.h"
+
+
+extern MASK0701 bcu;
 
 #define NO_OF_CHANNELS 4
 #define NO_OF_OUTPUTS  (NO_OF_CHANNELS * 2)
