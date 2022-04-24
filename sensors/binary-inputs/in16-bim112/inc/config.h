@@ -23,7 +23,6 @@
 //#define APPVERSION   0x16		// Version 1.6
 
 
-//static const char APP_VERSION[] __attribute__((used)) = "Binary Input 1.1.21";
 typedef struct
 {
     unsigned int noOfChannels;  //!> how many channels are supported with this hardware
