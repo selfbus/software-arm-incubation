@@ -15,7 +15,6 @@
  */
 
 #include <sblib/eib.h>
-#include <sblib/eib/sblib_default_objects.h>
 #include <sblib/timeout.h>
 #include "rm_com.h"
 #include "rm_app.h"
@@ -23,25 +22,13 @@
 // Digital pin for LED
 //#define PIO_LED PIO2_0
 
-
-// Place at own section
-volatile const char __attribute__((used)) APP_VERSION[20] = "!AVP!@:S_RM_H6 1.01";
-
-// disable optimization seems to be the only way to ensure that this is not being removed by the linker
-// to keep the variable, we need to declar a function that uses it
-// alternatively, the link script may be modified by adding KEEP to the section
-volatile const char * __attribute__((optimize("O0"))) getAppVersion()
-{
-    return APP_VERSION;
-}
-
+APP_VERSION("S_RM_H6 ", "1", "02");
 
 /**
  * Application setup
  */
 void setup()
 {
-    volatile const char * v = getAppVersion();		// Ensure APP ID is not removed by linker
     bcu.begin(0x004C, 0x03F2, 0x24); 		//Herstellercode 0x004C = Robert Bosch, Devicetype 1010 (0x03F2), Version 2.4
 
     //pinMode(PIO_LED, OUTPUT);

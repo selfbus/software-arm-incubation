@@ -10,6 +10,10 @@
  *  published by the Free Software Foundation.
  */
 
+#ifndef rm_eeprom_h
+#define rm_eeprom_h
+
+
 //-----------------------------------------------------------------------------
 // ETS VD Konfigurations-Parameter
 // Zugriff auf diese Parameter über das globale Array eeprom[]
@@ -94,3 +98,6 @@
  * Temperaturabgleich -12/+12 Grad in 0.1°C Schritten
  */
 #define CONF_TEMP_OFFSET    510 // war: 254
+
+
+#endif /* rm_eeprom_h */
