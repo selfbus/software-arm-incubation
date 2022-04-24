@@ -12,7 +12,6 @@
 
 #include <sblib/eib.h>
 #include <sblib/timeout.h>
-#include <sblib/eib/sblib_default_objects.h>
 
 
 
@@ -24,9 +23,9 @@
 // Debouncers for inputs
 Debouncer inputDebouncer[NUM_CHANNELS];
 
-const byte* channelParams = userEepromData + (EE_CHANNEL_PARAMS_BASE - USER_EEPROM_START);
-const byte* channelTimingParams = userEepromData + (EE_CHANNEL_TIMING_PARAMS_BASE - USER_EEPROM_START);
-const byte* LEDparams = userEepromData + (EE_LED_PARAMS_BASE - USER_EEPROM_START);
+const byte* channelParams;
+const byte* channelTimingParams;
+const byte* LEDparams;
 
 #ifdef DIRECT_IO
 // Input pins
@@ -91,6 +90,10 @@ int readIO(int channel)
  */
 void setup()
 {
+    channelParams = userEepromData + (EE_CHANNEL_PARAMS_BASE - USER_EEPROM_START);
+    channelTimingParams = userEepromData + (EE_CHANNEL_TIMING_PARAMS_BASE - USER_EEPROM_START);
+    LEDparams = userEepromData + (EE_LED_PARAMS_BASE - USER_EEPROM_START);
+
     bcu.begin(76, 0x474, 2); // We are a "Selfbus RGB Taster" device, version 0.2
 
     // onboard LEDs ausschalten
