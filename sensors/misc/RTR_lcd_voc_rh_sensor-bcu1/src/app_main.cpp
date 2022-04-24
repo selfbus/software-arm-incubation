@@ -17,7 +17,6 @@
 #include <sblib/eibBCU1.h>
 #include <sblib/core.h>
 #include <sblib/ioports.h>
-#include <sblib/spi.h>
 #include <sblib/serial.h>
 #include <sblib/timeout.h>
 
@@ -36,8 +35,6 @@
 #ifdef _DEBUG__
 Serial Serial(PIO2_7, PIO2_8);
 #endif
-
-//SPI spi(SPI_PORT_0);
 
 int blinkPin = PIO0_7;
 
