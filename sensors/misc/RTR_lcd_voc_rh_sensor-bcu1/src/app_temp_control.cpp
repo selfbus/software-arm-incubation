@@ -109,16 +109,16 @@ void objectUpdated(int objno) {
 		window_ventilation.ventilation_level = (bcu.comObjects->objectRead(objno) & 0xFF);
 	}
 	if(objno == REC_EXT_SET_TEMP){
-//		memMapper.setUInt32(UF_TEMP_SOLL_EXTERN, dptFromFloat((objectRead(objno) & 0xFFFF)));
-		extEeprom.eepromSetUInt32(UF_TEMP_SOLL_EXTERN, dptFromFloat(bcu.comObjects->objectRead(objno) & 0xFFFF));
+//		memMapper.setUInt32(UF_TEMP_SOLL_EXTERN, dpt9ToFloat((objectRead(objno) & 0xFFFF)));
+		extEeprom.eepromSetUInt32(UF_TEMP_SOLL_EXTERN, dpt9ToFloat(bcu.comObjects->objectRead(objno) & 0xFFFF));
 //		memMapper.doFlash();
 		extEeprom.write_to_chip();
-//		temp.TempSollExtern = dptFromFloat((objectRead(objno) & 0xFFFF));
-//		temp.hekaTempSollExtern = dptFromFloat( temp.TempSollExtern );
+//		temp.TempSollExtern = dpt9ToFloat((objectRead(objno) & 0xFFFF));
+//		temp.hekaTempSollExtern = dpt9ToFloat( temp.TempSollExtern );
 	}
 
 	if(objno == REC_EXT_TEMP && temp.floorTempShow && temp.ExtTempSensSource == ExtTempOverKNX){
-		temp.tempExtern = dptFromFloat(bcu.comObjects->objectRead(objno) & 0xFFFF);
+		temp.tempExtern = dpt9ToFloat(bcu.comObjects->objectRead(objno) & 0xFFFF);
 	}
 }
 
@@ -133,10 +133,10 @@ void handlePeriodic(void) {
 //		int SollTempFlag = memMapper.getUInt32(UF_TEMP_SOLL_TEMP_FLAG);
 		int SollTempFlag = extEeprom.eepromGetUInt32(UF_TEMP_SOLL_TEMP_FLAG);
 		if(SollTempFlag == SollTempIntern){
-//			objectWriteFloat(SEND_SET_TEMP, dptToFloat(memMapper.getUInt32(UF_TEMP_SOLL_INTERN)));
+//			objectWriteFloat(SEND_SET_TEMP, memMapper.getUInt32(UF_TEMP_SOLL_INTERN));
 		    bcu.comObjects->objectWriteFloat(SEND_SET_TEMP, extEeprom.eepromGetUInt32(UF_TEMP_SOLL_INTERN));
 		}else if (SollTempFlag == SollTempExtern){
-//			objectWriteFloat(SEND_SET_TEMP, dptToFloat(memMapper.getUInt32(UF_TEMP_SOLL_EXTERN)));
+//			objectWriteFloat(SEND_SET_TEMP, memMapper.getUInt32(UF_TEMP_SOLL_EXTERN));
 		    bcu.comObjects->objectWriteFloat(SEND_SET_TEMP, extEeprom.eepromGetUInt32(UF_TEMP_SOLL_EXTERN));
 		}
 		timeout[TEMPERATURES_KO].start(temp.sendInterval);
