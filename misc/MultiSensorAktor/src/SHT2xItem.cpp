@@ -13,7 +13,7 @@ extern int portPins[32];
 SHT2xItem::SHT2xItem(BcuBase* bcu, byte firstComIndex, SHT2xConfig *config, GenericItem* nextItem) : GenericItem(bcu, firstComIndex, nextItem), config(config), sht2x(SHT2xClass()), nextAction(0)
 {
 	sht2x.Init();
-	offset = config->Offset * 0.01;
+	offset = config->Offset * 0.01f;
 }
 
 void SHT2xItem::Loop(uint32_t now, int updatedObjectNo)

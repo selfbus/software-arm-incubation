@@ -33,8 +33,8 @@ void CCS811Item::Loop(uint32_t now, int updatedObjectNo)
 
 	if (updatedObjectNo == firstComIndex + 3 || updatedObjectNo == firstComIndex + 4)
 	{
-		float t = bcu->comObjects->objectReadFloat(firstComIndex + 3) * 0.01;
-		float rh = bcu->comObjects->objectReadFloat(firstComIndex + 4) * 0.01;
+		float t = bcu->comObjects->objectReadFloat(firstComIndex + 3) * 0.01f;
+		float rh = bcu->comObjects->objectReadFloat(firstComIndex + 4) * 0.01f;
 
 		ccs811.compensate(t, rh);
 	}

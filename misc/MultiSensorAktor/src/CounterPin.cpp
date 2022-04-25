@@ -25,7 +25,7 @@ void CounterPin::PutValue(uint32_t now, int val)
 		if (lastTime < now)
 		{
 			bcu->comObjects->objectWrite(firstComIndex + 1, now - lastTime);
-			float freq = 3600000 / (now - lastTime);
+			float freq = 3600000.0f / (now - lastTime);
 			freq = roundFloat(freq, config->DecimalsFreq);
 			bcu->comObjects->objectWrite(firstComIndex + 2, (byte*)&freq);
 		}

@@ -9,7 +9,7 @@
 DHTPin::DHTPin(BcuBase* bcu, int port, byte firstComIndex, DHTPinConfig *config, bool dht11) : GenericPin(bcu, firstComIndex), dht(DHT()), config(config), port(port)
 {
 	dht.DHTInit(port, dht11 ? DHT11 : DHT22);
-	offset = config->Offset * 0.01;
+	offset = config->Offset * 0.01f;
 };
 
 byte DHTPin::GetState(uint32_t now, byte updatedOjectNo)
