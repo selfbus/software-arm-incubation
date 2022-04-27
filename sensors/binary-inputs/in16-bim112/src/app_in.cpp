@@ -118,6 +118,10 @@ void initApplication(void)
     Timeout startupDelay;
     // delay in config is in seconds
     unsigned int delay = userEeprom.getUInt16(addressStartupDelay) * 1000;
+    if (delay > 60000)
+    {
+        delay = 60000;
+    }
     startupDelay.start(delay);
     if (delay)
     {
