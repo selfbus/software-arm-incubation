@@ -22,7 +22,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1472225030" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.553216540" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/EV_Out4I}/Debug" id="com.crt.advproject.builder.exe.debug.442785240" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out-cs-bim112}/Debug" id="com.crt.advproject.builder.exe.debug.442785240" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.1079328892" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.specs.1725635096" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.arch.1688108614" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
@@ -167,7 +167,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.1920689323." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.445321258" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1222596048" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/EV_Out4I}/Debug" id="com.crt.advproject.builder.exe.debug.1066530462" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out-cs-bim112}/Debug" id="com.crt.advproject.builder.exe.debug.1066530462" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.86329269" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.specs.1974222878" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.arch.208423744" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
@@ -310,7 +310,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.330125340." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1462622126" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.898654601" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/EV_Out4I}/Debug" id="com.crt.advproject.builder.exe.debug.222396970" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out-cs-bim112}/Debug" id="com.crt.advproject.builder.exe.debug.222396970" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.1297353226" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.specs.167424155" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.arch.912035412" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
@@ -453,7 +453,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.224937521." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.710966171" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.85331235" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/EV_Out4I}/Debug" id="com.crt.advproject.builder.exe.debug.723317120" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out-cs-bim112}/Debug" id="com.crt.advproject.builder.exe.debug.723317120" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.665540755" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.specs.1730644345" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.arch.1939297953" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
@@ -600,7 +600,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1123482093" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.101946888" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/EV_Out4I}/Debug" id="com.crt.advproject.builder.exe.debug.729382922" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out-cs-bim112}/Debug" id="com.crt.advproject.builder.exe.debug.729382922" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.151262722" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.specs.1063697925" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.arch.297824514" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
@@ -747,7 +747,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1886004643" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.252990765" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/EV_Out4I}/Debug" id="com.crt.advproject.builder.exe.debug.1552093485" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out-cs-bim112}/Debug" id="com.crt.advproject.builder.exe.debug.1552093485" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.617847893" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.specs.1192034375" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.arch.976590350" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
@@ -875,7 +875,7 @@
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="EV_Out4I.com.crt.advproject.projecttype.exe.1519709739" name="Executable" projectType="com.crt.advproject.projecttype.exe"/>
+		<project id="out-cs-bim112.com.crt.advproject.projecttype.exe.1519709739" name="Executable" projectType="com.crt.advproject.projecttype.exe"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="com.crt.config">
@@ -893,7 +893,7 @@
 &lt;memory can_program="true" id="Flash" is_ro="true" type="Flash"/&gt;&#13;
 &lt;memory id="RAM" type="RAM"/&gt;&#13;
 &lt;memory id="Periph" is_volatile="true" type="Peripheral"/&gt;&#13;
-&lt;memoryInstance derived_from="Flash" id="MFlash64" location="0x0" size="0x10000"/&gt;&#13;
+&lt;memoryInstance derived_from="Flash" id="MFlash64" location="0x0" size="0xf000"/&gt;&#13;
 &lt;memoryInstance derived_from="RAM" id="RamLoc8" location="0x10000000" size="0x2000"/&gt;&#13;
 &lt;/chip&gt;&#13;
 &lt;processor&gt;&#13;
@@ -905,19 +905,35 @@
 &lt;/TargetConfig&gt;</projectStorage>
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Debug 2Ch"/>
-		<configuration configurationName="Debug 6Ch"/>
-		<configuration configurationName="Debug 2Ch_wo_CS"/>
+		<configuration configurationName="Debug 2Ch">
+			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
+		</configuration>
+		<configuration configurationName="Release 2Ch_wo_CS">
+			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
+		</configuration>
+		<configuration configurationName="Debug 6Ch">
+			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
+		</configuration>
+		<configuration configurationName="Release 2Ch">
+			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
+		</configuration>
+		<configuration configurationName="Debug 2Ch_wo_CS">
+			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
+		</configuration>
 		<configuration configurationName="Release 6Ch">
 			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
 		</configuration>
-		<configuration configurationName="Debug 2CH_wo_CS"/>
-		<configuration configurationName="Debug TS_ARM_2CH"/>
+		<configuration configurationName="Debug 2CH_wo_CS">
+			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
+		</configuration>
+		<configuration configurationName="Debug TS_ARM_2CH">
+			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
+		</configuration>
 		<configuration configurationName="Release">
-			<resource resourceType="PROJECT" workspacePath="/EV_Out4I"/>
+			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
 		</configuration>
 		<configuration configurationName="Debug">
-			<resource resourceType="PROJECT" workspacePath="/EV_Out4I"/>
+			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>

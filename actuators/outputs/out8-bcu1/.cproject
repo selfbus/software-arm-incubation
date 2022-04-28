@@ -28,7 +28,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.29419348." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1557083906" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.771217188" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/sbapp-in4-cpp}/Debug" id="com.crt.advproject.builder.exe.debug.1782456061" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.1782456061" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.1122049352" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.arch.1745605815" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.thumb.1943179931" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
@@ -176,7 +176,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.2109895191." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1359569922" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1329134483" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/sbapp-in4-cpp}/Debug" id="com.crt.advproject.builder.exe.debug.1397662804" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.1397662804" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.1363714930" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.arch.597393691" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.thumb.2137231403" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
@@ -324,7 +324,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.2109895191.1175912006." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.737046686" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.48945163" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/sbapp-in4-cpp}/Debug" id="com.crt.advproject.builder.exe.debug.2136368891" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.2136368891" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.1279885585" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.arch.1851086931" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.thumb.1960948162" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
@@ -471,7 +471,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.2109895191.1175912006.254763734." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1302206450" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.629214634" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/sbapp-in4-cpp}/Debug" id="com.crt.advproject.builder.exe.debug.385719778" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.385719778" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="com.crt.advproject.cpp.exe.debug.1517001898" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.arch.1291617937" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.thumb.2016058097" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
@@ -619,7 +619,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.888440921." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.144403759" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.2019030958" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/sbapp-in4-cpp}/Debug" id="com.crt.advproject.builder.exe.debug.6243235" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.6243235" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.1848266358" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.arch.1256430727" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.thumb.24292421" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
@@ -766,7 +766,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.888440921.1620068050." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.896832632" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1573212984" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/sbapp-in4-cpp}/Debug" id="com.crt.advproject.builder.exe.debug.102723952" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.102723952" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.91349131" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.arch.1886795619" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.thumb.113641867" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
@@ -909,7 +909,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.984667403." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.313095855" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.995928147" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/sbapp-in4-cpp}/Debug" id="com.crt.advproject.builder.exe.debug.1496831546" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.1496831546" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.1762767651" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.arch.1230147027" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.thumb.815874700" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
@@ -1052,7 +1052,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.888440921.1620068050.1535897543." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.945142646" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.2121546434" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/sbapp-in4-cpp}/Debug" id="com.crt.advproject.builder.exe.debug.634734834" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.634734834" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.1357080126" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.arch.733203732" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.thumb.713938599" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
@@ -1195,7 +1195,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.888440921.1620068050.1625367490." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.993654020" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.128947966" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/sbapp-in4-cpp}/Debug" id="com.crt.advproject.builder.exe.debug.247730650" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.247730650" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.648722888" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.arch.1925271377" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.thumb.965436186" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
@@ -1343,7 +1343,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.888440921.867825780." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1912667223" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.984548313" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/sbapp-in4-cpp}/Debug" id="com.crt.advproject.builder.exe.debug.68248542" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.68248542" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.1002858368" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.arch.1286712229" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.thumb.492971113" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
@@ -1490,7 +1490,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.888440921.1620068050.1535897543.849277512." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1649048712" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.306106985" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/sbapp-in4-cpp}/Debug" id="com.crt.advproject.builder.exe.debug.1125459909" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.1125459909" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.443582633" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.arch.1992906849" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.thumb.984218690" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
@@ -1633,7 +1633,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.888440921.1620068050.1535897543.849277512.513457091." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1691763647" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1065727005" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/sbapp-in4-cpp}/Debug" id="com.crt.advproject.builder.exe.debug.901806700" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.901806700" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.198639866" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
 								<option id="com.crt.advproject.cpp.arch.1609689275" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.cpp.thumb.963102316" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
@@ -1751,7 +1751,7 @@
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="sbapp-in4-cpp.com.crt.advproject.projecttype.exe.1181457139" name="Executable" projectType="com.crt.advproject.projecttype.exe"/>
+		<project id="out8-bcu1.com.crt.advproject.projecttype.exe.1181457139" name="Executable" projectType="com.crt.advproject.projecttype.exe"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="com.crt.config">
@@ -1769,7 +1769,7 @@
 &lt;memory can_program="true" id="Flash" is_ro="true" type="Flash"/&gt;&#13;
 &lt;memory id="RAM" type="RAM"/&gt;&#13;
 &lt;memory id="Periph" is_volatile="true" type="Peripheral"/&gt;&#13;
-&lt;memoryInstance derived_from="Flash" id="MFlash64" location="0x0" size="0x10000"/&gt;&#13;
+&lt;memoryInstance derived_from="Flash" id="MFlash64" location="0x0" size="0xf000"/&gt;&#13;
 &lt;memoryInstance derived_from="RAM" id="RamLoc8" location="0x10000000" size="0x2000"/&gt;&#13;
 &lt;/chip&gt;&#13;
 &lt;processor&gt;&#13;
@@ -1781,40 +1781,96 @@
 &lt;/TargetConfig&gt;</projectStorage>
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Debug OUT8 4TE BUSFAIL HAND"/>
-		<configuration configurationName="Flashstart 0x6000 Release o8 4t ha"/>
-		<configuration configurationName="Debug_Updater"/>
-		<configuration configurationName="Debug o8 4t ha"/>
-		<configuration configurationName="Flashstart 0x3000 Release o8 4t ha"/>
-		<configuration configurationName="Debug OUT8 4TE HAND BUSFAIL"/>
-		<configuration configurationName="Debug o8 4t bf"/>
-		<configuration configurationName="Debug o8 4t ha bi"/>
-		<configuration configurationName="Debug o8 4t bi"/>
-		<configuration configurationName="Flashstart 0x5000 Debug o8 4t ha"/>
-		<configuration configurationName="Debug OUT8 4TE BUSFAIL HAND BI-STABLE"/>
-		<configuration configurationName="Release o8 4t bf ha"/>
-		<configuration configurationName="Debug_LPC11UXX"/>
-		<configuration configurationName="Debug OUT8 4TE HAND BI-STABLE"/>
-		<configuration configurationName="Release"/>
-		<configuration configurationName="Debug"/>
-		<configuration configurationName="Debug o8 4t bu"/>
-		<configuration configurationName="Debug o8 4t"/>
-		<configuration configurationName="Debug o8 4t bf ha"/>
-		<configuration configurationName="Debug OUT8 4TE BUSFAIL"/>
-		<configuration configurationName="Flashstart 0x3000 Debug o8 4t ha"/>
-		<configuration configurationName="Debug OUT8 4TE HAND BI-STABLE BUSFAIL"/>
-		<configuration configurationName="Debug o8 4t bu ha"/>
+		<configuration configurationName="Debug OUT8 4TE BUSFAIL HAND">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Flashstart 0x6000 Release o8 4t ha">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug_Updater">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug o8 4t ha">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Flashstart 0x3000 Release o8 4t ha">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug OUT8 4TE HAND BUSFAIL">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug o8 4t bf">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug o8 4t ha bi">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug o8 4t bi">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Flashstart 0x5000 Debug o8 4t ha">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug OUT8 4TE BUSFAIL HAND BI-STABLE">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Release o8 4t bf ha">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug_LPC11UXX">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug OUT8 4TE HAND BI-STABLE">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug o8 4t bu">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug o8 4t">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug o8 4t bf ha">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug OUT8 4TE BUSFAIL">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Flashstart 0x3000 Debug o8 4t ha">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug OUT8 4TE HAND BI-STABLE BUSFAIL">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug o8 4t bu ha">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
 		<configuration configurationName="Debug OUT8 4TE HAND">
 			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
 		</configuration>
 		<configuration configurationName="Release o8 4t bu ha">
 			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
 		</configuration>
-		<configuration configurationName="Release o8 4t ha"/>
-		<configuration configurationName="Debug o8 4t bf ha bi"/>
-		<configuration configurationName="Debug o8 4t bu ha bi"/>
-		<configuration configurationName="Debug OUT8 4TE"/>
-		<configuration configurationName="Flashstart 0x7000 Debug o8 4t ha"/>
+		<configuration configurationName="Release o8 4t ha">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug o8 4t bf ha bi">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug o8 4t bu ha bi">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Debug OUT8 4TE">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Flashstart 0x7000 Debug o8 4t ha">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="scannerConfiguration">

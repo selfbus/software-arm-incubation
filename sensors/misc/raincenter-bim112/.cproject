@@ -817,7 +817,7 @@
 &lt;memory can_program="true" id="Flash" is_ro="true" type="Flash"/&gt;&#13;
 &lt;memory id="RAM" type="RAM"/&gt;&#13;
 &lt;memory id="Periph" is_volatile="true" type="Peripheral"/&gt;&#13;
-&lt;memoryInstance derived_from="Flash" id="MFlash64" location="0x0" size="0x10000"/&gt;&#13;
+&lt;memoryInstance derived_from="Flash" id="MFlash64" location="0x0" size="0xf000"/&gt;&#13;
 &lt;memoryInstance derived_from="RAM" id="RamLoc8" location="0x10000000" size="0x2000"/&gt;&#13;
 &lt;/chip&gt;&#13;
 &lt;processor&gt;&#13;
@@ -832,8 +832,9 @@
 		<configuration configurationName="Debug 4TE">
 			<resource resourceType="PROJECT" workspacePath="/raincenter-bim112"/>
 		</configuration>
-		<configuration configurationName="Debug (TS_ARM)"/>
-		<configuration configurationName="Debug (Demoboard OM13087)"/>
+		<configuration configurationName="Debug (TS_ARM)">
+			<resource resourceType="PROJECT" workspacePath="/raincenter-bim112"/>
+		</configuration>
 		<configuration configurationName="Multiple configurations">
 			<resource resourceType="PROJECT" workspacePath="/raincenter-bim112"/>
 		</configuration>
@@ -843,7 +844,9 @@
 		<configuration configurationName="Release TS_ARM">
 			<resource resourceType="PROJECT" workspacePath="/raincenter-bim112"/>
 		</configuration>
-		<configuration configurationName="Release (TS_ARM)"/>
+		<configuration configurationName="Release (TS_ARM)">
+			<resource resourceType="PROJECT" workspacePath="/raincenter-bim112"/>
+		</configuration>
 		<configuration configurationName="Debug TS_ARM">
 			<resource resourceType="PROJECT" workspacePath="/raincenter-bim112"/>
 		</configuration>
