@@ -60,6 +60,10 @@
  *				bistabile Relais direkt, also nicht über SPI angesteuert
  *				Konfiguration als ABB SA/S2.16.2.1
  *
+ *
+ *-DHW_8CH_WO_CS    8-Kanal Schaltaktor ohne Strommessung für Hardware lpc1115_4te_top, out8 - Addon energy storage - 4TE MID und out8 - Applikation 4TE BOT
+ *				Konfiguration als ABB SA/S8.16.2.1
+ *
  */
 
 
@@ -92,6 +96,9 @@
 #endif
 #ifdef HW_2CH_WO_CS
 #define CHANNELCNT 2
+#endif
+#ifdef HW_8CH_WO_CS
+#define CHANNELCNT 8
 #endif
 
 /* Pulse Duration for the bistable Relais
@@ -225,12 +232,6 @@
 #define REL2OFF		PIO3_0
 #endif
 
-#ifndef HW_2CH_WO_CS
-#define PIOPROGBTN PIO2_8  // Programming button for LPC-4TE-TOP  (PROG2  S10)
-#else
-#define PIOPROGBTN PIO2_0  // Programming button for TS-ARM
-#endif
-
 /*
  * Definitions for the manual control and display LEDs
  * The Spi-Control allows to connect these as shift registers. In this implementation, this is not used and
@@ -258,6 +259,21 @@
 #define BUTTONLEDCH7  PIO3_5
 #define BUTTONLEDCH8  PIO2_1
 #define BUTTONLEDCOM  PIO2_3
+#define PIOPROGBTN    PIO2_8  // Programming button for LPC-4TE-TOP  (PROG2  S10)
+#endif
+#ifdef HW_8CH_WO_CS
+#define BUTTONLEDCNT  8
+#define BUTTONLEDCH1  PIO0_11
+#define BUTTONLEDCH2  PIO1_10
+#define BUTTONLEDCH3  PIO3_4
+#define BUTTONLEDCH4  PIO3_5
+#define BUTTONLEDCH5  PIO2_5
+#define BUTTONLEDCH6  PIO2_4
+#define BUTTONLEDCH7  PIO0_3
+#define BUTTONLEDCH8  PIO2_1
+#define BUTTONLEDCOM  PIO2_3
+#define PIOPROGBTN    PIO0_6  // Programming button for out8_mid (LPC-4TE-Top APROG)
+// alternativ: #define PIOPROGBTN    PIO2_8  // Programming button for LPC-4TE-TOP  (PROG2  S10)
 #endif
 #ifdef HW_2CH
 #define BUTTONLEDCNT  0 // last 2 LEDs used for status signaling
@@ -276,6 +292,7 @@
 #define BUTTONLEDCH3  PIO3_4
 #define BUTTONLEDCH4  PIO2_5
 #define BUTTONLEDCOM  PIO0_8		// TS-ARM IO10
+#define PIOPROGBTN PIO2_0  			// Programming button for TS-ARM
 #endif
 
 /* ---------------------------------------------------------------
@@ -314,11 +331,19 @@
 // 10 Wandlungen je Loop, 50kHz Samplefreq
 
 #elif CHANNELCNT <= 8
-
+#ifndef HW_8CH_WO_CS
+//mit Strommessung
 #define DEVICETYPE 0xA05D // SA/S8.16.6.1
 #define SPIRELDRIVERBYTES 2
 #define ADCCHANNELCNT 8
 // 20 Wandlungen je Loop, 100kHz Samplefreq
+#else
+//ohne Strommessung
+#define DEVICETYPE 0xA082 // SA/S8.16.2.1
+#define SPIRELDRIVERBYTES 3
+#define ADCCHANNELCNT 8
+#define OMITCURRFCT // Omit current functions to free some flash mem
+#endif
 
 #elif CHANNELCNT <= 12
 
