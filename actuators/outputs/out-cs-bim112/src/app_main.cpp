@@ -294,12 +294,16 @@ void LedProcessing(void)
  unsigned OutputState;
  if (AppOrNoAppProcessingEnabled()) // LEDs nur dann, wenn kein Strom gespart werden muss
  {
+#ifdef HW_6CH
+  // Debugausgaben bei den beiden "oberen" LEDs nur beim out6cs
   OutputState = relay.GetTrgState() & 0x3f;
-  // Debugausgaben bei den beiden "oberen" LEDs
   if (bcu.applicationRunning()) //(AppOperatingState == AppOperatingStates::AppStartup)
    OutputState |= 0x40;
   if (AppOperatingState == AppOperatingStates::AppRunning)
    OutputState |= 0x80;
+#else
+  OutputState = relay.GetTrgState();
+#endif
  } else {
   OutputState = 0;
  }
