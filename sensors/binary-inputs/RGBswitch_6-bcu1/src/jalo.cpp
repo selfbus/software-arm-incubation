@@ -6,16 +6,15 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/eib.h>
-
 #include "params.h"
 #include "com_objs.h"
 #include "jalo.h"
+#include "app_RGBswitch.h"
 
 void jaloChannelChanged(int channel, int pinValue)
 {
     unsigned int ls     = params [3] & 0x08;
-    unsigned int value  = objectRead(COMOBJ_SECONDARY1 + channel);
+    unsigned int value  = bcu.comObjects->objectRead(COMOBJ_SECONDARY1 + channel);
     unsigned int action = (params [3] & 0xF0) >> 4;
     if (!pinValue)
     {   // rising edge
@@ -27,13 +26,13 @@ void jaloChannelChanged(int channel, int pinValue)
         }
         if (! ls)
         {   // sls concept -> send short telegram
-            objectWrite(COMOBJ_PRIMARY1   + channel, value);
+            bcu.comObjects->objectWrite(COMOBJ_PRIMARY1   + channel, value);
             // start the time between short and log
             timeout[channel + NUM_CHANNELS].start(delayTime[channel + NUM_CHANNELS]); // time between short and long push
         }
         else
         {   // ls concept -> send long telegram
-            objectWrite(COMOBJ_SECONDARY1 + channel, value);
+            bcu.comObjects->objectWrite(COMOBJ_SECONDARY1 + channel, value);
             // start the blade changing time
             timeout[channel].start(delayTime[channel]); //blade change time
         }
@@ -42,7 +41,7 @@ void jaloChannelChanged(int channel, int pinValue)
     {   // falling edge
         if (timeout[channel].started() && !timeout[channel].expired())
         {
-            objectWrite(COMOBJ_PRIMARY1   + channel, value);
+            bcu.comObjects->objectWrite(COMOBJ_PRIMARY1   + channel, value);
         }
         if (timeout[channel + NUM_CHANNELS].started() && !timeout[channel + NUM_CHANNELS].expired())
         {   // falling edge inside short-long time -> no further action
@@ -61,8 +60,8 @@ void jaloPeriod(int channel)
     {   // short-long-short concept
         if (timeout[channel + NUM_CHANNELS].expired())
         {
-            value = objectRead(COMOBJ_PRIMARY1 + channel);
-            objectWrite(COMOBJ_SECONDARY1 + channel, value);
+            value = bcu.comObjects->objectRead(COMOBJ_PRIMARY1 + channel);
+            bcu.comObjects->objectWrite(COMOBJ_SECONDARY1 + channel, value);
             // start blade changing time
             timeout[channel].start(delayTime[channel]);
         }
@@ -79,7 +78,7 @@ void jaloSetup(int channel)
     unsigned int value;
 
    // Calculate blade change time
-    value = userEeprom[EE_CHANNEL_TIMING_PARAMS_BASE + ((channel + 1 + 8) >> 1)];
+    value = bcu.userEeprom->getUInt8(EE_CHANNEL_TIMING_PARAMS_BASE + ((channel + 1 + 8) >> 1));
     if (! (channel & 0x01)) value >>= 4;
     else                    value  &= 0x0F;
 
@@ -87,7 +86,7 @@ void jaloSetup(int channel)
     if (! (params[3] & 0x08)) // Short Long Short
     {
         // Calculate time between short and long push
-        value = userEeprom[EE_CHANNEL_TIMING_PARAMS_BASE + ((channel + 1) >> 1)];
+        value = bcu.userEeprom->getUInt8(EE_CHANNEL_TIMING_PARAMS_BASE + ((channel + 1) >> 1));
         if (! (channel & 0x01)) value >>= 4;
         else                    value  &= 0x0F;
 
@@ -98,14 +97,14 @@ void jaloSetup(int channel)
     // handle bus return
     switch ((params [0] & 0xC0) >> 6)
     {
-    case EE_JALO_BUS_RETURN_DOWN: objectWrite(COMOBJ_SECONDARY1 + channel, (unsigned int) 0); break;
-    case EE_JALO_BUS_RETURN_UP:   objectWrite(COMOBJ_SECONDARY1 + channel, (unsigned int) 1); break;
+    case EE_JALO_BUS_RETURN_DOWN: bcu.comObjects->objectWrite(COMOBJ_SECONDARY1 + channel, (unsigned int) 0); break;
+    case EE_JALO_BUS_RETURN_UP:   bcu.comObjects->objectWrite(COMOBJ_SECONDARY1 + channel, (unsigned int) 1); break;
     case EE_JALO_BUS_RETURN_NO_ACTION:
     default:
-        objectSetValue(COMOBJ_SECONDARY1 + channel, 0);
+        bcu.comObjects->objectSetValue(COMOBJ_SECONDARY1 + channel, 0);
         break;
     }
-    objectSetValue(COMOBJ_PRIMARY1 + channel, 0);
+    bcu.comObjects->objectSetValue(COMOBJ_PRIMARY1 + channel, 0);
 }
 
 void jaloLock(int state, int channel)
@@ -120,11 +119,11 @@ void jaloLock(int state, int channel)
         case EE_JALO_LOCK_SET_DOWN:
         case EE_JALO_LOCK_SET_UP:
             value = lockAction == EE_JALO_LOCK_SET_UP ? 1 : 0;
-            objectWrite(COMOBJ_SECONDARY1 + channel, value);
+            bcu.comObjects->objectWrite(COMOBJ_SECONDARY1 + channel, value);
             break;
         case EE_JALO_LOCK_TOGGLE:
-            value = !objectRead(COMOBJ_SECONDARY1 + channel);
-            objectWrite(COMOBJ_SECONDARY1 + channel, value);
+            value = !bcu.comObjects->objectRead(COMOBJ_SECONDARY1 + channel);
+            bcu.comObjects->objectWrite(COMOBJ_SECONDARY1 + channel, value);
             break;
         case EE_JALO_LOCK_NO_REACTION:
         default:
@@ -139,11 +138,11 @@ void jaloLock(int state, int channel)
         case EE_JALO_LOCK_SET_DOWN:
         case EE_JALO_LOCK_SET_UP:
             value = lockAction == EE_JALO_LOCK_SET_UP ? 1 : 0;
-            objectWrite(COMOBJ_SECONDARY1 + channel, value);
+            bcu.comObjects->objectWrite(COMOBJ_SECONDARY1 + channel, value);
             break;
         case EE_JALO_LOCK_TOGGLE:
-            value = !objectRead(COMOBJ_SECONDARY1 + channel);
-            objectWrite(COMOBJ_SECONDARY1 + channel, value);
+            value = !bcu.comObjects->objectRead(COMOBJ_SECONDARY1 + channel);
+            bcu.comObjects->objectWrite(COMOBJ_SECONDARY1 + channel, value);
             break;
         case EE_JALO_LOCK_NO_REACTION:
         default:

@@ -6,11 +6,10 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/eib.h>
-
 #include "params.h"
 #include "com_objs.h"
 #include "dimEncoder.h"
+#include "app_RGBswitch.h"
 
 static void dimEncAction(int channel, int action)
 {
@@ -36,7 +35,10 @@ void dimEncChannelChanged(int channel, int pinValue)
     if (pinValue && ! (params [0] & 0x08) && (kind != 3))
     {   // stop a running timer on falling edge and store new value into eeprom
         timeout[channel].stop();
-        userEeprom [EE_CHANNEL_PARAMS_BASE + (channel << 2) + 2] = objectRead(COMOBJ_PRIMARY1 + channel);
+        ///\todo this reduces the life of the flash, better would is, to save the setting on a bus voltage failure or a restart
+        // userEeprom[EE_CHANNEL_PARAMS_BASE + (channel << 2) + 2] = objectRead(COMOBJ_PRIMARY1 + channel);
+        *bcu.userMemoryPtr(EE_CHANNEL_PARAMS_BASE + (channel << 2) + 2) = bcu.comObjects->objectRead(COMOBJ_PRIMARY1 + channel);
+        bcu.userEeprom->modified();
     }
     if (!pinValue && ((kind == 0) || (kind == 3)))
     {   // rising edge and action configured
@@ -51,7 +53,7 @@ void dimEncChannelChanged(int channel, int pinValue)
     }
     if (send)
     {
-        objectWrite(COMOBJ_PRIMARY1 + channel, value);
+        bcu.comObjects->objectWrite(COMOBJ_PRIMARY1 + channel, value);
     }
     if (!pinValue && (kind != 3) && (! (params [0] & 0x08)))
     {   // use as "taster" and changing support configured
@@ -75,15 +77,15 @@ void dimEncPeriod(int channel)
         // clamp it and send the new value on the bus
         if (channelData[channel].dimenc.value >= 255)
         {
-            objectWrite(COMOBJ_PRIMARY1 + channel, (unsigned int) 255);
+            bcu.comObjects->objectWrite(COMOBJ_PRIMARY1 + channel, (unsigned int) 255);
         }
         else if (channelData[channel].dimenc.value <= 0)
         {
-            objectWrite(COMOBJ_PRIMARY1 + channel, (unsigned int) 0);
+            bcu.comObjects->objectWrite(COMOBJ_PRIMARY1 + channel, (unsigned int) 0);
         }
         else
         {
-            objectWrite(COMOBJ_PRIMARY1 + channel, (unsigned int) channelData[channel].dimenc.value);
+            bcu.comObjects->objectWrite(COMOBJ_PRIMARY1 + channel, (unsigned int) channelData[channel].dimenc.value);
             // if the value is outside the borders, restart the timeout
             timeout[channel].start(delayTime[channel]);
         }
@@ -95,14 +97,14 @@ void dimEncoderSetup(int channel)
     unsigned int value;
     if (((params [1] & 0xC0) >> 6) != 3)
     {
-        value = userEeprom[EE_CHANNEL_TIMING_PARAMS_BASE + ((channel + 1) >> 1)];
+        value = bcu.userEeprom->getUInt8(EE_CHANNEL_TIMING_PARAMS_BASE + ((channel + 1) >> 1));
         if (! (channel & 0x01)) value >>= 4;
         else                    value  &= 0x0F;
         delayTime[channel] = calculateTime(value, params [3] & 0x7F);
         channelData[channel].dimenc.step = (params [0] & 0xF0) >> 4;
         channelData[channel].dimenc.value = params [2];
     }
-    objectSetValue(COMOBJ_PRIMARY1 + channel, 0);
+    bcu.comObjects->objectSetValue(COMOBJ_PRIMARY1 + channel, 0);
     dimEncAction(channel, (params[1] & 0x0C) >> 2);
 }
 
