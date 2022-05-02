@@ -12,7 +12,6 @@
 
 #include <sblib/platform.h>
 #include <config.h>
-#include <sblib/eib/sblib_default_objects.h>
 #include <com_objs.h>
 #include <AdcIsr.h>
 #include <Relay.h>
