@@ -3,6 +3,8 @@
 //
 #include "common.h"
 
+BCU1 bcu = BCU1();
+
 SensorConfig config;
 SensorConf sc = &config;
 
@@ -12,7 +14,9 @@ SensorConf sc = &config;
  * @param comNo each com object gets 2 bytes
  */
 void fixRamLoc(COM comNo) {
-    uint8_t* l = (uint8_t*)&objectConfig(comNo)->dataPtr;
+    // uint8_t* l = (uint8_t*)&objectConfig(comNo)->dataPtr;
+    ComObjectsBCU1* comObjs = (ComObjectsBCU1*)bcu.comObjects;
+    uint8_t* l = (uint8_t*)&(comObjs->objectConfigBCU1(comNo)->dataPtr); ///\todo this looks stupid and i think it is.
     *l = comNo * 2;
 }
 
@@ -73,14 +77,15 @@ void initSensor() {
                      COM_THRESHOLD_3_TEMPERATURE_THRESHOLD_3_SENSOR_1);
 }
 
-/*
+/**
  * Initialize the application.
  */
-void setup() {
+BcuBase* setup() {
 #if LOGGING
     initLogger();
 #endif
     bcu.begin(0x4c, 0x438, 0x6); // 4Sense
     LOG("diagnosis on %x", EE_DIAGNOSIS);
     initSensor();
+    return (&bcu);
 }
