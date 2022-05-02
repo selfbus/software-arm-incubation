@@ -10,10 +10,7 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/core.h>
-#include <sblib/eib.h>
-#include <sblib/eib/sblib_default_objects.h>
-
+#include <sblib/eibBCU1.h>
 #include <sblib/internal/iap.h>
 #include <sblib/ioports.h>
 #include <sblib/spi.h>
@@ -45,7 +42,7 @@
 
 #define ARRAY_SIZE		1000
 #define TRESHHOLD_HIGH  15000			// 0-65535
-#define TRESHHOLD_LOW	10000			// vielleicht n�tig ???
+#define TRESHHOLD_LOW	10000			// vielleicht noetig ???
 #define SAMPLE_RATE		10				// Wieviel
 
 #define PARAMETER_BASE 	0x01F4
@@ -53,8 +50,9 @@
 
 SPI spi(SPI_PORT_0);
 
-volatile bool timer_expired=false;		// Bool f�r die IF-Abfrage, wenn true wird gesendet
-const byte* channelParams = userEepromData + (PARAMETER_BASE - USER_EEPROM_START);
+BCU1 bcu = BCU1();
+
+volatile bool timer_expired=false; // Bool  fuer die IF-Abfrage, wenn true wird gesendet
 
 unsigned short int limit;
 int min_limit;
@@ -62,44 +60,43 @@ int max_limit;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void setup_Timer32_0_Interrupt(){
+void setup_Timer32_0_Interrupt()
+{
+    // Enable the timer interrupt
+    enableInterrupt(TIMER_32_0_IRQn);
 
-	// Enable the timer interrupt
-		enableInterrupt(TIMER_32_0_IRQn);
+    // Begin using the timer
+    timer32_0.begin();
 
-		// Begin using the timer
-		timer32_0.begin();
+    // Let the timer count milliseconds
+    timer32_0.prescaler((SystemCoreClock / 1000) - 1);
 
-		// Let the timer count milliseconds
-		timer32_0.prescaler((SystemCoreClock / 1000) - 1);
+    // On match of MAT1, generate an interrupt and reset the timer
+    timer32_0.matchMode(MAT1, RESET | INTERRUPT);
 
-		// On match of MAT1, generate an interrupt and reset the timer
-		timer32_0.matchMode(MAT1, RESET | INTERRUPT);
+    // Match MAT1 when the timer reaches this value (in milliseconds)
+    timer32_0.match(MAT1, 1000);	//
 
-		// Match MAT1 when the timer reaches this value (in milliseconds)
-		timer32_0.match(MAT1, 1000);	//
-
-		timer32_0.start();
-
+    timer32_0.start();
 }
 
-// Funktion: Messung wird ausgef�hrt
-void messung(unsigned short int messwerte[SAMPLE_RATE]){
+// Funktion: Messung wird ausgefuehrt
+void messung(unsigned short int messwerte[SAMPLE_RATE])
+{
+    digitalWrite(PULSE_SHARP, true);		// Erzeugt den Puls, der LED, in der Rauchkammer (Eigentliche Messung)
+    for(int i=0;i<1400;i++);				// Wartezeit, ab wann gesamplet wird, Erfahrungswerte :0.28 ms warten von Messtechnik
 
-	digitalWrite(PULSE_SHARP, true);		// Erzeugt den Puls, der LED, in der Rauchkammer (Eigentliche Messung)
-	for(int i=0;i<1400;i++);				// Wartezeit, ab wann gesamplet wird, Erfahrungswerte :0.28 ms warten von Messtechnik
+    for(int j=0; j<SAMPLE_RATE; j++)
+    {		// Sampleung starten
 
-	for(int j=0; j<SAMPLE_RATE; j++){		// Sampleung starten
+        digitalWrite(ADC_CONF, true);		// IO 13 ansteuern Flanke erzeugen
+        for(int i=0;i<10;i++);				// Abwarten einer gewissen Zeit
+        digitalWrite(ADC_CONF, false);
 
-		digitalWrite(ADC_CONF, true);		// IO 13 ansteuern Flanke erzeugen
-		for(int i=0;i<10;i++);				// Abwarten einer gewissen Zeit
-		digitalWrite(ADC_CONF, false);
+        messwerte[j]=spi.transfer(0);		// Sendet Wert und empfaengt Wert vom Sensor und schreibt ins Messwerte Array[Global]
+    }
 
-		messwerte[j]=spi.transfer(0);		// Sendet Wert und empf�ngt Wert vom Sensor und schreibt ins Messwerte Array[Global]
-	}
-
-	digitalWrite(PULSE_SHARP, false);		// LED aus
-
+    digitalWrite(PULSE_SHARP, false);		// LED aus
 }
 
 // TimerInterrupt
@@ -112,18 +109,18 @@ extern "C" void TIMER32_0_IRQHandler()
     // again immediately after returning.
     timer32_0.resetFlags();
 
-
 	timer_expired=true;
 }
 
-
-void setup() {
-	// Initialize the application.
-
+/**
+ * Initialize the application.
+ */
+BcuBase* setup()
+{
 	//bcu.begin(4, 0x7054, 2); 	// We are a "Jung 2118" device, version 0.2
-	bcu.begin(76, 0x0442, 3); 	// We are a "EigenDevice" device, version 0.2  // eigengebr�u
+	bcu.begin(76, 0x0442, 3); 	// We are a "EigenDevice" device, version 0.3, eigengebraeu
 
-	// Interruptanweisung f�r die LED
+	// Interruptanweisung fuer die LED
 	pinMode(INFO_LED, OUTPUT);	// Info LED
 	pinMode(RUN_LED,  OUTPUT);	// Run LED
 
@@ -138,7 +135,7 @@ void setup() {
 
     // ADC Pins
     pinMode(PEEK_DET_SHARP, OUTPUT);
-    digitalWrite(PEEK_DET_SHARP,false);			// Setzt den Pin auf 0, sonst deckelt dieser den Sensor
+    digitalWrite(PEEK_DET_SHARP,false); // Setzt den Pin auf 0, sonst deckelt dieser den Sensor
     pinMode(ADC_CONF, 		OUTPUT);
     pinMode(PULSE_SHARP, 	OUTPUT);
 
@@ -146,10 +143,9 @@ void setup() {
     spi.setDataSize(SPI_DATA_16BIT);
     spi.begin();
 
-
     /////////////////////////////////////////////////////////////////////////////////
     // UART-Schnittstelle
-	serial.begin(19200);
+	serial.begin(115200);
 
 	serial.println("Selfbus serial port example");
 
@@ -159,42 +155,41 @@ void setup() {
 	serial.println();
 
 	// Hier wird das Objekt ausgelesen
-	for(int i=0; i<16;i++){
-		serial.print("OBjektNr ");
-		serial.print(i,DEC, 2);
-		serial.print(" ");
-		serial.println(objectSize(i), DEC, 2);
+	for(int i=0; i<16;i++)
+	{
+		serial.print("ObjektNr ", i, DEC, 2);
+		serial.println(" ", bcu.comObjects->objectSize(i), DEC, 2);
 	}
 
-	unsigned short int grenzwert_test=((userEepromData[0xF5])<<8) | userEepromData[0xF6];
+	unsigned short int grenzwert_test = bcu.userEeprom->getUInt16(0x1F5);
 
-	// Auslesung der ROM Werte
-	serial.println("EEPROM ab 1f4:");			// Grenzwert kann hier auch ausgelesen werden.
-	serial.print("Grenzwert: ");
-
-	serial.println( grenzwert_test);
-	for(int i=0;i<12;i++){					// 0 & 1 sind Grenzwert
-		serial.println(userEepromData[0xF4+i]);
+	// Auslesung der EEPROM Werte
+	serial.println("EEPROM ab 0x1f4:"); // Grenzwert kann hier auch ausgelesen werden.
+	serial.println("Grenzwert: ", grenzwert_test);
+	for(unsigned int i = 0; i < 12; i++){					// 0 & 1 sind Grenzwert
+		serial.println(bcu.userEeprom->getUInt16(0x1F4 + i));
 	}
-	objectWrite(0,(unsigned int) 0);
+	bcu.comObjects->objectWrite(0,(unsigned int) 0);
 
 	// Grenzwert holen
-	limit=((userEepromData[0xF5])<<8) | userEepromData[0xF6]; // Grenzwert auslesen! aus der Speicherstelle 0xF4 & 0xF5
-	min_limit = limit * 0.9;
-	max_limit = limit * 1.1;
+	limit = bcu.userEeprom->getUInt16(0x1F5); // Grenzwert auslesen! aus der Speicherstelle 0xF4 & 0xF5
+	min_limit = limit * 0.9f;
+	max_limit = limit * 1.1f;
+
+	return (&bcu);
 }
 
-/*
+/**
  * The main processing loop.
  */
 void loop()
 {
 	static bool Grenzwert=0;
-	unsigned short int messwerte[SAMPLE_RATE] = {0};		// Messwerte die gesampelt wurden, werden hier abgelegt.
-    volatile unsigned short int adc_value=0;							// Variable zur �bertragung der Werte, �ber KNX und bei UART
-    volatile unsigned int on=1,off=0;
+	unsigned short int messwerte[SAMPLE_RATE] = {0};    // Messwerte die gesampelt wurden, werden hier abgelegt.
+    volatile unsigned short int adc_value=0;            // Variable zur  Uebertragung der Werte, ueber KNX und bei UART
+    volatile unsigned int on = 1;
+    //volatile unsigned int off = 0;
     //volatile bool unterschritten=false;
-
 
 	// Diese If-Abfrage sendet den Wert auf das KNX, wenn timer_expired auf true gesetzt wird
     if(timer_expired)
@@ -229,13 +224,13 @@ void loop()
 
 
 
-		// Sendet an den KNX BUs, ob Grenzwert �berschritten ist, oder unterschritten ist!!
-    	if( max_limit < adc_value)		// Schreibt das Grenzwert = 1, wenn Limit um 10% �berschritten ist
+		// Sendet an den KNX Bus, ob Grenzwert  ueberschritten ist, oder unterschritten ist!!
+    	if( max_limit < adc_value) // Schreibt das Grenzwert = 1, wenn Limit um 10% ueberschritten ist
 		{
 			if(!Grenzwert){
-				objectWrite(0,on);
+			    bcu.comObjects->objectWrite(0,on);
 				Grenzwert=true;
-				serial.print("Grenzwert �berschritten :");
+				serial.print("Grenzwert  ueberschritten :");
 				serial.println(adc_value);
 			}
 		}
@@ -243,25 +238,24 @@ void loop()
 		{
 			if(Grenzwert) {
 				//unterschritten=true;
-				objectWrite(0, (unsigned int) 0);
+			    bcu.comObjects->objectWrite(0, (unsigned int) 0);
 				Grenzwert=false;
 				serial.print("Grenzwert unterschritten :");
 				serial.println(adc_value);
 			}
 		}
 
-		objectWrite(2, (unsigned int) (adc_value));		// OBjekt wird �bertragen
+    	bcu.comObjects->objectWrite(2, (unsigned int) (adc_value));		// OBjekt wird  uebertragen
 		timer_expired= false;
     }
 
-    // Irgendwie sendet obejctWrite keine null, deswegen wurde das aus der gro�en If rausgenommen ...
+    // Irgendwie sendet obejctWrite keine null, deswegen wurde das aus der grossen If rausgenommen ...
 //    if(unterschritten){
 //    	objectWrite(0, off);
 //    	unterschritten=false;
 //    }
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
+    if (bcu.bus->idle())
         waitForInterrupt();
-
 }
