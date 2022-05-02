@@ -21,7 +21,8 @@ BCU1 bcu = BCU1();
  */
 BcuBase* setup()
 {
-    bcu.begin(4, 0x2060, 1); // We are a "Jung 2138.10" device, version 0.1
+    bcu.begin(4, 0x2060, 1); // We are a "Jung 2204REGH" device, version 0.1
+                             // 4 channel blinds/shutter actuator
 #ifdef DEBUG
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
