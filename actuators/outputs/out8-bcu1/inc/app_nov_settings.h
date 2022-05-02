@@ -13,7 +13,6 @@
 #ifndef APP_NOV_SETTINGS_H_
 #define APP_NOV_SETTINGS_H_
 
-#include <sblib/eib.h>
 #include <sblib/mem_mapper.h>
 
 

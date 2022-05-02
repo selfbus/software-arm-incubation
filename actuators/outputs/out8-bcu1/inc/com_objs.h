@@ -8,18 +8,6 @@
 #ifndef com_objs_h
 #define com_objs_h
 
-/**
- * A structure for the com-object values.
- */
-struct ObjectValues
-{
-    unsigned char outputs[8];            // the output values
-    unsigned char special_functiions[4]; // the special function values
-    unsigned char feedback[8];           // the feedback values
-};
-
-// User ram address: value of com-object #0
-#define UR_COM_OBJ_VALUE0              0x0020
 
 /*
  * Com objects

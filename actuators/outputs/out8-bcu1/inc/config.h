@@ -18,7 +18,7 @@
  *
  * set the resulting build name (*.hex, *.axf, *.bin) under
  * eclipse menu "Project properties->C/C++ Build->Settings->[TAB]Build Artifact->Artifact name"
- * e.g. ${Proj_name}-${num_outputs}-BCU${bcu_type}-${controller_type}-${relay_type}-${inverted}-${hand_actuation}-${bus_fail}_${sw_version}
+ * e.g. ${Proj_name}-${num_outputs}-${controller_type}-${relay_type}-${inverted}-${hand_actuation}-${bus_fail}_${sw_version}
  *
  *
  * build variables available / default value:

@@ -39,10 +39,6 @@
     AppCallback callback;
 #endif
 
-
-
-ObjectValues& objectValues = *(ObjectValues*) (bcu.userRam->userRamData + UR_COM_OBJ_VALUE0);
-
 APP_VERSION("O08.10  ", "5", "10");
 
 /**

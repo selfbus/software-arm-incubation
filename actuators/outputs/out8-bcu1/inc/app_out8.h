@@ -45,11 +45,7 @@ void objectUpdated(int objno);
 void checkTimeouts(void);
 void initApplication(int lastRelayState = 0x00);
 void stopApplication();
-unsigned int  getRelaysState();
-/**
- * The values of the communication objects
- */
-extern ObjectValues& objectValues;
+unsigned int getRelaysState();
 
 extern BCU1 bcu;
 
