@@ -7,7 +7,6 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/eib/user_memory.h>
 #include "input.h"
 
 //#include "LedIndication.h"
@@ -16,7 +15,7 @@
 void Input::begin(int noOfChannels, int baseAddress)
 {
     this->noOfChannels = noOfChannels;
-    this->debounceTime = userEeprom.getUInt16(baseAddress);
+    this->debounceTime = bcu.userEeprom->getUInt16(baseAddress);
     inputState = 0;
     scan();
     int mode;

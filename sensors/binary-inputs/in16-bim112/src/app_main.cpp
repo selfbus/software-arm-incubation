@@ -8,7 +8,6 @@
 
 #include "app_in.h"
 #include "debug.h"
-#include <sblib/eib.h>
 #include "config.h"
 
 APP_VERSION("SBin16  ", "1", "10")
@@ -18,7 +17,7 @@ const HardwareVersion * currentVersion;
 /**
  * Application setup
  */
-void setup()
+BcuBase* setup()
 {
     //bcu.setProgPin(PIN_PROG);
 #ifndef __LPC11UXX__
@@ -35,6 +34,7 @@ void setup()
     // XXX read some ID pins to determine which version is attached
 
     initApplication();
+    return (&bcu);
 }
 
 /**
@@ -44,7 +44,7 @@ void loop()
 {
     int objno;
     // Handle updated communication objects
-    while ((objno = nextUpdatedObject()) >= 0)
+    while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
         objectUpdated(objno);
     }
@@ -52,6 +52,6 @@ void loop()
     checkPeriodic();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
+    if (bcu.bus->idle())
         waitForInterrupt();
 }

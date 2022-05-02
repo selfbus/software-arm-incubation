@@ -11,20 +11,20 @@
  */
 
 #include "logic.h"
-#include <sblib/eib.h>
+#include "app_in.h"
 
 Logic::Logic(unsigned int logicBase, unsigned int no, unsigned int chans,
         unsigned int busreturn) :
         configBase(logicBase), number(no), channels(chans)
 {
     unsigned int base = configBase + number * (11 + channels);
-    logicOperation = userEeprom.getUInt8(base);
-    sendCondition = userEeprom.getUInt8(base + 1);
-    outputInverted = userEeprom.getUInt8(base + 2);
+    logicOperation = bcu.userEeprom->getUInt8(base);
+    sendCondition = bcu.userEeprom->getUInt8(base + 1);
+    outputInverted = bcu.userEeprom->getUInt8(base + 2);
     inputCfgPtr = base + 3;
 
     int addr = configBase + 4 * (11 + channels) + 1 + 2 * number;
-    numScene = userEeprom.getUInt8(addr + 1);
+    numScene = bcu.userEeprom->getUInt8(addr + 1);
     for (unsigned int i = 0; i < MAX_CHANNELS + 2; i++)
     {
         inputs[i] = 0;
@@ -40,8 +40,8 @@ Logic::Logic(unsigned int logicBase, unsigned int no, unsigned int chans,
 
     if (busreturn)
     {
-        requestObjectRead(extLogicalObjectAComObjNo);
-        requestObjectRead(extLogicalObjectBComObjNo);
+        bcu.comObjects->requestObjectRead(extLogicalObjectAComObjNo);
+        bcu.comObjects->requestObjectRead(extLogicalObjectBComObjNo);
     }
 }
 
@@ -62,7 +62,7 @@ void Logic::doLogic(void)
             {
             	chanModePtr = inputCfgPtr + i + 2*number;
             }
-        	unsigned int chanMode = userEeprom.getUInt8(chanModePtr);
+        	unsigned int chanMode = bcu.userEeprom->getUInt8(chanModePtr);
             if (chanMode != CHAN_MODE_DISABLED)
             {
                 result |= inputs[i] ^ (chanMode - 1);
@@ -82,7 +82,7 @@ void Logic::doLogic(void)
         	{
         	   	chanModePtr = inputCfgPtr + i + 2*number;
         	}
-        	unsigned int chanMode = userEeprom.getUInt8(chanModePtr);
+        	unsigned int chanMode = bcu.userEeprom->getUInt8(chanModePtr);
             if (chanMode != CHAN_MODE_DISABLED)
             {
                 result &= inputs[i] ^ (chanMode - 1);
@@ -96,31 +96,31 @@ void Logic::doLogic(void)
     switch (sendCondition)
     {
     case SEND_COND_INPUT:
-        objectWrite(outLogicalObjectComObjNo, result);
+        bcu.comObjects->objectWrite(outLogicalObjectComObjNo, result);
         break;
     case SEND_COND_OUTPUT:
-        if (objectRead(outLogicalObjectComObjNo) != result)
+        if (bcu.comObjects->objectRead(outLogicalObjectComObjNo) != result)
         {
-            objectWrite(outLogicalObjectComObjNo, result);
+            bcu.comObjects->objectWrite(outLogicalObjectComObjNo, result);
         }
         ;
         break;
     case SEND_COND_SCENE:
         if (result)
         {
-            objectWrite(outLogicalObjectComObjNo, numScene);
+            bcu.comObjects->objectWrite(outLogicalObjectComObjNo, numScene);
         }
         ;
         break;
     case SEND_COND_NONE:
-        objectSetValue(outLogicalObjectComObjNo, result);
+        bcu.comObjects->objectSetValue(outLogicalObjectComObjNo, result);
         break;
     }
 }
 
 void Logic::inputChanged(int num, int value)
 {
-    unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + num);
+    unsigned int chanMode = bcu.userEeprom->getUInt8(inputCfgPtr + num);
     if (chanMode != CHAN_MODE_DISABLED)
     {
         inputs[num] = value ? 1 : 0;
@@ -132,19 +132,19 @@ void Logic::objectUpdated(int objno)
 {
     if (objno == extLogicalObjectAComObjNo)
     {
-        unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + channels + 2*number);
+        unsigned int chanMode = bcu.userEeprom->getUInt8(inputCfgPtr + channels + 2*number);
         if (chanMode != CHAN_MODE_DISABLED)
         {
-            inputs[channels] = objectRead(extLogicalObjectAComObjNo);
+            inputs[channels] = bcu.comObjects->objectRead(extLogicalObjectAComObjNo);
             doLogic();
         }
     }
     if (objno == extLogicalObjectBComObjNo)
     {
-        unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + channels + 1 + 2*number);
+        unsigned int chanMode = bcu.userEeprom->getUInt8(inputCfgPtr + channels + 1 + 2*number);
         if (chanMode != CHAN_MODE_DISABLED)
         {
-            inputs[channels+1] = objectRead(extLogicalObjectBComObjNo);
+            inputs[channels+1] = bcu.comObjects->objectRead(extLogicalObjectBComObjNo);
             doLogic();
         }
     }

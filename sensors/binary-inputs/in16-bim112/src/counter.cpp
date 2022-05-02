@@ -9,7 +9,7 @@
  */
 
 #include "counter.h"
-#include <sblib/eib.h>
+#include "app_in.h"
 
 // the following actions for individually configured channels
 #define COUNT_ON_RISING_EDGE         0x0000
@@ -20,8 +20,8 @@ Counter::Counter(unsigned int no, unsigned int longPress,
         unsigned int channelConfig, unsigned int busReturn, unsigned int value) :
         _Switch_(no, longPress)
 {
-    modeCounter = userEeprom.getUInt8(channelConfig + 0x03);
-    txDiffCounter = userEeprom.getUInt8(channelConfig + 0x1d);
+    modeCounter = bcu.userEeprom->getUInt8(channelConfig + 0x03);
+    txDiffCounter = bcu.userEeprom->getUInt8(channelConfig + 0x1d);
 
     debug_eeprom("Channel EEPROM:", channelConfig, 46);
 
@@ -31,7 +31,7 @@ Counter::Counter(unsigned int no, unsigned int longPress,
 
 void Counter::inputChanged(int value)
 {
-    int counter = objectRead(counterComObjNo);
+    int counter = bcu.comObjects->objectRead(counterComObjNo);
     int countok = 0;
     if (modeCounter == COUNT_ON_RISING_EDGE && value)
     {
@@ -52,21 +52,21 @@ void Counter::inputChanged(int value)
     {
         if (!(counter % txDiffCounter))
         {
-            objectWrite(counterComObjNo, counter);
+            bcu.comObjects->objectWrite(counterComObjNo, counter);
         }
         else
         {
-            objectSetValue(counterComObjNo, counter);
+            bcu.comObjects->objectSetValue(counterComObjNo, counter);
         }
     }
 }
 
 void Counter::checkPeriodic(void)
 {
-    if (objectRead(resetComObjNo))
+    if (bcu.comObjects->objectRead(resetComObjNo))
     {
         int val = 0;
-        objectSetValue(resetComObjNo, val);
-        objectWrite(counterComObjNo, val);
+        bcu.comObjects->objectSetValue(resetComObjNo, val);
+        bcu.comObjects->objectWrite(counterComObjNo, val);
     }
 }

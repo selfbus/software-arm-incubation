@@ -9,14 +9,14 @@
  */
 
 #include "scene.h"
-#include <sblib/eib.h>
+#include "app_in.h"
 
 Scene::Scene(unsigned int no, unsigned int longPress,
         unsigned int channelConfig, unsigned int busReturn, unsigned int value) :
         _Switch_(no, longPress)
 {
-    saveScene = userEeprom.getUInt8(channelConfig + 0x03) & 0x01;
-    numberScene = userEeprom.getUInt8(channelConfig + 0x04);
+    saveScene = bcu.userEeprom->getUInt8(channelConfig + 0x03) & 0x01;
+    numberScene = bcu.userEeprom->getUInt8(channelConfig + 0x04);
 
     debug_eeprom("Channel EEPROM:", channelConfig, 46);
 
@@ -39,7 +39,7 @@ void Scene::inputChanged(int value)
         // for the last rising edge
         if (timeout.started())
         {
-            objectWrite(sceneComObjNo, numberScene);
+            bcu.comObjects->objectWrite(sceneComObjNo, numberScene);
         }
         timeout.stop();
     }
@@ -51,7 +51,7 @@ void Scene::checkPeriodic(void)
     {
         if (saveScene)
         {
-            objectWrite(sceneComObjNo, numberScene | 0x80);
+            bcu.comObjects->objectWrite(sceneComObjNo, numberScene | 0x80);
         }
     }
 }

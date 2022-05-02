@@ -9,21 +9,21 @@
  */
 
 #include "dimmer.h"
-#include <sblib/eib.h>
+#include "app_in.h"
 
 Dimmer::Dimmer(unsigned int no, unsigned int longPress,
         unsigned int channelConfig, unsigned int busReturn, unsigned int value) :
         _Switch_(no, longPress)
 {
-    oneButtonDimmer = userEeprom.getUInt8(channelConfig + 0x03) & 0x03 ? 0 : 1;
-    upDownInverse = userEeprom.getUInt8(channelConfig + 0x03) & 0x03;
-    stepsDownWidthDimmer = userEeprom.getUInt8(channelConfig + 0x04);
-    stepsUpWidthDimmer = userEeprom.getUInt8(channelConfig + 0x08);
-    repeatDimmerTime = userEeprom.getUInt16(channelConfig + 0x1E);
+    oneButtonDimmer = bcu.userEeprom->getUInt8(channelConfig + 0x03) & 0x03 ? 0 : 1;
+    upDownInverse = bcu.userEeprom->getUInt8(channelConfig + 0x03) & 0x03;
+    stepsDownWidthDimmer = bcu.userEeprom->getUInt8(channelConfig + 0x04);
+    stepsUpWidthDimmer = bcu.userEeprom->getUInt8(channelConfig + 0x08);
+    repeatDimmerTime = bcu.userEeprom->getUInt16(channelConfig + 0x1E);
 
     debug_eeprom("Channel EEPROM:", channelConfig, 46);
 
-    if (!userEeprom[channelConfig + 0x20] & 0x3)
+    if (!bcu.userEeprom->getUInt8(channelConfig + 0x20) & 0x3)
     {
         repeatDimmerTime = 0;
     }
@@ -58,7 +58,7 @@ Dimmer::Dimmer(unsigned int no, unsigned int longPress,
     }
     if (busReturn && oneButtonDimmer)
     {
-        requestObjectRead(stateComObjNo);
+        bcu.comObjects->requestObjectRead(stateComObjNo);
     }
 }
 
@@ -80,7 +80,7 @@ void Dimmer::inputChanged(int value)
         {
             int objVal = 0;
             doStopFlag = 0;
-            objectWrite(dimValComObjNo, objVal);
+            bcu.comObjects->objectWrite(dimValComObjNo, objVal);
             if (oneButtonDimmer)
             {
                 upDownInverse = !upDownInverse;
@@ -91,14 +91,14 @@ void Dimmer::inputChanged(int value)
             unsigned int state = !upDownInverse;
             if (oneButtonDimmer)
             { // in one button mode use the inverse direction com obj value
-                state = !objectRead(stateComObjNo);
-                objectSetValue(stateComObjNo, state);
+                state = !bcu.comObjects->objectRead(stateComObjNo);
+                bcu.comObjects->objectSetValue(stateComObjNo, state);
             }
             else
             {
                 state = upDownInverse ? (number & 1) : !(number & 1);
             }
-            objectWrite(onOffComObjNo, state);
+            bcu.comObjects->objectWrite(onOffComObjNo, state);
         }
         timeout.stop();
     }
@@ -116,7 +116,7 @@ void Dimmer::checkPeriodic(void)
                 timeout.start(repeatDimmerTime);
             }
         }
-        objectWrite(dimValComObjNo, val);
+        bcu.comObjects->objectWrite(dimValComObjNo, val);
         doStopFlag = 1;
     }
 }
