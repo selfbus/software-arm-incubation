@@ -1,5 +1,5 @@
 /*
- *  device_mgnt.h - Device management, mode managemant and mode switching
+ *  device_mgnt.h - Device management, mode management and mode switching
  *
  *  Copyright (C) 2018 Florian Voelzke <fvoelzke@gmx.de>
  *

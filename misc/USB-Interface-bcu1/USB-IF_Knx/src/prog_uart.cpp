@@ -9,11 +9,11 @@
  */
 
 #include <stdio.h>
+#include <sblib/digital_pin.h>
 #include "GenFifo.h"
 #include "BufferMgr.h"
 #include "knxusb_const.h"
 #include "device_mgnt.h"
-#include <sblib/eib.h>
 #include "prog_uart.h"
 
 // Baudrate des Interfaces

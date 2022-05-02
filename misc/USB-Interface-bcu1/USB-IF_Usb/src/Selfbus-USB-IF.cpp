@@ -64,16 +64,20 @@ int main(void) {
 	if (deviceIf.KnxSideProgMode())
 	{
 	  CdcDeviceMode = TCdcDeviceMode::ProgBusChip;
-    modeSelect.SetLeds();
+      modeSelect.SetLeds();
 	} else	{ // wenn nicht "ProgBusChip"
 	  modeSelect.StartModeSelect();
 	  CdcDeviceMode = modeSelect.DeviceMode();
 	}
 
-	if (CdcDeviceMode == TCdcDeviceMode::ProgBusChip)
-		uart.Init(9200, true);
+	if (CdcDeviceMode == TCdcDeviceMode::ProgBusChip) // ISP enable for KNX module is set (JP5=on)
+	{
+	    uart.Init(9200, true); ///\todo check why 9200 and not at least 9600 isn't this the ISP-speed to the knx module?
+	}
 	else
-		uart.Init(115200, false);
+	{
+	    uart.Init(115200, false);
+	}
 
 	ret = usb_init(&g_hUsb, CdcDeviceMode == TCdcDeviceMode::HidOnly);
 
@@ -85,6 +89,7 @@ int main(void) {
 			if (CdcDeviceMode != TCdcDeviceMode::HidOnly) {
 				cdcdbgif.DbgIf_Tasks();
 			}
+
 			if (uart.SerIf_Tasks())
 				if (CdcDeviceMode == TCdcDeviceMode::ProgBusChip)
 					cdcdbgif.ReenableRec();
@@ -92,8 +97,8 @@ int main(void) {
 			if ((systemTime - Last10msTime) >= 10)
 			{
 			  Last10msTime = systemTime;
-        usb_alive = (alive_cnt != 0);
-	      alive_cnt = 0;
+			  usb_alive = (alive_cnt != 0);
+			  alive_cnt = 0;
 			  deviceIf.DoActivityLed(usb_alive);
 			  if (deviceIf.Hid2Knx_Ena()) // Folgendes nur, wenn nicht Prog-Bus-Chip aktiv ist
 			  {

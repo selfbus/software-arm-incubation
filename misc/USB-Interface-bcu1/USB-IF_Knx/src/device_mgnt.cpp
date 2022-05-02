@@ -9,7 +9,6 @@
  */
 
 #include <stdio.h>
-#include <sblib/eib.h>
 #include "prog_uart.h"
 #include "knxusb_const.h"
 #include "Emi_Knx.h"

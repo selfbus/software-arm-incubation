@@ -11,6 +11,7 @@
 #ifndef prog_uart_h
 #define prog_uart_h
 
+#include <sblib/timer.h>
 
 class ProgUart;
 
