@@ -51,7 +51,7 @@ BCU1 bcu;
 */
 //MemMapper memMapper(0xea00, 0x400, false);
 
-/*
+/**
  * Initialize the application.
  */
 BcuBase* setup() {

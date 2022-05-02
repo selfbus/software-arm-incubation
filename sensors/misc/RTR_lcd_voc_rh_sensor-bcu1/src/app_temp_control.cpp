@@ -54,10 +54,8 @@ void rebootApplication(void){
 }
 
 void initApplication(void) {
-
-    functionsParams = bcu.userEeprom->userEepromData + (EE_FUNCTIONS_PARAMS_BASE - bcu.userEeprom->userEepromStart);
-    TimingParams = bcu.userEeprom->userEepromData + (EE_TIMING_PARAMS_BASE - bcu.userEeprom->userEepromStart);
-	unsigned char eepromParams = (*(bcu.userEeprom))[EE_FUNCTIONS_PARAMS_BASE];
+    functionsParams = bcu.userMemoryPtr(EE_FUNCTIONS_PARAMS_BASE);
+    TimingParams = bcu.userMemoryPtr(EE_TIMING_PARAMS_BASE);
 
 	if ((*(bcu.userEeprom))[EE_FUNCTIONS_PARAMS_BASE] & TEMPERATURE_FUNCTION_ACTIVE) {
 		temp.functionActive = true;
