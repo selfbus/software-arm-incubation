@@ -1,0 +1,84 @@
+TLayer4::_begin debugging active
+Properties dump enabled.
+BCU Name: BCU2  MaskVersion: 0x0020
+userRam    start: 0x0000 end: 0x00FF size: 0x0100
+userEeprom start: 0x0100 end: 0x04FF size: 0x0400 flashSize: 0x0400
+
+Selfbus TSU/4.2 in4-bcu2
+propertyValueReadTelegram: objectIdx=0x00 OT_DEVICE propertyid=0x38 PID_MAX_APDULENGTH
+findProperty: objectIdx=0x01 OT_ADDR_TABLE propertyid=0x38 PID_MAX_APDULENGTH not implemented
+propertyValueReadTelegram: objectIdx=0x00 OT_DEVICE propertyid=0x0B PID_SERIAL_NUMBER
+propertyValueReadTelegram: objectIdx=0x00 OT_DEVICE propertyid=0x0C PID_MANUFACTURER_ID
+propertyValueReadTelegram: objectIdx=0x00 OT_DEVICE propertyid=0x11 PID_PORT_CONFIGURATION
+propertyValueWriteTelegram: objectIdx=0x00 OT_DEVICE propertyid=0x08 PID_SERVICE_CONTROL
+handleLoadStateMachine: objectIdx=0x01 OT_ADDR_TABLE loadstate=0x00 LS_UNLOADED
+handleLoadStateMachine: objectIdx=0x02 OT_ASSOC_TABLE loadstate=0x00 LS_UNLOADED
+handleLoadStateMachine: objectIdx=0x03 OT_APPLICATION loadstate=0x00 LS_UNLOADED
+handleLoadStateMachine: objectIdx=0x01 OT_ADDR_TABLE loadstate=0x02 LS_LOADING
+handleLoadStateMachine: objectIdx=0x01 OT_ADDR_TABLE loadstate=0x05 LS_LOADCOMPLETING
+handleAllocAbsDataSegment only partly implemented! objectIdx=0x01 OT_ADDR_TABLE Data: 01 16 00 0C 33 03 80 00 len: 8
+  --> start: 0x0116 length: 0x000C end: 0x0121 access: 0x33 memtype: 0x03 checksum: 1 attrib: 0x80
+
+propertyValueReadTelegram: objectIdx=0x00 OT_DEVICE propertyid=0x0E PID_DEVICE_CONTROL
+propertyValueReadTelegram: objectIdx=0x00 OT_DEVICE propertyid=0x0E PID_DEVICE_CONTROL
+propertyValueWriteTelegram: objectIdx=0x00 OT_DEVICE propertyid=0x0E PID_DEVICE_CONTROL
+propertyValueReadTelegram: objectIdx=0x00 OT_DEVICE propertyid=0x0E PID_DEVICE_CONTROL
+handleLoadStateMachine: objectIdx=0x01 OT_ADDR_TABLE loadstate=0x05 LS_LOADCOMPLETING
+handleAllocAbsTaskSegment: objectIdx=0x01 OT_ADDR_TABLE Data: 01 16 02 00 02 90 09 01 len: 8
+  --> startaddress: 0x0116 PEI: 0x02 Manufacturer: 0x0002 AppID: 0x9009 Vers.: 0x01
+  ----> userEeprom->addrTabAddr=0x0116
+
+handleLoadStateMachine: objectIdx=0x01 OT_ADDR_TABLE loadstate=0x01 LS_LOADED
+handleLoadStateMachine: objectIdx=0x02 OT_ASSOC_TABLE loadstate=0x02 LS_LOADING
+handleLoadStateMachine: objectIdx=0x02 OT_ASSOC_TABLE loadstate=0x05 LS_LOADCOMPLETING
+handleAllocAbsDataSegment only partly implemented! objectIdx=0x02 OT_ASSOC_TABLE Data: 01 22 00 4A 33 03 80 00 len: 8
+  --> start: 0x0122 length: 0x004A end: 0x016B access: 0x33 memtype: 0x03 checksum: 1 attrib: 0x80
+
+handleLoadStateMachine: objectIdx=0x02 OT_ASSOC_TABLE loadstate=0x05 LS_LOADCOMPLETING
+handleAllocAbsTaskSegment: objectIdx=0x02 OT_ASSOC_TABLE Data: 01 22 02 00 02 90 09 01 len: 8
+  --> startaddress: 0x0122 PEI: 0x02 Manufacturer: 0x0002 AppID: 0x9009 Vers.: 0x01
+  ----> userEeprom->assocTabAddr=0x0122
+
+handleLoadStateMachine: objectIdx=0x02 OT_ASSOC_TABLE loadstate=0x01 LS_LOADED
+handleLoadStateMachine: objectIdx=0x03 OT_APPLICATION loadstate=0x02 LS_LOADING
+handleLoadStateMachine: objectIdx=0x03 OT_APPLICATION loadstate=0x05 LS_LOADCOMPLETING
+handleAllocAbsDataSegment only partly implemented! objectIdx=0x03 OT_APPLICATION Data: 00 C8 00 18 33 01 00 00 len: 8
+  --> start: 0x00C8 length: 0x0018 end: 0x00DF access: 0x33 memtype: 0x01 checksum: 0 attrib: 0x00
+
+handleLoadStateMachine: objectIdx=0x03 OT_APPLICATION loadstate=0x05 LS_LOADCOMPLETING
+handleAllocAbsDataSegment only partly implemented! objectIdx=0x03 OT_APPLICATION Data: 09 72 00 4A 33 02 00 00 len: 8
+  --> start: 0x0972 length: 0x004A end: 0x09BB access: 0x33 memtype: 0x02 checksum: 0 attrib: 0x00
+
+handleLoadStateMachine: objectIdx=0x03 OT_APPLICATION loadstate=0x05 LS_LOADCOMPLETING
+handleAllocAbsDataSegment only partly implemented! objectIdx=0x03 OT_APPLICATION Data: 01 6C 00 30 33 03 00 00 len: 8
+  --> start: 0x016C length: 0x0030 end: 0x019B access: 0x33 memtype: 0x03 checksum: 0 attrib: 0x00
+
+handleLoadStateMachine: objectIdx=0x03 OT_APPLICATION loadstate=0x05 LS_LOADCOMPLETING
+handleAllocAbsDataSegment only partly implemented! objectIdx=0x03 OT_APPLICATION Data: 01 00 00 16 33 03 00 00 len: 8
+  --> start: 0x0100 length: 0x0016 end: 0x0115 access: 0x33 memtype: 0x03 checksum: 0 attrib: 0x00
+
+handleLoadStateMachine: objectIdx=0x03 OT_APPLICATION loadstate=0x05 LS_LOADCOMPLETING
+handleAllocAbsDataSegment only partly implemented! objectIdx=0x03 OT_APPLICATION Data: 01 9C 02 D4 33 03 80 00 len: 8
+  --> start: 0x019C length: 0x02D4 end: 0x046F access: 0x33 memtype: 0x03 checksum: 1 attrib: 0x80
+
+handleLoadStateMachine: objectIdx=0x03 OT_APPLICATION loadstate=0x05 LS_LOADCOMPLETING
+handleAllocAbsTaskSegment: objectIdx=0x03 OT_APPLICATION Data: 01 BE 02 00 02 90 09 01 len: 8
+  --> startaddress: 0x01BE PEI: 0x02 Manufacturer: 0x0002 AppID: 0x9009 Vers.: 0x01
+  ----> userEeprom->appPeiType = 0x02
+  ----> userEeprom->manufacturerH & L = 0x0002
+  ----> userEeprom->deviceTypeH & L = 0x9009
+  ----> userEeprom->version = 0x01
+
+handleLoadStateMachine: objectIdx=0x03 OT_APPLICATION loadstate=0x05 LS_LOADCOMPLETING
+handleTaskPtr NOT IMPLEMENTED! objectIdx=0x03 OT_APPLICATION Data: 01 9C 01 B8 00 00 00 00 len: 8
+  --> init: 0x019C save: 0x01B8 PEI: 0x1B8
+
+handleLoadStateMachine: objectIdx=0x03 OT_APPLICATION loadstate=0x05 LS_LOADCOMPLETING
+handleTaskCtrl1 ONLY PARTLY IMPLEMENTED! objectIdx=0x03 OT_APPLICATION Data: 00 00 00 00 00 00 00 00 len: 8
+  --> userEeprom->eibObjAddr: 0x0000 userEeprom->eibObjCount: 0x00
+
+handleLoadStateMachine: objectIdx=0x03 OT_APPLICATION loadstate=0x05 LS_LOADCOMPLETING
+handleTaskCtrl2 ONLY PARTLY IMPLEMENTED! objectIdx=0x03 OT_APPLICATION Data: 50 81 01 6C 00 D4 09 72 len: 8
+  --> callbackAddr: 0x5081 userEeprom->commsTabAddr: 0x016C userEeprom->commsSeg0Addr: 0x00D4 userEeprom->commsSeg1Addr: 0x0972
+
+handleLoadStateMachine: objectIdx=0x03 OT_APPLICATION loadstate=0x01 LS_LOADED

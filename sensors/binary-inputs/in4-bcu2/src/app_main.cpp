@@ -6,13 +6,16 @@
  *  published by the Free Software Foundation.
  */
 
+#include <sblib/eibBCU2.h>
 #include "app_in4.h"
 #include "com_objs.h"
 #include "params.h"
 
-#include <sblib/eib.h>
-#include <sblib/eib/sblib_default_objects.h>
-#include <sblib/serial.h>
+#ifdef DEBUG
+#   include <sblib/serial.h>
+#endif
+
+APP_VERSION("TSU/4.2 ", "0", "02")
 
 // Digital pin for LED
 #define PIO_LED PIO0_7
@@ -23,15 +26,14 @@ static const int inputPins[] = { PIO2_3, PIO2_2, PIO2_1, PIO2_0 };
 // Debouncers for inputs
 Debouncer inputDebouncer[NUM_CHANNELS];
 
-ObjectValues& objectValues = *(ObjectValues*) (userRamData + UR_COM_OBJ_VALUE0);
-const byte* channelParams = userEepromData + (EE_CHANNEL_PARAMS_BASE - USER_EEPROM_START);
-const byte* channelTimingParams = userEepromData + (EE_CHANNEL_TIMING_PARAMS_BASE - USER_EEPROM_START);
-
+ObjectValues& objectValues = *(ObjectValues*) bcu.userMemoryPtr(UR_COM_OBJ_VALUE0);
+const byte* channelParams = bcu.userMemoryPtr(EE_CHANNEL_PARAMS_BASE);
+const byte* channelTimingParams = bcu.userMemoryPtr(EE_CHANNEL_TIMING_PARAMS_BASE);
 
 /**
  * Application setup
  */
-void setup()
+BcuBase* setup()
 {
     bcu.begin(2, 0x9009, 0x01);  // we are a ABB TSU/4.2 version 0.1
 
@@ -45,9 +47,14 @@ void setup()
         pinMode(inputPins[channel], INPUT | HYSTERESIS | PULL_UP);
         inputDebouncer[channel].init(digitalRead(inputPins[channel]));
     }
-
-    serial.begin(115200);
-    serial.println("Selfbus TSU/4.2");
+#ifdef DEBUG
+    if (!serial.enabled())
+    {
+        serial.begin(115200);
+    }
+    serial.println("Selfbus TSU/4.2 in4-bcu2");
+#endif
+    return (&bcu);
 }
 
 /**
@@ -55,11 +62,13 @@ void setup()
  */
 void loop()
 {
-    int debounceTime = userEeprom[EE_INPUT_DEBOUNCE_TIME] >> 1;
-    int objno, channel, value, lastValue;
+    int objno;
+    int value;
+    int lastValue;
+    int debounceTime = bcu.userEeprom->getUInt8(EE_INPUT_DEBOUNCE_TIME) >> 1;
 
     // Handle the input pins
-    for (channel = 0; channel < NUM_CHANNELS; ++channel)
+    for (int channel = 0; channel < NUM_CHANNELS; ++channel)
     {
         lastValue = inputDebouncer[channel].value();
         value = inputDebouncer[channel].debounce(digitalRead(inputPins[channel]), debounceTime);
@@ -69,12 +78,12 @@ void loop()
     }
 
     // Handle updated communication objects
-    while ((objno = nextUpdatedObject()) >= 0)
+    while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
         objectUpdated(objno);
     }
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
+    if (bcu.bus->idle())
         waitForInterrupt();
 }

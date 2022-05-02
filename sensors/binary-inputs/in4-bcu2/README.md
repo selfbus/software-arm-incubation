@@ -1,11 +1,10 @@
 in4-bcu2
 ========
 
-This is an example application that uses the SBLib with BCU2 emulation.
 The emulated device is a ABB TSU/4.2 with 4 digital inputs.
 
 Please use the ABB TSU/4.2 VD for ETS configuration from this site:
-http://www.knx-gebaeudesysteme.de/sto_g/Deutsch/Deutschland/ABB_ibus_KNX/_HTML/product_GHQ6050025R0002.htm
+http://www.knx-gebaeudesysteme.de/sto_g/_All/ETS/TSU42.VD1
 
 Used IO Ports
 -------------

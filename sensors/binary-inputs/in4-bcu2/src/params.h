@@ -60,7 +60,7 @@ extern const byte* channelTimingParams;
 #define EE_TEL_RATE_LIMIT_ACTIVE       0x0110
 
 // Eeprom address: input debounce time in 0.5 msec
-#define EE_INPUT_DEBOUNCE_TIME         0x01d2
+#define EE_INPUT_DEBOUNCE_TIME         0x019A // 0x01d2 not correct
 
 // Eeprom address: telegram rate limit: telegrams per 17 sec
 #define EE_TEL_RATE_LIMIT              0x01d3

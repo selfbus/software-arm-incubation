@@ -9,8 +9,10 @@
 #ifndef app_in4_h
 #define app_in4_h
 
+#include <sblib/eibBCU2.h>
 #include "com_objs.h"
 
+extern BCU2 bcu;
 
 /**
  * Number of input channels. Default: 4.
