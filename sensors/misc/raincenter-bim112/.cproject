@@ -4,7 +4,6 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.1117847744">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.1117847744" moduleId="org.eclipse.cdt.core.settings" name="Debug 4TE">
 				<macros>
-					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.4"/>
 				</macros>
@@ -56,7 +55,6 @@
 								<option id="com.crt.advproject.gcc.arch.40513172" name="Architecture" superClass="com.crt.advproject.gcc.arch" useByScannerDiscovery="true" value="com.crt.advproject.gcc.target.cm0" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.preprocessor.def.symbols.422497648" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="DEBUG"/>
-									<listOptionValue builtIn="false" value="__CODE_RED"/>
 									<listOptionValue builtIn="false" value="__NEWLIB__"/>
 									<listOptionValue builtIn="false" value="CORE_M0"/>
 									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
@@ -134,7 +132,6 @@
 		<cconfiguration id="com.crt.advproject.config.exe.release.1922039176">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.release.1922039176" moduleId="org.eclipse.cdt.core.settings" name="Release TS_ARM">
 				<macros>
-					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.4"/>
 				</macros>
@@ -269,7 +266,6 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.1117847744.824627048">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.1117847744.824627048" moduleId="org.eclipse.cdt.core.settings" name="Debug TS_ARM">
 				<macros>
-					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.4"/>
 				</macros>
@@ -401,7 +397,6 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.1117847744.824627048.1285872332">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.1117847744.824627048.1285872332" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Debug TS_ARM">
 				<macros>
-					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.4"/>
 				</macros>
@@ -533,7 +528,6 @@
 		<cconfiguration id="com.crt.advproject.config.exe.release.1922039176.564530152">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.release.1922039176.564530152" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release TS_ARM">
 				<macros>
-					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.4"/>
 				</macros>
@@ -668,7 +662,6 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.1117847744.1807664122">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.1117847744.1807664122" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Debug 4TE">
 				<macros>
-					<stringMacro name="bcu_type" type="VALUE_TEXT" value="BIM112"/>
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="0.4"/>
 				</macros>
@@ -770,8 +763,8 @@
 									<listOptionValue builtIn="false" value="sblib"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.1457728463" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/Debug}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib/Release}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.link.cpp.crpenable.877468864" name="Enable automatic placement of Code Read Protection field in image" superClass="com.crt.advproject.link.cpp.crpenable" useByScannerDiscovery="false" value="false" valueType="boolean"/>
 								<option id="com.crt.advproject.link.cpp.multicore.slave.736465758" name="Multicore configuration" superClass="com.crt.advproject.link.cpp.multicore.slave" useByScannerDiscovery="false"/>
