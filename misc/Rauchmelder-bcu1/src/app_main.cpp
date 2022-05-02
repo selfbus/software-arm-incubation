@@ -14,7 +14,6 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/eib.h>
 #include <sblib/timeout.h>
 #include "rm_com.h"
 #include "rm_app.h"
@@ -27,7 +26,7 @@ APP_VERSION("S_RM_H6 ", "1", "02");
 /**
  * Application setup
  */
-void setup()
+BcuBase* setup()
 {
     bcu.begin(0x004C, 0x03F2, 0x24); 		//Herstellercode 0x004C = Robert Bosch, Devicetype 1010 (0x03F2), Version 2.4
 
@@ -41,6 +40,7 @@ void setup()
 	pinMode(RM_ACTIVITY_PIN, INPUT);		// Status RM Bodenplatte, no pullup or pulldown configured at this pin to not affect the Rauchmelder
 
     initApplication();
+    return (&bcu);
 }
 
 /**
@@ -63,13 +63,13 @@ void loop()
 
 
     // Handle updated communication objects
-    while ((objno = nextUpdatedObject()) >= 0)
+    while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
         objectUpdated(objno);
     }
 
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
+    if (bcu.bus->idle())
         waitForInterrupt();
 }

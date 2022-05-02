@@ -10,8 +10,8 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/eib.h>
 #include <sblib/serial.h>
+#include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
 
 #include "rm_com.h"

@@ -22,8 +22,9 @@
 #define rm_app_h
 
 #include <sblib/ioports.h>
+#include <sblib/eibBCU1.h>
 
-
+extern BCU1 bcu;
 
 // OPTIONS
 // Enable to activate device ID checking
