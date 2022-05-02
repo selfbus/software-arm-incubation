@@ -6,7 +6,6 @@
 #define INC_RAIN_COMMON_H
 
 #include <stdint.h>
-#include <sblib/eib.h>
 
 #ifdef LOGGING
     #include "log/logger.h"
