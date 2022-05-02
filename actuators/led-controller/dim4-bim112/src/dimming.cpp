@@ -6,11 +6,10 @@
  */
 
 #include <dimming.h>
-//#include <sblib/eib.h>
 #include <com_objs.h>
 #include "config.h"
 #include "DimmingCurves.h"
-#include <sblib/eib.h>
+#include <sblib/eibMASK0701.h>
 
 
 void dimming::init(int ch)
@@ -61,31 +60,53 @@ void dimming::stop()
 
 void dimming::checkperiodic()
 {
-	if (isDimming)
+	if (!isDimming)
 	{
-		if (dimStartValue <= dimDestinationValue)
-		{			//aufwärts dimmen
-			int tRest = dimSpeed * (MAXOUTPUTVALUE - dimStartValue) / MAXOUTPUTVALUE;
-			actualDimValue = dimStartValue + ((millis() - dimStartTime) * (MAXOUTPUTVALUE - dimStartValue) / tRest);
-			if (actualDimValue >= dimDestinationValue)
-			{	//Zielhelligkeit erreicht
-				actualDimValue = dimDestinationValue;
-				this->stop();
-			}
-		}
-		else
-		{											//abwärts dimmen
-			int tRest = dimSpeed * dimStartValue / MAXOUTPUTVALUE;
-			actualDimValue = dimStartValue - ((millis() - dimStartTime) * dimStartValue / tRest);
-			// TODO minimale Helligkeit bearbeiten
-			if (actualDimValue <= dimDestinationValue)
-			{	//Zielhelligkeit erreicht
-				actualDimValue = dimDestinationValue;
-				this->stop();
-			}
-		}
-		setOutput(channel, actualDimValue);
+	    return;
 	}
+
+	int tRest;
+	uint32_t dimTimeElapsed = millis() - dimStartTime;
+	bool isDimmingUp = dimStartValue <= dimDestinationValue;
+    if (isDimmingUp)
+    {
+        tRest = dimSpeed * (MAXOUTPUTVALUE - dimStartValue) / MAXOUTPUTVALUE;
+        if (tRest == 0) ///\todo implement a better catch devision by zero
+        {
+            actualDimValue = dimDestinationValue;
+        }
+        else
+        {
+            actualDimValue = dimStartValue + (dimTimeElapsed * (MAXOUTPUTVALUE - dimStartValue) / tRest);
+        }
+
+        if (actualDimValue >= dimDestinationValue)
+        {
+            //Zielhelligkeit erreicht
+            actualDimValue = dimDestinationValue;
+            this->stop();
+        }
+    }
+    else
+    {
+        tRest = dimSpeed * dimStartValue / MAXOUTPUTVALUE;
+        if (tRest == 0) ///\todo implement a better catch devision by zero
+        {
+            actualDimValue = dimDestinationValue;
+        }
+        else
+        {
+            actualDimValue = dimStartValue - (dimTimeElapsed * dimStartValue / tRest);
+        }
+        // TODO minimale Helligkeit bearbeiten
+        if (actualDimValue <= dimDestinationValue)
+        {
+            //Zielhelligkeit erreicht
+            actualDimValue = dimDestinationValue;
+            this->stop();
+        }
+    }
+    setOutput(channel, actualDimValue);
 }
 
 int dimming::getactualdimvalue()
