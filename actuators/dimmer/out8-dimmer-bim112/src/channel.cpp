@@ -11,7 +11,7 @@
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
 #include <sblib/timer.h>
-#include <sblib/eib.h>
+#include <sblib/eibMASK0701.h>
 #include <string.h>
 
 MASK0701 bcu = MASK0701();

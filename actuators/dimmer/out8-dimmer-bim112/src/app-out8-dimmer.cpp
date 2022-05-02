@@ -12,7 +12,7 @@
 #include <app-out8-dimmer.h>
 #include "config.h"
 #include "channel.h"
-#include <sblib/eib.h>
+#include <sblib/eibMASK0701.h>
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
 #include "hand_actuation.h"
