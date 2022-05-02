@@ -61,7 +61,6 @@
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 									<listOptionValue builtIn="false" value="HAND_DEBUG"/>
 									<listOptionValue builtIn="false" value="IAP_EMULATION"/>
-									<listOptionValue builtIn="false" value="BIM112"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.126752637" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1897113899" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -74,7 +73,6 @@
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 									<listOptionValue builtIn="false" value="HAND_DEBUG"/>
 									<listOptionValue builtIn="false" value="IAP_EMULATION"/>
-									<listOptionValue builtIn="false" value="BIM112"/>
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.826395086" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src-app}&quot;"/>
@@ -130,7 +128,6 @@
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 									<listOptionValue builtIn="false" value="IAP_EMULATION"/>
 									<listOptionValue builtIn="false" value="HAND_DEBUG"/>
-									<listOptionValue builtIn="false" value="BIM112"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.level.176513249" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.419465945" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
@@ -146,7 +143,6 @@
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 									<listOptionValue builtIn="false" value="IAP_EMULATION"/>
 									<listOptionValue builtIn="false" value="HAND_DEBUG"/>
-									<listOptionValue builtIn="false" value="BIM112"/>
 								</option>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.710505711" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.1493455123" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
