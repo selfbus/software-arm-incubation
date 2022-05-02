@@ -4,6 +4,8 @@
 #include <cstring>
 #include "common.h"
 
+BCU1 bcu = BCU1();
+
 SensorConfig configs[NUM_SENSORS];
 
 /**
@@ -12,7 +14,9 @@ SensorConfig configs[NUM_SENSORS];
  * @param comNo each com object gets 2 bytes
  */
 void fixRamLoc(COM comNo) {
-    uint8_t* l = (uint8_t*)&objectConfig(comNo)->dataPtr;
+    // uint8_t* l = (uint8_t*)&objectConfig(comNo)->dataPtr;
+    ComObjectsBCU1* comObjs = (ComObjectsBCU1*)bcu.comObjects;
+    uint8_t* l = (uint8_t*)&(comObjs->objectConfigBCU1(comNo)->dataPtr); ///\todo this looks stupid and i think it is.
     *l = comNo * 2;
 }
 
@@ -240,10 +244,10 @@ void initSensors() {
     initSensor4(&configs[3]);
 }
 
-/*
+/**
  * Initialize the application.
  */
-void setup() {
+BcuBase* setup() {
 #if LOGGING
     initLogger();
 #endif
@@ -251,4 +255,5 @@ void setup() {
     LOG("diagnosis on %x", EE_DIAGNOSIS);
 
     initSensors();
+    return (&bcu);
 }

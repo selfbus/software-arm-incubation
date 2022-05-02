@@ -1,6 +1,7 @@
 //
 // Created by Mario Theodoridis on 17.05.20.
 //
+#include <sblib/analog_pin.h>
 #include "common.h"
 
 // Enable the Parasite power (check ds18x20 Datasheet )
@@ -228,9 +229,9 @@ void SensorConfig::doPeriodics() {
 
 void SensorConfig::sendVoltage() const {
     if (res == SENDETYP_MW_DPT9_EIS5_DEFAULT) {
-        objectWriteFloat(com, voltage * 100);
+        bcu.comObjects->objectWriteFloat(com, voltage * 100);
     } else {
-        objectWrite(com, (uint8_t)voltage);
+        bcu.comObjects->objectWrite(com, (uint8_t)voltage);
     }
 }
 

@@ -56,7 +56,7 @@ void Threshold::test(float tempValue, bool periodic) {
             // only send changes unless we updating periodically
             LOG("#%d value %d is above threshold %d, so sending %d",
                 sensorNum, pretty(value), thresholdNum, v);
-            objectWrite(comObj, &v);
+            bcu.comObjects->objectWrite(comObj, &v);
         }
         currentValue = Value_above;
         return;
@@ -67,7 +67,7 @@ void Threshold::test(float tempValue, bool periodic) {
             // only send changes unless we updating periodically
             LOG("#%d value %d is below threshold %d, so sending %d",
                 sensorNum, pretty(value), thresholdNum, v);
-            objectWrite(comObj, &v);
+            bcu.comObjects->objectWrite(comObj, &v);
         }
         currentValue = Value_below;
         return;

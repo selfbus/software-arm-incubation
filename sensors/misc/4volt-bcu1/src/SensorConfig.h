@@ -2,8 +2,8 @@
 // Created by Mario Theodoridis on 17.05.20.
 //
 
-#ifndef INC_4SENSE_SENSORCONFIG_H
-#define INC_4SENSE_SENSORCONFIG_H
+#ifndef INC_4VOLT_SENSORCONFIG_H
+#define INC_4VOLT_SENSORCONFIG_H
 
 // variance from the average
 #define MAX_TEMP_VARIANCE 5
@@ -74,4 +74,4 @@ public:
 typedef SensorConfig* SensorConf;
 
 
-#endif //INC_4SENSE_SENSORCONFIG_H
+#endif //INC_4VOLT_SENSORCONFIG_H
