@@ -50,12 +50,6 @@ unsigned int calculateTime(int base, int factor);
 extern const byte* channelParams;
 
 /**
- * Channel timing parameters. 1 byte per channel.
- * In userEeprom at address 0x01f6
- */
-extern const byte* channelTimingParams;
-
-/**
  * pointer to the configuration of the currently evaluated channel
  */
 extern const byte* params;

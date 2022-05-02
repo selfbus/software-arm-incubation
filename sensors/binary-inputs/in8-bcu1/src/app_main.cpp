@@ -9,9 +9,6 @@
 #include "app_in8.h"
 #include "com_objs.h"
 #include "params.h"
-
-#include <sblib/eib.h>
-#include <sblib/eib/sblib_default_objects.h>
 #include <sblib/timeout.h>
 
 
@@ -33,8 +30,7 @@
 // Debouncers for inputs
 Debouncer inputDebouncer[NUM_CHANNELS];
 
-const byte* channelParams = userEepromData + (EE_CHANNEL_PARAMS_BASE - USER_EEPROM_START);
-const byte* channelTimingParams = userEepromData + (EE_CHANNEL_TIMING_PARAMS_BASE - USER_EEPROM_START);
+const byte* channelParams = bcu.userMemoryPtr(EE_CHANNEL_PARAMS_BASE);
 
 #ifdef DIRECT_IO
 // Input pins
@@ -125,7 +121,7 @@ void setLEDs(void)
 /**
  * Application setup
  */
-void setup()
+BcuBase* setup()
 {
     bcu.begin(4, 0x7054, 2); // We are a "Jung 2118" device, version 0.2
 
@@ -138,11 +134,11 @@ void setup()
 #endif
     // Handle configured power-up delay
     unsigned int startupTimeout = calculateTime
-            ( userEeprom[EE_BUS_RETURN_DELAY_BASE] >> 4
-            , userEeprom[EE_BUS_RETURN_DELAY_FACT] &  0x7F
+            ( bcu.userEeprom->getUInt8(EE_BUS_RETURN_DELAY_BASE) >> 4
+            , bcu.userEeprom->getUInt8(EE_BUS_RETURN_DELAY_FACT) &  0x7F
             );
     Timeout delay;
-    int debounceTime = userEeprom[EE_INPUT_DEBOUNCE_TIME] >> 1;
+    int debounceTime = bcu.userEeprom->getUInt8(EE_INPUT_DEBOUNCE_TIME) >> 1;
     delay.start(startupTimeout);
     while (delay.started() && !delay.expired())
     {   // while we wait for the power on delay to expire we debounce the input channels
@@ -154,6 +150,7 @@ void setup()
         waitForInterrupt();
     }
     initApplication();
+    return (&bcu);
 }
 
 
@@ -162,7 +159,7 @@ void setup()
  */
 void loop()
 {
-    int debounceTime = userEeprom[EE_INPUT_DEBOUNCE_TIME] >> 1;
+    int debounceTime = bcu.userEeprom->getUInt8(EE_INPUT_DEBOUNCE_TIME) >> 1;
     int objno, channel, value, lastValue;
 
     scanIO();
@@ -180,7 +177,7 @@ void loop()
     }
 
     // Handle updated communication objects
-    while ((objno = nextUpdatedObject()) >= 0)
+    while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
         objectUpdated(objno);
     }
@@ -189,6 +186,6 @@ void loop()
     handlePeriodic();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
+    if (bcu.bus->idle())
         waitForInterrupt();
 }

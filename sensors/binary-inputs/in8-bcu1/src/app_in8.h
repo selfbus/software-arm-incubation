@@ -10,6 +10,9 @@
 #define app_in8_h
 
 #include "params.h"
+#include <sblib/eibBCU1.h>
+
+extern BCU1 bcu;
 
 /**
  * A communication object was updated from somebody via the EIB bus.
