@@ -6,9 +6,11 @@
 #define INC_4SENSE_COMMON_H
 
 #include <stdint.h>
-#include <sblib/eib.h>
+#include <sblib/eibBCU1.h>
 #include <sblib/sensors/ds18x20.h>
 #include <sblib/sensors/dht.h>
+
+
 
 #ifdef LOGGING
     #include "log/logger.h"
@@ -28,6 +30,8 @@ typedef unsigned int uint;
 #include "params.h"
 #include "Threshold.h"
 #include "SensorConfig.h"
+
+extern BCU1 bcu;
 
 void fixRamLoc(COM comNo);
 void initSensors();
