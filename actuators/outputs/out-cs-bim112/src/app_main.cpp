@@ -76,9 +76,11 @@ bool NoAppWasRunning = false;
  */
 MemMapperMod memMapper(0xea00, 0x400);
 
+APP_VERSION("SBout_cs", "1", "20")
+
 AppUsrCallback usrCallback;
 
-/*
+/**
  * Initialize the application.
  */
 void setup()
