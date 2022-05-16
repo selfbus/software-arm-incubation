@@ -13,6 +13,8 @@ int sensCnt; // for debouncing
 
 MASK0701 bcu = MASK0701();
 
+APP_VERSION("SBrain  ", "1", "00")
+
 BcuBase* setup() {
     // reset init stuff
     startTime = 0;
