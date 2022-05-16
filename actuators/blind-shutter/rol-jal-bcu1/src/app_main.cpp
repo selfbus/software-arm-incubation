@@ -16,6 +16,8 @@
 
 BCU1 bcu = BCU1();
 
+APP_VERSION("SBrol_12", "1", "10")
+
 /**
  * Initialize the application.
  */

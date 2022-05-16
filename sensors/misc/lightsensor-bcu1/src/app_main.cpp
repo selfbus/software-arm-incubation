@@ -1,6 +1,8 @@
 
 #include "common.h"
 
+APP_VERSION("SBlight ", "1", "10")
+
 void loop() {
     sc->readValues();
     sc->doPeriodics();

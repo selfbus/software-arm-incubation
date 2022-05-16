@@ -1,6 +1,8 @@
 
 #include "common.h"
 
+APP_VERSION("SB4sense", "1", "10")
+
 void loop() {
     if (needSensorInit) {
         if (millis() > nextInit) initSensors();

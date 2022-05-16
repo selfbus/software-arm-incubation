@@ -52,6 +52,8 @@ SPI spi(SPI_PORT_0);
 
 BCU1 bcu = BCU1();
 
+APP_VERSION("SBdust_s", "1", "10")
+
 volatile bool timer_expired=false; // Bool  fuer die IF-Abfrage, wenn true wird gesendet
 
 unsigned short int limit;
