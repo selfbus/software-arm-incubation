@@ -12,7 +12,7 @@
 #include "config.h"
 #include "app_raincenter.h"
 
-APP_VERSION("SBrain  ", "0", "40");
+APP_VERSION("SBr_cent", "0", "41");
 
 /**
  * Application setup
