@@ -18,9 +18,6 @@
 #include "rm_com.h"
 #include "rm_app.h"
 
-// Digital pin for LED
-//#define PIO_LED PIO2_0
-
 APP_VERSION("S_RM_H6 ", "1", "02");
 
 /**
@@ -29,9 +26,6 @@ APP_VERSION("S_RM_H6 ", "1", "02");
 BcuBase* setup()
 {
     bcu.begin(0x004C, 0x03F2, 0x24); 		//Herstellercode 0x004C = Robert Bosch, Devicetype 1010 (0x03F2), Version 2.4
-
-    //pinMode(PIO_LED, OUTPUT);
-    //digitalWrite(PIO_LED, 1);
 
     // Handle power-up delay
     //Timeout delay;
@@ -60,7 +54,6 @@ void loop()
 
 	// Empfangenes Telegramm bearbeiten, aber nur wenn wir gerade nichts
 	// vom Rauchmelder empfangen.
-
 
     // Handle updated communication objects
     while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)

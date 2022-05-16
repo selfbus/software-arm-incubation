@@ -380,12 +380,6 @@
 							<tool id="com.crt.advproject.tool.debug.debug.1048061169" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug"/>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="com.crt.advproject.config.exe.debug.29419348.1178034494.src/cr_startup_lpc11xx_OL.cpp" name="cr_startup_lpc11xx.cpp" rcbsApplicability="disable" resourcePath="src/cr_startup_lpc11xx_OL.cpp" toolsToInvoke="com.crt.advproject.cpp.exe.debug.1788486198">
-						<tool id="com.crt.advproject.cpp.exe.debug.1788486198" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.1681686104">
-							<option id="com.crt.advproject.cpp.exe.debug.option.optimization.level.989856370" name="Optimization Level" superClass="com.crt.advproject.cpp.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
-							<inputType id="com.crt.advproject.compiler.cpp.input.1744282987" superClass="com.crt.advproject.compiler.cpp.input"/>
-						</tool>
-					</fileInfo>
 					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.1178034494.inc" name="/" resourcePath="inc">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1146338983" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1607818620" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
