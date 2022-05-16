@@ -30,7 +30,7 @@
 // Debouncers for inputs
 Debouncer inputDebouncer[NUM_CHANNELS];
 
-const byte* channelParams = bcu.userMemoryPtr(EE_CHANNEL_PARAMS_BASE);
+const byte* channelParams;
 
 #ifdef DIRECT_IO
 // Input pins
@@ -123,6 +123,7 @@ void setLEDs(void)
  */
 BcuBase* setup()
 {
+    channelParams = bcu.userMemoryPtr(EE_CHANNEL_PARAMS_BASE);
     bcu.begin(4, 0x7054, 2); // We are a "Jung 2118" device, version 0.2
 
     pinMode(PIO_LED, OUTPUT);
