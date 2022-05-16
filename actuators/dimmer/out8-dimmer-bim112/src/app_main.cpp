@@ -23,6 +23,8 @@ const HardwareVersion hardwareVersion[] =
 
 const HardwareVersion * currentVersion;
 
+APP_VERSION("SBout8di", "0", "10");
+
 Timeout timeout;
 /*
 AbsSegment1: 0x4000 (16384) Size 0x01FF (511)   End 0x41ff (16895)
