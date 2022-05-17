@@ -26,7 +26,7 @@ int lastLock[NUM_CHANNELS];
 ChannelData channelData[NUM_CHANNELS];
 
 
-/*
+/**
  * Get the type of an input channel.
  * See INPUT_TYPE_xx defines in com_objs.h
  *

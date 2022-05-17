@@ -51,12 +51,6 @@ unsigned int calculateTime(int base, int factor);
 extern const byte* channelParams;
 
 /**
- * Channel timing parameters. 1 byte per channel.
- * In userEeprom at address 0x01f6
- */
-extern const byte* channelTimingParams;
-
-/**
  * LED parameters
  * In userEeprom at address 0x01ED
  */
@@ -69,8 +63,6 @@ extern const byte* params;
 
 extern Timeout timeout[NUM_CHANNELS * 2];
 extern unsigned int delayTime[NUM_CHANNELS * 2];
-//extern int lastLock[NUM_CHANNELS];
-
 
 // Eeprom address: telegram rate limit active (bit 2)
 #define EE_TEL_RATE_LIMIT_ACTIVE       0x0110

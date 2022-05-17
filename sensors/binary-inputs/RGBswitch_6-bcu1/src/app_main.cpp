@@ -24,7 +24,6 @@ APP_VERSION("SBrgb_sw", "1", "10")
 Debouncer inputDebouncer[NUM_CHANNELS];
 
 const byte* channelParams;
-const byte* channelTimingParams;
 const byte* LEDparams;
 
 #ifdef DIRECT_IO
@@ -91,7 +90,6 @@ int readIO(int channel)
 BcuBase* setup()
 {
     channelParams = bcu.userMemoryPtr(EE_CHANNEL_PARAMS_BASE);
-    channelTimingParams = bcu.userMemoryPtr(EE_CHANNEL_TIMING_PARAMS_BASE);
     LEDparams = bcu.userMemoryPtr(EE_LED_PARAMS_BASE);
 
     bcu.begin(76, 0x474, 2); // We are a "Selfbus RGB Taster" device, version 0.2
