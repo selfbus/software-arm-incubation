@@ -41,8 +41,8 @@ MASK0701 bcu = MASK0701();
  */
 BcuBase* setup()
 {
-    bcu.begin(0x83, hardwareVersion[5], 0x13);
-    bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion)); // MDT AKD-0424R.01 RGBW LED Controller, MDRC
+    bcu.begin(0x83, hardwareVersion[5], 0x14);
+    bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion)); // MDT AKD-0424R.01 RGBW LED Controller, MDRC, version 1.4
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
