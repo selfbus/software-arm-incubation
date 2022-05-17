@@ -38,8 +38,8 @@ void objectUpdated(int objno);
 void inputChanged(int channel, int value);
 
 /**
- * The values of the communication objects
+ * Restore the state of the objects after a restart of the CPU
  */
-extern ObjectValues& objectValues;
+void initApplication(void);
 
 #endif /*app_in4_h*/

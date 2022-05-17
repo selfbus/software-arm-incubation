@@ -26,15 +26,17 @@ static const int inputPins[] = { PIO2_3, PIO2_2, PIO2_1, PIO2_0 };
 // Debouncers for inputs
 Debouncer inputDebouncer[NUM_CHANNELS];
 
-ObjectValues& objectValues = *(ObjectValues*) bcu.userMemoryPtr(UR_COM_OBJ_VALUE0);
-const byte* channelParams = bcu.userMemoryPtr(EE_CHANNEL_PARAMS_BASE);
-const byte* channelTimingParams = bcu.userMemoryPtr(EE_CHANNEL_TIMING_PARAMS_BASE);
+const byte* channelParams;
+const byte* channelTimingParams;
 
 /**
  * Application setup
  */
 BcuBase* setup()
 {
+    channelParams = bcu.userMemoryPtr(EE_CHANNEL_PARAMS_BASE);
+    channelTimingParams = bcu.userMemoryPtr(EE_CHANNEL_TIMING_PARAMS_BASE);
+
     bcu.begin(2, 0x9009, 0x01);  // we are a ABB TSU/4.2 version 0.1
 
     pinMode(PIO_LED, OUTPUT);
@@ -54,6 +56,8 @@ BcuBase* setup()
     }
     serial.println("Selfbus TSU/4.2 in4-bcu2");
 #endif
+
+    initApplication();
     return (&bcu);
 }
 
