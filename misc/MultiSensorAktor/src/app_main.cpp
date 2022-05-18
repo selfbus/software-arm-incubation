@@ -45,7 +45,7 @@ int portPins[32] = {
  */
 BcuBase* setup()
 {
-    bcu.begin(0x13A, 0x02, 1);
+    bcu.begin(0x13A, 0x05, 0x64); // Manufacturer name "Not assigned", app-id 0x05, version 6.4
 
     bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
 
