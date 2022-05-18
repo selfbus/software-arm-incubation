@@ -78,6 +78,7 @@ BcuBase* setup()
 #   error "unknown cpu"
 #endif // __LPC11XX__
     currentVersion = &hardwareVersion[0];
+    bcu.comObjects->objectEndian(LITTLE_ENDIAN);  ///\todo this is a test, not sure it's really little endian
     bcu.begin(0x0002, 0xa045, 0x0012); // ABB SD/S8.16.1 Switch/Dim Actuator, 8-fold, MDRC
     bcu.setMemMapper(&memMapper);
     bcu.setHardwareType(currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));

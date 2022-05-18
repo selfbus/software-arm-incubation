@@ -22,9 +22,13 @@ Channel * channels[NO_OF_CHANNELS];
 
 void objectUpdated(int objno)
 {
-    if (objno >= 13)
+    const uint8_t firstChannelObjectNumber = 10;
+    const uint8_t channelObjectCount = 24;
+
+    ///\todo fill with life, below is mostly c&p from somewhere
+    if (objno >= firstChannelObjectNumber)
     {   // handle the com objects specific to one channel
-        unsigned int channel = (objno - 13) / 20;
+        unsigned int channel = (objno - firstChannelObjectNumber) / channelObjectCount;
         Channel * chn = channels [channel];
         if (chn)
             chn->objectUpdateCh(objno);
