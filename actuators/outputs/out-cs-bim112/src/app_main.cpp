@@ -11,6 +11,7 @@
  */
 
 #include <sblib/platform.h>
+#include <sblib/eib.h>
 #include <config.h>
 #include <sblib/eib/sblib_default_objects.h>
 #include <com_objs.h>
@@ -117,13 +118,13 @@ void setup()
  _bcu.setMemMapper((MemMapper *)&memMapper); // Der BCU wird hier der modifizierte MemMapper bekanntgemacht
  _bcu.setUsrCallback((UsrCallback *)&usrCallback);
  _bcu.enableGroupTelSend(false);
- memcpy(userEeprom.serial, SerialNumber, sizeof(SerialNumber));
+ memcpy(userEeprom.serial(), SerialNumber, sizeof(SerialNumber));
  // 12 Bytes der Aktorkonfiguration werden ab 0x4B00 geschrieben. Das liegt bloederweise
  // genau jenseits des USER-EEPROM. Also mappen wir virtuellen Speicherbereich dorthin.
  memMapper.addRange(0x4b00, 0x100);
  memMapper.addRange(0x0, 0x100); // Zum Abspeichern/Laden des Systemzustands
  objectEndian(LITTLE_ENDIAN);
- userEeprom.commsTabAddr = 0x4400; // Diese Basisadresse wird nicht über die ETS runtergeschrieben, ist aber notwendig!
+ userEeprom.commsTabAddr() = 0x4400; // Diese Basisadresse wird nicht über die ETS runtergeschrieben, ist aber notwendig!
  setUserRamStart(0x3FC);
  appl.RecallAppData(RECALLAPPL_STARTUP);
  manuCtrl.StartManualCtrl();
@@ -291,8 +292,8 @@ void LedProcessing(void)
 {
  // Die ETS5.6 programmiert merkwürdigerweise eine ganz andere Adresse,
  // das muss korrigiert werden.
- if (userEeprom.commsTabAddr != 0x4400)
-  userEeprom.commsTabAddr = 0x4400;
+ if (userEeprom.commsTabAddr() != 0x4400)
+  userEeprom.commsTabAddr() = 0x4400;
 
  unsigned OutputState;
  if (AppOrNoAppProcessingEnabled()) // LEDs nur dann, wenn kein Strom gespart werden muss
