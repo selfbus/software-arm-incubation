@@ -48,12 +48,21 @@ Logic::Logic(unsigned int logicBase, unsigned int no, unsigned int chans,
 void Logic::doLogic(void)
 {
     unsigned int result = 0;
+    unsigned int chanModePtr = 0;
 
     if (logicOperation == LOGIC_OP_OR)
     {
         for (unsigned int i = 0; i < channels + 2; i++)
         {
-            unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + i);
+            if (i < channels)
+            {
+            	chanModePtr = inputCfgPtr + i;
+            }
+            else
+            {
+            	chanModePtr = inputCfgPtr + i + 2*number;
+            }
+        	unsigned int chanMode = userEeprom.getUInt8(chanModePtr);
             if (chanMode != CHAN_MODE_DISABLED)
             {
                 result |= inputs[i] ^ (chanMode - 1);
@@ -65,7 +74,15 @@ void Logic::doLogic(void)
         result = 1;
         for (unsigned int i = 0; i < channels + 2; i++)
         {
-            unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + i);
+        	if (i < channels)
+        	{
+        	   	chanModePtr = inputCfgPtr + i;
+        	}
+        	else
+        	{
+        	   	chanModePtr = inputCfgPtr + i + 2*number;
+        	}
+        	unsigned int chanMode = userEeprom.getUInt8(chanModePtr);
             if (chanMode != CHAN_MODE_DISABLED)
             {
                 result &= inputs[i] ^ (chanMode - 1);
@@ -115,7 +132,7 @@ void Logic::objectUpdated(int objno)
 {
     if (objno == extLogicalObjectAComObjNo)
     {
-        unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + channels);
+        unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + channels + 2*number);
         if (chanMode != CHAN_MODE_DISABLED)
         {
             inputs[channels] = objectRead(extLogicalObjectAComObjNo);
@@ -124,7 +141,7 @@ void Logic::objectUpdated(int objno)
     }
     if (objno == extLogicalObjectBComObjNo)
     {
-        unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + channels + 1);
+        unsigned int chanMode = userEeprom.getUInt8(inputCfgPtr + channels + 1 + 2*number);
         if (chanMode != CHAN_MODE_DISABLED)
         {
             inputs[channels+1] = objectRead(extLogicalObjectBComObjNo);

@@ -1,4 +1,4 @@
-Applikation für einen 6-fach Taster mit RGB Hintergrundbeleuchtung
+#Applikation für einen 6-fach Taster mit RGB Hintergrundbeleuchtung
 
 - 6 RGB LEDs werden über einen WS2803 IC angesteuert
 - Infrarot LED und Sensor werden für eine Näherungssensorik verwendet

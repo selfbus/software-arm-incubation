@@ -24,13 +24,22 @@ __attribute__ ((used,section(".crp"))) const unsigned int CRP_WORD = 0xFFFFFFFF;
 
 void setup()
 {
-  bcu.begin(2, 1, 1); // ABB, dummy something device
+    pinMode(PIN_PROG, OUTPUT);
+    digitalWrite(PIN_PROG, false);
+    pinMode(PIO1_5, OUTPUT);
+    digitalWrite(PIO1_5, false);
+    delay(500);
+    digitalWrite(PIN_PROG, true);
+    digitalWrite(PIO1_5, true);
+    bcu.begin(2, 1, 1); // ABB, dummy something device
 
-  int addr = bcu.ownAddress();
-  if ((addr == 0) || (addr == 0xffff))
-    bcu.setOwnAddress(0x1101);
+    int addr = bcu.ownAddress();
+    if ((addr == 0) || (addr == 0xffff))
+    {
+        bcu.setOwnAddress(0x1101);
+    }
 
-  uart.Init(115200, false);
+    uart.Init(115200, false);
 }
 
 /*
@@ -55,6 +64,7 @@ void loop_noapp()
 void loop()
 {
   uart.SerIf_Tasks();
+  // emiknxif.SetCdcMonMode(true); //only for debug to "hard" activate busmonitor mode
   emiknxif.EmiIf_Tasks();
   proguart.SerIf_Tasks();
   devicemgnt.DevMgnt_Tasks();

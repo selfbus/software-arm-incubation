@@ -335,7 +335,8 @@ void EmiKnxIf::EmiIf_Tasks(void)
         {
           if (!bus.sendingTelegram())
           {
-            bcu.processTelegram();
+            bcu.processTelegram(&bus.telegram[0], bus.telegramLen); // for new sblib
+            // bcu.processTelegram(); ///\todo use this in case of a build error
           } else {
             ProcTelWait = true;
           }

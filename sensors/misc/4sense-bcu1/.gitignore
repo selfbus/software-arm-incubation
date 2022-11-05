@@ -1,0 +1,18 @@
+# MCUx
+/Debug
+/Release
+# are symlinks the only sane way to get sources into MCUx???
+/src/log
+
+# misc
+/4*
+/run.cmd
+
+# CLION
+/.idea
+/cmake-build*
+
+# knx2header stuff
+*.pyc
+/test.*
+/params.cpp

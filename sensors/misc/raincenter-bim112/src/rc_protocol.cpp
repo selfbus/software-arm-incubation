@@ -135,7 +135,7 @@ bool RCParameterMessage::Decode(byte * msg, int msg_len)
         _TapWaterSupplyType = eTapWaterSupplyType(bcd2int(msg[5]));
         _FillingLevelMax_cm = bcd2int(msg[6]) * 5;
         _ReservoirType = eReservoirType(bcd2int(msg[7]));
-        _ReservoirArea_m2 = bcd2int(msg[8]) * 0.1;
+        _ReservoirArea_m2 = (float)bcd2int(msg[8]) * 0.1f;
         _OptionalRelaisFunction = eOptionalRelaisFunction(bcd2int(msg[9]));
         _FilterBackFlushingAutomaticTimerInterval_days = bcd2int(msg[10]);
         _FilterBackFlushingAutomaticTimerDuration_seconds = bcd2int(msg[11]) * 10;
@@ -153,10 +153,10 @@ bool RCParameterMessage::Decode(byte * msg, int msg_len)
             }
             case spherical:
             {
-                float r = float(_FillingLevelMax_cm) / 2 / 100;
-                float h = float(_LevelCalibrated_cm) / 100;
+                float r = float(_FillingLevelMax_cm) / 2.0f / 100.0f;
+                float h = float(_LevelCalibrated_cm) / 100.0f;
                 // V = (1/3)pi*h²(3r-h)
-                _Level_m3_Calibrated = M_PI/3 * (h*h) * (3*r-h);
+                _Level_m3_Calibrated = ((float)M_PI)/3.0f * (h*h) * (3.0f*r-h);
                 break;
             }
             default:
@@ -166,7 +166,7 @@ bool RCParameterMessage::Decode(byte * msg, int msg_len)
                 break;
             }
         }
-        _Level_m3_Calibrated = trunc(_Level_m3_Calibrated * 10) /10;
+        _Level_m3_Calibrated = truncf(_Level_m3_Calibrated * 10.0f) /10.0f;
         _IsValid = true;
     }
     return _IsValid;
@@ -254,7 +254,7 @@ bool RCDisplayMessage::Decode(byte * msg, int msg_len)
     _IsValid = false;
     if ((msg_len >= RCDisplayMessage::msgLength) && (msg[0] == RCDisplayMessage::msgIdentifier))
     {
-        _DisplayValue = bcd2int(msg[1]) + 100 * bcd2int(msg[2]);
+        _DisplayValue = (float)bcd2int(msg[1]) + 100.0f * (float)bcd2int(msg[2]);
 
         _AlarmBuzzerActive = bit_is_set(msg[3], 7);
         _OptionalRelaisBlinking = bit_is_set(msg[3], 6);

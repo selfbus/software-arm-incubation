@@ -1,5 +1,6 @@
 Debug*/
 Release*/
+Flashstart*/
 *.launch
 *.jlink
 *~
@@ -14,3 +15,9 @@ sblib-tests/sblib-results-Results.xml
 __pycache__
 .DS_Store
 ._.DS_Store
+
+# Build folders
+cmake-build*
+
+# IDE files
+.idea

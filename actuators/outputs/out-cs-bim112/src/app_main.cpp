@@ -42,7 +42,7 @@ bool NoAppWasRunning = false;
 // The last 2 Bytes of the Serial Number are now the Version number: 0x01 0x01 = V1.1
 const byte SerialNumber[] = { 0x12, 0x34, 0x56, 0x00, 0x01, 0x01 };
 
-/* Es gibt verschiedene SystemzustÃ¤nde, in denen Teile oder die ganze FunktionalitÃ¤t abgeschaltet ist:
+/* Es gibt verschiedene Systemzustände, in denen Teile oder die ganze Funktionalität abgeschaltet ist:
  * - direkt nach dem Systemstart
  *   + keine Objektverarbeitung
  *   + eigentlich gar nix, keine manuelle Bedienung, keine Relaisansteuerung
@@ -53,9 +53,9 @@ const byte SerialNumber[] = { 0x12, 0x34, 0x56, 0x00, 0x01, 0x01 };
  *     + Objektverarbeitung aktiv
  *     + jedoch noch kein Versenden von Objekten
  *     + keine Schaltaktionen und damit auch noch keine Handbedienung(!)
- *     + Beim Ãœbergang zum Normalzustand Versenden von Statusobjekten
- *     + Verbleiben in diesem Zustand bis Mindestschaltenergie fÃ¼r das "Schaltaktionen-bei-Busspannungsausfall" gespeichert
- *       Das wird innerhalb der Relais-Unit Ã¼berwacht, muss rÃ¼ckwÃ¤rts in das Hauptprogramm Ã¼bernommen werden.
+ *     + Beim Übergang zum Normalzustand Versenden von Statusobjekten
+ *     + Verbleiben in diesem Zustand bis Mindestschaltenergie für das "Schaltaktionen-bei-Busspannungsausfall" gespeichert
+ *       Das wird innerhalb der Relais-Unit überwacht, muss rückwärts in das Hauptprogramm übernommen werden.
  *   - Normalzustand
  *     + Objektverarbeitung aktiv
  *     + Versenden von Objekten aktiv
@@ -64,7 +64,7 @@ const byte SerialNumber[] = { 0x12, 0x34, 0x56, 0x00, 0x01, 0x01 };
  *   - Ausfall der Busspannung
  *     + Abspeichern des Systemzustandes
  *     + nix mehr, keine Objektverarbeitung, keine Schaltaktionen, keine Objekte mehr versenden
- *     + Ãœbergang zu Systemstart
+ *     + Übergang zu Systemstart
  * - "keine Applikation heruntergeladen"
  *     + Laden des Systemzustands, jedoch wird nur der Relaiszustand ausgewertet
  *     + Wartezeit, bis das Vermessen einer Schaltaktion beendet wurde, dann Handbedienung
@@ -74,10 +74,10 @@ const byte SerialNumber[] = { 0x12, 0x34, 0x56, 0x00, 0x01, 0x01 };
 /*
  * Der MemMapper bekommt einen 1kB Bereich ab 0xEA00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.
  * Damit lassen sich 3 Pages (je 256Byte) (und die allocTable die MemMappers) unterbringen.
- * BenÃ¶tigt werden zwei Pages:
- * - fÃ¼r den Konfigurationsspeicher jenseits von 0x4B00. FÃ¼r die SbLib endet der Konfigurationspeicher dort,
+ * Benötigt werden zwei Pages:
+ * - für den Konfigurationsspeicher jenseits von 0x4B00. Für die SbLib endet der Konfigurationspeicher dort,
  *   unser Vorbild legt dort jedoch noch einige allgemeine Optionen ab.
- * - fÃ¼r die SystemzustÃ¤nde. Diese werden bei Busspannungsausfall und Neustart abgespeichert.
+ * - für die Systemzustände. Diese werden bei Busspannungsausfall und Neustart abgespeichert.
  */
 MemMapperMod memMapper(0xea00, 0x400);
 
@@ -90,17 +90,17 @@ void setup()
 {
 	for (unsigned ipno=0; ipno<8; ipno++)
  {
-  // Allen Interrupts eine mittlere PrioritÃ¤t einrÃ¤umen
-  // (2, was "zweitniedrigst" bedeutet (Werte 3..0 mÃ¶glich, klein hÃ¶her).
-  // Die Standardeinstellung mit 0 (hÃ¶chste Prio fÃ¼r alle) hilft hier nicht weiter.
-  // Die ADC-ISR bekommt spÃ¤ter eine erhÃ¶hte PrioritÃ¤t.
+  // Allen Interrupts eine mittlere Priorität einräumen
+  // (2, was "zweitniedrigst" bedeutet (Werte 3..0 möglich, klein höher).
+  // Die Standardeinstellung mit 0 (höchste Prio für alle) hilft hier nicht weiter.
+  // Die ADC-ISR bekommt später eine erhöhte Priorität.
   NVIC->IP[ipno]=0x80808080;
  }
 // SystemCoreClockUpdate();
  adctimerSetup();
  analogSetup();
 #ifdef SERIALCURRPRINTOUT
- // Aufgrund einer PinÃ¼berschneidung (Rel-PWM ist RxD)
+ // Aufgrund einer Pinüberschneidung (Rel-PWM ist RxD)
  // PWM danach initialisieren.
  SerialPrintSetup();
 #endif
@@ -114,7 +114,7 @@ void setup()
  // das Ding ist ein BIM112 "Maskenversion 0701"
  bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
  // _bcu und bcu sind das gleiche Objekt.
- // _bcu ist vom Typ BCU, wÃ¤hrend bcu vom Typ BcuBase ist.
+ // _bcu ist vom Typ BCU, während bcu vom Typ BcuBase ist.
  _bcu.setMemMapper((MemMapper *)&memMapper); // Der BCU wird hier der modifizierte MemMapper bekanntgemacht
  _bcu.setUsrCallback((UsrCallback *)&usrCallback);
  _bcu.enableGroupTelSend(false);
@@ -124,12 +124,12 @@ void setup()
  memMapper.addRange(0x4b00, 0x100);
  memMapper.addRange(0x0, 0x100); // Zum Abspeichern/Laden des Systemzustands
  objectEndian(LITTLE_ENDIAN);
- userEeprom.commsTabAddr() = 0x4400; // Diese Basisadresse wird nicht Ã¼ber die ETS runtergeschrieben, ist aber notwendig!
+ userEeprom.commsTabAddr() = 0x4400; // Diese Basisadresse wird nicht über die ETS runtergeschrieben, ist aber notwendig!
  setUserRamStart(0x3FC);
  appl.RecallAppData(RECALLAPPL_STARTUP);
  manuCtrl.StartManualCtrl();
 #ifdef HW_2CH_WO_CS
- //AusgÃ¤nge fÃ¼r Relais
+ //Ausgänge für Relais
  pinMode(REL1ON, OUTPUT);
  pinMode(REL1OFF, OUTPUT);
  pinMode(REL2ON, OUTPUT);
@@ -196,7 +196,7 @@ void AppOperatingStateMachine(unsigned referenceTime, bool AppValid)
    }
   } else {
    // Obwohl das System mit "AppValid" gestartet wurde, ist nun das Flag auf einmal nicht mehr gesetzt -> Abbruch, Neustart
-   // Dieser Fall kommt vor, wenn ein Download Ã¼ber die ETS angestartet wird.
+   // Dieser Fall kommt vor, wenn ein Download über die ETS angestartet wird.
    relay.Stop();
    AppOperatingState = AppOperatingStates::AppShutdown;
    _bcu.enableGroupTelSend(false);
@@ -226,7 +226,7 @@ void AppOperatingStateMachine(unsigned referenceTime, bool AppValid)
    }
   } else {
    // Obwohl das System mit "AppValid = false" gestartet wurde, ist nun das Flag auf einmal gesetzt -> Abbruch, Neustart
-   // Dieser Fall kommt vor, wenn der Download Ã¼ber die ETS erfolgreich abgeschlossen worden ist.
+   // Dieser Fall kommt vor, wenn der Download über die ETS erfolgreich abgeschlossen worden ist.
    relay.Stop();
    AppOperatingState = AppOperatingStates::NoAppShutdown;
   }
@@ -248,9 +248,9 @@ void AppOperatingStateMachine(unsigned referenceTime, bool AppValid)
  }
 }
 
-// Ist wahr, wenn das GerÃ¤t einen sicheren Betriebszustand mit ausreichend Energieversorgung erreicht hat.
+// Ist wahr, wenn das Gerät einen sicheren Betriebszustand mit ausreichend Energieversorgung erreicht hat.
 // Wird im Grunde benutzt um festzustellen, ob die LEDs an oder zwecks Energiesparens aus sein sollten.
-// (Bei Busspannungsausfall muss Energie fÃ¼r das Abspeichern des Systemzustands gespeichert werden.)
+// (Bei Busspannungsausfall muss Energie für das Abspeichern des Systemzustands gespeichert werden.)
 bool AppOrNoAppProcessingEnabled(void)
 {
  return ((AppOperatingState == AppOperatingStates::AppStartup) ||
@@ -263,11 +263,11 @@ void RelayAndSpiProcessing(void)
 {
  unsigned referenceTime = systemTime;
  unsigned SpiRelData;
- // TODO Passt diese Rasterung bei den Relais? Die Pulsdauer verlÃ¤ngert sich, wenn mal der exakte Zeitpunkt verpasst wurde.
+ // TODO Passt diese Rasterung bei den Relais? Die Pulsdauer verlängert sich, wenn mal der exakte Zeitpunkt verpasst wurde.
  if ((referenceTime - LastRelTime) >= 5)
  {
   LastRelTime = referenceTime;
-  relay.DoSwitching(LastRelTime, SpiRelData); // Erzeugt in SpiRelData die aktuellen Ansteuerdaten fÃ¼r die Relais
+  relay.DoSwitching(LastRelTime, SpiRelData); // Erzeugt in SpiRelData die aktuellen Ansteuerdaten für die Relais
 #ifndef HW_2CH_WO_CS
   relspi.ReadRx(); // Liest die Daten aus dem Empfangspuffer der Schnittstelle
   // Die Anzahl der gelesenen Bytes wird verworfen, die Daten nie abgerufen
@@ -290,7 +290,7 @@ void RelayAndSpiProcessing(void)
 
 void LedProcessing(void)
 {
- // Die ETS5.6 programmiert merkwÃ¼rdigerweise eine ganz andere Adresse,
+ // Die ETS5.6 programmiert merkwürdigerweise eine ganz andere Adresse,
  // das muss korrigiert werden.
  if (userEeprom.commsTabAddr() != 0x4400)
   userEeprom.commsTabAddr() = 0x4400;
@@ -327,10 +327,10 @@ void MainProcessingRoutine(bool AppValid)
   { // Empfangene Objekte verarbeiten
    appl.objectUpdated(objno, referenceTime);
   }
-  relay.DoEnqueue(); // Erzeugt aus evtl. bei objectUpdates aufgelaufenen SchaltauftrÃ¤gen den eingentlichen Eintrag in der Warteschlange
+  relay.DoEnqueue(); // Erzeugt aus evtl. bei objectUpdates aufgelaufenen Schaltaufträgen den eingentlichen Eintrag in der Warteschlange
  } else {
   // Objektverarbeitung inaktiv
-  while ((objno = nextUpdatedObject()) >= 0); // Empfangene Objekte aus der Warteschlange lÃ¶schen
+  while ((objno = nextUpdatedObject()) >= 0); // Empfangene Objekte aus der Warteschlange löschen
  }
 
  // Zeitverarbeitung
@@ -386,7 +386,7 @@ void MainProcessingRoutine(bool AppValid)
  //============
  LedProcessing();
 
- //if (bus.idle()) // alle 10Âµs kommt ein INT, also ist das Sleep hier eher theoretischer Natur.
+ //if (bus.idle()) // alle 10µs kommt ein INT, also ist das Sleep hier eher theoretischer Natur.
    waitForInterrupt();
 }
 
@@ -399,7 +399,7 @@ void loop_noapp()
 }
 
 /*
- * Die Hauptverarbeitungsroutine wenn die Applikation gÃ¼ltig ist.
+ * Die Hauptverarbeitungsroutine wenn die Applikation gültig ist.
  */
 void loop()
 {
@@ -408,20 +408,20 @@ void loop()
 
 /*
  * USR_CALLBACK_RESET
- * Wird aufgerufen direkt vor einem ÂµC-Reset
+ * Wird aufgerufen direkt vor einem µC-Reset
  * - auf Relay warten, Relay sperren
  * - Runtime Daten abspeichern
- *   - es werden Defaultwerte abgespeichert (natÃ¼rlich nicht fÃ¼r den Relaiszustand, der wird weitergefÃ¼hrt)
+ *   - es werden Defaultwerte abgespeichert (natürlich nicht für den Relaiszustand, der wird weitergeführt)
  * USR_CALLBACK_FLASH
- * Wird aufgerufen allgemein wenn Ã„nderungen am User_Eeprom vorgenommen worden sind.
- * Konkrete FÃ¤lle: Download einer Applikation, aber auch Entladen einer Applikation. Unterscheiden der FÃ¤lle durch
+ * Wird aufgerufen allgemein wenn Änderungen am User_Eeprom vorgenommen worden sind.
+ * Konkrete Fälle: Download einer Applikation, aber auch Entladen einer Applikation. Unterscheiden der Fälle durch
  * AppRunning vorher/nachher
  * - auf Relay warten, Relay sperren
- * - Applikation auf Shutdown setzen (dadurch wird sie spÃ¤ter geordnet neu gestartet)
+ * - Applikation auf Shutdown setzen (dadurch wird sie später geordnet neu gestartet)
  * - Runtime Daten abspeichern
  * USR_CALLBACK_BCU_END
  * Kommt eigentlich nicht vor, wird bislang nicht mal bei einem Busspannungsausfall aufgerufen.
- * Es kÃ¶nnen aber die Schritte wie bei den anderen FÃ¤llen ausgefÃ¼hrt werden.
+ * Es können aber die Schritte wie bei den anderen Fällen ausgeführt werden.
  */
 void AppUsrCallback::Notify(int type)
 {
@@ -443,13 +443,13 @@ void AppUsrCallback::Notify(int type)
   bool ReasonAppDownload = NoAppWasRunning && bcu.applicationRunning();
   if ((type == USR_CALLBACK_FLASH) && (ReasonAppDownload))
    type = STOREAPPL_DOWNLOAD;
-  // App Download -> die Funktionen "Nach Appl Download" ausfÃ¼hren
-  // App Entladen -> ZustÃ¤nde beibehalten, fÃ¼r einen spÃ¤teren Download, Kanal kÃ¶nnte ja unverÃ¤ndert sein
+  // App Download -> die Funktionen "Nach Appl Download" ausführen
+  // App Entladen -> Zustände beibehalten, für einen späteren Download, Kanal könnte ja unverändert sein
   // Download failure
   // Reset
   // Bus Voltage Fail mit BusVoltageRecovery (wird nicht hier behandelt)
-  // Bei einem BusVolFail/Reset/Entladen muss der Zustand gespeichert werden, schlieÃŸlich kÃ¶nnte nach dem letzten Start
-  // noch die App aktiv gewesen sein. AuÃŸerdem gibt es die Handbedienung
+  // Bei einem BusVolFail/Reset/Entladen muss der Zustand gespeichert werden, schließlich könnte nach dem letzten Start
+  // noch die App aktiv gewesen sein. Außerdem gibt es die Handbedienung
   appl.StoreApplData(type);
  }
 }

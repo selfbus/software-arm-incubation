@@ -55,14 +55,14 @@ void SerialPrintCurrents(void)
    calc =
      (float)IsrData.RegSqr[ChIdx] *
      Square((float)IsrData.GainCorr[ChIdx]) *
-     Square(MAXCURRLOWRANGE/512/32768);
+     Square((float)MAXCURRLOWRANGE/512/32768);
   } else {
    // High Range
    //curr = (int)(calc*(float)IsrData.GainCorr[(ChIdx << 1)]*MAXCURRHIGHRANGE*10000/512/32768);
    calc =
      (float)IsrData.RegSqr[ChIdx] *
      Square((float)IsrData.GainCorr[ChIdx]) *
-     Square(MAXCURRHIGHRANGE/512/32768);
+     Square((float)MAXCURRHIGHRANGE/512/32768);
   }
   curr = sqrt(calc / (float)BUFSIZE)*10000;
 #endif

@@ -9,34 +9,44 @@
  */
 
 #include <sblib/eib.h>
+#include <sblib/io_pin_names.h>
+#include <sblib/timeout.h>
 #include <sblib/eib/sblib_default_objects.h>
 #include <sblib/eib/apci.h>
 #include <sblib/serial.h>
 
+#define LED_SERIAL_RX               (PIO0_6) //!< Serial-Rx LED Pin
+#define LED_KNX_RX                  (PIO0_7) //!< KNX-Rx LED Pin
 
-// Maximum size of FT1.2 frames
-#define FT_FRAME_SIZE 32
+#define PIN_FT_SERIAL_TX            (PIN_TX) //!< Serial-Tx Pin
+#define PIN_FT_SERIAL_RX            (PIN_RX) //!< Serial-Rx Pin
 
-// Buffer for incoming FT1.2 frames
-byte ftFrameIn[FT_FRAME_SIZE];
+#define LED_SERIAL_RX_BLINKTIME     (500)    //!< Receiving serial data blinking timeout in milliseconds
+#define LED_KNX_RX_BLINKTIME        (500)    //!< Receiving KNX packets blinking timeout in milliseconds
 
-// Buffer for outgoing FT1.2 frames
-byte ftFrameOut[FT_FRAME_SIZE];
-
-// Buffers for outgoing telegrams
-byte telegramOut1[SB_TELEGRAM_SIZE];
-byte telegramOut2[SB_TELEGRAM_SIZE];
-
-// Index of the next buffer for an outgoing telegram
-int telegramOutId;
+#define FT_OWN_KNX_ADDRESS          (0x11fe) //!< Our own knx-address: 1.1.254
+#define FT_FRAME_SIZE               (32)     //!< Maximum size of FT1.2 frames
+#define FT_MAX_SEND_RETRY           (1)      //!< Do not repeat sending
 
 
-int ftFrameInLen;   //!< Length of the data in ftFrameIn
-int ftFrameOutLen;  //!< Length of the data in ftFrameOut
-int ctrlBase = 0xf0;
+byte ftFrameIn[FT_FRAME_SIZE];  //!< Buffer for incoming FT1.2 frames
+byte ftFrameOut[FT_FRAME_SIZE]; //!< Buffer for outgoing FT1.2 frames
 
+byte telegramOut1[SB_TELEGRAM_SIZE]; //!< 1.Buffer for outgoing telegrams
+byte telegramOut2[SB_TELEGRAM_SIZE]; //!< 2.Buffer for outgoing telegrams
 
-// FT frame type
+int telegramOutId; //!< Index of the next buffer for an outgoing telegram
+
+int ftFrameInLen;       //!< Length of the data in ftFrameIn
+int ftFrameOutLen;      //!< Length of the data in ftFrameOut
+int ctrlBase = 0xf0;    //!<
+
+Timeout knxRxTimeout;       //!< KNX-Rx LED blinking timeout
+Timeout knxSerialTimeout;   //!< Serial-Rx LED blinking timeout
+
+/**
+ * FT frame type
+ */
 enum FtFrameType
 {
     FT_NONE = 0,         //!< none / unspecified
@@ -46,7 +56,9 @@ enum FtFrameType
     FT_ACK = 0xe5,       //!< confirmation
 } frameType;
 
-// FT function code
+/**
+ * FT function code
+ */
 enum FtFuncCode
 {
     FC_SEND_RESET = 0x00,  //!< Reset the remote link
@@ -55,20 +67,29 @@ enum FtFuncCode
     FC_RESET      = 0x40,  //!< Reset
 };
 
-// External message interface codes
+/**
+ * External message interface codes
+ */
 enum EmiCode
 {
     PEI_Identify_req = 0xa7, //!< PEI identify request
     PEI_Identify_con = 0xa8, //!< PEI identify reply
     PEI_Switch_req = 0xa9,   //!< Switch the PEI mode
-    L_Data_req = 0x11,       //!< Send data to the bus
-    L_Data_ind = 0x29,       //!< Data from the bus
+
+    // Link layer
+    L_Data_req      = 0x11,     //!< Send data to the bus
+    L_Data_ind      = 0x29,     //!< Data from the bus
+    L_Data_conf     = 0x2E,
+    L_Busmon_ind    = 0x2B,
+    L_Polldata_req  = 0x13,
+    L_Polldata_conf = 0x25,
+
+    // Transport layer
     T_Connect_req = 0x43,    //!< Connect request
     T_Data_Connected_req = 0x41, //!< Connected data request
     T_Data_Connected_con = 0x8e, //!< Connected data reply
     T_Connect_con = 0x86,    //!< Connect reply
 };
-
 
 /**
  * Reset the buffers.
@@ -82,36 +103,38 @@ void reset()
     frameType = FT_NONE;
 }
 
-
-/*
+/**
  * Initialize the application.
  */
 void setup()
 {
     bcu.begin(2, 1, 1);         // ABB, dummy something device
-    bcu.setOwnAddress(0x11fe);  // Our own address: 1.1.254
-    bus.maxSendTries(1);        // Do not repeat sending
+    bcu.setOwnAddress(FT_OWN_KNX_ADDRESS);
+    bus.maxSendTries(FT_MAX_SEND_RETRY);
 
     // Disable telegram processing by the lib
     if (userRam.status & BCU_STATUS_TL)
+    {
         userRam.status ^= BCU_STATUS_TL | BCU_STATUS_PARITY;
+    }
 
-    pinMode(PIO2_6, OUTPUT);	// Info LED
-    pinMode(PIO3_3, OUTPUT);	// Run LED
+    pinMode(LED_KNX_RX, OUTPUT);	// KNX-Rx LED
+    pinMode(LED_SERIAL_RX, OUTPUT);	// Serial-Rx LED
 
+    serial.setTxPin(PIN_FT_SERIAL_TX);
+    serial.setRxPin(PIN_FT_SERIAL_RX);
     serial.begin(19200, SERIAL_8E1);
     reset();
-
     telegramOutId = 0;
 }
 
-/*
+/**
  * Send a FT frame of variable length. The frame buffer must have enough space
  * so that the checksum and end byte are added.
  *
- * @param frame - the buffer that contains the frame
- * @param funcCode - the function code, e.g. FC_SEND_UDAT
- * @param len - the length of the frame payload
+ * @param frame     The buffer that contains the frame
+ * @param funcCode  The function code, e.g. FC_SEND_UDAT
+ * @param len       The length of the frame's payload
  */
 void sendVariableFrame(byte* frame, int funcCode, int len)
 {
@@ -131,7 +154,7 @@ void sendVariableFrame(byte* frame, int funcCode, int len)
     serial.write(frame, len + 7);
 }
 
-/*
+/**
  * Process a fixed length FT frame
  */
 void processFixedFrame()
@@ -172,7 +195,7 @@ void processDataConnectedRequest()
     }
 }
 
-/*
+/**
  * Process a variable length FT frame
  */
 void processVariableFrame()
@@ -205,7 +228,7 @@ void processVariableFrame()
 
         case PEI_Switch_req:
             serial.write(FT_ACK);
-            // TODO
+            ///\ TODO
             break;
 
         case T_Connect_req:
@@ -236,7 +259,18 @@ void processVariableFrame()
             telegramOut[0] = 0xB0 | (ftFrameIn[6] & 0x0F);
 
             bus.sendTelegram(telegramOut, len - 2);
+
+
             serial.write(FT_ACK);
+            ///\todo WIP L_Data_conf (0x2E) must be send to user, check how it must be done
+            ftFrameOut[5]  = L_Data_conf;
+            ftFrameOut[6]  = 0;
+            ftFrameOut[7]  = ftFrameIn[9];
+            ftFrameOut[8]  = ftFrameIn[10];
+            ftFrameOut[9]  = 0;
+            ftFrameOut[10] = 0;
+            ftFrameOut[11] = 0;
+            sendVariableFrame(ftFrameOut, FC_SEND_UDAT, 7);
             break;
         }
     }
@@ -267,25 +301,38 @@ void processTelegram()
     serial.write(ftFrameOut, bus.telegramLen + 7);
 }
 
-/*
+/**
  * The main processing loop.
  */
 void loop()
 {
     static unsigned int lastSerialRecvTime = 0;
-	static int receiveCount = -1;
-	static int telLength = 0;
-	static int  byteCount = 0;
-	static unsigned char telegram[32];
-	static unsigned char data;
+
+    if (knxRxTimeout.expired())
+    {
+        digitalWrite(LED_KNX_RX, true);
+    }
+
+    if (knxSerialTimeout.expired())
+    {
+        digitalWrite(LED_SERIAL_RX, true);
+    }
 
 	if (bus.telegramReceived())
     {
+	    digitalWrite(LED_KNX_RX, false);
+	    knxRxTimeout.start(LED_KNX_RX_BLINKTIME);
 	    processTelegram();
         bus.discardReceivedTelegram();
     }
 
 	// handle incoming data form the serial line
+	if (serial.available())
+	{
+        digitalWrite(LED_SERIAL_RX, false);
+        knxSerialTimeout.start(LED_SERIAL_RX_BLINKTIME);
+	}
+
 	while (serial.available())
 	{
 	    lastSerialRecvTime = millis();
