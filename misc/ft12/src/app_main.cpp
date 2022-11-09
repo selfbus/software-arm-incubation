@@ -13,6 +13,7 @@
 #include <sblib/timeout.h>
 #include <sblib/eib/apci.h>
 #include <sblib/serial.h>
+#include <sblib/bits.h>
 #include <sblib/version.h>
 #include "bcu_ft12.h"
 #include "ft12_protocol.h"
@@ -23,7 +24,7 @@
 #define PIN_FT_SERIAL_TX            (PIN_TX) //!< Serial-Tx Pin
 #define PIN_FT_SERIAL_RX            (PIN_RX) //!< Serial-Rx Pin
 
-#define LED_SERIAL_RX_BLINKTIME     (50)    //!< Receiving serial data blinking timeout in milliseconds
+#define LED_SERIAL_RX_BLINKTIME     (50)     //!< Receiving serial data blinking timeout in milliseconds
 #define LED_KNX_RX_BLINKTIME        (100)    //!< Receiving KNX packets blinking timeout in milliseconds
 
 #define FT_OWN_KNX_ADDRESS          (0x11fe) //!< Our own knx-address: 1.1.254
@@ -74,7 +75,6 @@ void reset()
 {
     serial.clearBuffers();
     sendFrameCountBit = true;
-    sendFrameCountBit = true;
     lastChecksum = -1;
     ftFrameInLen = 0;
     ftFrameOutLen = 0;
@@ -113,6 +113,58 @@ BcuBase* setup()
     return (&bcu);
 }
 
+
+/**
+ * This is a VERY VERY dirty hack to replace the KNX sender address 0.0.0 with 15.15.255 for @ref APCI_INDIVIDUAL_ADDRESS_RESPONSE_PDU
+ * Older ARM Selfbus devices with clean flash have the default KNX-address 0.0.0 which is not allowed in KNX specification so e.g. knxd ignores their response.
+ * Even KNX-address programming with a broadcasted @ref APCI_INDIVIDUAL_ADDRESS_READ_PDU will fail.
+ *
+ * @warning This is a VERY VERY dirty hack and not even close to KNX spec!
+ *
+ * @param frame          The buffer that contains the frame
+ * @param funcCode       The function code, e.g. FC_SEND_UDAT
+ * @param emi            The @ref EmiCode to send
+ * @param userDataLength The length of the frame's payload
+ *
+ * @return true if sender address was replaced with 15.15.255, otherwise false
+ */
+bool dirtyCheckAndReplaceInvalidDefaultSenderAddress(byte* frame, const FtFunctionCode& funcCode, const EmiCode& emi, const uint8_t& userDataLength)
+{
+    // invalid frame example:
+    // # 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
+    //  68 0A 0A 68 D3 29 B0 00 00 00 00 E1 01 40 CE 16
+
+    // user data indication with length 10?
+    if ((emi != L_Data_Ind) || (userDataLength != 0x0A) || ((funcCode & 0x0f) != FC_SEND_UDAT))
+    {
+        return (false);
+    }
+
+    // check 0.0.0 for KNX sender and destination address
+    if ((frame[7] != 0) || (frame[8] != 0) || (frame[9] != 0) || (frame[10] != 0))
+    {
+        return (false);
+    }
+
+    // is apci command = APCI_INDIVIDUAL_ADDRESS_RESPONSE_PDU ??
+    if (makeWord(frame[12], frame[13]) != APCI_INDIVIDUAL_ADDRESS_RESPONSE_PDU)
+    {
+        return (false);
+    }
+
+    // is response length = 1??
+    if ((frame[11] & 0x0f) != 1) // response length in low nibble
+    {
+        return (false);
+    }
+
+    // okay seems like we had a bad day
+    // -> inject sender address 15.15.255
+    frame[7] = 0xff;
+    frame[8] = 0xff;
+    return (true);
+}
+
 /**
  * Send a FT frame of variable length. The frame buffer must have enough space
  * so that the checksum and end byte are added.
@@ -126,6 +178,9 @@ BcuBase* setup()
 void sendVariableFrame(byte* frame, const FtFunctionCode& funcCode, const EmiCode& emi, const uint8_t& userDataLength,
         const bool& frameCountBit)
 {
+    // This is a VERY VERY dirty hack for older Selfbus devices
+    dirtyCheckAndReplaceInvalidDefaultSenderAddress(frame, funcCode, emi, userDataLength);
+
     frame[4] = 0xD0;
     if (frameCountBit)
     {
