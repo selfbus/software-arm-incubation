@@ -85,14 +85,14 @@ AppUsrCallback usrCallback;
  */
 void setup()
 {
-	for (unsigned ipno=0; ipno<8; ipno++)
- {
-  // Allen Interrupts eine mittlere Priorität einräumen
-  // (2, was "zweitniedrigst" bedeutet (Werte 3..0 möglich, klein höher).
-  // Die Standardeinstellung mit 0 (höchste Prio für alle) hilft hier nicht weiter.
-  // Die ADC-ISR bekommt später eine erhöhte Priorität.
-  NVIC->IP[ipno]=0x80808080;
- }
+    for (unsigned ipno=0; ipno<8; ipno++)
+    {
+        // Allen Interrupts eine mittlere Priorität einräumen
+        // (2, was "zweitniedrigst" bedeutet (Werte 3..0 möglich, klein höher).
+        // Die Standardeinstellung mit 0 (höchste Prio für alle) hilft hier nicht weiter.
+        // Die ADC-ISR bekommt später eine erhöhte Priorität.
+        NVIC->IP[ipno]=0x80808080;
+    }
 // SystemCoreClockUpdate();
  adctimerSetup();
  analogSetup();
