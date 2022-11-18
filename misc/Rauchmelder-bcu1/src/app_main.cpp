@@ -18,7 +18,7 @@
 #include "rm_com.h"
 #include "rm_app.h"
 
-APP_VERSION("S_RM_H6 ", "1", "02");
+APP_VERSION("S_RM_H6 ", "1", "03");
 
 /**
  * Application setup
@@ -30,8 +30,6 @@ BcuBase* setup()
     // Handle power-up delay
     //Timeout delay;
     //delay.start(userEeprom.addrTab[0]*20); //aus LPC922 Rauchmelder übernommen
-
-	pinMode(RM_ACTIVITY_PIN, INPUT);		// Status RM Bodenplatte, no pullup or pulldown configured at this pin to not affect the Rauchmelder
 
     initApplication();
     return (&bcu);
@@ -58,11 +56,19 @@ void loop()
     // Handle updated communication objects
     while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
-        objectUpdated(objno);
+       objectUpdated(objno);
     }
 
 
     // Sleep up to 1 millisecond if there is nothing to do
     if (bcu.bus->idle())
         waitForInterrupt();
+}
+
+/**
+ * The loop while no application is running.
+ */
+void loop_noapp()
+{
+    rm_recv_byte(); // timer32_0 is still running, so we should read the received bytes
 }

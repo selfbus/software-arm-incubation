@@ -27,7 +27,7 @@
 extern BCU1 bcu;
 
 // OPTIONS
-// Enable to activate device ID checking
+// Enable to activate device ID checking (not implemented)
 #define DEVICE_ID_CHECK
 
 
