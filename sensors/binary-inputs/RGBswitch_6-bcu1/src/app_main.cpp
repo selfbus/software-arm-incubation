@@ -92,6 +92,8 @@ BcuBase* setup()
     channelParams = bcu.userMemoryPtr(EE_CHANNEL_PARAMS_BASE);
     LEDparams = bcu.userMemoryPtr(EE_LED_PARAMS_BASE);
 
+    bcu.setProgPin(PIO2_11);
+
     bcu.begin(76, 0x474, 2); // We are a "Selfbus RGB Taster" device, version 0.2
 
     // onboard LEDs ausschalten
