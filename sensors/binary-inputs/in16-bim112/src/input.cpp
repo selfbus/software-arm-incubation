@@ -21,10 +21,11 @@ void Input::begin(int noOfChannels, int baseAddress)
     int mode;
     unsigned int mask = 0;
 
+    mode = INPUT | HYSTERESIS;
 #ifdef INVERT
-    	mode = INPUT | HYSTERESIS | PULL_UP;
+    mode |= PULL_UP;
 #else
-    	mode = INPUT | HYSTERESIS | PULL_DOWN;
+    mode |= PULL_DOWN;
 #endif
 
     for (int i = 0; i < noOfChannels; i++)
@@ -40,28 +41,21 @@ void Input::begin(int noOfChannels, int baseAddress)
 
 void Input::scan(void)
 {
-    for (unsigned int i = 0; i < noOfChannels; i++)
+    bool pinState;
+    for (uint8_t i = 0; i < noOfChannels; i++)
     {
+        pinState = digitalRead(inputPins[i]);
 #ifdef INVERT
-      	if (digitalRead(inputPins[i]))
-       	{
-       		inputState &= 0xffff ^ (1 << i);
-       	}
-       	else
-       	{
-       		inputState |= 1 << i;
-       	}
-
-#else
-       	if (digitalRead(inputPins[i]))
-       	{
-       		inputState |= 1 << i;
-       	}
-       	else
-       	{
-       		inputState &= 0xffff ^ (1 << i);
-       	}
+        pinState = !pinState;
 #endif
+      	if (pinState)
+       	{
+       		inputState &= 0xffff ^ (1 << i);
+       	}
+       	else
+       	{
+       		inputState |= 1 << i;
+       	}
     }
 }
 

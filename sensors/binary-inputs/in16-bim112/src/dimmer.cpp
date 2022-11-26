@@ -23,7 +23,7 @@ Dimmer::Dimmer(unsigned int no, unsigned int longPress,
 
     debug_eeprom("Channel EEPROM:", channelConfig, 46);
 
-    if (!bcu.userEeprom->getUInt8(channelConfig + 0x20) & 0x3)
+    if (!(bcu.userEeprom->getUInt8(channelConfig + 0x20) & 0x3))
     {
         repeatDimmerTime = 0;
     }
