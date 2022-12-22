@@ -16,8 +16,8 @@ void Input::begin(int noOfChannels, int baseAddress)
 {
     this->noOfChannels = noOfChannels;
     this->debounceTime = bcu.userEeprom->getUInt16(baseAddress);
-    inputState = 0;
-    scan();
+    this->inputState = 0;
+
     int mode;
     unsigned int mask = 0;
 
@@ -28,12 +28,16 @@ void Input::begin(int noOfChannels, int baseAddress)
     mode |= PULL_DOWN;
 #endif
 
-    for (int i = 0; i < noOfChannels; i++)
+    for (uint8_t i = 0; i < noOfChannels; i++)
     {
-#ifdef INVERT
-        mask  = 1 << i;
-#endif
         pinMode(inputPins[i], mode);
+    }
+
+    scan(); // scan after pins are configured
+
+    for (uint8_t i = 0; i < noOfChannels; i++)
+    {
+        mask  = 1 << i;
         inputDebouncer[i].init(inputState & mask);
     }
     //leds.begin();
