@@ -48,14 +48,14 @@ void Input::scan(void)
 #ifdef INVERT
         pinState = !pinState;
 #endif
-      	if (pinState)
-       	{
-       		inputState &= 0xffff ^ (1 << i);
-       	}
-       	else
-       	{
-       		inputState |= 1 << i;
-       	}
+        if (pinState)
+        {
+            inputState |= 1 << i;
+        }
+        else
+        {
+            inputState &= 0xffff ^ (1 << i);
+        }
     }
 }
 
