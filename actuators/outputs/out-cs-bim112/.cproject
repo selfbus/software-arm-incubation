@@ -4,6 +4,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422" moduleId="org.eclipse.cdt.core.settings" name="Debug 6Ch">
 				<macros>
+					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_6CH"/>
 				</macros>
 				<externalSettings/>
@@ -18,7 +19,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="axf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Debug build 6 channel" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422" name="Debug 6Ch" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
+				<configuration artifactExtension="axf" artifactName="out-cs_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Debug build 6 channel" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422" name="Debug 6Ch" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1472225030" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.553216540" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
@@ -146,7 +147,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.1920689323">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.1920689323" moduleId="org.eclipse.cdt.core.settings" name="Debug 2Ch_wo_CS">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.0"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_2CH_WO_CS"/>
 				</macros>
 				<externalSettings/>
@@ -161,7 +162,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="axf" artifactName="out_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="2ch Actuator without current sense" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.1920689323" name="Debug 2Ch_wo_CS" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
+				<configuration artifactExtension="axf" artifactName="out-cs_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="2ch Actuator without current sense" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.1920689323" name="Debug 2Ch_wo_CS" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.1920689323." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.445321258" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1222596048" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
@@ -288,6 +289,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.330125340">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.330125340" moduleId="org.eclipse.cdt.core.settings" name="Debug 2Ch">
 				<macros>
+					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_2CH"/>
 				</macros>
 				<externalSettings/>
@@ -302,7 +304,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="axf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Debug build 2 channel" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.330125340" name="Debug 2Ch" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
+				<configuration artifactExtension="axf" artifactName="out-cs_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Debug build 2 channel" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.330125340" name="Debug 2Ch" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.330125340." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1462622126" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.898654601" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
@@ -429,6 +431,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.224937521">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.224937521" moduleId="org.eclipse.cdt.core.settings" name="Release 6Ch">
 				<macros>
+					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_6CH"/>
 				</macros>
 				<externalSettings/>
@@ -443,7 +446,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="axf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Release 6Ch build" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.224937521" name="Release 6Ch" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
+				<configuration artifactExtension="axf" artifactName="out-cs_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Release 6Ch build" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.224937521" name="Release 6Ch" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.224937521." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.710966171" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.85331235" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
@@ -576,6 +579,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146" moduleId="org.eclipse.cdt.core.settings" name="Release 2Ch">
 				<macros>
+					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_2CH"/>
 				</macros>
 				<externalSettings/>
@@ -590,7 +594,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="axf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Release 2Ch build" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146" name="Release 2Ch" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
+				<configuration artifactExtension="axf" artifactName="out-cs_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Release 2Ch build" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146" name="Release 2Ch" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1123482093" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.101946888" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
@@ -723,6 +727,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916" moduleId="org.eclipse.cdt.core.settings" name="Release 2Ch_wo_CS">
 				<macros>
+					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_2CH_WO_CS"/>
 				</macros>
 				<externalSettings/>
@@ -737,7 +742,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="axf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="2ch Actuator without current sense" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916" name="Release 2Ch_wo_CS" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
+				<configuration artifactExtension="axf" artifactName="out-cs_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="2ch Actuator without current sense" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916" name="Release 2Ch_wo_CS" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1886004643" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.252990765" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
@@ -870,7 +875,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396" moduleId="org.eclipse.cdt.core.settings" name="Debug 8Ch_wo_CS">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.0"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_8CH_WO_CS"/>
 				</macros>
 				<externalSettings/>
@@ -885,7 +890,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="axf" artifactName="out_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="8ch Actuator without current sense" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396" name="Debug 8Ch_wo_CS" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
+				<configuration artifactExtension="axf" artifactName="out-cs_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="8ch Actuator without current sense" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396" name="Debug 8Ch_wo_CS" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.2138559106" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1533214607" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
@@ -1012,7 +1017,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396.1627959898">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396.1627959898" moduleId="org.eclipse.cdt.core.settings" name="Release 8Ch_wo_CS">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.0"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_8CH_WO_CS"/>
 				</macros>
 				<externalSettings/>
@@ -1027,7 +1032,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="axf" artifactName="out_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="8ch Actuator without current sense" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396.1627959898" name="Release 8Ch_wo_CS" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
+				<configuration artifactExtension="axf" artifactName="out-cs_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="8ch Actuator without current sense" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396.1627959898" name="Release 8Ch_wo_CS" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; checksum -p ${TargetChip} -v &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -I binary &quot;${BuildArtifactFileBaseName}.bin&quot; -O ihex &quot;${BuildArtifactFileBaseName}.hex&quot;">
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396.1627959898." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.356928701" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1479751398" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
@@ -1160,6 +1165,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.224937521.952200578">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.224937521.952200578" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release 6Ch">
 				<macros>
+					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_6CH"/>
 				</macros>
 				<externalSettings/>
@@ -1174,7 +1180,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="axf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Flashstart 0x3000 Release 6Ch build" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.224937521.952200578" name="Flashstart 0x3000 Release 6Ch" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -O ihex ${BuildArtifactFileName} ${BuildArtifactFileBaseName}.hex ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.bin&quot; ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.hex&quot;">
+				<configuration artifactExtension="axf" artifactName="out-cs_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Flashstart 0x3000 Release 6Ch build" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.224937521.952200578" name="Flashstart 0x3000 Release 6Ch" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -O ihex ${BuildArtifactFileName} ${BuildArtifactFileBaseName}.hex ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.bin&quot; ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.hex&quot;">
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.224937521.952200578." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1771198395" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1588409080" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
@@ -1307,6 +1313,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1025089933">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1025089933" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release 2Ch">
 				<macros>
+					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_2CH"/>
 				</macros>
 				<externalSettings/>
@@ -1321,7 +1328,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="axf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Flashstart 0x3000 Release 2Ch build" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1025089933" name="Flashstart 0x3000 Release 2Ch" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -O ihex ${BuildArtifactFileName} ${BuildArtifactFileBaseName}.hex ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.bin&quot; ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.hex&quot;">
+				<configuration artifactExtension="axf" artifactName="out-cs_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Flashstart 0x3000 Release 2Ch build" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1025089933" name="Flashstart 0x3000 Release 2Ch" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -O ihex ${BuildArtifactFileName} ${BuildArtifactFileBaseName}.hex ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.bin&quot; ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.hex&quot;">
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1025089933." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.2052940351" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.697875833" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
@@ -1454,6 +1461,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916.1602184431">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916.1602184431" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release 2Ch_wo_CS">
 				<macros>
+					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_2CH_WO_CS"/>
 				</macros>
 				<externalSettings/>
@@ -1468,7 +1476,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="axf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Flashstart 0x3000 Release 2ch Actuator without current sense" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916.1602184431" name="Flashstart 0x3000 Release 2Ch_wo_CS" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -O ihex ${BuildArtifactFileName} ${BuildArtifactFileBaseName}.hex ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.bin&quot; ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.hex&quot;">
+				<configuration artifactExtension="axf" artifactName="out-cs_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Flashstart 0x3000 Release 2ch Actuator without current sense" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916.1602184431" name="Flashstart 0x3000 Release 2Ch_wo_CS" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -O ihex ${BuildArtifactFileName} ${BuildArtifactFileBaseName}.hex ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.bin&quot; ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.hex&quot;">
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916.1602184431." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.1054028180" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1902369483" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
@@ -1601,7 +1609,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396.1627959898.829656119">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396.1627959898.829656119" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release 8Ch_wo_CS">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.0"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_8CH_WO_CS"/>
 				</macros>
 				<externalSettings/>
@@ -1616,7 +1624,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="axf" artifactName="out_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Flashstart 0x3000 Release 8ch Actuator without current sense" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396.1627959898.829656119" name="Flashstart 0x3000 Release 8Ch_wo_CS" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -O ihex ${BuildArtifactFileName} ${BuildArtifactFileBaseName}.hex ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.bin&quot; ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.hex&quot;">
+				<configuration artifactExtension="axf" artifactName="out-cs_${hardware}_V${version}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Flashstart 0x3000 Release 8ch Actuator without current sense" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396.1627959898.829656119" name="Flashstart 0x3000 Release 8Ch_wo_CS" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Performing post-build steps" postbuildStep="arm-none-eabi-size &quot;${BuildArtifactFileName}&quot; ; arm-none-eabi-objcopy -v -O binary &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}.bin&quot; ; arm-none-eabi-objcopy -O ihex ${BuildArtifactFileName} ${BuildArtifactFileBaseName}.hex ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.bin&quot; ; #checksum -p ${TargetChip} -d &quot;${BuildArtifactFileBaseName}.hex&quot;">
 					<folderInfo id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396.1627959898.829656119." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.2138180775" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1694108922" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
