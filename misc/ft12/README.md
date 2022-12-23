@@ -10,3 +10,37 @@ Example command line for knxd:
 ```
 knxd --trace=1023 -e 2.3.240 -E 2.3.241:9 -D -R -T -S -i -B log -b ft12:/dev/ttyKNX1
 ```
+
+Example /etc/knxd.ini
+```
+[A.tcp]
+server = knxd_tcp
+systemd-ignore = true
+
+[B.ft12]
+device = /dev/ttyKNX1
+driver = ft12
+filters = log,C.pace
+
+[C.pace]
+delay = 10
+filter = pace
+[debug-main]
+trace-mask = 0x3ff
+[debug-server]
+name = mcast:knxd
+
+[main]
+addr = 2.3.240
+client-addrs = 2.3.241:9
+connections = server,A.tcp,B.ft12
+debug = debug-main
+systemd = systemd
+
+[server]
+debug = debug-server
+discover = true
+router = router
+server = ets_router
+tunnel = tunnel
+```
