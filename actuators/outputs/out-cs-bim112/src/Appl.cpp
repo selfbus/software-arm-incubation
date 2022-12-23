@@ -503,15 +503,9 @@ void Appl::RecallChannelState(int chno, byte* ptr, unsigned referenceTime)
  ChObjectUpdate(chno, OBJ_TIMDURATION, PtrRdUint16(ptr));
  ptr+=2;
 }
-// USR_CALLBACK_RESET
-// USR_CALLBACK_FLASH
-// USR_CALLBACK_BCU_END
-// STOREAPPL_DOWNLOAD
-// STOREAPPL_BUSVFAIL
-// RECALLAPPL_INIT
 
-// Wird nur nach Systemstart aufgerufen, genau genommen ist type=RECALLAPPL_STARTUP also immer gegeben.
-void Appl::RecallAppData(int type)
+// Wird nur nach Systemstart aufgerufen, genau genommen ist type=UsrCallbackType::recallAppStartup also immer gegeben.
+void Appl::RecallAppData(UsrCallbackType callbackType)
 {
  byte* StoragePtr;
  unsigned referenceTime = systemTime;
@@ -536,7 +530,7 @@ void Appl::RecallAppData(int type)
      // Heizungsaktor konfiguriert -> wird nicht unterstützt.
      StoragePtr += 17;
     }
-    if (type == RECALLAPPL_STARTUP)
+    if (callbackType == UsrCallbackType::recallAppStartup)
     {
      ModifyChStateAfterBusVoltageRecovery(chno);
     }
@@ -552,7 +546,7 @@ void Appl::RecallAppData(int type)
     // Für den Teil der Daten, die nicht gespeichert werden, wird hier
     // erst mal die Default-Konfiguration hergestellt.
     SetIniChannelState(chno);
-    if (type == RECALLAPPL_STARTUP)
+    if (callbackType == UsrCallbackType::recallAppStartup)
     {
      ModifyChStateAfterBusVoltageRecovery(chno);
     }
@@ -561,14 +555,14 @@ void Appl::RecallAppData(int type)
  }
 }
 
-void Appl::StoreApplData(int callbacktype)
+void Appl::StoreApplData(UsrCallbackType callbackType)
 {
  byte* StoragePtr;
  unsigned referenceTime = systemTime;
  // Kann der Mapper überhaupt die Seite 0 mappen? Checken!
  memMapper.writeMem(0, 0); // writeMem() aktiviert die passende Speicherseite, entgegen zu memoryPtr()
  StoragePtr = memMapper.memoryPtr(0, false);
- *StoragePtr++ = callbacktype; // Der Grund für das Speichern wird auch abgelegt. Vielleicht ganz nützlich.
+ *StoragePtr++ = (uint8_t) callbackType; // Der Grund für das Speichern wird auch abgelegt. Vielleicht ganz nützlich.
  for (int chno = 0; chno < CHANNELCNT; chno++)
  {
   if ((ReadChConfigByte(chno, APP_OPMODE_O) & APP_OPMODE_M) == 1) // Schaltaktor
@@ -576,7 +570,7 @@ void Appl::StoreApplData(int callbacktype)
    *StoragePtr++ = 0x5A; // 1 Byte
    byte OldCrc = *StoragePtr;
    byte NewCrc = crc_calc(userMemoryPtr(APP_STARTADDR+APP_CHOFFS*chno), APP_CHOFFS);
-   if (callbacktype == STOREAPPL_DOWNLOAD)
+   if (callbackType == UsrCallbackType::storeAppDownload)
    {
     if (OldCrc != NewCrc)
     {
@@ -587,7 +581,7 @@ void Appl::StoreApplData(int callbacktype)
     }
     ModifyChStateAfterDownload(chno);
    }
-   if (callbacktype == USR_CALLBACK_RESET)
+   if (callbackType == UsrCallbackType::reset)
    {
     ModifyChStateBeforeReset(chno);
    }
