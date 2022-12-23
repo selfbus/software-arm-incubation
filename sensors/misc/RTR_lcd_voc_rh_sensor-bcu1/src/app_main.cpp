@@ -59,7 +59,7 @@ APP_VERSION("SBrtrLcd", "1", "10")
 BcuBase* setup() {
 
 #if EINHEIZKREIS
-	bcu.begin(76, 0x474, 2);  // we are a MDT temperatur controller, version 1.2
+	bcu.begin(76, 0x474, 2);  // we are a MDT temperature controller, version 1.2
 #else
 	bcu.begin(76, 0x47E, 2); // we are a Selfbus room temperature and air controller Version 0.2
 #endif
@@ -158,6 +158,14 @@ void loop() {
 	{
 		objectUpdated(objno);
 	}
+
+}
+
+/**
+ * The processing loop while no KNX-application is loaded
+ */
+void loop_noapp()
+{
 
 }
 

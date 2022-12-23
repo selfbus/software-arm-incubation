@@ -456,3 +456,11 @@ __attribute__((optimize("O3"))) void loop()
 	    timeoutSerial();
 	}
 }
+
+/**
+ * The processing loop while no KNX-application is loaded
+ */
+void loop_noapp()
+{
+
+}

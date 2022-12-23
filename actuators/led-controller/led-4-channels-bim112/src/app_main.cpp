@@ -119,3 +119,11 @@ void initChannel(unsigned int channel)
 {
 
 }
+
+/**
+ * The processing loop while no KNX-application is loaded
+ */
+void loop_noapp()
+{
+
+}
