@@ -29,7 +29,7 @@ def convert_to_readable_format(s):
             result += "<ETX>"
         elif x == 0x06:
             result += "<ACK>"
-        elif x == 0x0f:
+        elif x == 0x15:
             result += "<NAK>"
         elif x == 0x30:
             result += "0"
