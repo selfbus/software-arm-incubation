@@ -669,7 +669,7 @@ void Channel::handleScene(unsigned int value)
                 if (features & FEATURE_STORE_SCENE)
                 {
                     if (_storeScene(i))
-                        bcu.userEeprom->modified();
+                        bcu.userEeprom->modified(true);
                }
             }
             else

@@ -38,7 +38,7 @@ void dimEncChannelChanged(int channel, int pinValue)
         ///\todo this reduces the life of the flash, better would is, to save the setting on a bus voltage failure or a restart
         // userEeprom[EE_CHANNEL_PARAMS_BASE + (channel << 2) + 2] = objectRead(COMOBJ_PRIMARY1 + channel);
         *bcu.userMemoryPtr(EE_CHANNEL_PARAMS_BASE + (channel << 2) + 2) = bcu.comObjects->objectRead(COMOBJ_PRIMARY1 + channel);
-        bcu.userEeprom->modified();
+        bcu.userEeprom->modified(true);
     }
     if (!pinValue && ((kind == 0) || (kind == 3)))
     {   // rising edge and action configured

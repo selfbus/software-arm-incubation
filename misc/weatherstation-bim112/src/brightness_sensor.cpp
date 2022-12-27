@@ -152,7 +152,7 @@ void BrightnessSensor::objectUpdated(int number)
     {   // a teach request as been received and is enabled for position 1
         (*(bcu.userEeprom))[0x4556 + number] = bcu.comObjects->objectRead(COM_OBJ_FACADE_EAST_STATUS_POS  + objNoOffset);
         (*(bcu.userEeprom))[0x455C + number] = bcu.comObjects->objectRead(COM_OBJ_FACADE_EAST_STATUS_SLAT + objNoOffset);
-        bcu.userEeprom->modified();
+        bcu.userEeprom->modified(true);
     }
     if (  ((number - objNoOffset)         == COM_OBJ_FACADE_EAST_TEACH_IN_P2)
        && (bcu.userEeprom->getUInt8(0x4565 + number) == 1)
@@ -160,7 +160,7 @@ void BrightnessSensor::objectUpdated(int number)
     {   // a teach request as been received and is enabled for position 2
         (*(bcu.userEeprom))[0x4559 + number] = bcu.comObjects->objectRead(COM_OBJ_FACADE_EAST_STATUS_POS  + objNoOffset);
         (*(bcu.userEeprom))[0x455F + number] = bcu.comObjects->objectRead(COM_OBJ_FACADE_EAST_STATUS_SLAT + objNoOffset);
-        bcu.userEeprom->modified();
+        bcu.userEeprom->modified(true);
     }
 }
 
