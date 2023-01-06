@@ -12,24 +12,30 @@
 #include <app-out8-dimmer.h>
 #include "config.h"
 #include "channel.h"
-#include <sblib/eib.h>
+#include <sblib/eibMASK0701.h>
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
+#include "hand_actuation.h"
 
+HandActuation* handAct = new HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
 Channel * channels[NO_OF_CHANNELS];
 
 void objectUpdated(int objno)
 {
-    if (objno >= 13)
+    const uint8_t firstChannelObjectNumber = 10;
+    const uint8_t channelObjectCount = 24;
+
+    ///\todo fill with life, below is mostly c&p from somewhere
+    if (objno >= firstChannelObjectNumber)
     {   // handle the com objects specific to one channel
-        unsigned int channel = (objno - 13) / 20;
+        unsigned int channel = (objno - firstChannelObjectNumber) / channelObjectCount;
         Channel * chn = channels [channel];
         if (chn)
-            chn->objectUpdate(objno);
+            chn->objectUpdateCh(objno);
     }
     else
     {   // handle global objects
-        unsigned char value = objectRead(objno);
+        unsigned char value = bcu.comObjects->objectRead(objno);
         for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
         {   Channel * chn = channels [i];
             if (chn && (objno <= 4) && chn->centralEnabled())
@@ -84,7 +90,7 @@ void initApplication(void)
     }
     for (unsigned int i = 0; i < NO_OF_CHANNELS; i++, address += EE_CHANNEL_CFG_SIZE)
     {
-        switch (userEeprom.getUInt8(address))
+        switch (bcu.userEeprom->getUInt8(address))
         {
 //        case 0: channels [i] = new Blind(i, address); break;
 //        case 1: channels [i] = new Shutter(i, address); break;

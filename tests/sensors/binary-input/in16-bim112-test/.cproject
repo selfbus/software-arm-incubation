@@ -27,7 +27,7 @@
 									<listOptionValue builtIn="false" value="sblib-test"/>
 								</option>
 								<option id="macosx.cpp.link.option.paths.1307567113" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/Debug_BIM112}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib-test/Debug}&quot;"/>
 								</option>
 								<option id="macosx.cpp.link.option.flags.1218515520" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-m32" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.54493092" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
@@ -48,7 +48,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Catch/inc}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.821511711" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="BIM112"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.level.1581424036" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>

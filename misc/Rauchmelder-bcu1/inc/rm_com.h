@@ -12,12 +12,26 @@
 #ifndef rm_com_h
 #define rm_com_h
 
+#include <stdint.h>
+
 // Eingangspin definieren, an dem die Erkennung der internen Rauchmelder Spannung angeschlossen ist
 #define RM_ACTIVITY_PIN PIO0_11
+
+/**
+ * Smoke detector alarm states
+ */
+enum RmAlarmState : uint8_t
+{
+    RM_NO_ALARM,    //!< normal state, no alarm and no test alarm
+    RM_ALARM,       //!< alarm state
+    RM_TEST_ALARM   //!< test alarm state
+};
 
 //
 // Funktionen für die Kommunikation mit dem Rauchmelder
 //
+
+bool rm_set_alarm_state(RmAlarmState newState);
 
 /**
  * Ein Byte über die serielle Schnittstelle vom Rauchmelder empfangen.
@@ -26,7 +40,7 @@
  * zur Verarbeitung der Nachricht aufgerufen. Diese Funktion muss aus main()
  * aufgerufen werden wenn ein Byte empfangen wurde.
  */
-extern void rm_recv_byte();
+bool rm_recv_byte();
 
 /**
  * Die empfangene Nachricht vom Rauchmelder verarbeiten.
@@ -37,42 +51,32 @@ extern void rm_recv_byte();
  * @param bytes - die empfangene Nachricht, ohne STX, ETX, Prüfsumme.
  * @param len - die Anzahl der empfangenen Bytes
  */
-extern void rm_process_msg(unsigned char* bytes, unsigned char len);
+void rm_process_msg(unsigned char* bytes, unsigned char len);
 
 /**
  * Serielle Kommunikation mit dem Rauchmelder initialisieren
  */
-extern void rm_serial_init();
+void rm_serial_init();
 
 /**
  * Einen 1 Byte Befehl an den Rauchmelder senden.
  *
  * @param cmd - das Befehls-Byte.
  */
-extern void rm_send_cmd(unsigned char cmd);
+void rm_send_cmd(unsigned char cmd);
 
 /**
- * Ein Byte an den Rauchmelder senden.
+ * Ein ACK an den Rauchmelder senden.
  *
- * @param ch - das zu sendende Byte.
  */
-extern void rm_send_byte(unsigned char ch);
+void rm_send_ack();
 
 /**
- * Eine Nachricht an den Rauchmelder senden.
+ * Check if we are currently receiving bytes from the smoke detector
  *
- * Der Befehl wird als Hex String gesendet. Die Prüfsumme wird automatisch
- * berechnet und nach dem Befehl gesendet. Die gesammte Übertragung wird mit
- * STX begonnnen und mit ETX beendet.
- *
- * @param hexstr - die zu sendenden Bytes als Hex String, mit Nullbyte am Ende
+ * @return true if receiving, otherwise false
  */
-extern void rm_send_hexstr(unsigned char* hexstr);
-
-/**
- * Wenn >= 0 dann wird gerade etwas vom Rauchmelder empfangen
- */
-extern int recvCount;
+bool isReceiving();
 
 
 #endif /*rm_com_h*/

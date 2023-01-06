@@ -8,8 +8,7 @@
  *  it under the terms of the GNU General Public License version 3 as
  *  published by the Free Software Foundation.
  */
-#define _USE_MATH_DEFINES
-#include <cmath>
+#include <sblib/math.h>
 #include "rc_protocol.h"
 
 int bcd2int(byte bcd)
@@ -52,7 +51,7 @@ RCMessage* RCMessage::GetRCMessageFromTelegram(byte * msg, int msg_len)
             return ret;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 RCParameterMessage::RCParameterMessage()
@@ -148,7 +147,7 @@ bool RCParameterMessage::Decode(byte * msg, int msg_len)
         {
             case cylindrical:
             {
-                _Level_m3_Calibrated = float(_LevelCalibrated_cm) / 100 * _ReservoirArea_m2;
+                _Level_m3_Calibrated = (float)_LevelCalibrated_cm / 100.0f * _ReservoirArea_m2;
                 break;
             }
             case spherical:
@@ -156,7 +155,7 @@ bool RCParameterMessage::Decode(byte * msg, int msg_len)
                 float r = float(_FillingLevelMax_cm) / 2.0f / 100.0f;
                 float h = float(_LevelCalibrated_cm) / 100.0f;
                 // V = (1/3)pi*h²(3r-h)
-                _Level_m3_Calibrated = ((float)M_PI)/3.0f * (h*h) * (3.0f*r-h);
+                _Level_m3_Calibrated = ((float)(PI)/3.0f * (h*h) * (3.0f*r-h));
                 break;
             }
             default:
@@ -166,7 +165,7 @@ bool RCParameterMessage::Decode(byte * msg, int msg_len)
                 break;
             }
         }
-        _Level_m3_Calibrated = truncf(_Level_m3_Calibrated * 10.0f) /10.0f;
+        _Level_m3_Calibrated = round(_Level_m3_Calibrated * 10.0f) / 10.0f;
         _IsValid = true;
     }
     return _IsValid;

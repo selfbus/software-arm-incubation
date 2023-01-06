@@ -1,11 +1,12 @@
 
 #include "common.h"
-#include <sblib/eib/sblib_default_objects.h>
+
+APP_VERSION("SB4sense", "1", "10")
 
 void loop() {
     if (needSensorInit) {
         if (millis() > nextInit) initSensors();
-    }
+            }
     if (!needSensorInit) {
         for (auto &sc : configs) {
             sc.sampleValues();
@@ -14,5 +15,13 @@ void loop() {
         }
     }
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle()) waitForInterrupt();
+    if (bcu.bus->idle()) waitForInterrupt();
+}
+
+/**
+ * The processing loop while no KNX-application is loaded
+ */
+void loop_noapp()
+{
+
 }

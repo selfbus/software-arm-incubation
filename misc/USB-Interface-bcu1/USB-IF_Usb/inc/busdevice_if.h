@@ -15,7 +15,7 @@ extern volatile unsigned int systemTime;
 
 enum class TCdcDeviceMode
 {
-	Halt,
+	Halt, //!< Initialization or USB stopped working
 	HidOnly,
 	UsbMon,
 	BusMon,

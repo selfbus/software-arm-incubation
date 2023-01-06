@@ -6,10 +6,13 @@
  *  published by the Free Software Foundation.
  */
 
-#ifndef app_in8_h
-#define app_in8_h
+#ifndef APP_RGB_SWITCH
+#define APP_RGB_SWITCH
 
 #include "params.h"
+#include <sblib/eibBCU1.h>
+
+extern BCU1 bcu;
 
 /**
  * A communication object was updated from somebody via the EIB bus.
@@ -36,4 +39,4 @@ void initApplication(void);
  */
 void handlePeriodic(void);
 
-#endif /*app_in8_h*/
+#endif /*APP_RGB_SWITCH*/

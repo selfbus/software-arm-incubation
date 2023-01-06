@@ -349,7 +349,7 @@ void KnxHidIf::KnxIf_Tasks(void)
 		if (ReadReport(buffno) == LPC_OK)
 		{
 			ReceivedUsbPacket(buffno);
-      deviceIf.BlinkActivityLed();
+			deviceIf.BlinkActivityLed();
 		}
 	} else {
 		tx_busy = false;
@@ -370,8 +370,9 @@ void KnxHidIf::KnxIf_Tasks(void)
 				// über USB weitergeschickt werden. Da die Monitorfunktion intern nie
 			  // einen Reset erzeugt, ist das unproblematisch.
 				SendReport(&ptr[2]);
-        deviceIf.BlinkActivityLed();
+				deviceIf.BlinkActivityLed();
 			}
+
 			if (CdcDeviceMode == TCdcDeviceMode::BusMon)
 			{ // Nur im Monitor-Mode Telegramme über CDC im Klartext ausgeben
 				bool mon = false;
@@ -387,10 +388,10 @@ void KnxHidIf::KnxIf_Tasks(void)
 				}
 				if (mon)
 				{
-					unsigned tellen = ptr[0];
-					if ((tellen > 2) && (tellen < 66))
+					unsigned telLength = ptr[0];
+					if ((telLength > 2) && (telLength < 66))
 					{
-						teldump.Dump(systemTime, send, tellen-(2+C_HRH_HeadLen+C_TPH_HeadLen+A_TPB_Data), ptr+2+C_HRH_HeadLen+C_TPH_HeadLen+A_TPB_Data);
+						teldump.Dump(systemTime, send, telLength-(2+C_HRH_HeadLen+C_TPH_HeadLen+A_TPB_Data), ptr+2+C_HRH_HeadLen+C_TPH_HeadLen+A_TPB_Data);
 					}
 				}
 			}

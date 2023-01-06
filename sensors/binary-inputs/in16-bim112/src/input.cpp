@@ -7,7 +7,6 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/eib/user_memory.h>
 #include "input.h"
 
 //#include "LedIndication.h"
@@ -16,24 +15,29 @@
 void Input::begin(int noOfChannels, int baseAddress)
 {
     this->noOfChannels = noOfChannels;
-    this->debounceTime = userEeprom.getUInt16(baseAddress);
-    inputState = 0;
-    scan();
+    this->debounceTime = bcu.userEeprom->getUInt16(baseAddress);
+    this->inputState = 0;
+
     int mode;
     unsigned int mask = 0;
 
+    mode = INPUT | HYSTERESIS;
 #ifdef INVERT
-    	mode = INPUT | HYSTERESIS | PULL_UP;
+    mode |= PULL_UP;
 #else
-    	mode = INPUT | HYSTERESIS | PULL_DOWN;
+    mode |= PULL_DOWN;
 #endif
 
-    for (int i = 0; i < noOfChannels; i++)
+    for (uint8_t i = 0; i < noOfChannels; i++)
     {
-#ifdef INVERT
-        mask  = 1 << i;
-#endif
         pinMode(inputPins[i], mode);
+    }
+
+    scan(); // scan after pins are configured
+
+    for (uint8_t i = 0; i < noOfChannels; i++)
+    {
+        mask  = 1 << i;
         inputDebouncer[i].init(inputState & mask);
     }
     //leds.begin();
@@ -41,28 +45,21 @@ void Input::begin(int noOfChannels, int baseAddress)
 
 void Input::scan(void)
 {
-    for (unsigned int i = 0; i < noOfChannels; i++)
+    bool pinState;
+    for (uint8_t i = 0; i < noOfChannels; i++)
     {
+        pinState = digitalRead(inputPins[i]);
 #ifdef INVERT
-      	if (digitalRead(inputPins[i]))
-       	{
-       		inputState &= 0xffff ^ (1 << i);
-       	}
-       	else
-       	{
-       		inputState |= 1 << i;
-       	}
-
-#else
-       	if (digitalRead(inputPins[i]))
-       	{
-       		inputState |= 1 << i;
-       	}
-       	else
-       	{
-       		inputState &= 0xffff ^ (1 << i);
-       	}
+        pinState = !pinState;
 #endif
+        if (pinState)
+        {
+            inputState |= 1 << i;
+        }
+        else
+        {
+            inputState &= 0xffff ^ (1 << i);
+        }
     }
 }
 

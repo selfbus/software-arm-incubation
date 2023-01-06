@@ -8,7 +8,9 @@
  *  published by the Free Software Foundation.
  */
 #include "channel.h"
-#include <sblib/eib.h>
+#include <sblib/eibMASK0701.h>
+
+extern MASK0701 bcu;
 
 Channel::Channel()
 : pwm(0)
@@ -18,15 +20,16 @@ Channel::Channel()
 // XXX implement the curves
 void Channel::setValue(unsigned char value)
 {
-    if (userEeprom.getUInt8 (0x4762) == 0)
+    uint8_t eepromContent = bcu.userEeprom->getUInt8(0x4762);
+    if (eepromContent == 0)
     {   // quadratic curve
         pwm = value;
     }
-    else if (userEeprom.getUInt8 (0x4762) == 2)
+    else if (eepromContent == 2)
     {   // semi-logarithmic curve
         pwm = value;
     }
-    else if (userEeprom.getUInt8 (0x4762) == 7)
+    else if (eepromContent == 7)
     {   // linear curve
         pwm = value;
     }

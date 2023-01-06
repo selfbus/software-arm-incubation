@@ -350,17 +350,17 @@ void SensorConfig::doPeriodics() {
 
 void SensorConfig::sendTemperature() const {
     if (tRes == SENDETYP_MW_DPT9_EIS5_DEFAULT) {
-        objectWriteFloat(tCom, temperature*100);
+        bcu.comObjects->objectWriteFloat(tCom, temperature*100);
     } else {
-        objectWrite(tCom, (uint8_t)temperature);
+        bcu.comObjects->objectWrite(tCom, (uint8_t)temperature);
     }
 }
 
 void SensorConfig::sendHumidity() const {
     if (hRes == SENDETYP_MW_DPT9_EIS5_DEFAULT) {
-        objectWriteFloat(hCom, humidity*100);
+        bcu.comObjects->objectWriteFloat(hCom, humidity*100);
     } else {
-        objectWrite(hCom, (uint8_t)humidity);
+        bcu.comObjects->objectWrite(hCom, (uint8_t)humidity);
     }
 }
 

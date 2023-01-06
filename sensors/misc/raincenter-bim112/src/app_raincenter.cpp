@@ -9,9 +9,8 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/internal/iap.h>
-#include <sblib/eib.h>
 #include <sblib/timeout.h>
+#include <sblib/timer.h>
 #include <sblib/serial.h>
 
 #include "config.h"
@@ -19,8 +18,9 @@
 #include "rc_protocol.h"
 #include "debug.h"
 
-
 enum ePollState {Idle, PolledParam, ReceivedParam, PolledDisplay, ReceivedDisplay};
+
+MASK0701 bcu;
 
 static ePollState PollState = Idle;     //!< holds the actual state of the state machine
 static Timeout SendPeriodicTimer;       //!< TODO this is just for testing, Timeout Timer to send all objects periodically
@@ -50,15 +50,14 @@ bool Write2Serial(byte ch)
 
 bool ProcessParameterMsg(const RCParameterMessage* msg)
 {
-    // objectWrite(OBJ_CALIBRATED_FILL_LEVEL_m3, msg->Level_m3_Calibrated()*10);
+    // objectWrite(OBJ_CALIBRATED_FILL_LEVEL_m3, msg->level_m3_CalibratedToDPT());
     // return false;
-
     bool processed = false;
 
     if (!rcParamMsg.IsValid())
     {
         // seems like we have restarted, so lets send all objects
-        objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, (unsigned int)msg->Level_m3_Calibrated()*10);
+        bcu.comObjects->objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, msg->level_m3_CalibratedToDPT());
         processed = true;
     }
     else if (rcParamMsg != *msg)
@@ -67,7 +66,7 @@ bool ProcessParameterMsg(const RCParameterMessage* msg)
         // some values have changed, lets send the changed ones
         if (rcParamMsg.Level_m3_Calibrated() != msg->Level_m3_Calibrated())
         {
-            objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, (unsigned int)msg->Level_m3_Calibrated()*10);
+            bcu.comObjects->objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, msg->level_m3_CalibratedToDPT());
             processed = true;
         }
     }
@@ -84,12 +83,12 @@ bool ProcessDisplayMsg(const RCDisplayMessage* msg)
 
     if (!rcDisplayMsg.IsValid())
     {   // seems like we have restarted, so lets send all objects
-        objectWrite(OBJ_TAPWATER_REFILL_STATUS, msg->IsSwitchedToTapWater());
-        objectWrite(OBJ_TAPWATER_REFILL_AUTOMATIC_STATUS, msg->AutomaticallySwitchedToTapWater());
-        objectWrite(OBJ_TAPWATER_REFILL_MANUAL_STATUS, msg->ManualSwitchedToTapWater());
-        objectWrite(OBJ_TAPWATER_EXCHANGE_STATUS, msg->WaterExchangeActive());
-        objectWrite(OBJ_ALARM_STATUS, msg->AlarmBuzzerActive());
-        objectWrite(OBJ_PUMP_STATUS, msg->PumpActive());
+        bcu.comObjects->objectWrite(OBJ_TAPWATER_REFILL_STATUS, msg->IsSwitchedToTapWater());
+        bcu.comObjects->objectWrite(OBJ_TAPWATER_REFILL_AUTOMATIC_STATUS, msg->AutomaticallySwitchedToTapWater());
+        bcu.comObjects->objectWrite(OBJ_TAPWATER_REFILL_MANUAL_STATUS, msg->ManualSwitchedToTapWater());
+        bcu.comObjects->objectWrite(OBJ_TAPWATER_EXCHANGE_STATUS, msg->WaterExchangeActive());
+        bcu.comObjects->objectWrite(OBJ_ALARM_STATUS, msg->AlarmBuzzerActive());
+        bcu.comObjects->objectWrite(OBJ_PUMP_STATUS, msg->PumpActive());
         processed = true;
     }
     else if (rcDisplayMsg != *msg)
@@ -98,37 +97,37 @@ bool ProcessDisplayMsg(const RCDisplayMessage* msg)
         // some values have changed, lets send them for now
         if (rcDisplayMsg.IsSwitchedToTapWater() != msg->IsSwitchedToTapWater())
         {
-            objectWrite(OBJ_TAPWATER_REFILL_STATUS, msg->IsSwitchedToTapWater());
+            bcu.comObjects->objectWrite(OBJ_TAPWATER_REFILL_STATUS, msg->IsSwitchedToTapWater());
             processed = true;
         }
 
         if (rcDisplayMsg.AutomaticallySwitchedToTapWater() != msg->AutomaticallySwitchedToTapWater())
         {
-            objectWrite(OBJ_TAPWATER_REFILL_AUTOMATIC_STATUS, msg->AutomaticallySwitchedToTapWater());
+            bcu.comObjects->objectWrite(OBJ_TAPWATER_REFILL_AUTOMATIC_STATUS, msg->AutomaticallySwitchedToTapWater());
             processed = true;
         }
 
         if (rcDisplayMsg.ManualSwitchedToTapWater() != msg->ManualSwitchedToTapWater())
         {
-            objectWrite(OBJ_TAPWATER_REFILL_MANUAL_STATUS, msg->ManualSwitchedToTapWater());
+            bcu.comObjects->objectWrite(OBJ_TAPWATER_REFILL_MANUAL_STATUS, msg->ManualSwitchedToTapWater());
             processed = true;
         }
 
         if (rcDisplayMsg.WaterExchangeActive() != msg->WaterExchangeActive())
         {
-            objectWrite(OBJ_TAPWATER_EXCHANGE_STATUS, msg->WaterExchangeActive());
+            bcu.comObjects->objectWrite(OBJ_TAPWATER_EXCHANGE_STATUS, msg->WaterExchangeActive());
             processed = true;
         }
 
         if (rcDisplayMsg.AlarmBuzzerActive() != msg->AlarmBuzzerActive())
         {
-            objectWrite(OBJ_ALARM_STATUS, msg->AlarmBuzzerActive());
+            bcu.comObjects->objectWrite(OBJ_ALARM_STATUS, msg->AlarmBuzzerActive());
             processed = true;
         }
 
         if (rcDisplayMsg.PumpActive() != msg->PumpActive())
         {
-            objectWrite(OBJ_PUMP_STATUS, msg->PumpActive());
+            bcu.comObjects->objectWrite(OBJ_PUMP_STATUS, msg->PumpActive());
             processed = true;
         }
 
@@ -140,7 +139,7 @@ bool ProcessDisplayMsg(const RCDisplayMessage* msg)
 bool RunPollStateMachine(int SerialBytesAvailable)
 {
     bool result = false;
-    static byte * rx;
+    static byte *rx;
 
     if ((SerialBytesAvailable > 0) && (rcMessageLengthWaitingFor > 0) && (SerialBytesAvailable >= rcMessageLengthWaitingFor))
     {
@@ -151,7 +150,7 @@ bool RunPollStateMachine(int SerialBytesAvailable)
         RCMessage* msg;
 
         msg = RCMessage::GetRCMessageFromTelegram(&rx[0], SerialBytesAvailable);
-        if (msg != NULL)
+        if (msg != nullptr)
         {
             switch (msg->type())
             {
@@ -253,7 +252,7 @@ void objectUpdated(int objno)
     if (objno == OBJ_TAPWATER_REFILL)
     {
         bool switchToTapWater;
-        switchToTapWater = objectRead(OBJ_TAPWATER_REFILL);
+        switchToTapWater = bcu.comObjects->objectRead(OBJ_TAPWATER_REFILL);
         if (switchToTapWater)
         {
             CommandWaitingForSend = RCSwitchToTapWaterRefillMessage::msgIdentifier;
@@ -276,13 +275,13 @@ void checkPeriodic(void)
     // TODO this is just for testing
     if (SendPeriodicTimer.expired())
     {
-        objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, (unsigned int)rcParamMsg.Level_m3_Calibrated()*10);
-        objectWrite(OBJ_TAPWATER_REFILL_STATUS, rcDisplayMsg.IsSwitchedToTapWater());
-        objectWrite(OBJ_TAPWATER_REFILL_AUTOMATIC_STATUS, rcDisplayMsg.AutomaticallySwitchedToTapWater());
-        objectWrite(OBJ_TAPWATER_REFILL_MANUAL_STATUS, rcDisplayMsg.ManualSwitchedToTapWater());
-        objectWrite(OBJ_TAPWATER_EXCHANGE_STATUS, rcDisplayMsg.WaterExchangeActive());
-        objectWrite(OBJ_ALARM_STATUS, rcDisplayMsg.AlarmBuzzerActive());
-        objectWrite(OBJ_PUMP_STATUS, rcDisplayMsg.PumpActive());
+        bcu.comObjects->objectWrite(OBJ_FILL_LEVEL_CALIBRATED_m3, rcParamMsg.level_m3_CalibratedToDPT());
+        bcu.comObjects->objectWrite(OBJ_TAPWATER_REFILL_STATUS, rcDisplayMsg.IsSwitchedToTapWater());
+        bcu.comObjects->objectWrite(OBJ_TAPWATER_REFILL_AUTOMATIC_STATUS, rcDisplayMsg.AutomaticallySwitchedToTapWater());
+        bcu.comObjects->objectWrite(OBJ_TAPWATER_REFILL_MANUAL_STATUS, rcDisplayMsg.ManualSwitchedToTapWater());
+        bcu.comObjects->objectWrite(OBJ_TAPWATER_EXCHANGE_STATUS, rcDisplayMsg.WaterExchangeActive());
+        bcu.comObjects->objectWrite(OBJ_ALARM_STATUS, rcDisplayMsg.AlarmBuzzerActive());
+        bcu.comObjects->objectWrite(OBJ_PUMP_STATUS, rcDisplayMsg.PumpActive());
 
         SendPeriodicTimer.start(SENDPERIODIC_INTERVAL_MS);
     }

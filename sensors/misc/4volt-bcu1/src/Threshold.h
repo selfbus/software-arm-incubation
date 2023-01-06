@@ -2,8 +2,8 @@
 // Created by Mario Theodoridis on 19.05.20.
 //
 
-#ifndef INC_4SENSE_THRESHOLD_H
-#define INC_4SENSE_THRESHOLD_H
+#ifndef INC_4VOLT_THRESHOLD_H
+#define INC_4VOLT_THRESHOLD_H
 
 
 class Threshold {
@@ -26,4 +26,4 @@ public:
 };
 
 
-#endif //INC_4SENSE_THRESHOLD_H
+#endif //INC_4VOLT_THRESHOLD_H

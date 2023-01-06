@@ -10,42 +10,52 @@
  */
 
 #include "outputsBiStable.h"
-#define ON_DELAY 10
 
-void OutputsBiStable::updateOutputs(void)
+#define pinOff(ch) (ch*2+1)
+#define pinOn(ch)  (ch*2)
+
+unsigned int OutputsBiStable::updateOutput(unsigned int channel)
 {
-    unsigned int mask = 0x01;
-    unsigned int i;
-    unsigned int state   = _relayState ^ _inverted;
-	unsigned int changes = _relayState ^ _prevRelayState;
+    unsigned int mask      = 1 << channel;
+    unsigned int state     = (mask & (_relayState ^ _inverted)) >> channel;
+    unsigned int prevState = (mask & (_prevRelayState ^  _inverted)) >> channel;
+    unsigned int value     = (state ^ prevState) & state;
 
-    for (i = 0; i < NO_OF_CHANNELS; i++, mask <<= 1)
+    if (!(state ^ prevState))
+        return false; // nothing to do
+
+    if (value)
     {
-    	if (changes & mask)
-    	{
-    	    if (state & mask)
-                 digitalWrite(outputPins[i*2],     1);
-            else digitalWrite(outputPins[i*2 + 1], 1);
-    	    _pwm_timeout.start(ON_DELAY);
-#ifdef HAND_ACTUATION
-            handAct.setLedState(i, state & mask);
-#endif
-    	}
+        digitalWrite(_outputPins[pinOff(channel)], 0);
+        digitalWrite(_outputPins[pinOn(channel)],  1);
     }
-    _prevRelayState = _relayState;
+    else
+    {
+        digitalWrite(_outputPins[pinOn(channel)],  0);
+        digitalWrite(_outputPins[pinOff(channel)], 1);
+    }
+
+    _prevRelayState ^= mask; // toggle the bit of the channel we changed
+    _pwm_timeout.start(ON_DELAY);
+
+#ifdef HAND_ACTUATION
+    if (_handAct != nullptr)
+        _handAct->setLedState(channel, value);
+#endif
+    return true;
 }
 
 void OutputsBiStable::checkPWM(void)
 {
     if (_pwm_timeout.started () && _pwm_timeout.expired ())
     {
-        for (unsigned int i = 0; i < NO_OF_OUTPUTS; i++)
-            digitalWrite (outputPins[i], 0);
+        for (unsigned int i = 0; i < outputCount(); i++)
+            digitalWrite (_outputPins[i], 0);
     }
 }
 
 #ifdef BI_STABLE
-OutputsBiStable relays;
+    OutputsBiStable relays;
 #endif
 
 

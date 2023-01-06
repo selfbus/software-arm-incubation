@@ -10,13 +10,10 @@
 #include "channel.h"
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
-#include <sblib/eib.h>
 #include <string.h>
-#include <blind.h>
+#include <blind.h> ///\todo Blind is a child class of Channel, something is here wrong
 
-#ifdef HAND_ACTUATION
-#include "hand_actuation.h"
-#endif
+MASK0701 bcu = MASK0701();
 
 const int outputPins[NO_OF_OUTPUTS] =
     { PIN_IO1, PIN_IO2, PIN_IO3, PIN_IO4, PIN_IO5, PIN_IO6, PIN_IO7, PIN_IO8 };
@@ -78,6 +75,7 @@ Channel::Channel(unsigned int number, unsigned int address)
   , startPosition(-1)
   , targetPosition(-1)
   , savedPosition(-1)
+  , handAct_(nullptr)
 {
     for (unsigned int i = number * 2 ;i <= (number * 2 + 1); i++)
     {
@@ -85,42 +83,42 @@ Channel::Channel(unsigned int number, unsigned int address)
         switchOutputPin(outputPins [i], OUTPUT_LOW);
     }
 
-    pauseChangeDir = userEeprom.getUInt16 (address +   2);
-    openTime       = userEeprom.getUInt16 (address +   4) * 1000;
-    minMoveTime    = userEeprom.getUInt8  (address +  10);
+    pauseChangeDir = bcu.userEeprom->getUInt16 (address +   2);
+    openTime       = bcu.userEeprom->getUInt16 (address +   4) * 1000;
+    minMoveTime    = bcu.userEeprom->getUInt8  (address +  10);
     for (unsigned int i = 0; i < NO_OF_SCENES; i++)
     {
-        scenePos[i]    = userEeprom.getUInt8(address + 16 + i);
-        sceneNumber[i] = userEeprom.getUInt8(address + 32 + i);
+        scenePos[i]    = bcu.userEeprom->getUInt8(address + 16 + i);
+        sceneNumber[i] = bcu.userEeprom->getUInt8(address + 32 + i);
     }
     for (unsigned int i = 0; i < NO_OF_AUTOMATIC; i++)
     {
-        automaticPos[i] = userEeprom.getUInt8(address + 40 + i);
+        automaticPos[i] = bcu.userEeprom->getUInt8(address + 40 + i);
     }
     _enableFeature(address + 48,                FEATURE_STORE_SCENE);
     //_enableFeature(address + 49,                FEATURE_AUTOMATIK);
     //_enableFeature(address + 50,                FEATURE_MANUELL);
     //_enableFeature(address + 51,                FEATURE_ABS_POSITION, 0x04);
-    lockConfig     = userEeprom.getUInt8  (address +  52);
-    topLimitPos    = userEeprom.getUInt8  (address +  53);
-    botLimitPos    = userEeprom.getUInt8  (address +  54);
-    motorOnDelay   = userEeprom.getUInt8  (address +  55);
-    motorOffDelay  = userEeprom.getUInt8  (address +  56);
+    lockConfig     = bcu.userEeprom->getUInt8  (address +  52);
+    topLimitPos    = bcu.userEeprom->getUInt8  (address +  53);
+    botLimitPos    = bcu.userEeprom->getUInt8  (address +  54);
+    motorOnDelay   = bcu.userEeprom->getUInt8  (address +  55);
+    motorOffDelay  = bcu.userEeprom->getUInt8  (address +  56);
     // userEeprom.getUInt8  (address +  57); // ?? stop Mode
-    unsigned char extMoveTime    = userEeprom.getUInt8 (address +  58);
+    unsigned char extMoveTime    = bcu.userEeprom->getUInt8 (address +  58);
     _enableFeature(address +  59, FEATURE_RESTORE_AFTER_REF);
-    closeTime      = userEeprom.getUInt16 (address +  62) * 1000;
+    closeTime      = bcu.userEeprom->getUInt16 (address +  62) * 1000;
     if (closeTime == 0)
         closeTime = openTime;
-    unsigned char lockAbsPos     = userEeprom.getUInt8  (address +  64);
+    unsigned char lockAbsPos     = bcu.userEeprom->getUInt8  (address +  64);
     if (lockAbsPos & 0x80)
         lockConfig |= LOCK_POS_UP_DOWN;
     if (lockAbsPos & 0x20)
         lockConfig |= LOCK_POS_RELEASE_UP;
     _enableFeature(address + 65,                FEATURE_STATUS_MOVING,   0x80);
     _enableFeature(address + 65,                FEATURE_SHORT_OPERATION, 0x40);
-    obj24Config    = userEeprom.getUInt8(address + 66);
-    oneBitPosition = userEeprom.getUInt8(address + 67);
+    obj24Config    = bcu.userEeprom->getUInt8(address + 66);
+    oneBitPosition = bcu.userEeprom->getUInt8(address + 67);
 
     if (extMoveTime != 0)
     {
@@ -137,23 +135,23 @@ Channel::Channel(unsigned int number, unsigned int address)
         + currentVersion->noOfChannels * EE_CHANNEL_CFG_SIZE
         + (EE_ALARM_HEADER_SIZE + EE_ALARM_CFG_SIZE * NO_OF_ALARMS) * number;
 
-    reactionLockRemove = userEeprom.getUInt8  (baseAddr +  8);
+    reactionLockRemove = bcu.userEeprom->getUInt8  (baseAddr +  8);
     baseAddr += EE_ALARM_HEADER_SIZE;
     for (unsigned int i = 0; i < NO_OF_ALARMS; i++, baseAddr += EE_ALARM_CFG_SIZE)
     {
-        alarms[i].monitorTime   = userEeprom.getUInt16 (baseAddr + 0);
-        alarms[i].priority      = userEeprom.getUInt16 (baseAddr + 2);
-        alarms[i].releaseAction = userEeprom.getUInt8  (baseAddr + 5);
-        alarms[i].engageAction  = userEeprom.getUInt8  (baseAddr + 6);
-        if (userEeprom.getUInt8 (baseAddr + 4) == 255)
+        alarms[i].monitorTime   = bcu.userEeprom->getUInt16 (baseAddr + 0);
+        alarms[i].priority      = bcu.userEeprom->getUInt16 (baseAddr + 2);
+        alarms[i].releaseAction = bcu.userEeprom->getUInt8  (baseAddr + 5);
+        alarms[i].engageAction  = bcu.userEeprom->getUInt8  (baseAddr + 6);
+        if (bcu.userEeprom->getUInt8 (baseAddr + 4) == 255)
             alarms[i].priority  = 0;
     }
     baseAddr = currentVersion->baseAddress
              + currentVersion->noOfChannels
              * (EE_CHANNEL_CFG_SIZE + EE_ALARM_HEADER_SIZE + EE_ALARM_CFG_SIZE * NO_OF_ALARMS);
-    busDownAction   = userEeprom.getUInt8 (baseAddr + 0x00 + 2 * number);
-    busReturnAction = userEeprom.getUInt8 (baseAddr + 0x01 + 2 * number);
-    autoConfig      = userEeprom.getUInt8 (baseAddr + 0x10 + number);
+    busDownAction   = bcu.userEeprom->getUInt8 (baseAddr + 0x00 + 2 * number);
+    busReturnAction = bcu.userEeprom->getUInt8 (baseAddr + 0x01 + 2 * number);
+    autoConfig      = bcu.userEeprom->getUInt8 (baseAddr + 0x10 + number);
     if (autoConfig != 0xFF) // automatic for this channel is enabled
     {
         if (autoConfig & 0x80)
@@ -162,13 +160,13 @@ Channel::Channel(unsigned int number, unsigned int address)
     }
     _enableFeature(baseAddr + 0x18 + number, FEATURE_CENTRAL);
     timeout.start (pauseChangeDir);
-    objectSetValue(firstObjNo + COM_OBJ_POS_VALID, 0);
+    bcu.comObjects->objectSetValue(firstObjNo + COM_OBJ_POS_VALID, 0);
 }
 
-void Channel::objectUpdate(unsigned int objno)
+void Channel::objectUpdateCh(unsigned int objno)
 {
     unsigned int fct = objno - firstObjNo;
-    unsigned int value = objectRead(objno);
+    unsigned int value = bcu.comObjects->objectRead(objno);
     Blind * blind = NULL;
     if (channelType() == BLIND)
         blind = (Blind *) this;
@@ -303,20 +301,23 @@ void Channel::stop(void)
         switchOutputPin(outputPins[number * 2 + 0], OUTPUT_LOW);
         switchOutputPin(outputPins[number * 2 + 1], OUTPUT_LOW);
 #ifdef HAND_ACTUATION
-        handAct.setLedState(number * 2 + 0, 0);
-        handAct.setLedState(number * 2 + 1, 0);
+       if (handAct_ != nullptr)
+       {
+            handAct_->setLedState(number * 2 + 0, 0);
+            handAct_->setLedState(number * 2 + 1, 0);
+       }
 #endif
         state     = PROTECT;
         timeout.start(pauseChangeDir);
         _sendPosition();
         if (features & FEATURE_STATUS_MOVING)
-            objectWrite(firstObjNo + COM_OBJ_VISU_STATUS, (unsigned int) 0);
+            bcu.comObjects->objectWrite(firstObjNo + COM_OBJ_VISU_STATUS, (unsigned int) 0);
     }
 }
 
 void Channel::_sendPosition()
 {
-    objectWrite(firstObjNo + COM_OBJ_POSITION, position);
+    bcu.comObjects->objectWrite(firstObjNo + COM_OBJ_POSITION, position);
 }
 
 /*
@@ -406,7 +407,7 @@ void Channel::_handleState(void)
             if (!positionValid)
             {
                 positionValid = true;
-                objectWrite(firstObjNo + COM_OBJ_POS_VALID, 1);
+                bcu.comObjects->objectWrite(firstObjNo + COM_OBJ_POS_VALID, 1);
             }
             targetPosition = -1;
             if (! _restorePosition()) // check if we need to restore a saved position
@@ -428,15 +429,16 @@ void Channel::_handleState(void)
             if (direction == DOWN) outNo++;
             switchOutputPin(outputPins[outNo], OUTPUT_HIGH);
             if (features & FEATURE_STATUS_MOVING)
-                objectWrite(firstObjNo + COM_OBJ_VISU_STATUS, 1);
+                bcu.comObjects->objectWrite(firstObjNo + COM_OBJ_VISU_STATUS, 1);
             else
-                objectWrite(firstObjNo + COM_OBJ_VISU_STATUS, (int) (direction == UP ? 0 : 1));
+                bcu.comObjects->objectWrite(firstObjNo + COM_OBJ_VISU_STATUS, (int) (direction == UP ? 0 : 1));
 
             Channel::setPWMtoMaxDuty();     // set PWM to maximum pulse width so relays can switch
             PWMDisabled.start(PWM_TIMEOUT); // start timer to reset PWM back to normal pulse width
 
 #ifdef HAND_ACTUATION
-            handAct.setLedState(outNo, 1);
+            if (handAct_ != nullptr)
+                handAct_->setLedState(outNo, 1);
 #endif
             timeout.start(motorOnDelay);
             state = DELAY;
@@ -467,7 +469,7 @@ bool Channel::_trackPosition(void)
         state = EXTEND;
         timeout.start(openTimeExt);
     }
-    objectSetValue(firstObjNo + COM_OBJ_POSITION, position);
+    bcu.comObjects->objectSetValue(firstObjNo + COM_OBJ_POSITION, position);
     // check if we moved for a requested time
     if (  (   moveForTime
           && (elapsed(startTime) >= moveForTime)
@@ -523,12 +525,12 @@ void Channel::_updatePosState(unsigned int current, unsigned int mask, unsigned 
     if ((limits & mask) && !current)
     {
         limits &= ~mask;
-        objectWrite(objno, (unsigned int) 0);
+        bcu.comObjects->objectWrite(objno, (unsigned int) 0);
     }
     if (!(limits & mask) && current)
     {
         limits |= mask;
-        objectWrite(objno, (unsigned int) 1);
+        bcu.comObjects->objectWrite(objno, (unsigned int) 1);
     }
 }
 
@@ -667,7 +669,7 @@ void Channel::handleScene(unsigned int value)
                 if (features & FEATURE_STORE_SCENE)
                 {
                     if (_storeScene(i))
-                        userEeprom.modified();
+                        bcu.userEeprom->modified(true);
                }
             }
             else
@@ -695,9 +697,9 @@ bool Channel::_storeScene(unsigned int i)
 {
     unsigned int address = currentVersion->baseAddress + EE_CHANNEL_CFG_SIZE * number;
     scenePos [i] = position;
-    if (userEeprom [address + 32 + i] != position)
+    if ((*(bcu.userEeprom))[address + 32 + i] != position)
     {
-        userEeprom [address + 32 + i] = position;
+        (*(bcu.userEeprom))[address + 32 + i] = position;
         return true;
     }
     return false;
@@ -722,7 +724,7 @@ bool Channel::_restorePosition(void)
 
 void Channel::_enableFeature(unsigned int address, unsigned int feature, unsigned int mask)
 {
-    if (userEeprom.getUInt8(address) & mask)
+    if (bcu.userEeprom->getUInt8(address) & mask)
     {
         features |= feature;
     }
@@ -790,4 +792,9 @@ void Channel::_alarmAction(unsigned int action)
 void Channel::_moveToOneBitPostion()
 {
     moveTo(oneBitPosition);
+}
+
+void Channel::setHandActuation(HandActuation* hand)
+{
+    handAct_ = hand;
 }

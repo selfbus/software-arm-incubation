@@ -11,6 +11,9 @@
 #define app_in4_h
 
 #include <sblib/types.h>
+#include <sblib/eibMASK0701.h>
+
+extern MASK0701 bcu;
 
 /**
  * A communication object was updated from somebody via the EIB bus.

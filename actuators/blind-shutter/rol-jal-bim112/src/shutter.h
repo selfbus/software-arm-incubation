@@ -16,7 +16,8 @@
 class Shutter: public Channel
 {
 public:
-    Shutter(unsigned int nummber, unsigned int address);
+    Shutter() = delete;
+    Shutter(unsigned int number, unsigned int address);
 };
 
 #endif /* ROL_JAL_BIM112_SRC_SHUTTER_H_ */

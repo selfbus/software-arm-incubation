@@ -6,14 +6,16 @@
  */
 
 #include "pwmout.h"
-#include <sblib/eib.h>
+#include <sblib/eibMASK0701.h>
 #include <com_objs.h>
 #include "config.h"
-#include <sblib/serial.h>  //debugging only
+#ifdef DEBUG
+#   include <sblib/serial.h>  //debugging only
+#endif
 
 void pwmout::begin(int ch) {
 	channel = ch;
-	if (userEeprom.getUInt16(APP_PWM_O) == 0x600){	//0x600 = 600Hz ; 0xA00 = 1kHz
+	if (bcu.userEeprom->getUInt16(APP_PWM_O) == 0x600){	//0x600 = 600Hz ; 0xA00 = 1kHz
 		pwmmax = PWM_MAX_600;						// 600Hz PWM Frequenz
 	} else {
 		pwmmax = PWM_MAX_1000;						// 1kHz PWM Frequenz

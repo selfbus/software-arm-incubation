@@ -7,10 +7,13 @@
  *  published by the Free Software Foundation.
  */
 
-#ifndef appl_h
-#define appl_h
+#ifndef dim4_appl_h
+#define dim4_appl_h
 
 #include <sblib/types.h>
+#include <sblib/eibMASK0701.h>
+
+extern MASK0701 bcu;
 
 /**
  * A communication object was updated from somebody via the EIB bus.
@@ -50,4 +53,4 @@ void handleBusReturn(int channel);
  */
 bool centralObjectsActive(int channel);
 
-#endif /*appl_h*/
+#endif /*dim4_appl_h*/

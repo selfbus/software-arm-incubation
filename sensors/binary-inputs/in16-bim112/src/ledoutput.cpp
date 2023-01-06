@@ -6,7 +6,6 @@
  */
 
 #include "ledoutput.h"
-#include <sblib/eib.h>
 
 LedOutput::LedOutput(unsigned int no, unsigned int longPress,
         unsigned int channelConfig, unsigned int busReturn, unsigned int value) :
@@ -16,14 +15,14 @@ LedOutput::LedOutput(unsigned int no, unsigned int longPress,
 	digitalWrite(inputPins[number], false);
 	objectValueUnknown = true;
 	int ledParamBase = currentVersion->logicBaseAddress + 57 + currentVersion->noOfChannels * 4;
-	invert = (userEeprom.getUInt8(ledParamBase) >> number) & 1;  //switch inverted/not inverted
-	//pulse  = (userEeprom.getUInt8(ledParamBase + 1) >> number) & 1;  //pulse by unknown object
-	if ((userEeprom.getUInt8(ledParamBase + 1) >> number) & 1)		//pulse by unknown object
+	invert = (bcu.userEeprom->getUInt8(ledParamBase) >> number) & 1;  //switch inverted/not inverted
+	//pulse  = (bcu.userEeprom->getUInt8(ledParamBase + 1) >> number) & 1;  //pulse by unknown object
+	if ((bcu.userEeprom->getUInt8(ledParamBase + 1) >> number) & 1)		//pulse by unknown object
 	{
 		timeout.start(DELAYPULSEON);
 		digitalWrite(inputPins[number], 1);
 	}
-	blink = (userEeprom.getUInt8(ledParamBase + 2) >> number) & 1;  //blink function
+	blink = (bcu.userEeprom->getUInt8(ledParamBase + 2) >> number) & 1;  //blink function
 
 }
 

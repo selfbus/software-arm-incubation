@@ -17,7 +17,6 @@
 
 #include <sblib/serial.h>
 #include <sblib/ioports.h>
-#include <sblib/eib/user_memory.h>
 
 inline void debug_eeprom(const char *name, unsigned int channelConfig,
         unsigned int len)

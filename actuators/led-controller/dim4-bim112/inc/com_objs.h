@@ -8,8 +8,8 @@
  *      AKD-0424V.01 RGBW LED Controller  Vers. 1.4
  */
 
-#ifndef COM_OBJS_H_
-#define COM_OBJS_H_
+#ifndef DIM4_COM_OBJS_H_
+#define DIM4_COM_OBJS_H_
 
 /*
  *
@@ -140,4 +140,4 @@
 //#define APP_OFF_SPEED		0x45E3	// Ausschaltgeschwindigkeit
 //#define APP_SEND_DIM_END	0x45E8	// Dimmwert nach Dimmende senden; Maske=0x0080
 
-#endif /* COM_OBJS_H_ */
+#endif /* DIM4_COM_OBJS_H_ */

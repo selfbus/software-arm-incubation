@@ -2,13 +2,13 @@
 // Created by Mario Theodoridis on 8.04.21.
 //
 
-#ifndef INC_4SENSE_COMMON_H
-#define INC_4SENSE_COMMON_H
+#ifndef INC_4VOLT_COMMON_H
+#define INC_4VOLT_COMMON_H
 
 #include <stdint.h>
-#include <sblib/eib.h>
-#include <sblib/sensors/ds18x20.h>
-#include <sblib/sensors/dht.h>
+#include <sblib/eibBCU1.h>
+
+#define userEeprom (*(bcu.userEeprom))
 
 #ifdef LOGGING
     #include "log/logger.h"
@@ -31,7 +31,8 @@ typedef unsigned int uint;
 void fixRamLoc(COM comNo);
 void initSensors();
 
+extern BCU1 bcu;
 extern SensorConfig configs[NUM_SENSORS];
 
 
-#endif //INC_4SENSE_COMMON_H
+#endif //INC_4VOLT_COMMON_H

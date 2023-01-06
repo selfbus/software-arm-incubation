@@ -6,11 +6,10 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/eib.h>
-
 #include "params.h"
 #include "com_objs.h"
 #include "switch.h"
+#include "app_RGBswitch.h"
 
 /** Command category: input pin changed. */
 #define CMD_CAT_PINCHANGE 0x100
@@ -72,14 +71,14 @@ static void switchCommand(int objno, int channel, int cmd)
         break;
 
     case CMD_CAT_PINCHANGE|CMD_TOGGLE:
-        value = !objectRead(objno);
+        value = !bcu.comObjects->objectRead(objno);
         break;
     default:
         send = 0;
     }
     if (send)
     {
-        objectWrite(objno, value);
+        bcu.comObjects->objectWrite(objno, value);
     }
 }
 
@@ -107,11 +106,11 @@ void switchPeriodic (int channel)
     if (timeout[channel].expired())
     {
         int cyclicCfg = (params [0] & 0x0C) >> 2; // get the cyclic configuration
-        int value     = objectRead(channel);
+        int value     = bcu.comObjects->objectRead(channel);
         if ( value && (cyclicCfg & 0x01)) // send cyclic telegram if value is ON
-            objectWritten(channel);
+            bcu.comObjects->objectWritten(channel);
         if (!value && (cyclicCfg & 0x02)) // send cyclic telegram if value is OFF
-            objectWritten(channel);
+            bcu.comObjects->objectWritten(channel);
         timeout[channel].start(delayTime[channel]);
     }
 }
@@ -119,7 +118,7 @@ void switchPeriodic (int channel)
 static void _switchSetupDelay (int channel)
 {
     int coff = channel & 0x07;
-    int timeBase = userEeprom[EE_CHANNEL_TIMING_PARAMS_BASE + ((channel + 1) >> 1)];
+    int timeBase = bcu.userEeprom->getUInt8(EE_CHANNEL_TIMING_PARAMS_BASE + ((channel + 1) >> 1));
     if (! (coff & 0x01)) timeBase >>= 4;
     else                 timeBase  &= 0x0F;
 
@@ -157,13 +156,13 @@ void switchSetup(int channel)
     case EE_SWITCH_BUS_RETURN_SEND_ON:
     case EE_SWITCH_BUS_RETURN_SEND_OFF:
         value = busReturnCfg == EE_SWITCH_BUS_RETURN_SEND_ON ? 1 : 0;
-        objectWrite(COMOBJ_PRIMARY1   + channel, value);
-        objectWrite(COMOBJ_SECONDARY1 + channel, value);
+        bcu.comObjects->objectWrite(COMOBJ_PRIMARY1   + channel, value);
+        bcu.comObjects->objectWrite(COMOBJ_SECONDARY1 + channel, value);
         break;
     default:
     case EE_SWITCH_BUS_RETURN_NO_ACTION:
-        objectSetValue(COMOBJ_PRIMARY1   + channel, 0);
-        objectSetValue(COMOBJ_SECONDARY1 + channel, 0);
+        bcu.comObjects->objectSetValue(COMOBJ_PRIMARY1   + channel, 0);
+        bcu.comObjects->objectSetValue(COMOBJ_SECONDARY1 + channel, 0);
         break;
     }
 }
@@ -180,14 +179,14 @@ void switchLock(int state, int channel)
         case EE_INPUT_SWITCH_LOCK_SET_ON:
         case EE_INPUT_SWITCH_LOCK_SET_OFF:
             value = lockAction == EE_INPUT_SWITCH_LOCK_SET_ON ? 1 : 0;
-            objectWrite(COMOBJ_PRIMARY1   + channel, value);
-            objectWrite(COMOBJ_SECONDARY1 + channel, value);
+            bcu.comObjects->objectWrite(COMOBJ_PRIMARY1   + channel, value);
+            bcu.comObjects->objectWrite(COMOBJ_SECONDARY1 + channel, value);
             break;
         case EE_INPUT_SWITCH_LOCK_TOGGLE:
-            value = !objectRead(COMOBJ_PRIMARY1   + channel);
-            objectWrite(COMOBJ_PRIMARY1   + channel, value);
-            value = !objectRead(COMOBJ_SECONDARY1 + channel);
-            objectWrite(COMOBJ_SECONDARY1 + channel, value);
+            value = !bcu.comObjects->objectRead(COMOBJ_PRIMARY1   + channel);
+            bcu.comObjects->objectWrite(COMOBJ_PRIMARY1   + channel, value);
+            value = !bcu.comObjects->objectRead(COMOBJ_SECONDARY1 + channel);
+            bcu.comObjects->objectWrite(COMOBJ_SECONDARY1 + channel, value);
             break;
         case EE_INPUT_SWITCH_LOCK_NO_REACTION:
         default:
@@ -202,8 +201,8 @@ void switchLock(int state, int channel)
         case EE_INPUT_SWITCH_LOCK_SET_ON:
         case EE_INPUT_SWITCH_LOCK_SET_OFF:
             value = lockAction == EE_INPUT_SWITCH_LOCK_SET_ON ? 1 : 0;
-            objectWrite(COMOBJ_PRIMARY1   + channel, value);
-            objectWrite(COMOBJ_SECONDARY1 + channel, value);
+            bcu.comObjects->objectWrite(COMOBJ_PRIMARY1   + channel, value);
+            bcu.comObjects->objectWrite(COMOBJ_SECONDARY1 + channel, value);
             break;
         case EE_INPUT_SWITCH_LOCK_SET_CURRENT:
             value = inputDebouncer[channel].lastValue();

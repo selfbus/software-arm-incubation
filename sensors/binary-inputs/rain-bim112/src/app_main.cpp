@@ -1,7 +1,6 @@
 
+#include <sblib/eibMASK0701.h>
 #include "common.h"
-#include <sblib/eib/sblib_default_objects.h>
-#include <cstring>
 
 const unsigned char hardwareVersion[] =
         {0x00, 0x00, 0x00, 0x00, 0x00, 0x4f};
@@ -12,7 +11,11 @@ uint32_t startTime, lifeFreq, lifeTime, cycleFreq, cycleTime, rainDelay, dryDela
 bool sendOnchange, raining;
 int sensCnt; // for debouncing
 
-void setup() {
+MASK0701 bcu = MASK0701();
+
+APP_VERSION("SBrain  ", "1", "00")
+
+BcuBase* setup() {
     // reset init stuff
     startTime = 0;
     lifeFreq = 0;
@@ -29,8 +32,8 @@ void setup() {
 #if LOGGING
     initLogger();
 #endif
-    bcu.begin(0x83, hardwareVersion[5], 0x11); // rain
-    memcpy(userEeprom.order, hardwareVersion, sizeof(hardwareVersion));
+    bcu.begin(0x83, hardwareVersion[5], 0x11); // MDT SCN-RS1R1.01 rain sensor
+    bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
 
     if (EE_STARTUP_TIMEOUT <= 60) {
         startTime = millis() + (EE_STARTUP_TIMEOUT * 1000);
@@ -191,6 +194,7 @@ void setup() {
     }
     // let pin float, pull up will raise
     pinMode(sensorPin, INPUT | PULL_DOWN);
+    return (&bcu);
 }
 
 void checkSensor() {
@@ -220,7 +224,7 @@ void doPeriodics() {
     if (cycleTime && cycleTime < now) {
         // send it on the bus
         LOG("Sending rain: %d", raining);
-        objectWrite(COM_RAIN, raining);
+        bcu.comObjects->objectWrite(COM_RAIN, raining);
         if (cycleFreq) {
             cycleTime = now - (now % cycleFreq) + cycleFreq;
         } else {
@@ -230,7 +234,7 @@ void doPeriodics() {
     if (lifeTime && lifeTime < now) {
         // send it on the bus
         LOG("Sending life signs");
-        objectWrite(COM_OPERATING, 1);
+        bcu.comObjects->objectWrite(COM_OPERATING, 1);
         if (lifeFreq) {
             lifeTime = now - (now % lifeFreq) + lifeFreq;
         } else {
@@ -246,5 +250,13 @@ void loop() {
         doPeriodics();
     }
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle()) waitForInterrupt();
+    if (bcu.bus->idle()) waitForInterrupt();
+}
+
+/**
+ * The processing loop while no KNX-application is loaded
+ */
+void loop_noapp()
+{
+
 }

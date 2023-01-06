@@ -17,14 +17,14 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/eib.h>
-
+#include <stdint.h>
+#include <sblib/eib/datapoint_types.h>
 #include "rm_app.h"
 #include "rm_const.h"
 #include "rm_com.h"
-#include "rm_conv.h"
 #include "rm_eeprom.h"
 
+BCU1 bcu = BCU1();
 
 // Befehle an den Rauchmelder
 /*
@@ -169,12 +169,11 @@ unsigned char infoCounter;
 // Nummer des Com-Objekts das bei zyklischem Info Senden als nächstes geprüft/gesendet wird
 unsigned char infoSendObjno;
 
-// Nummer des Befehls, welcher als nächtes zyklisch an den Rauchmelder gesendet wird
+// Nummer des Befehls, welcher als nächstes zyklisch an den Rauchmelder gesendet wird
 unsigned char readCmdno;
 
 // Halbsekunden Zähler 0..119
-unsigned char eventTime = 120; //Initialisierung auf 1 Minute (sonst wird im Timer Interrupt 0 minus 1 durchgeführt)
-
+unsigned char eventTime = DEFAULT_EVENTTIME;
 
 // Tabelle für 1<<x, d.h. pow2[3] == 1<<3
 const unsigned char pow2[8] = { 1, 2, 4, 8, 16, 32, 64, 128 };
@@ -218,8 +217,8 @@ void send_obj_test_alarm(bool newAlarm)
 {
 	if (testAlarmLocal != newAlarm)
 	{
-		objectWrite(OBJ_TALARM_BUS, newAlarm);
-		objectWrite(OBJ_STAT_TALARM, newAlarm);
+		bcu.comObjects->objectWrite(OBJ_TALARM_BUS, newAlarm);
+		bcu.comObjects->objectWrite(OBJ_STAT_TALARM, newAlarm);
 	}
 }
 
@@ -250,8 +249,10 @@ void set_errcode(unsigned char newErrCode)
  */
 void rm_process_msg(unsigned char* bytes, unsigned char len)
 {
-	unsigned char objno, cmd, msgType;
-	unsigned char byteno, mask;
+	uint8_t cmd;
+	uint8_t msgType;
+	uint8_t byteno;
+	uint8_t mask;
 
 	answerWait = 0;
 	if (noAnswerCount)
@@ -276,7 +277,7 @@ void rm_process_msg(unsigned char* bytes, unsigned char len)
 			objValueCurrent = objValues[cmd];
 			cmdCurrent = cmd;
 
-			// eleganter umsetzbar? -> ToDo
+			///\todo eleganter umsetzbar?
 			objValues[cmd] = 0;
 			for( unsigned char lencnt = 1; lencnt<len; lencnt++ ){
 				objValues[cmd] |= (bytes[lencnt] << ((lencnt-1)*8));
@@ -290,8 +291,8 @@ void rm_process_msg(unsigned char* bytes, unsigned char len)
 			// notwendig für den Abruf von Informationen über KNX aus den Status Objekten (GroupValueRead -> GroupValueResponse)
 			for(unsigned char cmdObj_cnt=0; CmdTab[cmd].objects[cmdObj_cnt] != 0xFF && cmdObj_cnt < MAX_OBJ_CMD; cmdObj_cnt++)
 			{
-				unsigned char objno = CmdTab[cmd].objects[cmdObj_cnt];
-				objectSetValue(objno, read_obj_value(objno));
+				uint8_t objno = CmdTab[cmd].objects[cmdObj_cnt];
+				bcu.comObjects->objectSetValue(objno, read_obj_value(objno));
 
 				// Versand der erhaltenen Com-Objekte einleiten.
 				// Sofern sie für den Versand vorgemerkt sind.
@@ -300,7 +301,7 @@ void rm_process_msg(unsigned char* bytes, unsigned char len)
 
 				if (objSendReqFlags[byteno] & mask)
 				{
-					objectWrite(objno, read_obj_value(objno));
+				    bcu.comObjects->objectWrite(objno, read_obj_value(objno));
 					objSendReqFlags[byteno] &= ~mask;
 				}
 			}
@@ -317,18 +318,18 @@ void rm_process_msg(unsigned char* bytes, unsigned char len)
 
 		// Lokaler Alarm: Rauch Alarm | Temperatur Alarm | Wired Alarm
 		newAlarm = (subType & 0x10) | (status & (0x04 | 0x08));
-		if ((userEeprom[CONF_SEND_ENABLE] & CONF_ENABLE_ALARM_DELAYED) && newAlarm) // wenn Alarm verzögert gesendet werden soll und Alarm ansteht
+		if ((bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_ALARM_DELAYED) && newAlarm) // wenn Alarm verzögert gesendet werden soll und Alarm ansteht
 		{
-			delayedAlarmCounter = userEeprom[CONF_ALARM_DELAYED];
-			objectSetValue(OBJ_STAT_ALARM_DELAYED, read_obj_value(OBJ_STAT_ALARM_DELAYED));
+			delayedAlarmCounter = bcu.userEeprom->getUInt8(CONF_ALARM_DELAYED);
+			bcu.comObjects->objectSetValue(OBJ_STAT_ALARM_DELAYED, read_obj_value(OBJ_STAT_ALARM_DELAYED));
 		}
 		else if (alarmLocal != newAlarm)//wenn Alarm nicht verzögert gesendet werden soll oder Alarm nicht mehr ansteht (nur 1x senden)
 		{
-			objectWrite(OBJ_ALARM_BUS, newAlarm);
+		    bcu.comObjects->objectWrite(OBJ_ALARM_BUS, newAlarm);
 		}
 
 		if (alarmLocal != newAlarm){ //sobald neuer AlarmStaus ansteht, soll dieser versendet werden
-			objectWrite(OBJ_STAT_ALARM, newAlarm);
+		    bcu.comObjects->objectWrite(OBJ_STAT_ALARM, newAlarm);
 		}
 
 		alarmLocal = newAlarm;
@@ -352,7 +353,7 @@ void rm_process_msg(unsigned char* bytes, unsigned char len)
 			// Werte für OBJ_ERRCODE (Objekt 12), OBJ_BAT_LOW (Objekt 13) und OBJ_MALFUNCTION (Objekt 14) für die sblib zur Verfügung stellen
 			// notwendig für den Abruf von Informationen über KNX aus den Status Objekten (GroupValueRead -> GroupValueResponse)
 			for(unsigned char objno=12; objno<=14; objno++){
-				objectSetValue(objno, read_obj_value(objno));
+			    bcu.comObjects->objectSetValue(objno, read_obj_value(objno));
 			}
 		}
 
@@ -516,7 +517,7 @@ unsigned long read_obj_value(unsigned char objno)
 
 		case RM_TYPE_QSEC:  // Betriebszeit verarbeiten
 		    lval = answer_to_long(answer) >> 2; // Wert in Sekunden
-		    if (userEeprom[CONF_SEND_ENABLE] & CONF_ENABLE_OPERATION_TIME_TYPE)
+		    if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_OPERATION_TIME_TYPE)
 		        return lval / 3600; // Stunden, 16Bit
 		    else
 		        return lval;        // Sekunden, 32Bit
@@ -528,14 +529,18 @@ unsigned long read_obj_value(unsigned char objno)
 			lval = ((int) answer[0]) + answer[1];
 			lval *= 25;  // in lval sind zwei Temperaturen, daher halber Multiplikator
 			lval -= 2000;
-			lval += (signed char)userEeprom[CONF_TEMP_OFFSET] *10;  // Temperaturabgleich
-			return conv_dpt_9_001(lval);
+			lval += (signed char)bcu.userEeprom->getUInt8(CONF_TEMP_OFFSET) *10;  // Temperaturabgleich
+			return (floatToDpt9(lval));
 
 		case RM_TYPE_MVOLT:
-			lval = answer_to_int(answer);
+			if ((answer[0]  == 0) && (answer[1] == 1))
+			{
+			    return (floatToDpt9(BATTERY_VOLTAGE_INVALID));
+			}
+		    lval = answer_to_int(answer);
 			lval *= 9184;
 			lval /= 5;
-			return conv_dpt_9_001(lval);
+			return (floatToDpt9(lval));
 
 		default: // Fehler: unbekannter Datentyp
 			return -2;
@@ -557,24 +562,24 @@ void objectUpdated(int objno)
  	if (objno == OBJ_ALARM_BUS) // Bus Alarm
 	{
 
- 		setAlarmBus = objectRead(objno) & 0x01; //ToDo: prüfen ob ok   //war: setAlarmBus = telegramm[7] & 0x01;
+ 		setAlarmBus = bcu.comObjects->objectRead(objno) & 0x01; //ToDo: prüfen ob ok   //war: setAlarmBus = telegramm[7] & 0x01;
 
  		// Wenn wir lokalen Alarm haben dann Bus Alarm wieder auslösen
 		// damit der Status der anderen Rauchmelder stimmt
  		if (!setAlarmBus && alarmLocal)
- 			objectWrite(OBJ_ALARM_BUS, read_obj_value(OBJ_ALARM_BUS)); //send_obj_value(OBJ_ALARM_BUS);
+ 		   bcu.comObjects->objectWrite(OBJ_ALARM_BUS, read_obj_value(OBJ_ALARM_BUS)); //send_obj_value(OBJ_ALARM_BUS);
 
  		if (ignoreBusAlarm)
  			setAlarmBus = 0;
 	}
 	else if (objno == OBJ_TALARM_BUS) // Bus Test Alarm
 	{
-		setTestAlarmBus = objectRead(objno) & 0x01; //ToDo: prüfen ob ok   //war: setTestAlarmBus = telegramm[7] & 0x01;
+		setTestAlarmBus = bcu.comObjects->objectRead(objno) & 0x01; //ToDo: prüfen ob ok   //war: setTestAlarmBus = telegramm[7] & 0x01;
 
  		// Wenn wir lokalen Testalarm haben dann Bus Testalarm wieder auslösen
 		// damit der Status der anderen Rauchmelder stimmt
  		if (!setTestAlarmBus && testAlarmLocal)
- 			objectWrite(OBJ_TALARM_BUS, read_obj_value(OBJ_TALARM_BUS)); //send_obj_value(OBJ_TALARM_BUS);
+ 		   bcu.comObjects->objectWrite(OBJ_TALARM_BUS, read_obj_value(OBJ_TALARM_BUS)); //send_obj_value(OBJ_TALARM_BUS);
 
  		if (ignoreBusAlarm)
  			setTestAlarmBus = 0;
@@ -589,16 +594,18 @@ void objectUpdated(int objno)
 
 /**
  * Befehl an den Rauchmelder versenden
- * Der Empfang und die Verarbeitung der Antwort des Raucmelders derfolgt in process_msg().
+ * Der Empfang und die Verarbeitung der Antwort des Rauchmelders erfolgt in process_msg().
  *
  * @param cmd - Index des zu sendenden Befehls aus der CmdTab
  */
 void send_Cmd(unsigned char cmd){
-	if (recvCount < 0)
+	if (isReceiving())
 	{
-		rm_send_cmd(CmdTab[cmd].cmdno);
-		answerWait = INITIAL_ANSWER_WAIT;
+	    return;
 	}
+
+    rm_send_cmd(CmdTab[cmd].cmdno);
+    answerWait = INITIAL_ANSWER_WAIT;
 }
 
 /**
@@ -608,17 +615,15 @@ void send_Cmd(unsigned char cmd){
  */
 void process_obj(unsigned char objno)
 {
-	unsigned char cmd = objMappingTab[objno].cmd;
-
 	// Der Wert des Com-Objekts ist bekannt, also sofort senden
-	//Die Werte werden zyklisch (minütlich) alle vom Rauchmelder abgefragt, daher sind immer alle Werte aktuell vorhanden
+	// Die Werte werden zyklisch (minütlich) alle vom Rauchmelder abgefragt, daher sind immer alle Werte aktuell vorhanden
 
 	unsigned char byteno = objno >> 3;
 	unsigned char mask = pow2[objno & 7];
 
 	if (objSendReqFlags[byteno] & mask)
 	{
-		objectWrite(objno, read_obj_value(objno));
+	    bcu.comObjects->objectWrite(objno, read_obj_value(objno));
 		objSendReqFlags[byteno] &= ~mask;
 	}
 }
@@ -678,19 +683,19 @@ void process_alarm_stats()
 	if (setAlarmBus && !alarmBus)
 	{
 		// Alarm auslösen
-		rm_send_hexstr((unsigned char*)"030210");
+		rm_set_alarm_state(RM_ALARM);
 		answerWait = INITIAL_ANSWER_WAIT;
 	}
 	else if (setTestAlarmBus && !testAlarmBus)
 	{
 		// Testalarm auslösen
-		rm_send_hexstr((unsigned char*)"030280");
+	    rm_set_alarm_state(RM_TEST_ALARM);
 		answerWait = INITIAL_ANSWER_WAIT;
 	}
 	else if ((!setAlarmBus && alarmBus) || (!setTestAlarmBus && testAlarmBus))
 	{
 		// Alarm und Testalarm beenden
-		rm_send_hexstr((unsigned char*)"030200");
+	    rm_set_alarm_state(RM_NO_ALARM);
 		answerWait = INITIAL_ANSWER_WAIT;
 	}
 }
@@ -738,22 +743,22 @@ extern "C" void TIMER32_0_IRQHandler()
 			--delayedAlarmCounter;
 			if (!delayedAlarmCounter)   // Verzögerungszeit abgelaufen
 			{
-				objectSetValue(OBJ_STAT_ALARM_DELAYED, read_obj_value(OBJ_STAT_ALARM_DELAYED)); // Status verzögerter Alarm zurücksetzen
+			    bcu.comObjects->objectSetValue(OBJ_STAT_ALARM_DELAYED, read_obj_value(OBJ_STAT_ALARM_DELAYED)); // Status verzögerter Alarm zurücksetzen
 				//ARRAY_SET_BIT(objSendReqFlags, OBJ_ALARM_BUS);  // Vernetzung Alarm senden
 				//ARRAY_SET_BIT(objSendReqFlags, OBJ_STAT_ALARM); // Status Alarm senden
 
-				objectWrite(OBJ_ALARM_BUS, alarmLocal);
+				bcu.comObjects->objectWrite(OBJ_ALARM_BUS, alarmLocal);
 			}
 		}
 		else // Alarm zyklisch senden
 		{
-			if (userEeprom[CONF_SEND_ENABLE] & CONF_ENABLE_ALARM_INTERVAL)
+			if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_ALARM_INTERVAL)
 			{
 				--alarmCounter;
 				if (!alarmCounter)
 				{
-					alarmCounter = userEeprom[CONF_ALARM_INTERVAL];     // Zykl. senden Zeit holen
-					if (userEeprom[CONF_SEND_ENABLE] & CONF_ENABLE_ALARM_INTERVAL_NW)
+					alarmCounter = bcu.userEeprom->getUInt8(CONF_ALARM_INTERVAL);     // Zykl. senden Zeit holen
+					if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_ALARM_INTERVAL_NW)
                     {
                         ARRAY_SET_BIT(objSendReqFlags, OBJ_ALARM_BUS);  // Vernetzung Alarm senden
                     }
@@ -765,12 +770,12 @@ extern "C" void TIMER32_0_IRQHandler()
 	// Kein Alarm, zyklisch 0 senden
 	else
 	{
-	    if (userEeprom[CONF_SEND_ENABLE] & CONF_ENABLE_TALARM_INTERVAL_S0)
+	    if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_TALARM_INTERVAL_S0)
         {
             --alarmCounter;
             if (!alarmCounter)
             {
-                alarmCounter = userEeprom[CONF_ALARM_INTERVAL];     // Zykl. senden Zeit holen
+                alarmCounter = bcu.userEeprom->getUInt8(CONF_ALARM_INTERVAL);     // Zykl. senden Zeit holen
                 ARRAY_SET_BIT(objSendReqFlags, OBJ_STAT_ALARM);
             }
         }
@@ -779,13 +784,13 @@ extern "C" void TIMER32_0_IRQHandler()
 	// Testalarm: zyklisch senden
 	if (testAlarmLocal)
 	{
-		if (userEeprom[CONF_SEND_ENABLE] & CONF_ENABLE_TALARM_INTERVAL)
+		if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_TALARM_INTERVAL)
 		{
 			--TalarmCounter;
 			if (!TalarmCounter)
 			{
-				TalarmCounter = userEeprom[CONF_TALARM_INTERVAL];
-				if (userEeprom[CONF_SEND_ENABLE] & CONF_ENABLE_TALARM_INTERVAL_NW)
+				TalarmCounter = bcu.userEeprom->getUInt8(CONF_TALARM_INTERVAL);
+				if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_TALARM_INTERVAL_NW)
 				{
 				    ARRAY_SET_BIT(objSendReqFlags, OBJ_TALARM_BUS);
 				}
@@ -797,13 +802,13 @@ extern "C" void TIMER32_0_IRQHandler()
 	// Jede zweite Sekunde ein Status Com-Objekt senden.
 	// (Vormals war es jede 4. Sekunde, aber dann reicht 1 Minute nicht für 16 eventuell zu sendende Status Objekte (ComOject 6 - 21))
 	// Aber nur senden wenn kein Alarm anliegt.
-	if ((eventTime & 3) == 0 && infoSendObjno &&
+	if ((eventTime & DEFAULT_KNX_OBJECT_TIME) == 0 && infoSendObjno &&
 	    !(alarmLocal | alarmBus | testAlarmLocal | testAlarmBus))
 	{
 		// Info Objekt zum Senden vormerken wenn es dafür konfiguriert ist.
 		// Leider sind die Bits in der VD in der falschen Reihenfolge, daher 7-x
-		if ((infoSendObjno >= 14 && (userEeprom[CONF_INFO_14TO21] & pow2[7 - (infoSendObjno - 14)])) ||
-				(infoSendObjno < 14 && infoSendObjno >= 6 && (userEeprom[CONF_INFO_6TO13] & pow2[7 - (infoSendObjno - 6)])))
+		if ((infoSendObjno >= 14 && (bcu.userEeprom->getUInt8(CONF_INFO_14TO21) & pow2[7 - (infoSendObjno - 14)])) ||
+				(infoSendObjno < 14 && infoSendObjno >= 6 && (bcu.userEeprom->getUInt8(CONF_INFO_6TO13) & pow2[7 - (infoSendObjno - 6)])))
 		{
 			ARRAY_SET_BIT(objSendReqFlags, infoSendObjno);
 		}
@@ -814,7 +819,7 @@ extern "C" void TIMER32_0_IRQHandler()
 	// alle 8 Sekunden einen der 6 Befehle aus der CmdTab an den Rauchmelder senden, um alle Status Daten aus dem Rauchmelder abzufragen
 	// notwendig, da die ARM sblib keine Funktion aufruft, wenn ein Objekt ausgelesen wird
 	// daher müssen alle Informationen immer im Speicher vorliegen
-	if((eventTime & 15) == 0 && readCmdno &&
+	if ((eventTime & DEFAULT_SERIAL_COMMAND_TIME) == 0 && readCmdno &&
 			!(alarmLocal | alarmBus | testAlarmLocal | testAlarmBus))
 	{
 		if (!answerWait){
@@ -825,7 +830,7 @@ extern "C" void TIMER32_0_IRQHandler()
 
 	if (!eventTime) // einmal pro Minute
 	{
-		eventTime = 120;
+		eventTime = DEFAULT_EVENTTIME;
 
 		// Bus Alarm ignorieren Flag rücksetzen wenn kein Alarm mehr anliegt
 		if (ignoreBusAlarm & !(alarmBus | testAlarmBus))
@@ -836,59 +841,59 @@ extern "C" void TIMER32_0_IRQHandler()
 		}
 
 		// Status Informationen zyklisch senden
-		if (userEeprom[CONF_SEND_ENABLE] & CONF_ENABLE_INFO_INTERVAL)
+		if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_INFO_INTERVAL)
 		{
 			--infoCounter;
 			if (!infoCounter)
 			{
-				infoCounter = userEeprom[CONF_INFO_INTERVAL];
+				infoCounter = bcu.userEeprom->getUInt8(CONF_INFO_INTERVAL);
 				infoSendObjno = OBJ_HIGH_INFO_SEND;
 			}
 		}
 	}
 }
 
+void setupPeriodicTimer(uint32_t milliseconds)
+{
+    // Enable the timer interrupt
+    enableInterrupt(TIMER_32_0_IRQn);
+
+    // Begin using the timer
+    timer32_0.begin();
+
+    // Let the timer count milliseconds
+    timer32_0.prescaler((SystemCoreClock / 1000) - 1);
+
+    // On match of MAT1, generate an interrupt and reset the timer
+    timer32_0.matchMode(MAT1, RESET | INTERRUPT);
+
+    // Match MAT1 when the timer reaches this value (in milliseconds)
+    timer32_0.match(MAT1, milliseconds- 1); // -1 because counting starts from 0, e.g. 0-499=500ms
+
+    timer32_0.start();
+}
 
 /**
  * Alle Applikations-Parameter zurücksetzen
  */
 void initApplication()
 {
-	unsigned char i;
-
-	pinMode(RM_COMM_ENABLE, OUTPUT);
-	digitalWrite(RM_COMM_ENABLE, 0);	// PIO3_5 low to enable RM serial communication feature
-
-	rm_serial_init(); 	//serielle Schnittstelle für die Kommunikation mit dem Rauchmelder initialisieren
-
-	// Enable the timer interrupt
-	enableInterrupt(TIMER_32_0_IRQn);
-
-	// Begin using the timer
-	timer32_0.begin();
-
-	// Let the timer count milliseconds
-	timer32_0.prescaler((SystemCoreClock / 1000) - 1);
-
-	// On match of MAT1, generate an interrupt and reset the timer
-	timer32_0.matchMode(MAT1, RESET | INTERRUPT);
-
-	// Match MAT1 when the timer reaches this value (in milliseconds)
-	timer32_0.match(MAT1, 499); // 0-499 = 500ms
-
-	timer32_0.start();
+    rm_serial_init();   //serielle Schnittstelle für die Kommunikation mit dem Rauchmelder initialisieren
 
 	// Werte initialisieren
-
-	for (i = 0; i < NUM_OBJ_FLAG_BYTES; ++i)
+	for (uint8_t i = 0; i < NUM_OBJ_FLAG_BYTES; ++i)
 	{
 		objSendReqFlags[i] = 0;
 	}
 
+    for (uint8_t i = 0; i < RM_CMD_COUNT; ++i)
+    {
+        objValues[i] = 0;
+    }
+
 	answerWait = 0;
 	noAnswerCount = 0;
 	cmdCurrent = RM_CMD_NONE;
-	recvCount = -1;
 
 	alarmBus = 0;
 	alarmLocal = 0;
@@ -902,7 +907,7 @@ void initApplication()
 
 	infoSendObjno = 0;
 	readCmdno = RM_CMD_COUNT;
-	infoCounter = userEeprom[CONF_INFO_INTERVAL];
+	infoCounter = bcu.userEeprom->getUInt8(CONF_INFO_INTERVAL);
 	alarmCounter = 1;
 	TalarmCounter = 1;
 	alarmStatusCounter = 1;
@@ -911,26 +916,24 @@ void initApplication()
 
 	errCode = 0;
 
-	// EEPROM initialisieren
-#ifdef DEBUG_H_
-	EA = 0;							// Interrupts sperren, damit Flashen nicht unterbrochen wird
-	START_WRITECYCLE;
-	WRITE_BYTE(0x01, 0x03, 0x00);	// Herstellercode 0x004C = Bosch
-	WRITE_BYTE(0x01, 0x04, 0x4C);
+    // set all comObjects to default
+    for (uint8_t i = 0; i < NUM_OBJS; i++)
+    {
+        bcu.comObjects->objectSetValue(i, 0);
+    }
 
-	// Wenn VD Version Lock oder Device Lock aktiv hier ID und Version setzen
-	WRITE_BYTE(0x01, 0x05, 0x03);	// Devicetype 1010 (0x03F2)
-	WRITE_BYTE(0x01, 0x06, 0xF2);
-	WRITE_BYTE(0x01, 0x07, 0x23);	// Version der Applikation: 2.3
+    pinMode(RM_ACTIVITY_PIN, INPUT); // smoke detector base plate state, no pullup or pulldown configured at this pin to not affect the smoke detector
+    pinMode(RM_COMM_ENABLE, OUTPUT);
+    digitalWrite(RM_COMM_ENABLE, false); // set low to enable smoke detector's serial communication feature
 
-	WRITE_BYTE(0x01, 0x0C, 0x00);	// PORT A Direction Bit Setting
-	WRITE_BYTE(0x01, 0x0D, 0xFF);	// Run-Status (00=stop FF=run)
-	STOP_WRITECYCLE;
-	EA = 1;							// Interrupts freigeben
-#endif
+    // rm_send_ack();
+    // rm_send_ack(); // sending twice a ACK came from original LPC922 source, because
+    // smoke detector will answer with it's automatic message (hex) after enabling the serial e.g.:
+    // 00 02 38 32 32 30 30 30 30 30 30 30 45 43 03 = <STX>8220000000EC<ETX>
 
-	rm_send_byte(ACK);
-	rm_send_byte(ACK);
+    delay(STARTUP_DELAY_MS);
+    rm_recv_byte();
+    setupPeriodicTimer(TIMER_INTERVAL_MS);
 
 	// TODO Alarm-Status vom Rauchmelder abfragen
 }

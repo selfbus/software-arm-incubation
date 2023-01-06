@@ -9,7 +9,7 @@
  */
 
 #include "threshold.h"
-#include <sblib/eib.h>
+#include "sensor_base.h" ///\todo BAD, only needed for bcu
 
 Threshold::Threshold()
 : objNumber(-1)
@@ -43,7 +43,7 @@ void Threshold::periodic(unsigned int value)
             state = (state & ~LOWER_LIMIT_TIME_ACTIVE) | UPPER_LIMIT_TIME_ACTIVE;
             limitTimeout.start (upperLimitTime);
             if (immediateObjNumber >= 0)
-                objectWrite(immediateObjNumber & 0xFF, immediateObjNumber > 255 ? 0 : 1);
+                bcu.comObjects->objectWrite(immediateObjNumber & 0xFF, immediateObjNumber > 255 ? 0 : 1);
         }
     }
     else if ((value < lowerLimit) && !(state & IN_LOWER_LIMIT))
@@ -62,7 +62,7 @@ void Threshold::periodic(unsigned int value)
             state = (state & ~UPPER_LIMIT_TIME_ACTIVE) | LOWER_LIMIT_TIME_ACTIVE;
             limitTimeout.start (lowerLimitTime);
             if (immediateObjNumber >= 0)
-                objectWrite(immediateObjNumber & 0xFF, immediateObjNumber > 255 ? 1 : 0);
+                bcu.comObjects->objectWrite(immediateObjNumber & 0xFF, immediateObjNumber > 255 ? 1 : 0);
         }
     }
     else
@@ -77,9 +77,9 @@ void Threshold::periodic(unsigned int value)
     if (sendRequested)
     {   // we should send the value
         if (state & IN_LOWER_LIMIT)
-            objectWrite(objNumber, sendLowerDeviation == 1 ? 1 : 0);
+            bcu.comObjects->objectWrite(objNumber, sendLowerDeviation == 1 ? 1 : 0);
         if (state & IN_UPPER_LIMIT)
-            objectWrite(objNumber, sendLimitExceeded == 1 ? 1 : 0);
+            bcu.comObjects->objectWrite(objNumber, sendLimitExceeded == 1 ? 1 : 0);
         // we sent an update -> restart the cyclic timer
         cycleTimeout.start(cycleTime);
     }

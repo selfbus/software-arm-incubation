@@ -1,52 +1,72 @@
 /*
  *  Copyright (c) 2015 Martin Glueck <martin@mangari.org>
+ *                2021 Darthyson <darth@maptrack.de>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
  *  published by the Free Software Foundation.
  */
 
-#ifndef ROL_JAL_BIM112_SRC_HAND_ACTUATION_H_
-#define ROL_JAL_BIM112_SRC_HAND_ACTUATION_H_
+#ifndef HAND_ACTUATION_H_
+#define HAND_ACTUATION_H_
 
-#include "config.h"
 #include <sblib/timeout.h>
-
-extern const int handPins[NO_OF_HAND_PINS];
 
 class HandActuation
 {
 public:
-    enum {NO_ACTUATION = -1, BUTTON_PRESSED = 0x100, BUTTON_RELEASED = 0x200};
-    HandActuation();
-    int check(void);
+    enum ButtonState {NO_ACTUATION = -1, BUTTON_PRESSED = 0x100, BUTTON_RELEASED = 0x200};
+    HandActuation() = delete;
+    HandActuation(const unsigned int* pins, const unsigned int pinCount, const unsigned int readbackPin, const unsigned int blinkTimeMs);
+    ~HandActuation() = default;
+
+    /**
+     * Checks whether a button is pressed or was released
+     *
+     * @param btnNumber Button which is pressed or was release
+     * @param btnState  Button state (pressed or released)
+     * @return True in case a button is pressed or was released, otherwise false
+     */
+    bool getButtonAndState(int& btnNumber, HandActuation::ButtonState& btnState);
     bool ledState(unsigned int led);
     bool blinkState(unsigned int led);
     void setLedState(unsigned int led, bool state, bool blinking = false);
+    void setallLedState(bool state);
+
+    unsigned int getDelayBetweenButtonsMs();
+    unsigned int getDelayAtEndMs();
+    void setDelayBetweenButtonsMs(unsigned int newDelayBetweenButtonsMs);
+    void setDelayAtEndMs(unsigned int newDelayAtEndMs);
+
+    /**
+     * @brief Simple test of the hand actuation pins.
+     *        This test toggles the pins, waits blinkTimeMs and toggles the pins again.
+     *
+     * @param testPins     Array of pins to test
+     * @param pinCount     Number of pins in testPins
+     * @param blinkTimeMs  Time in milliseconds the test should take
+     */
+    static void testIO(const unsigned int* testPins, const unsigned int pinCount, const unsigned int blinkTimeMs);
 
 protected:
-    static const unsigned int DELAY_AT_END          = 10;
-    static const unsigned int DELAY_BETWEEN_BUTTONS = 10;
+    int check(void);
+    unsigned int getHandPinCount();
     static Timeout blinkTimer;
     static bool blinkOnOffState;
+    unsigned int pinCount_;
+    unsigned int readbackPin_;
+    unsigned int blinkTimeMs_;
+    unsigned int  number_;
+    unsigned char mask_;
+    unsigned char buttonState_;
+    unsigned char ledState_;
+    unsigned char blinkState_;
+    unsigned int delayBetweenButtonsMs_;
+    unsigned int delayAtEndMs_;
+    Timeout handDelay_;
+    unsigned int* handPins_;
+private:
 
-    unsigned int  number;
-    unsigned char mask;
-    unsigned char _buttonState;
-    unsigned char _ledState;
-    unsigned char _blinkState;
-    Timeout _handDelay;
 };
 
-extern HandActuation handAct;
-
-inline bool HandActuation::ledState(unsigned int led)
-{
-    return _ledState & (1 << led) ? true : false;
-}
-
-inline bool HandActuation::blinkState(unsigned int led)
-{
-    return _blinkState & (1 << led) ? true : false;
-}
-#endif /* ROL_JAL_BIM112_SRC_HAND_ACTUATION_H_ */
+#endif /* HAND_ACTUATION_H_ */

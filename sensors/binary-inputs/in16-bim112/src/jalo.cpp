@@ -9,15 +9,15 @@
  */
 
 #include "jalo.h"
-#include <sblib/eib.h>
+#include "app_in.h"
 
 Jalo::Jalo(unsigned int no, unsigned int longPress, unsigned int channelConfig,
         unsigned int busReturn, unsigned int value) :
         _Switch_(no, longPress)
 {
-    oneButtonShutter = userEeprom.getUInt8(channelConfig + 0x03) & 0x04 ? 1 : 0;
-    shortLongInverse = userEeprom.getUInt8(channelConfig + 0x03) & 0x02 ? 1 : 0;
-    upDownInverse = userEeprom.getUInt8(channelConfig + 0x03) & 0x01 ? 1 : 0;
+    oneButtonShutter = bcu.userEeprom->getUInt8(channelConfig + 0x03) & 0x04 ? 1 : 0;
+    shortLongInverse = bcu.userEeprom->getUInt8(channelConfig + 0x03) & 0x02 ? 1 : 0;
+    upDownInverse = bcu.userEeprom->getUInt8(channelConfig + 0x03) & 0x01 ? 1 : 0;
 
     debug_eeprom("Channel EEPROM:", channelConfig, 46);
 
@@ -35,7 +35,7 @@ Jalo::Jalo(unsigned int no, unsigned int longPress, unsigned int channelConfig,
     }
     if (busReturn && oneButtonShutter)
     {
-        requestObjectRead(directionComObjNo);
+        bcu.comObjects->requestObjectRead(directionComObjNo);
     }
 }
 
@@ -58,7 +58,7 @@ void Jalo::inputChanged(int value)
             unsigned int direction = upDownInverse; //use inverse value from parameters
             if (oneButtonShutter)
             { // in one button mode use the inverse direction com obj value
-                direction = !objectRead(directionComObjNo);
+                direction = !bcu.comObjects->objectRead(directionComObjNo);
             }
             if (!shortLongInverse)
             {
@@ -66,11 +66,11 @@ void Jalo::inputChanged(int value)
                 {
                     direction ^= 1;
                 }
-                objectWrite(stopComObjNo, direction);
+                bcu.comObjects->objectWrite(stopComObjNo, direction);
             }
             else
             {
-                objectWrite(upDownComObjNo, direction);
+                bcu.comObjects->objectWrite(upDownComObjNo, direction);
             }
         }
         timeout.stop();
@@ -84,7 +84,7 @@ void Jalo::checkPeriodic(void)
         unsigned int direction = upDownInverse; //use inverse value from parameters
         if (oneButtonShutter)
         { // in one button mode use the inverse direction com obj value
-            direction = !objectRead(directionComObjNo);
+            direction = !bcu.comObjects->objectRead(directionComObjNo);
         }
         if (shortLongInverse)
         {
@@ -92,11 +92,11 @@ void Jalo::checkPeriodic(void)
             {
                 direction ^= 1;
             }
-            objectWrite(stopComObjNo, direction);
+            bcu.comObjects->objectWrite(stopComObjNo, direction);
         }
         else
         {
-            objectWrite(upDownComObjNo, direction);
+            bcu.comObjects->objectWrite(upDownComObjNo, direction);
         }
     }
 }
