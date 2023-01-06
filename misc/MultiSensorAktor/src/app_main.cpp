@@ -22,10 +22,10 @@
 extern "C" const char APP_VERSION[13] = "MSA 0.1";
 
 #pragma comment(linker, "/include:getAppVersion")
-extern "C" __attribute__ ((noinline))  __attribute__ ((used)) const char * getAppVersion()
-{
-    return APP_VERSION;
-}
+//extern "C" __attribute__ ((noinline))  __attribute__ ((used)) const char * getAppVersion()
+//{
+//    return APP_VERSION;
+//}
 
 
 #define CONFIG_ADDRESS 0x4800
@@ -53,7 +53,7 @@ int portPins[32] = {
  */
 BcuBase* setup()
 {
-    bcu.begin(0x13A, 0x02, 1);
+    bcu.begin(0x13A, 0x01, 0x10);
 
     memcpy(bcu.userEeprom->order(), hardwareVersion,
             sizeof(hardwareVersion));

@@ -65,7 +65,7 @@ PCA9555DItem::PCA9555DItem(BcuBase* bcu, byte firstComIndex, PCA9555DConfig *con
 			bcu->comObjects->requestObjectRead(firstComIndex + 2);
 			configured = true;
 
-			nextComObj += 3;
+			nextComObj += 4;
 			currentConfig += sizeof(PCA9555DPinConfig);
 		}
 		else

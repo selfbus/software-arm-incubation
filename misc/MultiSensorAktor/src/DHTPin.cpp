@@ -6,7 +6,7 @@
 
 #include <DHTPin.h>
 
-DHTPin::DHTPin(BcuBase* bcu, int port, byte firstComIndex, DHTPinConfig *config, bool dht11) : GenericPin(bcu, firstComIndex), dht(DHT()), config(config), port(port)
+DHTPin::DHTPin(BcuBase* bcu, int port, byte firstComIndex, DHTPinConfig *config, bool dht11) : GenericPin(bcu, firstComIndex), dht(DHT()), config(config), port(port), dht11(dht11)
 {
 	dht.DHTInit(port, dht11 ? DHT11 : DHT22);
 	offset = config->Offset * 0.01;
@@ -43,7 +43,7 @@ byte DHTPin::GetState(uint32_t now, byte updatedOjectNo)
 			state++;
 			break;
 		default:
-			if (dht.readData(false))
+			if (dht.readData(true))
 			{
 				float ftemp = dht.ConvertTemperature(CELCIUS) + offset;
 				int16_t temp = (int16_t)(ftemp * 100);
@@ -52,12 +52,6 @@ byte DHTPin::GetState(uint32_t now, byte updatedOjectNo)
 				bcu->comObjects->objectWrite(firstComIndex + 2, (byte*)&ftemp);
 				bcu->comObjects->objectWriteFloat(firstComIndex + 3, hum);
 				nextAction = now + (config->Delay * 1000);
-			}else
-			{
-				bcu->comObjects->objectWriteFloat(firstComIndex + 1, 0);
-				float ftemp = 0;
-				bcu->comObjects->objectWrite(firstComIndex + 2, (byte*)&ftemp);
-				bcu->comObjects->objectWriteFloat(firstComIndex + 3, 0);
 			}
 			state = 0;
 			break;

@@ -17,20 +17,12 @@ CCS811Item::CCS811Item(BcuBase* bcu, byte firstComIndex, CCS811Config *config, G
 		delay(i * 1000);
 		configured = ccs811.begin(config->addr | 0x5A, portPins[config->wakePin]);
 	}
-	if (configured)
-	{
-		bcu->comObjects->requestObjectRead(firstComIndex + 3);
-		bcu->comObjects->requestObjectRead(firstComIndex + 4);
-	}
+	bcu->comObjects->requestObjectRead(firstComIndex + 3);
+	bcu->comObjects->requestObjectRead(firstComIndex + 4);
 }
 
 void CCS811Item::Loop(uint32_t now, int updatedObjectNo)
 {
-	if (!configured)
-	{
-		return;
-	}
-
 	if (updatedObjectNo == firstComIndex + 3 || updatedObjectNo == firstComIndex + 4)
 	{
 		float t = bcu->comObjects->objectReadFloat(firstComIndex + 3) * 0.01;
@@ -39,7 +31,7 @@ void CCS811Item::Loop(uint32_t now, int updatedObjectNo)
 		ccs811.compensate(t, rh);
 	}
 
-	if (now > nextAction)
+	if (now >= nextAction || (now + (config->PreFan + config->PreMeasure + config->Delay) * 1000) < nextAction)
 	{
 		switch (state)
 		{
@@ -68,10 +60,25 @@ void CCS811Item::Loop(uint32_t now, int updatedObjectNo)
 			state++;
 			break;
 		case 2:
-			ccs811.getData();
+			if (!configured)
+			{
+				configured = ccs811.begin(config->addr | 0x5A, portPins[config->wakePin]);
+				if (baseline != 0)
+				{
+					ccs811.setBaseline(baseline);
+				}
+			}
 
-			bcu->comObjects->objectWrite(firstComIndex + 1, ccs811.CO2);
-			bcu->comObjects->objectWrite(firstComIndex + 2, ccs811.TVOC);
+			if (configured)
+			{
+				configured = ccs811.getData();
+				if (configured)
+				{
+					baseline = ccs811.getBaseline();
+					bcu->comObjects->objectWrite(firstComIndex + 1, ccs811.CO2);
+					bcu->comObjects->objectWrite(firstComIndex + 2, ccs811.TVOC);
+				}
+			}
 
 			nextAction = now + (config->Delay * 1000);
 			state = 0;

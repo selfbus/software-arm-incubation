@@ -21,7 +21,7 @@ public:
 	byte GetState(uint32_t now, byte updatedObjectNo);
 
 	int ConfigLength() { return sizeof(OutputPinConfig); }
-	int ComObjCount() { return 3; }
+	int ComObjCount() { return 4; }
 
 protected:
 	OutputPinConfig* config;

@@ -25,7 +25,7 @@ byte OutputPin::GetState(uint32_t now, byte updatedObjectNo)
 
 		setType();
 	}
-	else if (updatedObjectNo == firstComIndex)
+	else if (updatedObjectNo == firstComIndex + 1)
 	{
 		blinkObjState = bcu->comObjects->objectRead(firstComIndex + 1);
 

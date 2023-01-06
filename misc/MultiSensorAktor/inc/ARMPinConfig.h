@@ -16,8 +16,8 @@
 enum ARMPinType : byte
 {
 	ARMPinTypeInputFloating,
-	ARMPinTypeInputPulldown,
 	ARMPinTypeInputPullup,
+	ARMPinTypeInputPulldown,
 	ARMPinTypeOutput,
 	ARMPinTypeDHT11,
 	ARMPinTypeDHT22,

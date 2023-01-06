@@ -30,6 +30,7 @@ protected:
 	float offset;
 	DHTPinConfig* config;
 	int port;
+	int dht11;
 };
 
 

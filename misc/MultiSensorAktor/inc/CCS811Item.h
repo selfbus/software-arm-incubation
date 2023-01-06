@@ -29,6 +29,7 @@ protected:
 	byte state = 0;
 	bool configured = false;
 	CCS811Class ccs811;
+	uint16_t baseline = 0;
 };
 
 #endif /* CCS811ITEM_H_ */
