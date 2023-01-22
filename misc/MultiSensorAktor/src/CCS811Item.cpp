@@ -7,18 +7,31 @@
 #include <CCS811Item.h>
 #include <sblib/i2c.h>
 #include <sblib/timer.h>
+#include <HelperFunctions.h>
+#include <ARMPinItem.h>
 
-extern int portPins[32];
-
-CCS811Item::CCS811Item(BcuBase* bcu, byte firstComIndex, CCS811Config *config, GenericItem* nextItem) : GenericItem(bcu, firstComIndex, nextItem), config(config), ccs811(CCS811Class()), nextAction(0)
+CCS811Item::CCS811Item(BcuBase* bcu, byte firstComIndex, CCS811Config *config, GenericItem* nextItem, uint16_t& objRamPointer) : GenericItem(bcu, firstComIndex, nextItem), config(config), ccs811(CCS811Class()), nextAction(0)
 {
 	for (int i = 0; i < 10 && !configured; i++)
 	{
 		delay(i * 1000);
-		configured = ccs811.begin(config->addr | 0x5A, portPins[config->wakePin]);
+		if (config->wakePin >= 0 && config->wakePin < 32)
+		{
+			configured = ccs811.begin(config->addr | 0x5A, ARMPinItem::PortPins[config->wakePin]);
+		}
+		else
+		{
+			configured = false;
+		}
 	}
 	bcu->comObjects->requestObjectRead(firstComIndex + 3);
 	bcu->comObjects->requestObjectRead(firstComIndex + 4);
+
+	HelperFunctions::setComObjPtr(bcu, firstComIndex, BIT_1, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 1, BYTE_2, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 2, BYTE_2, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 3, BYTE_2, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 4, BYTE_2, objRamPointer);
 }
 
 void CCS811Item::Loop(uint32_t now, int updatedObjectNo)
@@ -38,7 +51,7 @@ void CCS811Item::Loop(uint32_t now, int updatedObjectNo)
 		case 0:
 			if (config->PreFan > 0)
 			{
-				bcu->comObjects->objectWrite(firstComIndex + 0, 1);
+				bcu->comObjects->objectWrite(firstComIndex, 1);
 				nextAction = now + (config->PreFan * 1000);
 			}
 			else
@@ -50,7 +63,7 @@ void CCS811Item::Loop(uint32_t now, int updatedObjectNo)
 		case 1:
 			if (config->PreFan > 0)
 			{
-				bcu->comObjects->objectWrite(firstComIndex + 0, (int)0);
+				bcu->comObjects->objectWrite(firstComIndex, (int)0);
 				nextAction = now + (config->PreMeasure * 1000);
 			}
 			else
@@ -59,11 +72,14 @@ void CCS811Item::Loop(uint32_t now, int updatedObjectNo)
 			}
 			state++;
 			break;
-		case 2:
+		default:
 			if (!configured)
 			{
-				configured = ccs811.begin(config->addr | 0x5A, portPins[config->wakePin]);
-				if (baseline != 0)
+				if (config->wakePin >= 0 && config->wakePin < 32)
+				{
+					configured = ccs811.begin(config->addr | 0x5A, ARMPinItem::PortPins[config->wakePin]);
+				}
+				if (configured && baseline != 0)
 				{
 					ccs811.setBaseline(baseline);
 				}

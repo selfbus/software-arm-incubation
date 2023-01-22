@@ -15,7 +15,7 @@
 class OutputPin : public GenericPin
 {
 public:
-	OutputPin(BcuBase* bcu, byte firstComObj, OutputPinConfig *config);
+	OutputPin(BcuBase* bcu, byte firstComObj, OutputPinConfig *config, uint16_t& objRamPointer);
 	~OutputPin() = default;
 
 	byte GetState(uint32_t now, byte updatedObjectNo);

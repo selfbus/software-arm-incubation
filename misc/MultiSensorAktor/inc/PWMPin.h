@@ -22,7 +22,7 @@ public:
 class PWMPin : public GenericPin, public IRQItem
 {
 public:
-	PWMPin(BcuBase* bcu, byte firstComObj, PWMPinConfig *config, GenericItem* parent);
+	PWMPin(BcuBase* bcu, byte firstComObj, PWMPinConfig *config, GenericItem* parent, uint16_t& objRamPtr);
 	~PWMPin() = default;
 
 	byte GetState(uint32_t now, byte updatedObjectNo);

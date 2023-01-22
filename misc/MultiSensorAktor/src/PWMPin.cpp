@@ -5,6 +5,7 @@
  */
 
 #include <PWMPin.h>
+#include <HelperFunctions.h>
 
 PWMPin *firstPwmPin = nullptr;
 uint16_t currentPwmValue = 0;
@@ -26,7 +27,7 @@ extern "C" void TIMER16_0_IRQHandler()
 	}
 }
 
-PWMPin::PWMPin(BcuBase* bcu, byte firstComIndex, PWMPinConfig* config, GenericItem* parent) : GenericPin(bcu, firstComIndex), config(config), parent(parent)
+PWMPin::PWMPin(BcuBase* bcu, byte firstComIndex, PWMPinConfig* config, GenericItem* parent, uint16_t& objRamPointer) : GenericPin(bcu, firstComIndex), config(config), parent(parent)
 {
 	bcu->comObjects->requestObjectRead(firstComIndex);
 	bcu->comObjects->requestObjectRead(firstComIndex + 1);
@@ -60,6 +61,10 @@ PWMPin::PWMPin(BcuBase* bcu, byte firstComIndex, PWMPinConfig* config, GenericIt
 	on = config->Invert == 0;
 	nextPin = firstPwmPin;
 	firstPwmPin = this;
+
+	HelperFunctions::setComObjPtr(bcu, firstComIndex, BYTE_1, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 1, BIT_1, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 2, BIT_1, objRamPointer);
 }
 
 byte PWMPin::GetState(uint32_t now, byte updatedObjectNo)

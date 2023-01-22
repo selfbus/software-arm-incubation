@@ -27,8 +27,7 @@ struct DeviceConfig
 	byte iAQCoreCount;
 	byte SHT2xCount;
 	byte PCA9555DCount;
-	byte RFM69Count;
-	uint32_t PortsEnable;
+	uint8_t PortAssignment[32];
 };
 #pragma pack()
 

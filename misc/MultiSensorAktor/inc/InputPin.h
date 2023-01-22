@@ -14,7 +14,7 @@
 class InputPin : public GenericPin
 {
 public:
-	InputPin(BcuBase* bcu, byte firstComObj, InputPinConfig *config);
+	InputPin(BcuBase* bcu, byte firstComObj, InputPinConfig *config, uint16_t& objRamPointer);
 	~InputPin() = default;
 
 	void PutValue(uint32_t now, int val);

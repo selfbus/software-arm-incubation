@@ -8,6 +8,7 @@
 #define INPUTITEM_H_
 
 #include <sblib/eib/bcu_base.h>
+#include <sblib/ioports.h>
 #include <sblib/debounce.h>
 #include <GenericItem.h>
 #include <ARMPinConfig.h>
@@ -16,13 +17,15 @@
 class ARMPinItem : public GenericItem
 {
 public:
-	ARMPinItem(BcuBase* bcu, int port, byte firstComIndex, ARMPinConfig* config, GenericItem* nextItem);
+	ARMPinItem(BcuBase* bcu, byte firstComIndex, byte portNumber, ARMPinConfig* config, GenericItem* nextItem, uint16_t& objRamPointer);
 	~ARMPinItem() = default;
 
 	void Loop(uint32_t now, int updatedObjectNo);
 	void Irq(void* item, byte value);
 	int ConfigLength();
 	int ComObjCount();
+
+	const static int PortPins[];
 
 protected:
 	ARMPinConfig* config;

@@ -15,7 +15,7 @@
 class DHTPin : public GenericPin
 {
 public:
-	DHTPin(BcuBase* bcu, int port, byte firstComIndex, DHTPinConfig* config, bool dht11);
+	DHTPin(BcuBase* bcu, int port, byte firstComIndex, DHTPinConfig* config, bool dht11, uint16_t& objRamPointer);
 	~DHTPin() = default;
 
 	byte GetState(uint32_t now, byte updatedObjectNo);

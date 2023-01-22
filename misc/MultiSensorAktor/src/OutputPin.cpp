@@ -5,8 +5,9 @@
  */
 
 #include <OutputPin.h>
+#include <HelperFunctions.h>
 
-OutputPin::OutputPin(BcuBase* bcu, byte firstComIndex, OutputPinConfig* config) : GenericPin(bcu, firstComIndex), config(config), sw(false), blinkObjState(false), blinkState(false), blink(false), lastState(false), blinkActionTime(0)
+OutputPin::OutputPin(BcuBase* bcu, byte firstComIndex, OutputPinConfig* config, uint16_t& objRamPointer) : GenericPin(bcu, firstComIndex), config(config), sw(false), blinkObjState(false), blinkState(false), blink(false), lastState(false), blinkActionTime(0)
 {
 	bcu->comObjects->requestObjectRead(firstComIndex);
 	bcu->comObjects->requestObjectRead(firstComIndex + 2);
@@ -15,6 +16,11 @@ OutputPin::OutputPin(BcuBase* bcu, byte firstComIndex, OutputPinConfig* config) 
 		bcu->comObjects->requestObjectRead(firstComIndex + 1);
 	}
 	setType();
+
+	HelperFunctions::setComObjPtr(bcu, firstComIndex, BIT_1, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 1, BIT_1, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 2, BIT_1, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 3, BIT_1, objRamPointer);
 }
 
 byte OutputPin::GetState(uint32_t now, byte updatedObjectNo)

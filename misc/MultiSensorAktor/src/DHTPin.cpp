@@ -5,11 +5,17 @@
  */
 
 #include <DHTPin.h>
+#include <HelperFunctions.h>
 
-DHTPin::DHTPin(BcuBase* bcu, int port, byte firstComIndex, DHTPinConfig *config, bool dht11) : GenericPin(bcu, firstComIndex), dht(DHT()), config(config), port(port), dht11(dht11)
+DHTPin::DHTPin(BcuBase* bcu, int port, byte firstComIndex, DHTPinConfig *config, bool dht11, uint16_t& objRamPointer) : GenericPin(bcu, firstComIndex), dht(DHT()), config(config), port(port), dht11(dht11)
 {
 	dht.DHTInit(port, dht11 ? DHT11 : DHT22);
 	offset = config->Offset * 0.01f;
+
+	HelperFunctions::setComObjPtr(bcu, firstComIndex, BIT_1, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 1, BYTE_2, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 2, BYTE_4, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 3, BYTE_2, objRamPointer);
 };
 
 byte DHTPin::GetState(uint32_t now, byte updatedOjectNo)
@@ -51,8 +57,9 @@ byte DHTPin::GetState(uint32_t now, byte updatedOjectNo)
 				bcu->comObjects->objectWriteFloat(firstComIndex + 1, temp);
 				bcu->comObjects->objectWrite(firstComIndex + 2, (byte*)&ftemp);
 				bcu->comObjects->objectWriteFloat(firstComIndex + 3, hum);
-				nextAction = now + (config->Delay * 1000);
 			}
+
+			nextAction = now + (config->Delay * 1000);
 			state = 0;
 			break;
 		}

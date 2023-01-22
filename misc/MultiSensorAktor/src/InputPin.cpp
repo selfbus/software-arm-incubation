@@ -5,6 +5,7 @@
  */
 
 #include <InputPin.h>
+#include <HelperFunctions.h>
 
 // Todos:
 // Einstellung für Reset:
@@ -16,7 +17,7 @@
 
 
 
-InputPin::InputPin(BcuBase* bcu, byte firstComObj, InputPinConfig *config) : GenericPin(bcu, firstComObj), config(config)
+InputPin::InputPin(BcuBase* bcu, byte firstComObj, InputPinConfig *config, uint16_t& objRamPointer) : GenericPin(bcu, firstComObj), config(config)
 {
 	longActive = config->HiLong || config->LoLong;
 
@@ -29,6 +30,10 @@ InputPin::InputPin(BcuBase* bcu, byte firstComObj, InputPinConfig *config) : Gen
    	{
    	   	bcu->comObjects->requestObjectRead(firstComObj + 1);
    	}
+
+   	HelperFunctions::setComObjPtr(bcu, firstComIndex, BIT_1, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 1, BIT_1, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 2, BIT_1, objRamPointer);
 }
 
 void InputPin::PutValue(uint32_t now, int val)

@@ -7,13 +7,19 @@
 #include <SHT2xItem.h>
 #include <sblib/i2c.h>
 #include <sblib/timer.h>
+#include <HelperFunctions.h>
 
 extern int portPins[32];
 
-SHT2xItem::SHT2xItem(BcuBase* bcu, byte firstComIndex, SHT2xConfig *config, GenericItem* nextItem) : GenericItem(bcu, firstComIndex, nextItem), config(config), sht2x(SHT2xClass()), nextAction(0)
+SHT2xItem::SHT2xItem(BcuBase* bcu, byte firstComIndex, SHT2xConfig *config, GenericItem* nextItem, uint16_t& objRamPointer) : GenericItem(bcu, firstComIndex, nextItem), config(config), sht2x(SHT2xClass()), nextAction(0)
 {
 	sht2x.Init();
 	offset = config->Offset * 0.01f;
+
+	HelperFunctions::setComObjPtr(bcu, firstComIndex, BIT_1, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 1, BYTE_2, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 2, BYTE_4, objRamPointer);
+	HelperFunctions::setComObjPtr(bcu, firstComIndex + 3, BYTE_2, objRamPointer);
 }
 
 void SHT2xItem::Loop(uint32_t now, int updatedObjectNo)

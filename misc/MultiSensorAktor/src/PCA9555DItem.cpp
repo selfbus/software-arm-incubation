@@ -5,11 +5,11 @@
  */
 
 #include <PCA9555DItem.h>
+#include <DummyPin.h>
 #include <sblib/i2c.h>
+#include <ARMPinItem.h>
 
-extern int portPins[32];
-
-PCA9555DItem::PCA9555DItem(BcuBase* bcu, byte firstComIndex, PCA9555DConfig *config, GenericItem* nextItem) : GenericItem(bcu, firstComIndex, nextItem), config(config)
+PCA9555DItem::PCA9555DItem(BcuBase* bcu, byte firstComIndex, PCA9555DConfig *config, GenericItem* nextItem, uint16_t& objRamPointer) : GenericItem(bcu, firstComIndex, nextItem), config(config)
 {
 	IRQItem *lastIRQItem = nullptr;
 	byte* currentConfig = (byte*)config + sizeof(PCA9555DConfig);
@@ -21,9 +21,9 @@ PCA9555DItem::PCA9555DItem(BcuBase* bcu, byte firstComIndex, PCA9555DConfig *con
 	checkTime = 0;
 	forceCheckTill = 0;
 
-	if (config->IntPin != 99)
+	if (config->IntPin != 99 && config->IntPin >= 0 && config->IntPin < 32)
 	{
-		pinMode(portPins[config->IntPin], INPUT | PULL_UP);
+		pinMode(ARMPinItem::PortPins[config->IntPin], INPUT | PULL_UP);
 	}
 
 	for (byte i = 0; i < 16; i++)
@@ -35,7 +35,7 @@ PCA9555DItem::PCA9555DItem(BcuBase* bcu, byte firstComIndex, PCA9555DConfig *con
 			{
 			case PCA9555DPinTypeInput:
 				{
-					pins[i] = new InputPin(bcu, nextComObj, &(pinConfig->Input));
+					pins[i] = new InputPin(bcu, nextComObj, &pinConfig->Input, objRamPointer);
 					inOutConfig |= (1 << i);
 					if (pinConfig->Input.DebounceTime > checkTime)
 					{
@@ -49,16 +49,17 @@ PCA9555DItem::PCA9555DItem(BcuBase* bcu, byte firstComIndex, PCA9555DConfig *con
 				}
 				break;
 			case PCA9555DPinTypeOutput:
-				pins[i] = new OutputPin(bcu, nextComObj, &pinConfig->Output);
+				pins[i] = new OutputPin(bcu, nextComObj, &pinConfig->Output, objRamPointer);
 				break;
 			case PCA9555DPinTypePWM:
 				{
-					PWMPin* pwmPin = new PWMPin(bcu, nextComObj, &pinConfig->PWM, this);
+					PWMPin* pwmPin = new PWMPin(bcu, nextComObj, &pinConfig->PWM, this, objRamPointer);
 					lastIRQItem = pwmPin;
 					pins[i] = pwmPin;
 				}
 				break;
 			default:
+				pins[i] = new DummyPin();
 				inOutConfig |= (1 << i);
 				continue;
 			}
@@ -70,7 +71,7 @@ PCA9555DItem::PCA9555DItem(BcuBase* bcu, byte firstComIndex, PCA9555DConfig *con
 		}
 		else
 		{
-			pins[i] = nullptr;
+			pins[i] = new DummyPin();
 		}
 	}
 
@@ -130,7 +131,7 @@ void PCA9555DItem::Loop(uint32_t now, int updatedObjectNo)
 		Chip_I2C_MasterSend(I2C0, 0x20 + config->Address, tempBytes1 , 3);
 	}
 
-	if (config->IntPin == 99 || !digitalRead(portPins[config->IntPin]))
+	if (config->IntPin == 99 || (config->IntPin >= 0 && config->IntPin <=32 && !digitalRead(ARMPinItem::PortPins[config->IntPin])))
 	{
 		forceCheckTill = now + checkTime;
 	}

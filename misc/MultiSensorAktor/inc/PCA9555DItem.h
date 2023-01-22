@@ -18,7 +18,7 @@
 class PCA9555DItem : public GenericItem, public IRQItem
 {
 public:
-	PCA9555DItem(BcuBase* bcu, byte firstComIndex, PCA9555DConfig* config, GenericItem* nextItem);
+	PCA9555DItem(BcuBase* bcu, byte firstComIndex, PCA9555DConfig* config, GenericItem* nextItem, uint16_t& objRamPointer);
 	~PCA9555DItem() = default;
 
 	void Loop(uint32_t now, int updatedObjectNo);

@@ -15,7 +15,7 @@
 class SHT2xItem : public GenericItem
 {
 public:
-	SHT2xItem(BcuBase* bcu, byte firstComIndex, SHT2xConfig* config, GenericItem* nextItem);
+	SHT2xItem(BcuBase* bcu, byte firstComIndex, SHT2xConfig* config, GenericItem* nextItem, uint16_t& objRamPtr);
 	~SHT2xItem() = default;
 
 	void Loop(uint32_t now, int updatedObjectNo);

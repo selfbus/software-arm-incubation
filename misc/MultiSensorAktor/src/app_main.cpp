@@ -18,8 +18,9 @@
 #include <CCS811Item.h>
 #include <ARMPinItem.h>
 #include <SHT2xItem.h>
+#include <HelperFunctions.h>
 
-APP_VERSION("MSA     ", "0", "10")
+APP_VERSION("MSA     ", "0", "10");
 #define CONFIG_ADDRESS 0x4800
 
 MASK0701 bcu = MASK0701();
@@ -33,19 +34,13 @@ const unsigned char hardwareVersion[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x48 };
 
 MemMapper memMapper = MemMapper(0xe000, 0x1000, false);
 
-int portPins[32] = {
-		PIO0_2, PIO0_3, PIO0_4, PIO0_5, PIO0_6, PIO0_7, PIO0_8, PIO0_9, PIO0_11,
-		PIO1_0, PIO1_1, PIO1_2, PIO1_5, PIO1_10,
-		PIO2_0, PIO2_1, PIO2_2, PIO2_3, PIO2_4, PIO2_5, PIO2_6, PIO2_7, PIO2_8, PIO2_9, PIO2_10, PIO2_11,
-		PIO3_0, PIO3_1, PIO3_2, PIO3_3, PIO3_4, PIO3_5
-};
-
 /**
  * Application setup
  */
 BcuBase* setup()
 {
-    bcu.begin(0x13A, 0x01, 0x10);
+    bcu.begin(0x13A, 0x01, 0x02);
+
 
     memcpy(bcu.userEeprom->order(), hardwareVersion,
             sizeof(hardwareVersion));
@@ -55,6 +50,9 @@ BcuBase* setup()
 
     memMapper.addRange(0x6000, 0xF00);
     bcu.setMemMapper(&memMapper);
+
+    HelperFunctions::setFlagsTablePtr(&bcu, 0x6C5);
+    uint16_t objRamPointer = 0x5FC;
 
     DeviceConfig* deviceConfig = (DeviceConfig*)&(*bcu.userEeprom)[CONFIG_ADDRESS];
     byte nextComObj = 1;
@@ -85,21 +83,21 @@ BcuBase* setup()
 
     	for (int i = 0; i < deviceConfig->PCA9555DCount; i++)
     	{
-    		firstItem = new PCA9555DItem(&bcu, nextComObj, (PCA9555DConfig*)configPos, firstItem);
+    		firstItem = new PCA9555DItem(&bcu, nextComObj, (PCA9555DConfig*)configPos, firstItem, objRamPointer);
     		nextComObj += firstItem->ComObjCount();
     		configPos += firstItem->ConfigLength();
     	}
 
     	for (int i = 0; i < deviceConfig->CCS811Count; i++)
     	{
-    		firstItem = new CCS811Item(&bcu, nextComObj, (CCS811Config*)configPos, firstItem);
+    		firstItem = new CCS811Item(&bcu, nextComObj, (CCS811Config*)configPos, firstItem, objRamPointer);
     		nextComObj += firstItem->ComObjCount();
     		configPos += firstItem->ConfigLength();
     	}
 
     	if (deviceConfig->SHT2xCount)
     	{
-    		firstItem = new SHT2xItem(&bcu, nextComObj, (SHT2xConfig*)configPos, firstItem);
+    		firstItem = new SHT2xItem(&bcu, nextComObj, (SHT2xConfig*)configPos, firstItem, objRamPointer);
     		nextComObj += firstItem->ComObjCount();
     		configPos += firstItem->ConfigLength();
     	}
@@ -107,15 +105,15 @@ BcuBase* setup()
 
 
     configPos = &(*bcu.userEeprom)[CONFIG_ADDRESS + sizeof(DeviceConfig)];
-    for (int i = 0; i < 32; i++)
-    {
-    	if (deviceConfig->PortsEnable & (1u << i))
-    	{
-    		firstItem = new ARMPinItem(&bcu, portPins[i], nextComObj, (ARMPinConfig*)configPos, firstItem);
-    		nextComObj += firstItem->ComObjCount();
-    		configPos += firstItem->ConfigLength();
-    	}
-    }
+	for (int i = 0; i < 32; i++)
+	{
+		if (deviceConfig->PortAssignment[i] > 0 && deviceConfig->PortAssignment[i] <= 32)
+		{
+			firstItem = new ARMPinItem(&bcu, nextComObj, deviceConfig->PortAssignment[i] - 1, (ARMPinConfig*)configPos, firstItem, objRamPointer);
+			nextComObj += firstItem->ComObjCount();
+			configPos += firstItem->ConfigLength();
+		}
+	}
 
     interrupts();
 
