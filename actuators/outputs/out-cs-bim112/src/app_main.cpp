@@ -12,7 +12,6 @@
 
 #include <sblib/platform.h>
 #include <config.h>
-#include <sblib/eib/sblib_default_objects.h>
 #include <com_objs.h>
 #include <AdcIsr.h>
 #include <Relay.h>
@@ -23,7 +22,6 @@
 #include <sblib/usr_callback.h>
 #include <app_main.h>
 #include <DebugFunc.h>
-#include <string.h> /* for memcpy() */
 
 
 // System time in milliseconds (from timer.cpp)
@@ -121,7 +119,6 @@ void setup()
  memMapper.addRange(0x4b00, 0x100);
  memMapper.addRange(0x0, 0x100); // Zum Abspeichern/Laden des Systemzustands
  objectEndian(LITTLE_ENDIAN);
- userEeprom.commsTabAddr = 0x4400; // Diese Basisadresse wird nicht über die ETS runtergeschrieben, ist aber notwendig!
  setUserRamStart(0x3FC);
  appl.RecallAppData(UsrCallbackType::recallAppStartup);
  manuCtrl.StartManualCtrl();
@@ -287,18 +284,12 @@ void RelayAndSpiProcessing(void)
 
 void LedProcessing(void)
 {
- // Die ETS5.6 programmiert merkwürdigerweise eine ganz andere Adresse,
- // das muss korrigiert werden.
- if (userEeprom.commsTabAddr != 0x4400)
-  userEeprom.commsTabAddr = 0x4400;
-
  unsigned OutputState;
  if (AppOrNoAppProcessingEnabled()) // LEDs nur dann, wenn kein Strom gespart werden muss
  {
 #ifdef HW_6CH
   // Debugausgaben bei den beiden "oberen" LEDs nur beim out6cs
   OutputState = relay.GetTrgState() & 0x3f;
-  // Debugausgaben bei den beiden "oberen" LEDs
   if (bcu.applicationRunning()) //(AppOperatingState == AppOperatingStates::AppStartup)
    OutputState |= 0x40;
   if (AppOperatingState == AppOperatingStates::AppRunning)
