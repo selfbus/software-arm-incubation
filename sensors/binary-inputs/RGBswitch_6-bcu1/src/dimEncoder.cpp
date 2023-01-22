@@ -32,20 +32,17 @@ void dimEncChannelChanged(int channel, int pinValue)
     unsigned int kind = (params [1] & 0xC0) >> 6;
     unsigned int value;
     unsigned int send = 0;
-    if (pinValue && ! (params [0] & 0x08) && (kind != 3))
+    if (!pinValue && ! (params [0] & 0x08) && (kind != 3))
     {   // stop a running timer on falling edge and store new value into eeprom
         timeout[channel].stop();
-        ///\todo this reduces the life of the flash, better would is, to save the setting on a bus voltage failure or a restart
-        // userEeprom[EE_CHANNEL_PARAMS_BASE + (channel << 2) + 2] = objectRead(COMOBJ_PRIMARY1 + channel);
         *bcu.userMemoryPtr(EE_CHANNEL_PARAMS_BASE + (channel << 2) + 2) = bcu.comObjects->objectRead(COMOBJ_PRIMARY1 + channel);
-        bcu.userEeprom->modified(true);
     }
-    if (!pinValue && ((kind == 0) || (kind == 3)))
+    if (pinValue && ((kind == 0) || (kind == 3)))
     {   // rising edge and action configured
         send  = 1;
         value = params [2];
     }
-    else if (pinValue && ((kind == 1) || (kind == 3)))
+    else if (!pinValue && ((kind == 1) || (kind == 3)))
     {   // falling edge and action configured
         send = 1;
         if (kind == 1) value = params [2];
@@ -55,7 +52,7 @@ void dimEncChannelChanged(int channel, int pinValue)
     {
         bcu.comObjects->objectWrite(COMOBJ_PRIMARY1 + channel, value);
     }
-    if (!pinValue && (kind != 3) && (! (params [0] & 0x08)))
+    if (pinValue && (kind != 3) && (! (params [0] & 0x08)))
     {   // use as "taster" and changing support configured
         timeout[channel].start (EE_DIMENC_TIME_LONG);
         channelData[channel].dimenc.first = true;
