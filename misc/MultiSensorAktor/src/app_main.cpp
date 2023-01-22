@@ -39,11 +39,8 @@ MemMapper memMapper = MemMapper(0xe000, 0x1000, false);
  */
 BcuBase* setup()
 {
-    bcu.begin(0x13A, 0x01, 0x02);
-
-
-    memcpy(bcu.userEeprom->order(), hardwareVersion,
-            sizeof(hardwareVersion));
+    bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
+    bcu.begin(0x13A, 0x01, 0x02); // Manufacturer name "Not assigned", app-id 0x01, version 0.2
 
     pinMode(PIO_LED, OUTPUT);
     digitalWrite(PIO_LED, 1);
