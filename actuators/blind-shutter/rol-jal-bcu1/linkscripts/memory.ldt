@@ -24,13 +24,13 @@ as normal.
 <#assign selfbus_custom_memory_layout = false>  <#-- set no offsets by default-->
 <#assign application_offset = 0>                <#-- set no application offset by default-->
 <#assign ram_offset = 0>                        <#-- set no RAM offset by default-->
-<#assign default_ram_offset = 256>              <#-- change this in case bus-updater copies more bytes in "void jumpToApplication(unsigned int start)" -->
+<#assign default_ram_offset = 192>              <#-- change this in case bus-updater copies more bytes in "void jumpToApplication(unsigned int start)" -->
 
 <#-- check if build config starts with FLASHSTART and we have a custom memory configuration (like in MCUxpresso) -->
 <#if buildConfig?upper_case?starts_with("FLASHSTART ") && configMemory?has_content>
     <#assign splittedName = buildConfig?split(" ")>     <#-- spilt buildConfig name at spaces -->
     <#assign application_offset = splittedName[1]> <#-- the second spilt is our offset in hex (count starts from 0) -->
-    <#assign ram_offset = default_ram_offset>           <#-- new ram_offset = 0x100 -->
+    <#assign ram_offset = default_ram_offset>           <#-- new ram_offset -->
     <#assign selfbus_custom_memory_layout = true>
 </#if>
 
