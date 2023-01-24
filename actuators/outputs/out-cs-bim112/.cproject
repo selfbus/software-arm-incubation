@@ -1786,19 +1786,16 @@
 &lt;/TargetConfig&gt;</projectStorage>
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Flashstart 0x3000 Release 8Ch_wo_CS">
+			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
+		</configuration>
 		<configuration configurationName="Debug 2Ch">
 			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
 		</configuration>
 		<configuration configurationName="Release 2Ch_wo_CS">
 			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
 		</configuration>
-		<configuration configurationName="Release 8Ch_wo_CS">
-			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
-		</configuration>
 		<configuration configurationName="Debug 6Ch">
-			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
-		</configuration>
-		<configuration configurationName="Release 2Ch">
 			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
 		</configuration>
 		<configuration configurationName="Debug 2Ch_wo_CS">
@@ -1810,10 +1807,22 @@
 		<configuration configurationName="Release 6Ch">
 			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
 		</configuration>
+		<configuration configurationName="Release 8Ch_wo_CS">
+			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
+		</configuration>
+		<configuration configurationName="Flashstart 0x3000 Release 6Ch">
+			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
+		</configuration>
+		<configuration configurationName="Release 2Ch">
+			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
+		</configuration>
+		<configuration configurationName="Flashstart 0x3000 Release 2Ch">
+			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
+		</configuration>
 		<configuration configurationName="Debug 2CH_wo_CS">
 			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
 		</configuration>
-		<configuration configurationName="Debug TS_ARM_2CH">
+		<configuration configurationName="Flashstart 0x3000 Release 2Ch_wo_CS">
 			<resource resourceType="PROJECT" workspacePath="/out-cs-bim112"/>
 		</configuration>
 		<configuration configurationName="Release">
