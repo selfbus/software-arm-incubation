@@ -4,11 +4,13 @@
 APP_VERSION("SB4sense", "1", "10")
 
 void loop() {
-    if (needSensorInit) {
-        if (millis() > nextInit) initSensors();
+    for (auto &sc : configs) {
+        if (!sc.isInitialized()) {
+            if (millis() > nextInit) {
+                initSensors(false);
             }
-    if (!needSensorInit) {
-        for (auto &sc : configs) {
+        }
+        else {
             sc.sampleValues();
             sc.readValues();
             sc.doPeriodics();

@@ -1,20 +1,29 @@
 //
 // Created by Mario Theodoridis on 17.05.20.
 //
+
+#include <sblib/io_pin_names.h>
 #include "common.h"
 
 // Enable the Parasite power (check ds18x20 Datasheet )
 #define PARASITE_POWER  false
 
-// where the sensors are hanging .... "on"
-//                   IO16    IO14    IO12     IO10
-int sensorPins[] = {PIO1_5, PIO1_2, PIO0_11, PIO0_8};
+// where the sensors are hanging .... "on" a TS_ARM
+#ifdef TS_ARM
+//                      IO16    IO14    IO12     IO10
+    int sensorPins[] = {PIO1_5, PIO1_2, PIO0_11, PIO0_8};
+#else //default 4TE-Controller
+    //                  PIO2_2   PIO0_7   PIO2_10  PIO2_9
+    int sensorPins[] = {PIN_IO1, PIN_IO2, PIN_IO3, PIN_IO4};
+#endif
 
 // a usable alternative over the stupid 130ms
 #define TIME_BASE_MS 125u
 
 // specifies what schedule is set to when deltas or thresholds are set.
 #define DEFAULT_SAMPLE_PERIOD 1000
+
+#define INIT_DELAY 2200 //!< default conversion start delay after a initialization
 
 // easy to read on the bus
 #define INVALID_DATA (-999)
@@ -41,56 +50,127 @@ uint Filter::getVariance(int num) {
     return var;
 }
 
+bool SensorConfig::isInitialized() const
+{
+    return (initialized);
+}
+
+void SensorConfig::setInitialized(bool newState)
+{
+    LOG("#%d initialized set to %d", sensorNum, newState);
+    initialized = newState;
+}
+
 // Initializers
-bool SensorConfig::init(int sensorIdx, uint sensorType,
+bool SensorConfig::init(int sensorIdx, SENSOR_TYP sensorType, SENSOR_FEUCHTIGKEIT senserDHTType,
         int tempDpt, int8_t tempOffset, COM tempCo,
         int humDpt, int8_t humOffset, COM humCo) {
     sensorNum = sensorIdx + 1;
-    LOG("Initializing Sensor %d", sensorNum);
-    // DS18.. & DHT..
-    ds.DS18x20Init(sensorPins[sensorIdx], PARASITE_POWER);
-    dht.DHTInit(sensorPins[sensorIdx],DHT22);
-    // Scan the 1-Wire bus for DS18x devices
-    for(int8_t tries = 1; tries <= 3; tries++) {
-        uint8_t s = ds.Search();
-        if (s) {
-            bool there = dht.readData(true);
-            if (there) {
-                isDht = true;
-                leadTime = DHT::leadTime;
-                break;
-            }
-
-            LOG("#%d Try %d no devices found. Ec: %d",
-                    sensorNum, tries, s);
-            delay(50); // maybe bus settling?
-            continue;
-        }
-        leadTime = DS18x20::leadTime;
+    switch (sensorType)
+    {
+    case SENSOR_TYP_TEMPERATURE_SENSOR: // DS18..
+        type = SN_DS18XX;
+        isDht = false;
+        ds.DS18x20Init(sensorPins[sensorIdx], PARASITE_POWER);
+        LOG("#%d ETS configured as DS18xx Sensor", sensorNum);
         break;
+    case SENSOR_TYP_TEMPERATURE_HUMIDITY_SENSOR: // DHT..
+        isDht = true;
+        eType dhtType;
+        switch (senserDHTType)
+        {
+            case SENSOR_FEUCHTIGKEIT_DTH11:
+                dhtType = DHT11;
+                type = SN_DHT11;
+                LOG("#%d ETS configured as DHT11 Sensor", sensorNum);
+                break;
+            default:
+                type = SN_DHT22;
+                dhtType = DHT22;
+                LOG("#%d ETS configured as DHT22 Sensor", sensorNum);
+        }
+        dht.DHTInit(sensorPins[sensorIdx], dhtType);
+        break;
+    default:
+        type = SN_NO_SENSOR;
+        LOG("#%d ETS not configured", sensorNum);
+        return (false);
     }
-    if (isDht) {
-        LOG("#%d has a DHT22 Sensor", sensorNum);
-    } else {
+
+    // Scan the 1-Wire bus for DS18x devices
+    bool success = false;
+    uint8_t searchResult;
+    for(int8_t tries = 1; tries <= 3; tries++) {
+        switch (type) {
+            case SN_DS18XX :
+                searchResult = ds.Search();
+                if (searchResult == 0) { // success
+                    isDht = false;
+                    leadTime = DS18x20::leadTime;
+                    success = true;
+                }
+                break;
+            case SN_DHT11 :
+            case SN_DHT22 :
+                searchResult = dht.readData(true);
+                if (searchResult != 0) { // success
+                    isDht = true;
+                    leadTime = DHT::leadTime;
+                    success = true;
+                }
+                break;
+            default :
+                return (false);
+        }
+        if (success) {
+            break;
+        }
+        LOG("#%d Try %d no devices found. Ec: %d", sensorNum, tries, success);
+        delay(50); // maybe bus settling?
+    }
+
+    if (!success)
+    {
+        return (false);
+    }
+
+    setInitialized(true);
+    converting = false;
+    // convTime = millis() + INIT_DELAY;
+    // readTime = millis() + leadTime;
+
+    switch (type)
+    {
+    case SN_DHT11 :
+        if (success) {
+            LOG("#%d has a DHT11 Sensor", sensorNum);
+        }
+        break;
+    case SN_DHT22 :
+        if (success) {
+            LOG("#%d has a DHT22 Sensor", sensorNum);
+        }
+        break;
+    default:
         if (sensorType == SENSOR_TYP_TEMPERATURE_HUMIDITY_SENSOR) {
             LOG("#%d cannot do humidity with a DS18 sensor", sensorNum);
-            requestSensorInit();
-            return false;
+            setInitialized(false);
+            return (false);
         }
         if (!ds.m_foundDevices) {
-            requestSensorInit();
-            return false;
+            setInitialized(false);
+            return (false);
         }
         for (int i = 0; i < ds.m_foundDevices; i++) {
             LOG("#%d found a %s device", sensorNum, ds.TypeStr(i));
         }
     }
-    type = sensorType;
+
     tRes = tempDpt;
     if (tempDpt == SENDETYP_MW_DPT5_EIS6_NON_STANDARD_COMPLIANT) {
         LOG("#%d using non-standard DPT5 temp resolution", sensorNum);
     }
-    tOffset = tempOffset * .1;
+    tOffset = tempOffset * .1f;
     // a good invalid start value ;)
     temperature = lastTempTrig = INVALID_DATA;
     LOG("#%d using a temperature offset of %dd°", sensorNum, tempOffset);
@@ -103,13 +183,13 @@ bool SensorConfig::init(int sensorIdx, uint sensorType,
         if (humDpt == SENDETYP_MW_DPT5_EIS6_NON_STANDARD_COMPLIANT) {
             LOG("#%d using non-standard DPT5 humidity resolution", sensorNum);
         }
-        hOffset = humOffset * .1;
+        hOffset = humOffset * .1f;
         LOG("#%d using a humidity offset of %dpm", sensorNum, humOffset);
         humidity = INVALID_DATA;
         hCom = humCo;
         fixRamLoc(humCo);
     }
-    return true;
+    return (true);
 }
 
 void SensorConfig::setSendPeriod(int sendValAtStart, uint startFactor,
@@ -149,12 +229,12 @@ void SensorConfig::setDiffTrigger(bool checkTemp, uint tempTrigger,
                                   bool checkHum, uint humTrigger) {
 
     if (checkTemp == JA_NEIN_YES) {
-        tempTrig = tempTrigger * .1;
+        tempTrig = tempTrigger * .1f;
         schedule = DEFAULT_SAMPLE_PERIOD;
         LOG("#%d will send if temperature varies by more than %dd°", sensorNum, tempTrigger);
     }
     if (checkHum == JA_NEIN_YES) {
-        humTrig = humTrigger * .1;
+        humTrig = humTrigger * .1f;
         schedule = DEFAULT_SAMPLE_PERIOD;
         LOG("#%d will send if humidity varies by more than %dpm", sensorNum, humTrigger);
     }
@@ -226,7 +306,7 @@ void SensorConfig::readValues() {
     if (!success) {
         if (readTime && now > (readTime + 3000)) {
             LOG("#%d Failed to get reading at %d", sensorNum, readTime);
-            requestSensorInit();
+            setInitialized(false);
         }
         return;
     }
@@ -236,7 +316,7 @@ void SensorConfig::readValues() {
 
     if (!isDht && !ds.lastReadOk(0)) {
         LOG("#%d Ignoring invalid reading", sensorNum);
-        requestSensorInit();
+        setInitialized(false);
         return;
     }
 #ifdef LOGGING
@@ -261,9 +341,14 @@ void SensorConfig::readValues() {
 #ifdef LOGGING
     if (oldTemp != temperature) {
         LOG("#%d read temp: %dd°", sensorNum, pretty(temperature));
+    } else {
+        // LOG("#%d read temp: %dd unchanged°", sensorNum, pretty(temperature));
     }
+
     if (doesHumidity && oldHum != humidity) {
         LOG("#%d read humidity: %dpm", sensorNum, pretty(humidity));
+    } else {
+        // LOG("#%d read humidity: %dpm unchanged", sensorNum, pretty(humidity));
     }
 #endif
     // test for variations
@@ -313,7 +398,7 @@ void SensorConfig::doPeriodics() {
     if (!isActive()) return;
     if (temperature == INVALID_DATA) return;
     uint32_t now = millis();
-    // check preiodics
+    // check periodics
     if (sendTempTime && sendTempTime < now) {
         // send it on the bus
         LOG("#%d sending temp: %dd°", sensorNum, pretty(temperature));

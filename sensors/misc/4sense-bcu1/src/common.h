@@ -13,12 +13,15 @@
 
 
 #ifdef LOGGING
-    #include "log/logger.h"
+    #include "logger.h"
     #define pretty(val) (int)(val*10)
     #define LOG(...) serPrintf(__VA_ARGS__)
 #else
     #define LOG(...) // nada!
 #endif
+
+
+// #define TS_ARM
 
 // number of seconds before we reset
 #define RE_INIT_DELAY   2000
@@ -34,11 +37,9 @@ typedef unsigned int uint;
 extern BCU1 bcu;
 
 void fixRamLoc(COM comNo);
-void initSensors();
-#define requestSensorInit() { needSensorInit = true; }
+void initSensors(bool all);
 
 extern SensorConfig configs[NUM_SENSORS];
-extern bool needSensorInit;
 extern uint32_t nextInit;
 
 

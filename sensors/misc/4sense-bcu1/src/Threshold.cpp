@@ -39,7 +39,7 @@ Threshold::init(int idx, int sensNum, GRENZWERT_ZUORDNUNG triggerType,
     thresholdNum = idx + 1;
     type = triggerType;
     action = (uint8_t)triggerAction;
-    trigger = triggerValue * .1;
+    trigger = triggerValue * .1f;
     comObj = comObject;
     fixRamLoc(comObject);
     currentValue = Value_off;
