@@ -10,7 +10,7 @@
  *  Copyright (c) 2013 Stefan Taferner <stefan.taferner@gmx.at>
  *
  *  Modified for LPC1115 ARM processor:
- *  Copyright (c) 2017-2020 Oliver Stefan <o.stefan252@googlemail.com>
+ *  Copyright (c) 2017-2022 Oliver Stefan <o.stefan252@googlemail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <sblib/eib/datapoint_types.h>
+#include <sblib/timeout.h>
 #include "rm_app.h"
 #include "rm_const.h"
 #include "rm_com.h"
@@ -703,6 +704,7 @@ void process_alarm_stats()
 
 /**
  * Timer Event.
+ * Is called every 500ms
  */
 extern "C" void TIMER32_0_IRQHandler()
 {
@@ -828,6 +830,24 @@ extern "C" void TIMER32_0_IRQHandler()
 		}
 	}
 
+	/* Hier kann die minütliche Kontrolle der Bodenplatte aktiviert werden
+
+	// Zur vollen Minute die Spannungsversorgung ausschalten, um zu prüfen, ob der RM noch auf der Bodenplatte arretiert ist
+	// Der RM_ACTIVITY_PIN wird nur low, wenn die Unterstützung der Versorgungsspannung ausgeschaltet ist
+	if (!eventTime && !(alarmLocal | alarmBus | testAlarmLocal | testAlarmBus))
+	{
+		digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_OFF);
+	}
+
+	if(eventTime == 4){ //bei 2 Sekunden kontrollieren, ob der RM noch auf der Bodenplatte arretiert ist
+		pinMode(RM_ACTIVITY_PIN, INPUT | PULL_DOWN);	//Pin als Eingang mit Pulldown Widerstand konfigurieren
+		if(digitalRead(RM_ACTIVITY_PIN) == RM_IS_ACTIVE){
+			digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_ON); // Spannungsversorgung wieder aktivieren
+		}
+		pinMode(RM_ACTIVITY_PIN, INPUT);
+	}
+	*/
+
 	if (!eventTime) // einmal pro Minute
 	{
 		eventTime = DEFAULT_EVENTTIME;
@@ -923,15 +943,22 @@ void initApplication()
     }
 
     pinMode(RM_ACTIVITY_PIN, INPUT); // smoke detector base plate state, no pullup or pulldown configured at this pin to not affect the smoke detector
-    pinMode(RM_COMM_ENABLE, OUTPUT);
-    digitalWrite(RM_COMM_ENABLE, false); // set low to enable smoke detector's serial communication feature
+    pinMode(RM_COMM_ENABLE_PIN, OUTPUT);
+	digitalWrite(RM_COMM_ENABLE_PIN, RM_COMM_ENABLE); // Kommunikation mit dem RM aktivieren
+    pinMode(RM_SUPPORT_VOLTAGE_PIN, OUTPUT);
+    digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_OFF); // zuerst die Spannungsversorgung ausschalten
 
     // rm_send_ack();
     // rm_send_ack(); // sending twice a ACK came from original LPC922 source, because
     // smoke detector will answer with it's automatic message (hex) after enabling the serial e.g.:
     // 00 02 38 32 32 30 30 30 30 30 30 30 45 43 03 = <STX>8220000000EC<ETX>
 
-    delay(STARTUP_DELAY_MS);
+    //delay(10000);
+    //delay(STARTUP_DELAY_MS);
+
+    Timeout delay;
+    delay.start(STARTUP_DELAY_MS);
+
     rm_recv_byte();
     setupPeriodicTimer(TIMER_INTERVAL_MS);
 

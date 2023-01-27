@@ -3,7 +3,7 @@
  *  Copyright (c) 2013 Stefan Taferner <stefan.taferner@gmx.at>
  *
  *  Modified for LPC1115 ARM processor:
- *  Copyright (c) 2017 Oliver Stefan <o.stefan252@googlemail.com>
+ *  Copyright (c) 2017-2022 Oliver Stefan <o.stefan252@googlemail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -14,8 +14,20 @@
 
 #include <stdint.h>
 
+// IO Pin assignments
+#define RM_COMM_ENABLE_PIN	PIO3_5
+#define RM_COMM_ENABLE false // set low to enable smoke detector's serial communication feature
+#define RM_COMM_DISABLE true
+
 // Eingangspin definieren, an dem die Erkennung der internen Rauchmelder Spannung angeschlossen ist
 #define RM_ACTIVITY_PIN PIO0_11
+#define RM_IS_ACTIVE true
+#define RM_IS_NOT_ACTIVE false
+
+// Ansteuerung der Spannungsversorgung zur Untertützung des Rauchmelders
+#define RM_SUPPORT_VOLTAGE_PIN PIO2_1
+#define RM_SUPPORT_VOLTAGE_ON false
+#define RM_SUPPORT_VOLTAGE_OFF true // NPN Transistor zieht die Versorgungsspannung herunter
 
 /**
  * Smoke detector alarm states

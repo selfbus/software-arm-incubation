@@ -55,11 +55,15 @@ void rm_serial_init()
  */
 bool checkRmActivity(void)
 {
-	// return true;
     pinMode(RM_ACTIVITY_PIN, INPUT | PULL_DOWN);	//Pin als Eingang mit Pulldown Widerstand konfigurieren
-	bool ret = digitalRead(RM_ACTIVITY_PIN);
+	bool rmActiv = digitalRead(RM_ACTIVITY_PIN);
 	pinMode(RM_ACTIVITY_PIN, INPUT);
-	return ret;
+
+	// falls der Rauchmelder auf die Bodenplatte gesteckt wurde, aber die Spannungsversorung noch nicht ativ ist
+	if(rmActiv == RM_IS_ACTIVE && digitalRead(RM_SUPPORT_VOLTAGE_PIN) == RM_SUPPORT_VOLTAGE_OFF){
+		digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_ON); // Spannungsversorgung aktivieren
+	}
+	return rmActiv;
 }
 
 /**

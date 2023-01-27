@@ -36,8 +36,7 @@ extern BCU1 bcu;
 #define FW_VER_MIN  0x42    // Minor
 
 
-// IO Pin assignments
-#define RM_COMM_ENABLE	PIO3_5
+
 
 
 /**
