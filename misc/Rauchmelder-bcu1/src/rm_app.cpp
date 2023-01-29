@@ -953,11 +953,7 @@ void initApplication()
     // smoke detector will answer with it's automatic message (hex) after enabling the serial e.g.:
     // 00 02 38 32 32 30 30 30 30 30 30 30 45 43 03 = <STX>8220000000EC<ETX>
 
-    //delay(10000);
-    //delay(STARTUP_DELAY_MS);
-
-    Timeout delay;
-    delay.start(STARTUP_DELAY_MS);
+    delay(STARTUP_DELAY_MS);
 
     rm_recv_byte();
     setupPeriodicTimer(TIMER_INTERVAL_MS);
