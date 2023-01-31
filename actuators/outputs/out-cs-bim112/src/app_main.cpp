@@ -82,7 +82,7 @@ AppUsrCallback usrCallback;
 /**
  * Initialize the application.
  */
-void setup()
+BcuBase* setup()
 {
     for (unsigned ipno=0; ipno<8; ipno++)
     {
@@ -118,8 +118,8 @@ void setup()
  // genau jenseits des USER-EEPROM. Also mappen wir virtuellen Speicherbereich dorthin.
  memMapper.addRange(0x4b00, 0x100);
  memMapper.addRange(0x0, 0x100); // Zum Abspeichern/Laden des Systemzustands
- objectEndian(LITTLE_ENDIAN);
- setUserRamStart(0x3FC);
+ bcu.comObjects->objectEndian(LITTLE_ENDIAN);
+ bcu.userRam->setUserRamStart(0x3FC);
  appl.RecallAppData(UsrCallbackType::recallAppStartup);
  manuCtrl.StartManualCtrl();
 #ifdef HW_2CH_WO_CS
@@ -129,6 +129,7 @@ void setup()
  pinMode(REL2ON, OUTPUT);
  pinMode(REL2OFF, OUTPUT);
 #endif
+ return (&bcu);
 }
 
 void AppOperatingStateMachine(unsigned referenceTime, bool AppValid)
@@ -316,14 +317,14 @@ void MainProcessingRoutine(bool AppValid)
  int objno;
  if (AppProcessingEnabled())
  {
-  while ((objno = nextUpdatedObject()) >= 0)
+  while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
   { // Empfangene Objekte verarbeiten
    appl.objectUpdated(objno, referenceTime);
   }
   relay.DoEnqueue(); // Erzeugt aus evtl. bei objectUpdates aufgelaufenen Schaltaufträgen den eingentlichen Eintrag in der Warteschlange
  } else {
   // Objektverarbeitung inaktiv
-  while ((objno = nextUpdatedObject()) >= 0); // Empfangene Objekte aus der Warteschlange löschen
+  while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0); // Empfangene Objekte aus der Warteschlange löschen
  }
 
  // Zeitverarbeitung

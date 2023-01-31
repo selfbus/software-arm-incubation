@@ -12,7 +12,6 @@
 #define CONFIG_H_
 
 #include <sblib/core.h>
-#include <sblib/eib.h>
 /*
  * Project:
  * out-cs-bim112

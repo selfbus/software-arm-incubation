@@ -13,6 +13,10 @@
 #ifndef APPL_H_
 #define APPL_H_
 
+#include <sblib/eibMASK0701.h>
+
+extern MASK0701 bcu;
+
 /* Trigger - TStateAndTrigger
  * In den verschiedenen Funktionen des Ausgangskanals wird immer mit "Triggern" für die
  * Neubestimmung des Ausgangszustands gearbeitet. Trigger sind nichts anderes als eine
