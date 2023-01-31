@@ -53,7 +53,7 @@ void SHT2xItem::Loop(uint32_t now, int updatedObjectNo)
 			state++;
 			break;
 		default:
-			int16_t temp = (int16_t)(sht2x.GetTemperature() * 100);
+			int16_t temp = (int16_t)(sht2x.GetTemperature());
 			float ftemp = temp * 0.01f + offset;
 			uint16_t hum = (uint16_t)(sht2x.GetHumidity());
 			bcu->comObjects->objectWriteFloat(firstComIndex + 1, temp);
