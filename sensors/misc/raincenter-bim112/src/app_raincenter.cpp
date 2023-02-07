@@ -16,7 +16,7 @@
 #include "config.h"
 #include "app_raincenter.h"
 #include "rc_protocol.h"
-#include "debug.h"
+#include "blinkenlights.h"
 
 enum ePollState {Idle, PolledParam, ReceivedParam, PolledDisplay, ReceivedDisplay};
 
@@ -286,7 +286,7 @@ void checkPeriodic(void)
         SendPeriodicTimer.start(SENDPERIODIC_INTERVAL_MS);
     }
 
-    debugCheckPeriodic(); // call to switch off debugging TX/RX Leds
+    blinkenCheckPeriodic(); // call to switch off Tx/Rx Leds
 }
 
 void initApplication(void)
@@ -303,7 +303,7 @@ void initApplication(void)
     // TODO this is just for testing
     SendPeriodicTimer.start(SENDPERIODIC_INTERVAL_MS);
 
-#ifdef DEBUG
+#ifdef BLINKENLIGHTS
     // LED Initialize
     pinMode(TX_LED, OUTPUT);
     pinMode(RX_LED, OUTPUT);

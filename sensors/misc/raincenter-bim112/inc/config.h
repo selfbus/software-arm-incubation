@@ -31,6 +31,8 @@
  *
  */
 
+#define BLINKENLIGHTS //!< enables Tx/Rx leds
+
 #define OBJ_TAPWATER_REFILL 13
 #define OBJ_TAPWATER_REFILL_STATUS 17
 #define OBJ_TAPWATER_EXCHANGE_STATUS 15

@@ -1,14 +1,14 @@
 /*
- * debug.h
+ * blinkenlights.h
  *
  *  Created on: 11.09.2020
  *      Author: denis
  */
 
-#ifndef DEBUG_H_
-#define DEBUG_H_
+#ifndef RAINCENTER_BLINKENLIGHTS_H_
+#define RAINCENTER_BLINKENLIGHTS_H_
 
-#ifdef DEBUG
+#ifdef BLINKENLIGHTS
 
 #include <sblib/timeout.h>
 
@@ -100,7 +100,7 @@ void FlashTX_LED(int FlashTime_ms = TX_FLASH_MS)
     */
 }
 
-void debugCheckPeriodic()
+void blinkenCheckPeriodic()
 {
     if (TX_FlashTimeOut.expired())
     {
@@ -114,14 +114,14 @@ void debugCheckPeriodic()
 
 }
 
-#else /* DEBUG */
+#else /* BLINKENLIGHTS */
 void FlashRX_LED(){};
 void FlashRX_LED(int FlashTime_ms){};
 void FlashTX_LED(){};
 void FlashTX_LED(int FlashTime_ms){};
-void debugCheckPeriodic(){};
+void blinkenCheckPeriodic(){};
 #endif
 
 
 
-#endif /* DEBUG_H_ */
+#endif /* RAINCENTER_BLINKENLIGHTS_H_ */
