@@ -52,6 +52,6 @@ int BufferMgr::FreeBuffer(int no)
 uint8_t* BufferMgr::buffptr(int no)
 {
 	if ((no < 0) || (no >= BUFF_CNT))
-		return 0;
+		return nullptr;
 	return &data[no][0];
 }
