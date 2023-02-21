@@ -11,6 +11,7 @@
 #include "com_objs.h"
 #include <sblib/core.h>
 #include <sblib/timeout.h>
+#include <sblib/eibMASK0701.h>
 
 extern dimming dimming[];
 Timeout RelayTimeout;
@@ -25,7 +26,7 @@ void Relay::init() {
 }
 
 void Relay::handle() {
-	if (userEeprom.getUInt8(APP_USE_RELAY)) { //Relais schaltet wenn Kanäle ein/aus
+	if (bcu.userEeprom->getUInt8(APP_USE_RELAY)) { //Relais schaltet wenn Kanäle ein/aus
 		switch (relState) {
 		case relDelayOff: //alle Kanäle sind 0, Verzögerungszeit bis zum abschalten läuft
 			if (this->checkChannels()) {

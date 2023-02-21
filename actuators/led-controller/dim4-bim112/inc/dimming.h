@@ -24,7 +24,7 @@ public:
 	void start(int destination, int speed);		// Zielhelligkeit byte 0-255 = 0-100%, Dimmgeschwindigkeit in s
 	void stop();				// Auf- Abdimmen wird angehalten
 	int getactualdimvalue();
-	int getlastdimvalue();		// lezter Ziel-Dimmwert >0 zur Verwendung beim nächsten Einschalten wenn parametriert
+	int getlastdimvalue();		// letzter Ziel-Dimmwert >0 zur Verwendung beim nächsten Einschalten wenn parametriert
 	bool getswitchstatus();
 	bool getIsDimming();
 	bool changedtoon();
@@ -35,12 +35,12 @@ private:
 	bool isDimming = false;		// true wenn gerade auf oder abgedimmt wird, false wenn zielhelligkeit erreicht
 	bool isOnOneCycle = true;	// genau 1 mal true wenn der Kanal seit dem letzten Aufruf eingeschaltet wurde
 	bool isOffOneCycle = true;	// genau 1 mal true wenn der Kanal seit dem letzten Aufruf ausgeschaltet wurde
-	unsigned int dimStartTime;			// Systemzeit in ms zu Dimmbeginn
-	unsigned int dimStartValue;			// Helligkeit zu Dimmbeginn 0-MAXOUTPUTVALUE
-	unsigned int dimDestinationValue;	// Zielhelligkeit 0-MAXOUTPUTVALUE
-	unsigned int dimSpeed;				// Dimmgeschwindigkeit 0-100% in ms
-	unsigned int actualDimValue = 0;		// momentaner Dimmwert 0-MAXOUTPUTVALUE
-	unsigned int lastDimValue = 255;		// lezter Ziel-Dimmwert 1-255 (nach Reset 255)
+	unsigned int dimStartTime;	// Systemzeit in ms zu Dimmbeginn
+	float dimStartValue;		// Helligkeit zu Dimmbeginn 0-MAXOUTPUTVALUE
+	float dimDestinationValue;	// Zielhelligkeit 0-MAXOUTPUTVALUE
+	unsigned int dimSpeed;		// Dimmgeschwindigkeit 0-100% in ms
+	float actualDimValue = 0;	// momentaner Dimmwert 0-MAXOUTPUTVALUE
+	unsigned int lastDimValue = 255; // lezter Ziel-Dimmwert 1-255 (nach Reset 255)
 };
 
 #endif /* DIMMING_H_ */

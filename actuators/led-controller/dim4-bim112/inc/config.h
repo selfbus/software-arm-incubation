@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef CONFIG_H_
-#define CONFIG_H_
+#ifndef DIM4_CONFIG_H_
+#define DIM4_CONFIG_H_
 
 #include <Appl.h>
 
@@ -71,7 +71,7 @@ const HardwareVersion hardwareVersion[3] =
 #define RELAYOFFDELAY 2000
 
 //Maximalwert bestimmt die Auflösung der Dimmstufen speziell für langsames auf-abdimmen, anstelle der von außen einstellbaren KNX-Dimmstufen 0-255
-#define MAXOUTPUTVALUE 10000      //  entspricht Ausgang = 100%; bei Änderung DimmingCurves.cpp anpassen
+#define MAXOUTPUTVALUE 10000.0f      //  entspricht Ausgang = 100%; bei Änderung DimmingCurves.cpp anpassen
 
 
-#endif /* CONFIG_H_ */
+#endif /* DIM4_CONFIG_H_ */

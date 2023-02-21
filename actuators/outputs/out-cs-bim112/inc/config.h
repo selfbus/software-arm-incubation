@@ -12,7 +12,6 @@
 #define CONFIG_H_
 
 #include <sblib/core.h>
-#include <sblib/eib.h>
 /*
  * Project:
  * out-cs-bim112
@@ -60,6 +59,10 @@
  *				bistabile Relais direkt, also nicht über SPI angesteuert
  *				Konfiguration als ABB SA/S2.16.2.1
  *
+ *
+ *-DHW_8CH_WO_CS    8-Kanal Schaltaktor ohne Strommessung für Hardware lpc1115_4te_top, out8 - Addon energy storage - 4TE MID und out8 - Applikation 4TE BOT
+ *				Konfiguration als ABB SA/S8.16.2.1
+ *
  */
 
 
@@ -92,6 +95,9 @@
 #endif
 #ifdef HW_2CH_WO_CS
 #define CHANNELCNT 2
+#endif
+#ifdef HW_8CH_WO_CS
+#define CHANNELCNT 8
 #endif
 
 /* Pulse Duration for the bistable Relais
@@ -201,35 +207,29 @@
 /*
  * SPI-Interface
  */
-#define SPI0               // Change to SPI1 if SPI-Interface 1 is needed
-#define PIOSPISCK  PIO2_11
-#define PIOSPIMOSI PIO0_9
-#define PIOSPIMISO PIO0_8  // Can be omitted if there is nothing to read back from the SPI bus
-//#define SPICSEMULATION     // Define this if the Chip Select/Slave Select pin is not the hardware SS pin
-#define PIOSPICS   PIO0_2 // This pin can be the hardware Slave-Select pin or any other pin // DEBUG PIO1_10
+#   define SPI0               // Change to SPI1 if SPI-Interface 1 is needed
+#   define PIOSPISCK  PIO2_11
+#   define PIOSPIMOSI PIO0_9
+#   define PIOSPIMISO PIO0_8  // Can be omitted if there is nothing to read back from the SPI bus
+//#   define SPICSEMULATION     // Define this if the Chip Select/Slave Select pin is not the hardware SS pin
+#   define PIOSPICS   PIO0_2 // This pin can be the hardware Slave-Select pin or any other pin // DEBUG PIO1_10
 #else
 /*
  * SPI-Interface -- wird nicht benutzt, Relais direkt angeschlossen
  */
-#define SPI0               // Change to SPI1 if SPI-Interface 1 is needed
-#define PIOSPISCK  PIO2_11
-#define PIOSPIMOSI PIO0_9
-#define PIOSPIMISO PIO0_8  // Can be omitted if there is nothing to read back from the SPI bus
+#   define SPI0               // Change to SPI1 if SPI-Interface 1 is needed
+#   define PIOSPISCK  PIO2_11
+#   define PIOSPIMOSI PIO0_9
+#   define PIOSPIMISO PIO0_8  // Can be omitted if there is nothing to read back from the SPI bus
 //#define SPICSEMULATION     // Define this if the Chip Select/Slave Select pin is not the hardware SS pin
-#define PIOSPICS   PIO0_2 // This pin can be the hardware Slave-Select pin or any other pin // DEBUG PIO1_10
+#   define PIOSPICS   PIO0_2 // This pin can be the hardware Slave-Select pin or any other pin // DEBUG PIO1_10
 
 //Relais Ausgänge für   2out_16A_bi_TS-ARM
-#define REL1ON		PIO2_2
-#define REL1OFF		PIO0_9
-#define REL2ON		PIO2_11
-#define REL2OFF		PIO3_0
-#endif
-
-#ifndef HW_2CH_WO_CS
-#define PIOPROGBTN PIO2_8  // Programming button for LPC-4TE-TOP  (PROG2  S10)
-#else
-#define PIOPROGBTN PIO2_0  // Programming button for TS-ARM
-#endif
+#   define REL1ON		PIO2_2
+#   define REL1OFF		PIO0_9
+#   define REL2ON		PIO2_11
+#   define REL2OFF		PIO3_0
+#endif // HW_2CH_WO_CS
 
 /*
  * Definitions for the manual control and display LEDs
@@ -240,43 +240,64 @@
  * das nicht benoetigt und nicht unterstuetzt, sie sind direkt am Mikrocontroller angeschlossen.
  */
 #ifndef HW_2CH_WO_CS
-#define SPILEDBYTES 0      // Number of the LED driver bytes in the SPI chain
+#   define SPILEDBYTES 0      // Number of the LED driver bytes in the SPI chain
 // Anzahl der LED-Steuerbytes in der SPI-Kette.
-#define SPIBUTTONBYTES 0   // Number of the button readback bytes in the SPI chain
+#   define SPIBUTTONBYTES 0   // Number of the button readback bytes in the SPI chain
 // Anzahl der Bytes mit Tasten-Informationen in der SPI-Kette.
 
 // Pin definitions for the manual control
 // Pin Definitionen fuer die Handbedienung
-#ifdef HW_6CH
-#define BUTTONLEDCNT  8 // last 2 LEDs used for status signaling
-#define BUTTONLEDCH1  PIO0_11
-#define BUTTONLEDCH2  PIO1_10
-#define BUTTONLEDCH3  PIO3_4
-#define BUTTONLEDCH4  PIO2_5
-#define BUTTONLEDCH5  PIO2_4
-#define BUTTONLEDCH6  PIO0_3
-#define BUTTONLEDCH7  PIO3_5
-#define BUTTONLEDCH8  PIO2_1
-#define BUTTONLEDCOM  PIO2_3
-#endif
-#ifdef HW_2CH
-#define BUTTONLEDCNT  0 // last 2 LEDs used for status signaling
-#endif
-#else
-#define SPILEDBYTES 0      // Number of the LED driver bytes in the SPI chain
+#   ifdef HW_6CH
+#       define BUTTONLEDCNT  8 // last 2 LEDs used for status signaling
+#       define BUTTONLEDCH1  PIO0_11
+#       define BUTTONLEDCH2  PIO1_10
+#       define BUTTONLEDCH3  PIO3_4
+#       define BUTTONLEDCH4  PIO2_5
+#       define BUTTONLEDCH5  PIO2_4
+#       define BUTTONLEDCH6  PIO0_3
+#       define BUTTONLEDCH7  PIO3_5
+#       define BUTTONLEDCH8  PIO2_1
+#       define BUTTONLEDCOM  PIO2_3
+#       define PIOPROGBTN    PIO2_8  // Programming button for LPC-4TE-TOP  (PROG2  S10)
+#   endif // HW_6CH
+
+#   ifdef HW_8CH_WO_CS
+#       define BUTTONLEDCNT  8
+#       define BUTTONLEDCH1  PIO0_11
+#       define BUTTONLEDCH2  PIO1_10
+#       define BUTTONLEDCH3  PIO3_4
+#       define BUTTONLEDCH4  PIO3_5
+#       define BUTTONLEDCH5  PIO2_5
+#       define BUTTONLEDCH6  PIO2_4
+#       define BUTTONLEDCH7  PIO0_3
+#       define BUTTONLEDCH8  PIO2_1
+#       define BUTTONLEDCOM  PIO2_3
+#       define PIOPROGBTN    PIO0_6  // Programming button for out8_mid (LPC-4TE-Top APROG)
+//#       define PIOPROGBTN    PIO2_8  // alternative Programming button for LPC-4TE-TOP  (PROG2  S10)
+//#       define PIOPROGBTN    PIO2_0 // dirty hack to debug on a 4TE-controller (PIN_PROG)
+#   endif // HW_8CH_WO_CS
+
+#   ifdef HW_2CH
+#       define BUTTONLEDCNT  0 // last 2 LEDs used for status signaling
+#       define PIOPROGBTN PIO2_0 // Programming button for TS-ARM
+#   endif // HW_2CH
+
+#else // ifndef HW_2CH_WO_CS
+#   define SPILEDBYTES 0      // Number of the LED driver bytes in the SPI chain
 // Anzahl der LED-Steuerbytes in der SPI-Kette.
-#define SPIBUTTONBYTES 0   // Number of the button readback bytes in the SPI chain
+#   define SPIBUTTONBYTES 0   // Number of the button readback bytes in the SPI chain
 // Anzahl der Bytes mit Tasten-Informationen in der SPI-Kette.
 
 // Pin definitions for the manual control
 // Pin Definitionen fuer die Handbedienung
-#define BUTTONLEDCNT  4 // last 2 LEDs used for status signaling
-#define BUTTONLEDCH1  PIO1_10		// TS-ARM IO11
-#define BUTTONLEDCH2  PIO0_11		// TS-ARM IO12
-#define BUTTONLEDCH3  PIO3_4
-#define BUTTONLEDCH4  PIO2_5
-#define BUTTONLEDCOM  PIO0_8		// TS-ARM IO10
-#endif
+#   define BUTTONLEDCNT  4 // last 2 LEDs used for status signaling
+#   define BUTTONLEDCH1  PIO1_10    // TS-ARM IO11
+#   define BUTTONLEDCH2  PIO0_11    // TS-ARM IO12
+#   define BUTTONLEDCH3  PIO3_4
+#   define BUTTONLEDCH4  PIO2_5
+#   define BUTTONLEDCOM  PIO0_8		// TS-ARM IO10
+#   define PIOPROGBTN PIO2_0        // Programming button for TS-ARM
+#endif // HW_2CH_WO_CS
 
 /* ---------------------------------------------------------------
  * Additional internal stuff, change only if you know what you do!
@@ -314,11 +335,19 @@
 // 10 Wandlungen je Loop, 50kHz Samplefreq
 
 #elif CHANNELCNT <= 8
-
+#ifndef HW_8CH_WO_CS
+//mit Strommessung
 #define DEVICETYPE 0xA05D // SA/S8.16.6.1
 #define SPIRELDRIVERBYTES 2
 #define ADCCHANNELCNT 8
 // 20 Wandlungen je Loop, 100kHz Samplefreq
+#else
+//ohne Strommessung
+#define DEVICETYPE 0xA082 // SA/S8.16.2.1
+#define SPIRELDRIVERBYTES 3
+#define ADCCHANNELCNT 8
+#define OMITCURRFCT // Omit current functions to free some flash mem
+#endif
 
 #elif CHANNELCNT <= 12
 

@@ -7,14 +7,12 @@
  */
 
 #include <shutter.h>
-#include <sblib/digital_pin.h>
-#include <sblib/timer.h>
 
 Shutter::Shutter(unsigned int number, unsigned int address)
   : Channel(number, address)
 {
-    if (userEeprom.getUInt8(address +   65) & 0x40)
-        shortTime = userEeprom.getUInt16(address +   6);
+    if (bcu.userEeprom->getUInt8(address +   65) & 0x40)
+        shortTime = bcu.userEeprom->getUInt16(address +   6);
 }
 
 

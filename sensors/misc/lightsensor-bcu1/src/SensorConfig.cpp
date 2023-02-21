@@ -268,6 +268,6 @@ void SensorConfig::doPeriodics() {
 }
 
 void SensorConfig::sendReading() {
-    objectWriteFloat(com, lux * 100);
+    bcu.comObjects->objectWriteFloat(com, lux * 100);
     ag.reset();
 }

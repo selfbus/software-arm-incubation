@@ -14,15 +14,15 @@
 #include "channel.h"
 #include "blind.h"
 #include "shutter.h"
-#include <sblib/eib.h>
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
-
-#ifdef HAND_ACTUATION
 #include "hand_actuation.h"
-#endif
 
-//#define MEM_TEST
+#ifndef HAND_ACTUATION
+    HandActuation* handAct = nullptr;
+#else
+    HandActuation* handAct = new HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
+#endif
 
 Channel * channels[NO_OF_CHANNELS];
 #ifdef MEM_TEST
@@ -39,11 +39,11 @@ void objectUpdated(int objno)
         unsigned int channel = (objno - 13) / 20;
         Channel * chn = channels [channel];
         if (chn)
-            chn->objectUpdate(objno);
+            chn->objectUpdateCh(objno);
     }
     else
     {   // handle global objects
-        unsigned char value = objectRead(objno);
+        unsigned char value = bcu.comObjects->objectRead(objno);
         for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
         {
             Channel * chn = channels [i];
@@ -83,6 +83,40 @@ void objectUpdated(int objno)
     }
 }
 
+void checkHandActuation(void)
+{
+    int btnNumber;
+    HandActuation::ButtonState btnState;
+    bool processHandActuation = (handAct->getButtonAndState(btnNumber, btnState)); // changed a button its state?
+    processHandActuation &= (btnState == HandActuation::BUTTON_PRESSED); // was a button pressed?
+
+    if (!processHandActuation)
+    {
+        return;
+    }
+
+    Channel * chn = channels [btnNumber / 2];
+    if ((chn == nullptr) || (!chn->isHandModeAllowed())) // is a channel associated with the pressed button?
+    {
+        return;
+    }
+
+    if (btnNumber & 0x01)
+    {
+        if (chn->isRunning() == Channel::DOWN)
+            chn->stop();
+        else
+            chn->startDown();
+    }
+    else
+    {
+        if (chn->isRunning() == Channel::UP)
+            chn->stop();
+        else
+            chn->startUp();
+    }
+}
+
 void checkPeriodicFuntions(void)
 {
     for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
@@ -96,36 +130,10 @@ void checkPeriodicFuntions(void)
     {
         Channel::startPWM();  // re-enable the PWM
     }
-
-#ifdef HAND_ACTUATION
-    int handStatus = handAct.check();
-    if (handStatus != HandActuation::NO_ACTUATION)
+    if (handAct != nullptr)
     {
-        unsigned int number = handStatus & 0xFF;
-        Channel * chn = channels [number / 2];
-        if ((chn != 0) && (handStatus & HandActuation::BUTTON_PRESSED))
-        {
-            if (chn->isHandModeAllowed())
-            {
-                if (number & 0x01)
-                {
-                    if (chn->isRunning() == Channel::DOWN)
-                        chn->stop();
-                    else
-                        chn->startDown();
-                }
-                else
-                {
-                    if (chn->isRunning() == Channel::UP)
-                        chn->stop();
-                    else
-                        chn->startUp();
-                }
-            }
-        }
+        checkHandActuation();
     }
-#endif
-
 }
 
 void initApplication(void)
@@ -142,12 +150,17 @@ void initApplication(void)
 
     for (unsigned int i = 0; i < NO_OF_CHANNELS; i++, address += EE_CHANNEL_CFG_SIZE)
     {
-        switch (userEeprom.getUInt8(address))
+        switch (bcu.userEeprom->getUInt8(address))
         {
         case 0: channels [i] = new Blind(i, address); break;
         case 1: channels [i] = new Shutter(i, address); break;
         default :
             channels [i] = 0;
+        }
+
+        if (channels[i] != nullptr)
+        {
+            channels[i]->setHandActuation(handAct);
         }
     }
 }

@@ -6,11 +6,10 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/eib.h>
-
 #include "params.h"
 #include "com_objs.h"
 #include "dimmer.h"
+#include "app_in8.h"
 
 #define DIM_STEP_MASK      0x07
 #define DIM_DIRECTION_MASK 0x08
@@ -27,21 +26,21 @@ void dimChannelChanged(int channel, int pinValue)
         if (channelData[channel].dim.started)
         {
             // read dim object value
-            unsigned int value  = objectRead(channel + 8)  & ~DIM_STEP_MASK;
+            unsigned int value  = bcu.comObjects->objectRead(channel + 8)  & ~DIM_STEP_MASK;
             // but only send a STOP telegram if configured to do so
             if (params [0] & 0x08)
-                 objectWrite(COMOBJ_SECONDARY1 + channel, value);
-            else objectUpdate(COMOBJ_SECONDARY1 + channel, value);
+                 bcu.comObjects->objectWrite(COMOBJ_SECONDARY1 + channel, value);
+            else bcu.comObjects->objectUpdate(COMOBJ_SECONDARY1 + channel, value);
         }
         else
         {
-            unsigned int value  = !objectRead(channel);
+            unsigned int value  = !bcu.comObjects->objectRead(channel);
             if (method == DIMMER_TYPE_TWO_HAND_LIGHTER_ON)
                 value = 1;
             if (method == DIMMER_TYPE_TWO_HAND_DARKER_OFF)
                 value = 0;
             // send telegram on switching object
-            objectWrite(COMOBJ_PRIMARY1 + channel, value);
+            bcu.comObjects->objectWrite(COMOBJ_PRIMARY1 + channel, value);
         }
         timeout[channel    ].stop();
         timeout[channel + 8].stop();
@@ -57,7 +56,7 @@ void dimPeriod(int channel)
         int          method = (params [0] & 0x70) >> 4;
         // time between switch and dim expired -> start dimming
         channelData[channel].dim.started = 1;
-        value = objectRead(COMOBJ_SECONDARY1 + channel);
+        value = bcu.comObjects->objectRead(COMOBJ_SECONDARY1 + channel);
         switch (method)
         {
         case DIMMER_TYPE_ONE_HAND:
@@ -76,14 +75,14 @@ void dimPeriod(int channel)
             value = (value & DIM_DIRECTION_MASK) | ((params [1] & 0x38) >> 3);
         else                            // dim darker
             value = (value & DIM_DIRECTION_MASK) | ((params [1] & 0x07) >> 0);
-        objectWrite(COMOBJ_SECONDARY1 + channel, value);
+        bcu.comObjects->objectWrite(COMOBJ_SECONDARY1 + channel, value);
         // start timeout for dim telegram repitition
         timeout[channel + 8].start (delayTime [channel + 8]);
     }
     if (timeout[channel + 8].expired ())
     {
         // send the current dim telegram again
-        objectWritten(channel + 8);
+        bcu.comObjects->objectWritten(channel + 8);
         // restart the timeout
         timeout[channel + 8].start (delayTime [channel + 8]);
     }
@@ -94,24 +93,24 @@ void dimSetup(int channel)
     unsigned int value;
 
     // Calculate time between switch and dim
-    value = userEeprom[EE_CHANNEL_TIMING_PARAMS_BASE + ((channel + 1) >> 1)];
+    value = bcu.userEeprom->getUInt8(EE_CHANNEL_TIMING_PARAMS_BASE + ((channel + 1) >> 1));
     if (! (channel & 0x01)) value >>= 4;
     else                    value  &= 0x0F;
 
     delayTime[channel    ] = calculateTime(value, params [2] & 0x7F);
     // Calculate repitition time
-    value = userEeprom[EE_CHANNEL_TIMING_PARAMS_BASE + ((channel + 1 + 8) >> 1)];
+    value = bcu.userEeprom->getUInt8(EE_CHANNEL_TIMING_PARAMS_BASE + ((channel + 1 + 8) >> 1));
     if (! (channel & 0x01)) value >>= 4;
     else                    value  &= 0x0F;
     if (! (params [0] & 0x04)) // telegram repitition is disabled
          delayTime[channel + 8] = 0;
     else delayTime[channel + 8] = calculateTime(value, params [3] & 0x7F);
-    objectSetValue(COMOBJ_PRIMARY1   + channel, 0);
-    objectSetValue(COMOBJ_SECONDARY1 + channel, 0);
+    bcu.comObjects->objectSetValue(COMOBJ_PRIMARY1   + channel, 0);
+    bcu.comObjects->objectSetValue(COMOBJ_SECONDARY1 + channel, 0);
     if(params [2] & 0x80) // send a ON  telegram on bus return
-        objectWrite(COMOBJ_PRIMARY1 + channel, (unsigned int) 1);
+        bcu.comObjects->objectWrite(COMOBJ_PRIMARY1 + channel, (unsigned int) 1);
     if(params [3] & 0x80) // send a OFF telegram on bus return
-        objectWrite(COMOBJ_PRIMARY1 + channel, (unsigned int) 0);
+        bcu.comObjects->objectWrite(COMOBJ_PRIMARY1 + channel, (unsigned int) 0);
 }
 
 void dimLock(int state, int channel)
@@ -126,11 +125,11 @@ void dimLock(int state, int channel)
          case EE_INPUT_DIM_LOCK_ON_SET_ON:
          case EE_INPUT_DIM_LOCK_ON_SET_OFF:
              value = lockAction == EE_INPUT_SWITCH_LOCK_SET_ON ? 1 : 0;
-             objectWrite(COMOBJ_PRIMARY1   + channel, value);
+             bcu.comObjects->objectWrite(COMOBJ_PRIMARY1   + channel, value);
              break;
          case EE_INPUT_DIM_LOCK_ON_TOGGLE:
-             value = !objectRead(COMOBJ_PRIMARY1   + channel);
-             objectWrite(COMOBJ_PRIMARY1   + channel, value);
+             value = !bcu.comObjects->objectRead(COMOBJ_PRIMARY1   + channel);
+             bcu.comObjects->objectWrite(COMOBJ_PRIMARY1   + channel, value);
              break;
          case EE_INPUT_DIM_LOCK_NO_REACTION:
          default:
@@ -141,7 +140,7 @@ void dimLock(int state, int channel)
     {
         if (params [0] & 0x80)
         {
-            objectWrite(COMOBJ_PRIMARY1   + channel, (unsigned int) 0);
+            bcu.comObjects->objectWrite(COMOBJ_PRIMARY1   + channel, (unsigned int) 0);
         }
     }
  }

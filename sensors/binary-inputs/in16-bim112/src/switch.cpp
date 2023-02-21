@@ -10,7 +10,7 @@
  */
 
 #include "switch.h"
-#include <sblib/eib.h>
+#include "app_in.h"
 
 /**
  * Channel actions
@@ -48,11 +48,11 @@ Switch::Switch(unsigned int no, unsigned int longPress,
         unsigned int channelConfig, unsigned int busReturn, unsigned int value) :
         _Switch_(no, longPress)
 {
-    action = userEeprom.getUInt16(channelConfig + 2);
-    usage_falling = userEeprom.getUInt8(channelConfig + 4);
-    usage_rising = userEeprom.getUInt8(channelConfig + 8);
-    delay = userEeprom.getUInt16(channelConfig + 0x1E) * 1000;
-    repeat = userEeprom.getUInt8(channelConfig + 0x20) & 0x03;
+    action = bcu.userEeprom->getUInt16(channelConfig + 2);
+    usage_falling = bcu.userEeprom->getUInt8(channelConfig + 4);
+    usage_rising = bcu.userEeprom->getUInt8(channelConfig + 8);
+    delay = bcu.userEeprom->getUInt16(channelConfig + 0x1E) * 1000;
+    repeat = bcu.userEeprom->getUInt8(channelConfig + 0x20) & 0x03;
 
     if ((action & GROUP_SEND_ON) == GROUP_SEND_ON)
     {
@@ -73,14 +73,14 @@ Switch::Switch(unsigned int no, unsigned int longPress,
         {
         case TOGGLE_RISING_EDGE:
         case TOGGLE_FALLING_EDGE:
-            requestObjectRead(statusComObjNo);
+            bcu.comObjects->requestObjectRead(statusComObjNo);
             break;
         case SEND_STATE:
         case SEND_VALUE_ANY_EDGE:
             if (value)
-                objectWrite(valueComObjNo, usage_rising);
+                bcu.comObjects->objectWrite(valueComObjNo, usage_rising);
             else
-                objectWrite(valueComObjNo, usage_falling);
+                bcu.comObjects->objectWrite(valueComObjNo, usage_falling);
             break;
         default:
             break;
@@ -105,7 +105,7 @@ void Switch::inputChanged(int value)
             objValue = usage_rising;
             break;
         case TOGGLE_RISING_EDGE:
-            objValue = !objectRead(statusComObjNo);
+            objValue = !bcu.comObjects->objectRead(statusComObjNo);
             break;
         case GROUP_SEND_ON:
             objValue = 1;
@@ -138,7 +138,7 @@ void Switch::inputChanged(int value)
             objValue = usage_falling;
             break;
         case TOGGLE_FALLING_EDGE:
-            objValue = !objectRead(statusComObjNo);
+            objValue = !bcu.comObjects->objectRead(statusComObjNo);
             break;
         case SEND_STATE:
             objValue = usage_falling;
@@ -159,7 +159,7 @@ void Switch::inputChanged(int value)
     }
     if (objValue != -1 && (repeat || !timeout.started()))
     {
-        objectWrite(valueComObjNo, objValue);
+        bcu.comObjects->objectWrite(valueComObjNo, objValue);
     }
 }
 
@@ -177,13 +177,13 @@ void Switch::checkPeriodic(void)
             objValue = 0;
             break;
         case SEND_STATE:
-            objValue = objectRead(valueComObjNo);
+            objValue = bcu.comObjects->objectRead(valueComObjNo);
             timeout.start(delay);
             break;
         }
         if (objValue != -1)
         {
-            objectWrite(valueComObjNo, objValue);
+            bcu.comObjects->objectWrite(valueComObjNo, objValue);
         }
         if (repeat)
         {
@@ -196,10 +196,10 @@ Switch2Level::Switch2Level(unsigned int no, unsigned int longPress,
         unsigned int channelConfig, unsigned int busReturn, unsigned int value) :
         _Switch_(no, longPress)
 {
-    shortAction = userEeprom.getUInt8(channelConfig + 0x14);
-    longAction = userEeprom.getUInt8(channelConfig + 0x17);
-    usage_falling = userEeprom.getUInt8(channelConfig + 0x04);
-    usage_rising = userEeprom.getUInt8(channelConfig + 0x10);
+    shortAction = bcu.userEeprom->getUInt8(channelConfig + 0x14);
+    longAction = bcu.userEeprom->getUInt8(channelConfig + 0x17);
+    usage_falling = bcu.userEeprom->getUInt8(channelConfig + 0x04);
+    usage_rising = bcu.userEeprom->getUInt8(channelConfig + 0x10);
 
     valueComObjNo = number * 5;
     statusComObjNo = number * 5 + 1;
@@ -211,7 +211,7 @@ Switch2Level::Switch2Level(unsigned int no, unsigned int longPress,
         switch (shortAction)
         {
         case LS_TOGGLE:
-            requestObjectRead(statusComObjNo);
+            bcu.comObjects->requestObjectRead(statusComObjNo);
             break;
         default:
             break;
@@ -219,7 +219,7 @@ Switch2Level::Switch2Level(unsigned int no, unsigned int longPress,
         switch (longAction)
         {
         case LS_TOGGLE:
-            requestObjectRead(statusLongComObjNo);
+            bcu.comObjects->requestObjectRead(statusLongComObjNo);
             break;
         default:
             break;
@@ -254,7 +254,7 @@ void Switch2Level::inputChanged(int value)
                 objValue = 1;
                 break;
             case LS_TOGGLE:
-                objValue = !objectRead(statusComObjNo);
+                objValue = !bcu.comObjects->objectRead(statusComObjNo);
                 break;
             case LS_SEND_VALUE:
                 objValue = usage_falling & 0xFF;
@@ -265,7 +265,7 @@ void Switch2Level::inputChanged(int value)
             timeout.stop();
             if (objValue != -1)
             {
-                objectWrite(valueComObjNo, objValue);
+                bcu.comObjects->objectWrite(valueComObjNo, objValue);
             }
         }
     }
@@ -285,7 +285,7 @@ void Switch2Level::checkPeriodic(void)
             objValue = 1;
             break;
         case LS_TOGGLE:
-            objValue = !objectRead(statusLongComObjNo);
+            objValue = !bcu.comObjects->objectRead(statusLongComObjNo);
             break;
         case LS_SEND_VALUE:
             objValue = usage_rising & 0xFF;
@@ -295,7 +295,7 @@ void Switch2Level::checkPeriodic(void)
         }
         if (objValue != -1)
         {
-            objectWrite(valueLongComObjNo, objValue);
+            bcu.comObjects->objectWrite(valueLongComObjNo, objValue);
         }
     }
 }

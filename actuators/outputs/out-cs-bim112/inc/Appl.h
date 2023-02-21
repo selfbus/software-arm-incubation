@@ -13,6 +13,10 @@
 #ifndef APPL_H_
 #define APPL_H_
 
+#include <sblib/eibMASK0701.h>
+
+extern MASK0701 bcu;
+
 /* Trigger - TStateAndTrigger
  * In den verschiedenen Funktionen des Ausgangskanals wird immer mit "Triggern" für die
  * Neubestimmung des Ausgangszustands gearbeitet. Trigger sind nichts anderes als eine
@@ -110,11 +114,6 @@ typedef struct
 #define CFINIDONE2_M 0x80 // Ini2: Beim Übergang zu "Running"
 #define CFINIDONE2_O 7
 
-#define STOREAPPL_DOWNLOAD 0x80
-#define STOREAPPL_BUSVFAIL 0x81
-#define RECALLAPPL_STARTUP 0
-#define RECALLAPPL_OTHER   1
-
 /*
  * Liest die Wartezeit bei Systemstart für Schaltaktionen und Objektsenden.
  * Das Ergebnis ist in Sekunden.
@@ -168,9 +167,9 @@ public:
 
  void RecallChannelState(int chno, byte* ptr, unsigned referenceTime);
 
- void StoreApplData(int type);
+ void StoreApplData(UsrCallbackType callbackType);
 
- void RecallAppData(int type);
+ void RecallAppData(UsrCallbackType callbackType);
 
  /*
   * Aktualisiert den Zustand aller KanalZustandsobjekte (Statusobjekt). Wenn die

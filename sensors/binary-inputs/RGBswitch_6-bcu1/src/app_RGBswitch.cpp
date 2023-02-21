@@ -6,18 +6,18 @@
  *  published by the Free Software Foundation.
  */
 
+#include <sblib/eibBCU1.h>
 #include "app_RGBswitch.h"
-
 #include "com_objs.h"
 #include "params.h"
-
-#include <sblib/eib.h>
-
 #include "switch.h"
 #include "dimmer.h"
 #include "jalo.h"
 #include "dimEncoder.h"
 #include "leds.h"
+
+
+BCU1 bcu = BCU1();
 
 // The parameters of the current channel (4 bytes)
 const byte* params;
@@ -36,7 +36,7 @@ ChannelData channelData[NUM_CHANNELS];
  */
 inline int channelType(int channel)
 {
-    unsigned char type = userEeprom[EE_INPUT1_TYPE + (channel >> 1)];
+    unsigned char type = bcu.userEeprom->getUInt8(EE_INPUT1_TYPE + (channel >> 1));
 
     if (channel & 1) type >>= 4;
     else type &= 15;
@@ -48,7 +48,7 @@ inline int channelType(int channel)
 void inputChanged(int channel, int val)
 {
     params = channelParams + (channel << 2);
-    if (objectRead(COMOBJ_LOCK1 + channel)) // check if channel is currently locked
+    if (bcu.comObjects->objectRead(COMOBJ_LOCK1 + channel)) // check if channel is currently locked
         return;
 
     const int type = channelType(channel);
@@ -96,7 +96,7 @@ void objectUpdated(int objno)
     if (objno >= COMOBJ_LOCK1 && objno < COMOBJ_LOCK1 + NUM_CHANNELS)
     {
         int channel = objno - COMOBJ_LOCK1;
-        int value = objectRead(objno);
+        int value = bcu.comObjects->objectRead(objno);
 
         if (value != lastLock[channel])
         {
@@ -106,12 +106,12 @@ void objectUpdated(int objno)
     }
 
     if (objno == 6){ // nichtlight active/deactive
-    	int value = objectRead(objno);
+    	int value = bcu.comObjects->objectRead(objno);
     	set_nightlight_state(value);
     }
 
     if (objno == 7 || objno == 14 || objno == 15 || objno == 22 || objno == 23 || objno == 24 ){ //blink mode active/deactive
-    	int value = objectRead(objno);
+    	int value = bcu.comObjects->objectRead(objno);
     	int channel;
     	if(objno == 7 ){		//because this is a modified 2118 device, the object numbers are dispersed
     		channel = 0;
@@ -136,7 +136,7 @@ void handlePeriodic(void)
 
     for (channel = 0; channel < NUM_CHANNELS; ++channel)
     {
-        if (objectRead(COMOBJ_LOCK1 + channel)) // check if channel is currently locked
+        if (bcu.comObjects->objectRead(COMOBJ_LOCK1 + channel)) // check if channel is currently locked
             return;
 
         params = channelParams + (channel << 2);
@@ -181,7 +181,7 @@ void initApplication(void)
         const int type = channelType(channel);
         // set the initial state of the lock object
 		lastLock[channel] = (params [0] & 0x03) == 0x02;
-        objectSetValue(COMOBJ_LOCK1      + channel, 0);
+		bcu.comObjects->objectSetValue(COMOBJ_LOCK1      + channel, 0);
 
         switch (type)
         {

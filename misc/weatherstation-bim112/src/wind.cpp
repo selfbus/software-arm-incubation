@@ -21,32 +21,32 @@ Wind::Wind()
 void Wind::Initialize(void)
 {
     InitializeSensor
-    ( userEeprom.getUInt8(0x457F)
+    ( bcu.userEeprom->getUInt8(0x457F)
     , COM_OBJ_WIND_VELOCITY
     , 0x4580
-    , userEeprom.getUInt8(0x4581)
+    , bcu.userEeprom->getUInt8(0x4581)
     );
-    threshold[0].upperLimit     = userEeprom.getUInt8(0x4583);
+    threshold[0].upperLimit     = bcu.userEeprom->getUInt8(0x4583);
     threshold[0].upperLimitTime = timeConversionMinSec(0x4587);
-    threshold[0].lowerLimit     = userEeprom.getUInt8(0x4584);
+    threshold[0].lowerLimit     = bcu.userEeprom->getUInt8(0x4584);
     threshold[0].lowerLimitTime = timeConversionMinSec(0x4588);
-    threshold[0].sendLimitExceeded  = userEeprom.getUInt8(0x4585);
-    threshold[0].sendLowerDeviation = userEeprom.getUInt8(0x4586);
+    threshold[0].sendLimitExceeded  = bcu.userEeprom->getUInt8(0x4585);
+    threshold[0].sendLowerDeviation = bcu.userEeprom->getUInt8(0x4586);
     threshold[0].cycleTime = timeConversionMinSec(0x459D);
 
-    threshold[1].upperLimit     = userEeprom.getUInt8(0x45AD);
+    threshold[1].upperLimit     = bcu.userEeprom->getUInt8(0x45AD);
     threshold[1].upperLimitTime = timeConversionMinSec(0x45B1);
-    threshold[1].lowerLimit     = userEeprom.getUInt8(0x45AE);
+    threshold[1].lowerLimit     = bcu.userEeprom->getUInt8(0x45AE);
     threshold[1].lowerLimitTime = timeConversionMinSec(0x45B2);
-    threshold[1].sendLimitExceeded  = userEeprom.getUInt8(0x45AF);
-    threshold[1].sendLowerDeviation = userEeprom.getUInt8(0x45AC);
+    threshold[1].sendLimitExceeded  = bcu.userEeprom->getUInt8(0x45AF);
+    threshold[1].sendLowerDeviation = bcu.userEeprom->getUInt8(0x45AC);
     threshold[1].cycleTime = timeConversionMinSec(0x45AC);
 
-    if (userEeprom.getUInt8(0x4582))
+    if (bcu.userEeprom->getUInt8(0x4582))
         // check if threshold 1 is active
         threshold[0].objNumber = COM_OBJ_WIND_THRESHOLD_1;
 
-    if (userEeprom.getUInt8(0x45AB))
+    if (bcu.userEeprom->getUInt8(0x45AB))
         // check if threshold 2 is active
         threshold[1].objNumber = COM_OBJ_WIND_THRESHOLD_2;
 }

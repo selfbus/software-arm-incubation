@@ -11,6 +11,7 @@
  */
 
 #include <sblib/platform.h>
+#include <sblib/eib/MASK0701.h>
 #include <config.h>
 #include <com_objs.h>
 #include <Appl.h>
@@ -25,15 +26,17 @@ extern volatile unsigned int systemTime;
 
 Appl appl;
 
+MASK0701 bcu = MASK0701();
+
 inline byte ReadChConfigByte(int chno, int confaddr)
 {
- byte retval = userEeprom[APP_STARTADDR+APP_CHOFFS*chno+confaddr];
+ byte retval = bcu.userEeprom->getUInt8(APP_STARTADDR+APP_CHOFFS*chno+confaddr);;
  return retval;
 }
 
 inline unsigned short ReadChConfigUInt16(int chno, int confaddr)
 {
- //return userEeprom.getUInt16(APP_STARTADDR+APP_CHOFFS*chno+confaddr); Beim ABB ist so etwas Little Endian!
+ //return bcu.userEeprom->getUInt16(APP_STARTADDR+APP_CHOFFS*chno+confaddr); Beim ABB ist so etwas Little Endian!
  return (unsigned short)ReadChConfigByte(chno, confaddr) + ((unsigned short)ReadChConfigByte(chno, confaddr+1) << 8);
 }
 
@@ -43,13 +46,13 @@ inline unsigned short ReadChConfigUInt16(int chno, int confaddr)
  * Memory-Mapper gelöst. Zugriffe, die ins "Jenseits" gehen würden,
  * werden auf memMapper umgeleitet.
 */
-byte ReadConfigByte(int confaddr)
+byte ReadConfigByte(uint16_t confaddr)
 {
- if (confaddr >= (USER_EEPROM_END-APP_STARTADDR))
+ if (confaddr >= (bcu.userEeprom->endAddr()-APP_STARTADDR))
  {
   return memMapper.getUInt8(APP_STARTADDR+confaddr);
  } else {
-  return userEeprom.getUInt8(APP_STARTADDR+confaddr);
+  return bcu.userEeprom->getUInt8(APP_STARTADDR+confaddr);
  }
 }
 
@@ -58,11 +61,11 @@ unsigned short ReadConfigUInt16(int confaddr)
  byte retval_low = ReadConfigByte(confaddr);
  byte retval_high = ReadConfigByte(confaddr+1) << 8;
  return (unsigned short)retval_low + (unsigned short)retval_high;
-// if (confaddr >= (USER_EEPROM_END-APP_STARTADDR))
+// if (confaddr >= (bcu.userEeprom->endAddr()-APP_STARTADDR))
 // {
 //  return memMapper.getUInt16(APP_STARTADDR+confaddr);
 // } else {
-//  return userEeprom.getUInt16(APP_STARTADDR+confaddr);
+//  return bcu.userEeprom->getUInt16(APP_STARTADDR+confaddr);
 // }
 }
 
@@ -73,22 +76,22 @@ unsigned ReadStartDelayObjSendAndSwitching(void)
 
 inline void ChObjectUpdate(int chno, unsigned int objofs, unsigned int value)
 {
- objectUpdate(OFSCHANNELOBJECTS+chno*SPACINGCHANNELOBJECTS+objofs, value);
+    bcu.comObjects->objectUpdate(OFSCHANNELOBJECTS+chno*SPACINGCHANNELOBJECTS+objofs, value);
 }
 
 inline void ChObjectWrite(int chno, unsigned int objofs, unsigned int value)
 {
- objectWrite(OFSCHANNELOBJECTS+chno*SPACINGCHANNELOBJECTS+objofs, value);
+    bcu.comObjects->objectWrite(OFSCHANNELOBJECTS+chno*SPACINGCHANNELOBJECTS+objofs, value);
 }
 
 inline unsigned int ChObjectRead(int chno, unsigned int objofs)
 {
- return objectRead(OFSCHANNELOBJECTS+chno*SPACINGCHANNELOBJECTS+objofs);
+ return bcu.comObjects->objectRead(OFSCHANNELOBJECTS+chno*SPACINGCHANNELOBJECTS+objofs);
 }
 
 //unsigned int Appl::ChObjectRead(int chno, int objno)
 //{
-// return objectRead(objno + chno*SPACINGCHANNELOBJECTS + OFSCHANNELOBJECTS);
+// return bcu.comObjects->objectRead(objno + chno*SPACINGCHANNELOBJECTS + OFSCHANNELOBJECTS);
 //}
 
 /*
@@ -503,15 +506,9 @@ void Appl::RecallChannelState(int chno, byte* ptr, unsigned referenceTime)
  ChObjectUpdate(chno, OBJ_TIMDURATION, PtrRdUint16(ptr));
  ptr+=2;
 }
-// USR_CALLBACK_RESET
-// USR_CALLBACK_FLASH
-// USR_CALLBACK_BCU_END
-// STOREAPPL_DOWNLOAD
-// STOREAPPL_BUSVFAIL
-// RECALLAPPL_INIT
 
-// Wird nur nach Systemstart aufgerufen, genau genommen ist type=RECALLAPPL_STARTUP also immer gegeben.
-void Appl::RecallAppData(int type)
+// Wird nur nach Systemstart aufgerufen, genau genommen ist type=UsrCallbackType::recallAppStartup also immer gegeben.
+void Appl::RecallAppData(UsrCallbackType callbackType)
 {
  byte* StoragePtr;
  unsigned referenceTime = systemTime;
@@ -536,7 +533,7 @@ void Appl::RecallAppData(int type)
      // Heizungsaktor konfiguriert -> wird nicht unterstützt.
      StoragePtr += 17;
     }
-    if (type == RECALLAPPL_STARTUP)
+    if (callbackType == UsrCallbackType::recallAppStartup)
     {
      ModifyChStateAfterBusVoltageRecovery(chno);
     }
@@ -552,7 +549,7 @@ void Appl::RecallAppData(int type)
     // Für den Teil der Daten, die nicht gespeichert werden, wird hier
     // erst mal die Default-Konfiguration hergestellt.
     SetIniChannelState(chno);
-    if (type == RECALLAPPL_STARTUP)
+    if (callbackType == UsrCallbackType::recallAppStartup)
     {
      ModifyChStateAfterBusVoltageRecovery(chno);
     }
@@ -561,22 +558,22 @@ void Appl::RecallAppData(int type)
  }
 }
 
-void Appl::StoreApplData(int callbacktype)
+void Appl::StoreApplData(UsrCallbackType callbackType)
 {
  byte* StoragePtr;
  unsigned referenceTime = systemTime;
  // Kann der Mapper überhaupt die Seite 0 mappen? Checken!
  memMapper.writeMem(0, 0); // writeMem() aktiviert die passende Speicherseite, entgegen zu memoryPtr()
  StoragePtr = memMapper.memoryPtr(0, false);
- *StoragePtr++ = callbacktype; // Der Grund für das Speichern wird auch abgelegt. Vielleicht ganz nützlich.
+ *StoragePtr++ = (uint8_t) callbackType; // Der Grund für das Speichern wird auch abgelegt. Vielleicht ganz nützlich.
  for (int chno = 0; chno < CHANNELCNT; chno++)
  {
   if ((ReadChConfigByte(chno, APP_OPMODE_O) & APP_OPMODE_M) == 1) // Schaltaktor
   {
    *StoragePtr++ = 0x5A; // 1 Byte
    byte OldCrc = *StoragePtr;
-   byte NewCrc = crc_calc(userMemoryPtr(APP_STARTADDR+APP_CHOFFS*chno), APP_CHOFFS);
-   if (callbacktype == STOREAPPL_DOWNLOAD)
+   byte NewCrc = crc_calc(bcu.userMemoryPtr(APP_STARTADDR+APP_CHOFFS*chno), APP_CHOFFS);
+   if (callbackType == UsrCallbackType::storeAppDownload)
    {
     if (OldCrc != NewCrc)
     {
@@ -587,7 +584,7 @@ void Appl::StoreApplData(int callbacktype)
     }
     ModifyChStateAfterDownload(chno);
    }
-   if (callbacktype == USR_CALLBACK_RESET)
+   if (callbackType == UsrCallbackType::reset)
    {
     ModifyChStateBeforeReset(chno);
    }
@@ -620,9 +617,9 @@ bool Appl::GetSwitchStatus(int chno)
 //{
 // if (AppObjSendEnabled())
 // {
-//  objectWrite(objno, value);
+//  bcu.comObjects->objectWrite(objno, value);
 // } else {
-//  objectUpdate(objno, value);
+//  bcu.comObjects->objectUpdate(objno, value);
 // }
 //}
 
@@ -675,10 +672,10 @@ void Appl::UpdateStatusObjekt(int chno, TStateAndTrigger &trigger) // wird VOR d
    if (conf != 0)
    {
     ChObjectWrite(chno, OBJ_STATESW, ActRelStatus ? 1 : 0);
-    //objectWrite(OFSCHANNELOBJECTS+chno*SPACINGCHANNELOBJECTS+OBJ_STATESW, ActRelStatus ? 1 : 0);
+    //bcu.comObjects->objectWrite(OFSCHANNELOBJECTS+chno*SPACINGCHANNELOBJECTS+OBJ_STATESW, ActRelStatus ? 1 : 0);
    } else {
     ChObjectUpdate(chno, OBJ_STATESW, ActRelStatus ? 1 : 0);
-    //objectUpdate(OFSCHANNELOBJECTS+chno*SPACINGCHANNELOBJECTS+OBJ_STATESW, ActRelStatus ? 1 : 0);
+    //bcu.comObjects->objectUpdate(OFSCHANNELOBJECTS+chno*SPACINGCHANNELOBJECTS+OBJ_STATESW, ActRelStatus ? 1 : 0);
    }
   }
  }
@@ -2050,11 +2047,11 @@ void Appl::CurrentFunctions(unsigned referenceTime)
 //    byte SendCfg = (ReadChConfigByte(chno, APP_CURRCONTFAILMON_O) & APP_CURRCONTFAILMON_M) >> APP_CURRCONTFAILMON_B;
 //    if (Chg) //(((SendCfg == 1) && Chg) || ((SendCfg == 3) && (UpdFailState || Chg)))
 //    {
-//     objectWrite(OFSCHANNELOBJECTS+chno*SPACINGCHANNELOBJECTS+OBJ_CONTACTMON, ContFailState ? 1 : 0);
+//     bcu.comObjects->objectWrite(OFSCHANNELOBJECTS+chno*SPACINGCHANNELOBJECTS+OBJ_CONTACTMON, ContFailState ? 1 : 0);
 //    } else
 //     if (Chg)
 //     {
-//      objectUpdate(OFSCHANNELOBJECTS+chno*SPACINGCHANNELOBJECTS+OBJ_CONTACTMON, ContFailState ? 1 : 0);
+//      bcu.comObjects->objectUpdate(OFSCHANNELOBJECTS+chno*SPACINGCHANNELOBJECTS+OBJ_CONTACTMON, ContFailState ? 1 : 0);
 //     }
 //    ChannelStates[chno].CurrFctStates &= ~CFCONTFAILSTATE_M;
 //    if (ContFailState)
@@ -2087,8 +2084,8 @@ void Appl::ProcAliveObject(unsigned referenceTime)
   {
    if ((signed int)(referenceTime - AliveTargetTime) > 0)
    {
-    objectWrite(OBJ_OPERATIONAL, 1);
-    AliveTargetTime = referenceTime + AliveTime*1000;
+       bcu.comObjects->objectWrite(OBJ_OPERATIONAL, 1);
+       AliveTargetTime = referenceTime + AliveTime*1000;
    }
   }
 }
@@ -2250,17 +2247,17 @@ void Appl::GlobalSafetyObjRelated(int obj, unsigned referenceTime)
  switch (obj)
  {
  case OBJ_SAFETYPRIO1:
-  if (OneGlobalSafetyObjRelated(objectRead(obj), ReadConfigByte(APP_SAFPRIO1FKT_O),
+  if (OneGlobalSafetyObjRelated(bcu.comObjects->objectRead(obj), ReadConfigByte(APP_SAFPRIO1FKT_O),
     ReadConfigUInt16(APP_SAFPRIO1TIM_O), 0, referenceTime))
    SafetyChanges |= 1;
   break;
  case OBJ_SAFETYPRIO2:
-  if (OneGlobalSafetyObjRelated(objectRead(obj), ReadConfigByte(APP_SAFPRIO2FKT_O),
+  if (OneGlobalSafetyObjRelated(bcu.comObjects->objectRead(obj), ReadConfigByte(APP_SAFPRIO2FKT_O),
     ReadConfigUInt16(APP_SAFPRIO2TIM_O), 1, referenceTime))
    SafetyChanges |= 2;
   break;
  case OBJ_SAFETYPRIO3:
-  if (OneGlobalSafetyObjRelated(objectRead(obj), ReadConfigByte(APP_SAFPRIO3FKT_O),
+  if (OneGlobalSafetyObjRelated(bcu.comObjects->objectRead(obj), ReadConfigByte(APP_SAFPRIO3FKT_O),
     ReadConfigUInt16(APP_SAFPRIO3TIM_O), 2, referenceTime))
    SafetyChanges |= 4;
   break;

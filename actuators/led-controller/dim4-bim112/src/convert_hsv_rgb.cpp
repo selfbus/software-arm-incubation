@@ -4,7 +4,6 @@
 //   see also : http://ja.wikipedia.org/wiki/HSV%E8%89%B2%E7%A9%BA%E9%96%93
 //
 
-//#include <stdio.h>
 #include <math.h>
 
 #define min_f(a, b, c)  (fminf(a, fminf(b, c)))
@@ -58,7 +57,9 @@ void hsv2rgb(const unsigned char &src_h, const unsigned char &src_s, const unsig
     float s = src_s / 255.0f; // 0.0-1.0
     float v = src_v / 255.0f; // 0.0-1.0
 
-    float r, g, b; // 0.0-1.0
+    float r; // 0.0-1.0
+    float g; // 0.0-1.0
+    float b; // 0.0-1.0
 
     int   hi = (int)(h / 60.0f) % 6;
     float f  = (h / 60.0f) - hi;
@@ -73,6 +74,7 @@ void hsv2rgb(const unsigned char &src_h, const unsigned char &src_s, const unsig
         case 3: r = p, g = q, b = v; break;
         case 4: r = t, g = p, b = v; break;
         case 5: r = v, g = p, b = q; break;
+        default: r = 0; g = 0; b = 0; // just to prevent warnings, this should never happen because "hi" is modulo 6
     }
 
     dst_r = (unsigned char)(r * 255); // dst_r : 0-255

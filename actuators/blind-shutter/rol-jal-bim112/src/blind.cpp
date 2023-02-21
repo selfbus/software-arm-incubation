@@ -9,7 +9,6 @@
 #include <blind.h>
 #include <sblib/digital_pin.h>
 #include <sblib/timer.h>
-#include <sblib/eib.h>
 #include "config.h"
 
 Blind::Blind(unsigned int number, unsigned int address)
@@ -20,18 +19,18 @@ Blind::Blind(unsigned int number, unsigned int address)
   , slatTargetPosition(-1)
   , slatSavedPosition(-1)
 {
-    shortTime = userEeprom.getUInt16(address +   6);
-    slatTime  = userEeprom.getUInt16(address +  8);
+    shortTime = bcu.userEeprom->getUInt16(address +   6);
+    slatTime  = bcu.userEeprom->getUInt16(address +  8);
     for (unsigned int i = 0; i < NO_OF_SCENES; i++)
     {
-        sceneSlatPos[i] = userEeprom.getUInt8(address + 24 + i);
+        sceneSlatPos[i] = bcu.userEeprom->getUInt8(address + 24 + i);
     }
-    slatPosAfterMove = userEeprom.getUInt8(address + 61);
+    slatPosAfterMove = bcu.userEeprom->getUInt8(address + 61);
     for (unsigned int i = 0; i < NO_OF_AUTOMATIC; i++)
     {
-        automaticSlatPos[i] = userEeprom.getUInt8(address + 44 + i);
+        automaticSlatPos[i] = bcu.userEeprom->getUInt8(address + 44 + i);
     }
-    oneBitSlatPosition = userEeprom.getUInt8(address + 68);
+    oneBitSlatPosition = bcu.userEeprom->getUInt8(address + 68);
 }
 
 void Blind::moveTo(short position)
@@ -105,7 +104,7 @@ bool Blind::_trackSlatPosition(void)
         }
         slatPosReached = slatPosition >= slatTargetPosition;
     }
-    objectSetValue(firstObjNo + COM_OBJ_SLAT_POSITION, slatPosition);
+    bcu.comObjects->objectSetValue(firstObjNo + COM_OBJ_SLAT_POSITION, slatPosition);
     if (  (   slatMoveForTime
           && (elapsed(startTime) >= slatMoveForTime)
           )
@@ -153,9 +152,9 @@ bool Blind::_storeScene(unsigned int i)
     bool result = Channel::_storeScene(i);
     unsigned int address = currentVersion->baseAddress + EE_CHANNEL_CFG_SIZE * number;
     sceneSlatPos [i] = slatPosition;
-    if (userEeprom [address + 24 + i] != slatPosition)
+    if ((*(bcu.userEeprom))[address + 24 + i] != slatPosition)
     {
-        userEeprom [address + 24 + i] = slatPosition;
+        (*(bcu.userEeprom))[address + 24 + i] = slatPosition;
         result = true;
     }
     return result;
@@ -183,8 +182,8 @@ bool Blind::_restorePosition(void)
 
 void Blind::_sendPosition()
 {
-    objectWrite(firstObjNo + COM_OBJ_POSITION, position);
-    objectWrite(firstObjNo + COM_OBJ_SLAT_POSITION, slatPosition);
+    bcu.comObjects->objectWrite(firstObjNo + COM_OBJ_POSITION, position);
+    bcu.comObjects->objectWrite(firstObjNo + COM_OBJ_SLAT_POSITION, slatPosition);
 }
 
 void Blind::_moveToOneBitPostion()

@@ -29,7 +29,7 @@
 		<link>
 			<name>src/app-common</name>
 			<type>2</type>
-			<locationURI>copy_PARENT1/common/hand-actuation</locationURI>
+			<locationURI>PARENT-3-PROJECT_LOC/common/hand-actuation</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>

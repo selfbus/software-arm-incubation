@@ -8,30 +8,14 @@
  *  published by the Free Software Foundation.
  */
 
-#define NEW_LIB
-
-#include <sblib/eib.h>
-#ifdef NEW_LIB
-#include <sblib/eib/sblib_default_objects.h>
-#define BCU_ACCESS(x) bcu->x
-#else
-#define BCU_ACCESS(x) bcu.x
-#endif
-
+#include <sblib/eibMASK0701.h>
 #include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 #include <sblib/timeout.h>
-#include <string.h>
 #include "individual_channel.h"
 #include "led-controller.h"
 
-extern "C" const char APP_VERSION[13] = "LED 0.1";
-
-const char * getAppVersion()
-{
-    return APP_VERSION;
-}
-
+APP_VERSION("SBLED   ", "0", "01")
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const unsigned char hardwareVersion[] =
@@ -50,30 +34,33 @@ void checkPeriodicFuntions(void);
 
 static Channel * channels[4];
 
-/*
+MASK0701 bcu = MASK0701();
+
+/**
  * Initialize the application.
  */
-void setup()
+BcuBase* setup()
 {
-    volatile char v = getAppVersion()[0];
-    v++;
-    BCU_ACCESS(begin)(131, hardwareVersion[5], 0x13);  // we are a MDT weather station, version 1.3
-    memcpy(userEeprom.order, hardwareVersion, sizeof(hardwareVersion));
+    bcu.begin(0x83, hardwareVersion[5], 0x14);
+    bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion)); // MDT AKD-0424R.01 RGBW LED Controller, MDRC, version 1.4
 
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
-    if (BCU_ACCESS(applicationRunning) ())
+    if (bcu.applicationRunning())
+    {
         initApplication();
+    }
+    return (&bcu);
 }
 
-/*
+/**
  * The main processing loop.
  */
 void loop()
 {
     int objno;
     // Handle updated communication objects
-    while ((objno = nextUpdatedObject()) >= 0)
+    while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
         objectUpdated(objno);
     }
@@ -81,26 +68,26 @@ void loop()
     checkPeriodicFuntions();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
+    if (bcu.bus->idle())
         waitForInterrupt();
 }
 
 void initApplication(void)
 {
     // XXX setup the PWM frequency
-    unsigned int pwmFreq = userEeprom.getUInt8 (0x476C) * 1000;
+    unsigned int pwmFreq = bcu.userEeprom->getUInt8 (0x476C) * 1000;
     timer16_0.prescaler(pwmFreq);
 
-    switch (userEeprom.getUInt8 (0x470E))
+    switch (bcu.userEeprom->getUInt8 (0x470E))
     {
     case 0x00 : // 4 seperate channels for dimming
-        channles [0] =initChannel(0);
+        initChannel(0);
         initChannel(1);
         initChannel(2);
         initChannel(3);
         break;
     case 0x01 : // RGB dimming
-        if (userEeprom.getUInt8(0x476B) == 0x1)
+        if (bcu.userEeprom->getUInt8(0x476B) == 0x1)
         {   // channel D is used as standalone channel but configured as channel A !
             initChannel(0);
         }
@@ -117,18 +104,26 @@ void objectUpdated(unsigned int objno)
 
 void checkPeriodicFuntions(void)
 {
-    if (userEeprom.getUInt8 (0x4764) == 1)
+    if (bcu.userEeprom->getUInt8 (0x4764) == 1)
     {   // relay output is controlled by the 4 channels
         unsigned int value = 0;
         for (unsigned int i = 0; i < 4; i++)
             value += (channels[i] != NULL) && channels[i]->isOn();
-        objectSetValue(COM_OBJ_RELAI_SWITCH, value > 0);
+        bcu.comObjects->objectSetValue(COM_OBJ_RELAI_SWITCH, value > 0);
     }
     // update the relay output state
-    digitalWrite(RELAY_OUTPUT, objectRead(COM_OBJ_RELAI_SWITCH));
+    digitalWrite(RELAY_OUTPUT, bcu.comObjects->objectRead(COM_OBJ_RELAI_SWITCH));
 }
 
 void initChannel(unsigned int channel)
+{
+
+}
+
+/**
+ * The processing loop while no KNX-application is loaded
+ */
+void loop_noapp()
 {
 
 }

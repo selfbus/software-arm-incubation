@@ -16,6 +16,7 @@
 class Blind: public Channel
 {
 public:
+    Blind() = delete;
     Blind(unsigned int nummber, unsigned int address);
     virtual unsigned int channelType(void);
     //virtual void periodic(void);

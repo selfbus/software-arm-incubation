@@ -309,7 +309,6 @@ void initLEDs() {
 		time_leds_on = translate_value_to_time(LEDparams[5] & 0x0F);
 		time_period_blink = translate_value_to_time(LEDparams[6] >> 4);
 
-		uint32_t color_calc;
 		uint8_t LEDnumber;
 
 		for (uint8_t i = 0; i < LEDS / 3; i++) {

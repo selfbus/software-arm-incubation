@@ -8,6 +8,7 @@
 #ifndef params_h
 #define params_h
 
+#include <sblib/types.h>
 #include <sblib/timeout.h>
 #include <sblib/debounce.h>
 
@@ -47,12 +48,6 @@ unsigned int calculateTime(int base, int factor);
  * In userEeprom at address 0x01d5
  */
 extern const byte* channelParams;
-
-/**
- * Channel timing parameters. 1 byte per channel.
- * In userEeprom at address 0x01f6
- */
-extern const byte* channelTimingParams;
 
 /**
  * pointer to the configuration of the currently evaluated channel

@@ -6,7 +6,7 @@
 #define INC_LIGHTSENSOR_COMMON_H
 
 #include <stdint.h>
-#include <sblib/eib.h>
+#include <sblib/eibBCU1.h>
 #include <sblib/i2c/bh1750.h>
 
 #ifdef LOGGING
@@ -25,6 +25,8 @@ typedef unsigned int uint;
 #include "params.h"
 #include "Threshold.h"
 #include "SensorConfig.h"
+
+extern BCU1 bcu;
 
 void fixRamLoc(COM comNo);
 void initSensor();

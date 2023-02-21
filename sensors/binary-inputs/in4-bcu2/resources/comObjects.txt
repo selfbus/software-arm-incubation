@@ -1,0 +1,21 @@
+looks like in4-bcu2 is Mask 0x0020 but runs in BCU1 compatibility mode
+comObjectsFlagTable address is only 1 byte not like normal in BCU2 2 bytes
+
+0x16c: comObjectTable content from knxprod
+08 d0 00 6f 00 01 63 00 02 6f 00 03
+f3 00 04 6f 00 05 63 00 06 6f 00 07
+63 00 FD FD FD FD 01 02 03 04 05 06
+07 08 0A 0B 0C 0D 01 01 01 01 64 7F
+
+08 comObjectTableSize
+d0 objectsFlagsTable
+00 6f 00
+01 63 00
+02 6f 00
+03 f3 00
+04 6f 00
+05 63 00
+06 6f 00
+07 63 00
+
+FD FD FD FD 01 02 03 04 05 06

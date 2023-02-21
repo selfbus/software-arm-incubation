@@ -4,8 +4,9 @@
 #include <cstring>
 #include "common.h"
 
+BCU1 bcu = BCU1();
+
 SensorConfig configs[NUM_SENSORS];
-bool needSensorInit = false;
 uint32_t nextInit = 0;
 
 /**
@@ -14,7 +15,9 @@ uint32_t nextInit = 0;
  * @param comNo each com object gets 2 bytes
  */
 void fixRamLoc(COM comNo) {
-    uint8_t* l = (uint8_t*)&objectConfig(comNo).dataPtr;
+    // uint8_t* l = (uint8_t*)&objectConfig(comNo)->dataPtr;
+    ComObjectsBCU1* comObjs = (ComObjectsBCU1*)bcu.comObjects;
+    uint8_t* l = (uint8_t*)&(comObjs->objectConfigBCU1(comNo)->dataPtr); ///\todo this looks stupid and i think it is.
     *l = comNo * 2;
 }
 
@@ -24,7 +27,7 @@ void initSensor1(SensorConf sc) {
         return;
     }
 
-    if (!sc->init(0, EE_TYPE_SENSOR_1,
+    if (!sc->init(0, (SENSOR_TYP) EE_TYPE_SENSOR_1, (SENSOR_FEUCHTIGKEIT) EE_SENSOR_TYPE_SENSOR_1,
             EE_SEND_TEMPERATURE_AS_SENSOR_1,
             (int8_t) EE_TEMPERATURE_OFFSET_IN_0_1K_SENSOR_1,
             COM_TEMPERATURE_SEND_TEMPERATURE_AS_SENSOR_1,
@@ -85,7 +88,7 @@ void initSensor2(SensorConf sc) {
         return;
     }
 
-    if (!sc->init(1, EE_TYPE_SENSOR_2,
+    if (!sc->init(1, (SENSOR_TYP) EE_TYPE_SENSOR_2, (SENSOR_FEUCHTIGKEIT) EE_SENSOR_TYPE_SENSOR_2,
                   EE_SEND_TEMPERATURE_AS_SENSOR_2,
                   (int8_t) EE_TEMPERATURE_OFFSET_IN_0_1K_SENSOR_2,
                   COM_TEMPERATURE_SEND_TEMPERATURE_AS_SENSOR_2,
@@ -146,7 +149,7 @@ void initSensor3(SensorConf sc) {
         return;
     }
 
-    if (!sc->init(2, EE_TYPE_SENSOR_3,
+    if (!sc->init(2, (SENSOR_TYP) EE_TYPE_SENSOR_3, (SENSOR_FEUCHTIGKEIT) EE_SENSOR_TYPE_SENSOR_3,
                   EE_SEND_TEMPERATURE_AS_SENSOR_3,
                   (int8_t) EE_TEMPERATURE_OFFSET_IN_0_1K_SENSOR_3,
                   COM_TEMPERATURE_SEND_TEMPERATURE_AS_SENSOR_3,
@@ -207,7 +210,7 @@ void initSensor4(SensorConf sc) {
         return;
     }
 
-    if (!sc->init(3, EE_TYPE_SENSOR_4,
+    if (!sc->init(3, (SENSOR_TYP) EE_TYPE_SENSOR_4, (SENSOR_FEUCHTIGKEIT) EE_SENSOR_TYPE_SENSOR_4,
                   EE_SEND_TEMPERATURE_AS_SENSOR_4,
                   (int8_t) EE_TEMPERATURE_OFFSET_IN_0_1K_SENSOR_4,
                   COM_TEMPERATURE_SEND_TEMPERATURE_AS_SENSOR_4,
@@ -262,28 +265,63 @@ void initSensor4(SensorConf sc) {
                      COM_THRESHOLD_3_TEMPERATURE_THRESHOLD_3_SENSOR_4);
 }
 
-void initSensors() {
-    LOG("\n* * * Init Sensors * * *");
-    // spiffy those puppies
-    memset(&configs[0], 0, sizeof(SensorConfig) * NUM_SENSORS);
-    // so if inits run clean we're fine
-    needSensorInit = false;
-    initSensor1(&configs[0]);
-    initSensor2(&configs[1]);
-    initSensor3(&configs[2]);
-    initSensor4(&configs[3]);
+void initSensors(bool all) {
+    if (all)
+    {
+        LOG("\n* * * Init ALL Sensors * * *");
+        // spiffy those puppies
+        memset(&configs[0], 0, sizeof(SensorConfig) * NUM_SENSORS);
+        // so if inits run clean we're fine
+        for (auto &sc : configs) {
+            sc.setInitialized(false);
+        }
+    }
+    else
+    {
+        LOG("\n* * * Init FAILED Sensors * * *");
+    }
+
+    for (uint8_t i = 0; i < NUM_SENSORS; i++)
+    {
+        if (configs[i].isInitialized())
+        {
+            continue;
+        }
+
+        if (i == 0) {
+            initSensor1(&configs[0]);
+        }
+        else if (i == 1) {
+            initSensor2(&configs[1]);
+        }
+        else if (i == 2) {
+            initSensor3(&configs[2]);
+        }
+        else if (i == 3) {
+            initSensor4(&configs[3]);
+        }
+        else {
+            LOG("initSensor%d not implemented", i);
+        }
+    }
     nextInit = millis() + RE_INIT_DELAY;
 }
 
-/*
+/**
  * Initialize the application.
  */
-void setup() {
+BcuBase* setup() {
 #if LOGGING
-    initLogger();
+#   ifdef TS_ARM
+       // initLogger(PIO1_7, PIO1_6); // TS_ARM ISP header
+       initLogger(PIO3_0, PIO3_1); // TS_ARM Tx: IO6, Rx: IO7
+#   else
+       initLogger(PIO2_8, PIO2_7); // 4TE-Controller ID header
+#   endif
 #endif
     bcu.begin(0x4c, 0x438, 0x6); // 4Sense
     LOG("diagnosis on %x", EE_DIAGNOSIS);
 
-    initSensors();
+    initSensors(true);
+    return (&bcu);
 }

@@ -21,11 +21,13 @@ outLang = 'en-US'
 headerStart = '''
 #ifndef INC_RAIN_PARAMS_H
 #define INC_RAIN_PARAMS_H
+
+#define userEeprom (*(bcu.userEeprom))
 '''
 
 # end of the file
 headerEnd = '''
-#endif //INC_RAIN_PARAMS_H
+#endif /* INC_RAIN_PARAMS_H */
 '''
 
 # indent of the tree body

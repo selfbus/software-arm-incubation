@@ -71,7 +71,7 @@ static inline bool AppManualOpWOObjEnabled(void)
 
 class AppUsrCallback: public UsrCallback {
 public:
- virtual void Notify(int type);
+ virtual void Notify(UsrCallbackType type);
 };
 
 

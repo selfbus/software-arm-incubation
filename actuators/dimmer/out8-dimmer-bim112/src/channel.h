@@ -4,6 +4,11 @@
 
 #include <sblib/types.h>
 #include <sblib/timeout.h>
+#include <sblib/eibMASK0701.h>
+#include "hand_actuation.h"
+
+
+extern MASK0701 bcu;
 
 #define NO_OF_CHANNELS 4
 #define NO_OF_OUTPUTS  (NO_OF_CHANNELS * 2)
@@ -85,7 +90,7 @@ public:
     bool automaticAEnabled();
     bool automaticBEnabled();
     unsigned short currentPosition(void);
-    virtual void objectUpdate(unsigned int objno);
+    virtual void objectUpdateCh(unsigned int objno);
             void startUp(void);
             void startDown(void);
             void stop(void);
@@ -157,6 +162,7 @@ protected:
              short targetPosition;   //!< requested target position
              short savedPosition;    //!< position before an automatic commands was triggered
     Timeout        timeout;
+    HandActuation* handAct_;
 };
 
 inline unsigned int Channel::isRunning(void)

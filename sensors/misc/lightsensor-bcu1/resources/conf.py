@@ -19,13 +19,15 @@ outLang = 'en-US'
 
 # start of the file
 headerStart = '''
-#ifndef INC_4SENSE_PARAMS_H
-#define INC_4SENSE_PARAMS_H
+#ifndef INC_LIGHTSENSOR_PARAMS_H
+#define INC_LIGHTSENSOR_PARAMS_H
+
+#define userEeprom (*(bcu.userEeprom))
 '''
 
 # end of the file
 headerEnd = '''
-#endif //INC_4SENSE_PARAMS_H
+#endif /* INC_LIGHTSENSOR_PARAMS_H */
 '''
 
 # indent of the tree body

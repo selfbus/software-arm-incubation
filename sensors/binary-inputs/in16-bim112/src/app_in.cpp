@@ -7,7 +7,6 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/eib.h>
 #include <sblib/timeout.h>
 #include <string.h>
 
@@ -25,6 +24,8 @@
 
 //extern Led_Indication leds;
 
+MASK0701 bcu = MASK0701();
+
 Input inputs;
 
 Channel * channelConfig[MAX_CHANNELS];
@@ -38,9 +39,9 @@ void objectUpdated(int objno)
 	{
 		int channel = objno / 5;
 		int channelObjno = objno - (channel * 5);
-		if (channelObjno == 4)
+		if ((channelObjno == 4) && (channelConfig[channel] != nullptr))
 		{ // change of the lock object
-		    channelConfig[channel]->setLock(objectRead(objno));
+		    channelConfig[channel]->setLock(bcu.comObjects->objectRead(objno));
 		}
 	}
 
@@ -65,7 +66,7 @@ void objectUpdated(int objno)
     	{
     		int i = objno - ledObjStart;
     		Channel * channel = channelConfig[i];
-    		channel->objectChanged(objectRead(objno));
+    		channel->objectChanged(bcu.comObjects->objectRead(objno));
     		//LED Output
 
     	}
@@ -106,18 +107,22 @@ void checkPeriodic(void)
 void initApplication(void)
 {
     unsigned int channels = currentVersion->noOfChannels;
-    unsigned int longKeyTime = userEeprom.getUInt16(
+    unsigned int longKeyTime = bcu.userEeprom->getUInt16(
             currentVersion->baseAddress + 2);
     unsigned int addressStartupDelay = currentVersion->baseAddress + 4 // debounce, longTime
             + channels * 46 + channels + (11 + channels) * 4 // logic config
             + 10;
-    unsigned int busReturn = userEeprom.getUInt8(addressStartupDelay - 1) & 0x2; // bit offset is 6: means 2^(7-bit offset)
+    unsigned int busReturn = bcu.userEeprom->getUInt8(addressStartupDelay - 1) & 0x2; // bit offset is 6: means 2^(7-bit offset)
     memset(channelConfig, 0, sizeof(channelConfig));
     inputs.begin(channels, currentVersion->baseAddress);
 
     Timeout startupDelay;
     // delay in config is in seconds
-    unsigned int delay = userEeprom.getUInt16(addressStartupDelay) * 1000;
+    unsigned int delay = bcu.userEeprom->getUInt16(addressStartupDelay) * 1000;
+    if (delay > 60000)
+    {
+        delay = 60000;
+    }
     startupDelay.start(delay);
     if (delay)
     {
@@ -134,11 +139,11 @@ void initApplication(void)
     }
 
 
-    unsigned int busReturnLogic = userEeprom.getUInt8(addressStartupDelay - 1) & 0x01;
+    unsigned int busReturnLogic = bcu.userEeprom->getUInt8(addressStartupDelay - 1) & 0x01;
 
     for (unsigned int i = 0; i < MAX_LOGIC; i++)
     {
-        if (userEeprom.getUInt8(currentVersion->logicBaseAddress + i * (11 + channels))
+        if (bcu.userEeprom->getUInt8(currentVersion->logicBaseAddress + i * (11 + channels))
                 != 0xff)
         {
             logicConfig[i] = new Logic(currentVersion->logicBaseAddress, i,
@@ -151,7 +156,7 @@ void initApplication(void)
     {
         unsigned int value;
         int configBase = currentVersion->baseAddress + 4 + i * 46;
-        word channelType = userEeprom.getUInt16(configBase);
+        word channelType = bcu.userEeprom->getUInt16(configBase);
         Channel * channel;
         inputs.checkInput(i, &value);
         //leds.setStatus(i, value);
@@ -163,7 +168,7 @@ void initApplication(void)
             }
         }
 
-        busReturn = userEeprom.getUInt8(configBase + 32) || userEeprom.getUInt8(addressStartupDelay - 1) & 0x02; // param sendValue || readToggleObject
+        busReturn = bcu.userEeprom->getUInt8(configBase + 32) || bcu.userEeprom->getUInt8(addressStartupDelay - 1) & 0x02; // param sendValue || readToggleObject
         switch (channelType)
         {
         case 0: // channel is configured as switch

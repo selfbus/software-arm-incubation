@@ -9,38 +9,20 @@
  *  published by the Free Software Foundation.
  */
 
-#include <string.h>
-#include <sblib/eib.h>
-#include <sblib/eib/user_memory.h>
-#include <sblib/eib/sblib_default_objects.h>
 #include "config.h"
 #include "app_raincenter.h"
 
-// create APP_VERSION, its used in the bus updater magic string is !AVP!@:
-// from Rauchmelder-bcu1 (app_main.cpp):
-volatile const char __attribute__((used)) APP_VERSION[20] = "!AVP!@:SBrain  0.30";
-// disable optimization seems to be the only way to ensure that this is not being removed by the linker
-// to keep the variable, we need to declare a function that uses it
-// alternatively, the link script may be modified by adding KEEP to the section
-volatile const char * __attribute__((optimize("O0"))) getAppVersion()
-{
-    return APP_VERSION;
-}
-
-const HardwareVersion * currentVersion;
+APP_VERSION("SBr_cent", "0", "41");
 
 /**
  * Application setup
  */
-void setup()
+BcuBase* setup()
 {
-    volatile const char * v = getAppVersion();      // Ensure APP ID is not removed by linker (its used in the bus updater)
-    v++;                                            // just to avoid compiler warning of unused variable
-    currentVersion = &hardwareVersion[HARDWARE_ID];
-    bcu.begin(MANUFACTURER, currentVersion->hardwareVersion[5], 0x28);  // we are a MDT shutter/blind actuator, version 2.8
-    memcpy(userEeprom.order, currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
-
+    bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
+    bcu.setHardwareType(&hardwareVersion[0], sizeof(hardwareVersion));
     initApplication();
+    return (&bcu);
 }
 
 /**
@@ -50,7 +32,7 @@ void loop()
 {
     int objno;
     // Handle updated communication objects
-    while ((objno = nextUpdatedObject()) >= 0)
+    while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
         objectUpdated(objno);
     }
@@ -58,18 +40,11 @@ void loop()
     checkPeriodic();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
+    if (bcu.bus->idle())
         waitForInterrupt();
 }
 
-/*
- * The main processing loop while no app is loaded.
- */
 void loop_noapp()
 {
-    checkPeriodic();
 
-    // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
-        waitForInterrupt();
 }

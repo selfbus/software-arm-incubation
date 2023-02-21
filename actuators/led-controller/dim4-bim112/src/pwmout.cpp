@@ -6,14 +6,16 @@
  */
 
 #include "pwmout.h"
-#include <sblib/eib.h>
+#include <sblib/eibMASK0701.h>
 #include <com_objs.h>
 #include "config.h"
-#include <sblib/serial.h>  //debugging only
+#ifdef DEBUG
+#   include <sblib/serial.h>  //debugging only
+#endif
 
 void pwmout::begin(int ch) {
 	channel = ch;
-	if (userEeprom.getUInt16(APP_PWM_O) == 0x600){	//0x600 = 600Hz ; 0xA00 = 1kHz
+	if (bcu.userEeprom->getUInt16(APP_PWM_O) == 0x600){	//0x600 = 600Hz ; 0xA00 = 1kHz
 		pwmmax = PWM_MAX_600;						// 600Hz PWM Frequenz
 	} else {
 		pwmmax = PWM_MAX_1000;						// 1kHz PWM Frequenz
@@ -80,30 +82,33 @@ void pwmout::begin(int ch) {
 }
 
 void pwmout::setpwm(int value) {
-	if (value < 0 || value > MAXOUTPUTVALUE) {
-		return;
+	if (value < 0)
+	{
+		value = 0;
 	}
+
+	if (value > MAXOUTPUTVALUE)
+	{
+		value = MAXOUTPUTVALUE;
+	}
+
 	if (isactive) {
 		switch (channel) {
 			//int val = value*pwmmax/MAXVALUE;
 			case 0:
 				//timer16_0.match(MAT0, pwmmax-(value*pwmmax/MAXOUTPUTVALUE));      // match MAT0 when the timer reaches this value
-				return;
 				break;
 			case 1:
 				timer16_0.match(MAT1, pwmmax-(value*pwmmax/MAXOUTPUTVALUE));      // match MAT1 when the timer reaches this value
-				return;
 				break;
 			case 2:
 				timer32_1.match(MAT0, pwmmax-(value*pwmmax/MAXOUTPUTVALUE));      // match MAT0 when the timer reaches this value
-				return;
 				break;
 			case 3:
 				timer32_1.match(MAT1, pwmmax-(value*pwmmax/MAXOUTPUTVALUE));      // match MAT1 when the timer reaches this value
-				return;
 				break;
 			default:
-				return;
+				break;
 		}
 	}
 }

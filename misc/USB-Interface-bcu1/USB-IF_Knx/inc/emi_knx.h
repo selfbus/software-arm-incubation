@@ -12,19 +12,19 @@
 #define EMI_KNX_H_
 
 #define SYSST_BUSMON 0x90
-//    BCU_STATUS_SER (serial PEI)
+//    BCU_STATUS_SERIAL_PEI (serial PEI)
 #define SYSST_LINKL  0x12 // wird von der ETS genutzt
-//    BCU_STATUS_LL (link layer) +
-//    BCU_STATUS_SER (serial PEI)
+//    BCU_STATUS_LINK_LAYER (link layer) +
+//    BCU_STATUS_SERIAL_PEI (serial PEI)
 #define SYSST_TRANSP 0x96
-//    BCU_STATUS_LL (link layer) +
-//    BCU_STATUS_TL (transport layer) +
-//    BCU_STATUS_SER (serial PEI)
+//    BCU_STATUS_LINK_LAYER (link layer) +
+//    BCU_STATUS_TRANSPORT_LAYER (transport layer) +
+//    BCU_STATUS_SERIAL_PEI (serial PEI)
 #define SYSST_APPLL  0x1E // wird von der ETS genutzt
-//    BCU_STATUS_LL (link layer) +
-//    BCU_STATUS_TL (transport layer) +
-//    BCU_STATUS_AL (application layer) +
-//    BCU_STATUS_SER (serial PEI)
+//    BCU_STATUS_LINK_LAYER (link layer) +
+//    BCU_STATUS_TRANSPORT_LAYER (transport layer) +
+//    BCU_STATUS_APPLICATION_LAYER (application layer) +
+//    BCU_STATUS_SERIAL_PEI (serial PEI)
 // SYSST_APPLL ist auch der Default- und Reset-Zustand
 #define SYSST_RESET  0xC0
 

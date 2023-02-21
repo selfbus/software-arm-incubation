@@ -1,5 +1,5 @@
 # 4Sense
-This project aims replace the old [Selfbus](https://selfbus.org/wiki/) LPC922 based 
+This project aims to replace the old [Selfbus](https://selfbus.org/wiki/) LPC922 based 
 [4Sense](https://selfbus.myxwiki.org/xwiki/bin/view/Geräte/Sensoren/4Sense_Temp_Feuchte) project with its ARM counter part.
 
 ## Downloads

@@ -17,7 +17,10 @@ __pycache__
 ._.DS_Store
 
 # Build folders
-cmake-build*
+/cmake-build*
 
 # IDE files
 .idea
+
+# Python stuff (e.g. knx2header)
+*.pyc

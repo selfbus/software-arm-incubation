@@ -9,33 +9,39 @@
  */
 
 
-#include <sblib/eib.h>
-#include <sblib/eib/sblib_default_objects.h>
+#include <sblib/eibBCU1.h>
 #include <sblib/io_pin_names.h>
 #include "app-rol-jal.h"
+#include "config.h"
 
-/*
+BCU1 bcu = BCU1();
+
+APP_VERSION("SBrol_12", "1", "10")
+
+/**
  * Initialize the application.
  */
-void setup()
+BcuBase* setup()
 {
-    bcu.begin(4, 0x2060, 1); // We are a "Jung 2138.10" device, version 0.1
-
+    bcu.begin(4, 0x2070, 1); // We are a "Jung 2204REGH" device, version 0.1
+                             // 4 channel blinds/shutter actuator
+#ifdef DEBUG
     pinMode(PIN_INFO, OUTPUT);	// Info LED
     pinMode(PIN_RUN,  OUTPUT);	// Run LED
+#endif
 
     initApplication();
+    return (&bcu);
 }
 
-/*
+/**
  * The main processing loop.
  */
-
 void loop()
 {
     int objno;
     // Handle updated communication objects
-    while ((objno = nextUpdatedObject()) >= 0)
+    while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
         objectUpdated(objno);
     }
@@ -43,6 +49,14 @@ void loop()
     checkPeriodicFuntions();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bus.idle())
+    if (bcu.bus->idle())
         waitForInterrupt();
+}
+
+/**
+ * The processing loop while no KNX-application is loaded
+ */
+void loop_noapp()
+{
+
 }

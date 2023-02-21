@@ -1,8 +1,4 @@
 /**
-
-
-
-/*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
  *  published by the Free Software Foundation.
@@ -18,11 +14,9 @@
  * entfernen der aktivierung des externen temp sensors aus der VD -> 2 Versionen in VD
  */
 
-
-#include <sblib/eib/sblib_default_objects.h>
+#include <sblib/eibBCU1.h>
 #include <sblib/core.h>
 #include <sblib/ioports.h>
-#include <sblib/spi.h>
 #include <sblib/serial.h>
 #include <sblib/timeout.h>
 
@@ -42,14 +36,15 @@
 Serial Serial(PIO2_7, PIO2_8);
 #endif
 
-//SPI spi(SPI_PORT_0);
-
 int blinkPin = PIO0_7;
 
 // Timeout
 Timeout timeout[NUM_TIMED_VALUES];
 
 ExtEeprom extEeprom;
+BCU1 bcu = BCU1();
+
+APP_VERSION("SBrtrLcd", "1", "10")
 
 /*
 * Der MemMapper bekommt einen 1kB Bereich ab 0xEA00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.
@@ -58,20 +53,20 @@ ExtEeprom extEeprom;
 */
 //MemMapper memMapper(0xea00, 0x400, false);
 
-/*
+/**
  * Initialize the application.
  */
-void setup() {
+BcuBase* setup() {
 
 #if EINHEIZKREIS
-	bcu.begin(76, 0x474, 2);  // we are a MDT temperatur controller, version 1.2
+	bcu.begin(76, 0x474, 2);  // we are a MDT temperature controller, version 1.2
 #else
 	bcu.begin(76, 0x47E, 2); // we are a Selfbus room temperature and air controller Version 0.2
 #endif
 
 //	pinMode(blinkPin, OUTPUT);
 
-//	memcpy(userEeprom.order, hardwareVersion, sizeof(hardwareVersion));
+//	bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
 
 	// Enable the serial port with 19200 baud, no parity, 1 stop bit
 #ifdef _DEBUG__
@@ -126,6 +121,7 @@ void setup() {
 	BacklightOnFlag = true;
 
 	debounceTime = 10;// userEeprom[EE_TIMING_PARAMS_BASE + 3]; //TODO: checken ob Parameter benötigt wird!
+	return &bcu;
 }
 
 bool LCDdrawFlag = false; //a helper to get more runs through the complete loop
@@ -158,10 +154,18 @@ void loop() {
 	handlePeriodicInputs();
 
 	// Handle updated communication objects
-	while ((objno = nextUpdatedObject()) >= 0)
+	while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
 	{
 		objectUpdated(objno);
 	}
+
+}
+
+/**
+ * The processing loop while no KNX-application is loaded
+ */
+void loop_noapp()
+{
 
 }
 

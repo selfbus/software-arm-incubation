@@ -5,6 +5,13 @@
 #ifndef INC_4SENSE_SENSORCONFIG_H
 #define INC_4SENSE_SENSORCONFIG_H
 
+enum SensorName {
+    SN_NO_SENSOR = 0
+,   SN_DS18XX = 1
+,   SN_DHT11 = 2
+,   SN_DHT22 = 3
+};
+
 // 5° variance from the average
 #define MAX_TEMP_VARIANCE 50
 // how many samples to average
@@ -23,7 +30,7 @@ public:
 class SensorConfig {
 private:
     int sensorNum;      // The sensor number i am
-    int type;           // whether this config is actually used
+    SensorName type;    // whether this config is actually used
     int tRes;           // whether temperature is DPT9 float16 default or DTP5 uint8
     int hRes;           // whether humidity is DPT9 float16 default or DTP5 uint8
     bool converting;    // indicates a conversion to be sent is in progress
@@ -65,9 +72,12 @@ private:
     uint32_t thTime;    // when it's time to send threshold data
     Threshold th[3];    // thresholds
 
+    bool initialized; // whether the sensor is initialized
+
 public:
     // Initializers
-    bool init(int sensorIdx, uint sensorType,
+    bool init(int sensorIdx, SENSOR_TYP sensorType,
+            SENSOR_FEUCHTIGKEIT senserDHTType,
             int tempDpt, int8_t tempOffset, COM tempCo,
             int humDpt, int8_t humOffset, COM humCo);
     void setSendPeriod(int sendValAtStart, uint startFactor,
@@ -81,13 +91,16 @@ public:
             uint triggerValue, uint triggerAction, COM comObject);
 
     // Runtime functions
-    bool isActive() const { return type != SENSOR_TYP_NO_SENSOR; }
+    bool isActive() const { return type != SN_NO_SENSOR; }
     void setConvTime(uint when);
     void sampleValues();
     void readValues();
     void doPeriodics();
     void sendTemperature() const;
     void sendHumidity() const;
+
+    bool isInitialized() const;
+    void setInitialized(bool newState);
 };
 
 typedef SensorConfig* SensorConf;

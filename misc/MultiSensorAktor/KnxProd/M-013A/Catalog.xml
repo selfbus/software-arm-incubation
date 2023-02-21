@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" CreatedBy="KNX MT" ToolVersion="5.1.255.16695" xmlns="http://knx.org/xml/project/14">
+  <ManufacturerData>
+    <Manufacturer RefId="M-013A">
+      <Catalog>
+        <CatalogSection Id="M-013A_CS-1" Name="Geräte" Number="1" DefaultLanguage="de-DE">
+          <CatalogItem Id="M-013A_H-2-1_HP-0001-02-8861_CI-1-1" Name="Multi-Sensor-Aktor" Number="1" ProductRefId="M-013A_H-2-1_P-1" Hardware2ProgramRefId="M-013A_H-2-1_HP-0001-02-8861" DefaultLanguage="de-DE" />
+        </CatalogSection>
+      </Catalog>
+      <Languages>
+        <Language Identifier="de-DE">
+        </Language>
+      </Languages>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>

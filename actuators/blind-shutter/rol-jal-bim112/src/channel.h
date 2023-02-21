@@ -12,6 +12,8 @@
 #include <sblib/types.h>
 #include <sblib/timeout.h>
 #include <sblib/timer.h>
+#include <sblib/eibMASK0701.h>
+#include "hand_actuation.h"
 
 #define NO_OF_CHANNELS 4
 #define NO_OF_OUTPUTS  (NO_OF_CHANNELS * 2)
@@ -19,6 +21,7 @@
 #define NO_OF_SCENES    8
 #define NO_OF_ALARMS    4
 
+extern MASK0701 bcu;
 extern const int outputPins[NO_OF_OUTPUTS];
 extern Timeout PWMDisabled;
 
@@ -145,7 +148,7 @@ public:
     static void initPWM(int PWMPin);
     static void startPWM();
     static void setPWMtoMaxDuty();
-
+    Channel() = delete;
     Channel(unsigned int number, unsigned int address);
     virtual unsigned int channelType(void);
 
@@ -155,7 +158,7 @@ public:
     bool automaticBEnabled();
     bool isBlocking();
     unsigned short currentPosition(void);
-    virtual void objectUpdate(unsigned int objno);
+    virtual void objectUpdateCh(unsigned int objno);
             void startUp(void);
             void startDown(void);
             void stop(void);
@@ -170,6 +173,7 @@ public:
             void handleMove(unsigned int value);
             void handleStep(unsigned int value);
             bool isHandModeAllowed();
+            void setHandActuation(HandActuation* hand);
 
 protected:
             void _handleState(void);
@@ -240,6 +244,7 @@ protected:
              short savedPosition;    //!< position before an automatic commands was triggered
     Timeout        timeout;
     Timeout        Blocking;         //!< active while the "cooldown" of an recently high switched OutputPin is blocking other channels from doing the same
+    HandActuation* handAct_;
 };
 
 inline unsigned int Channel::isRunning(void)
