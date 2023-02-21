@@ -1,4 +1,3 @@
 [submodule "software-arm-lib"]
 	path = software-arm-lib
-	url = https://www.github.com/gnampf1/software-arm-lib.git
-	branch = DEV-Timing+0x07B0+Properties
+	url = https://github.com/selfbus/software-arm-lib.git
