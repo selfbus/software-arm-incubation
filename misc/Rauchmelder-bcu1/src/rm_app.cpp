@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 #include <sblib/eib/datapoint_types.h>
-#include <sblib/timeout.h>
 #include "rm_app.h"
 #include "rm_const.h"
 #include "rm_com.h"
@@ -46,12 +45,12 @@ const struct
 	unsigned const char objects[MAX_OBJ_CMD];	// Zuordnung der ComObjekte zu den Befehlen
 } CmdTab[RM_CMD_COUNT] =
 {	//CMD	objNr.
-	{ 0x04, {6,  0xFF, 0xFF, 0xFF} },	// RM_CMD_SERIAL
-	{ 0x09, {7,  0xFF, 0xFF, 0xFF} },	// RM_CMD_OPERATING_TIME
-	{ 0x0B, {8,  9,    15,   0xFF} },	// RM_CMD_SMOKEBOX
-	{ 0x0C, {10, 11,   0xFF, 0xFF} }, 	// RM_CMD_BATTEMP
-	{ 0x0D, {16, 17,   18,   19} },		// RM_CMD_NUM_ALARMS
-	{ 0x0E, {20, 21,   0xFF, 0xFF} } 	// RM_CMD_NUM_ALARMS_2
+	{ 0x04, {6,  0xFF, 0xFF, 0xFF} },	// <STX>C4214710F31F<ETX> RM_CMD_SERIAL
+	{ 0x09, {7,  0xFF, 0xFF, 0xFF} },	// <STX>C9000047E31F<ETX> RM_CMD_OPERATING_TIME
+	{ 0x0B, {8,  9,    15,   0xFF} },	// <STX>CB0065000111<ETX> RM_CMD_SMOKEBOX
+	{ 0x0C, {10, 11,   0xFF, 0xFF} }, 	// <STX>CC000155551B<ETX> RM_CMD_BATTEMP
+	{ 0x0D, {16, 17,   18,   19} },		// <STX>CD0000000007<ETX> RM_CMD_NUM_ALARMS
+	{ 0x0E, {20, 21,   0xFF, 0xFF} } 	// <STX>CE000048<ETX> RM_CMD_NUM_ALARMS_2
 };
 
 // Mapping von den Kommunikations-Objekten auf die Rauchmelder Requests
@@ -944,10 +943,9 @@ void initApplication()
 
     pinMode(RM_ACTIVITY_PIN, INPUT); // smoke detector base plate state, no pullup or pulldown configured at this pin to not affect the smoke detector
     pinMode(RM_COMM_ENABLE_PIN, OUTPUT);
-	digitalWrite(RM_COMM_ENABLE_PIN, RM_COMM_ENABLE); // Kommunikation mit dem RM aktivieren
+    digitalWrite(RM_COMM_ENABLE_PIN, RM_COMM_ENABLE); // Kommunikation mit dem RM aktivieren
     pinMode(RM_SUPPORT_VOLTAGE_PIN, OUTPUT);
     digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_OFF); // zuerst die Spannungsversorgung ausschalten
-
     // rm_send_ack();
     // rm_send_ack(); // sending twice a ACK came from original LPC922 source, because
     // smoke detector will answer with it's automatic message (hex) after enabling the serial e.g.:
