@@ -604,6 +604,32 @@ void send_Cmd(unsigned char cmd){
 	    return;
 	}
 
+    ///\todo set remaining objValues to invalid values before sending serial command
+    switch (cmd)
+    {
+        case RM_CMD_SERIAL:
+            break;
+
+        case RM_CMD_OPERATING_TIME:
+            break;
+
+        case RM_CMD_SMOKEBOX:
+            break;
+
+        case RM_CMD_BATTEMP:
+            objValues[RM_CMD_BATTEMP] = 0;
+            break;
+
+        case RM_CMD_NUM_ALARMS:
+            break;
+
+        case RM_CMD_NUM_ALARMS_2:
+            break;
+
+        default:
+            ;
+    }
+
     rm_send_cmd(CmdTab[cmd].cmdno);
     answerWait = INITIAL_ANSWER_WAIT;
 }
