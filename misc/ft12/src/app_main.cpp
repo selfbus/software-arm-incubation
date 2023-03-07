@@ -15,47 +15,60 @@
 #include <sblib/serial.h>
 #include <sblib/bits.h>
 #include <sblib/version.h>
+#include <cstring>
 #include "bcu_ft12.h"
 #include "ft12_protocol.h"
 
 #define LED_SERIAL_RX               (PIO0_6) //!< Serial-Rx LED Pin
 #define LED_KNX_RX                  (PIO0_7) //!< KNX-Rx LED Pin
+#define LED_ON                      (false)  //!< Led is turned on by setting the IO-pin to low/ground
+#define LED_OFF                     (true)   //!< Led is turned off by setting the IO-pin to high/+3V3
+#define LED_TEST_MS                 (250)    //!< Time in milliseconds every led should light up on startup test
 
 #define PIN_FT_SERIAL_TX            (PIN_TX) //!< Serial-Tx Pin
 #define PIN_FT_SERIAL_RX            (PIN_RX) //!< Serial-Rx Pin
 
-#define LED_SERIAL_RX_BLINKTIME     (50)     //!< Receiving serial data blinking timeout in milliseconds
 #define LED_KNX_RX_BLINKTIME        (100)    //!< Receiving KNX packets blinking timeout in milliseconds
 
 #define FT_OWN_KNX_ADDRESS          (0x11fe) //!< Our own knx-address: 1.1.254
 #define FT_FRAME_SIZE               (32)     //!< Maximum size of FT1.2 frames
 #define FT_MAX_SEND_RETRY           (1)      //!< Do not repeat sending
 #define FT_BAUDRATE                 (19200)  //!< Ft12 baudrate
-#define FT_TIMEOUT_MS               (510*1000/FT_BAUDRATE) //!< Timeout of the serial communication (~510 bits)
-
+#define FT_OUTBUFFER_COUNT          (2)      //!< Number of outgoing FT12 frame buffers
 APP_VERSION("SBft12  ", "0", "01")
 
 BcuFt12 bcu = BcuFt12();  //!< Bus coupling unit Maskversion 0x0012 of the ft12 module
 
-byte ftFrameIn[FT_FRAME_SIZE];  //!< Buffer for incoming FT1.2 frames
-byte ftFrameOut[FT_FRAME_SIZE]; //!< Buffer for outgoing FT1.2 frames
+/** ft12 bit timeout converted in milliseconds */
+uint32_t ft12ExchangeTimeoutMs = 2 * ((FT12_EXCHANGE_TIMEOUT_BITS * 1000/FT_BAUDRATE) + 1);
+/** ft12 line idle timeout converted in milliseconds */
+uint32_t ft12LineIdleTimeoutMs = 2 * ((FT12_LINE_IDLE_TIMEOUT_BITS * 1000/FT_BAUDRATE) + 1);
 
-static unsigned int lastSerialRecvTime = 0;
+byte ftFrameIn[FT_FRAME_SIZE];        //!< Buffer for incoming FT1.2 frames
+uint8_t ftFrameInLen;                 //!< Length of the data in ftFrameIn
+byte ftFrameOut[FT_FRAME_SIZE];       //!< Buffer for preparing FT1.2 frames to send to serial port
+byte ftFrameOutBuffer[FT_FRAME_SIZE][FT_OUTBUFFER_COUNT]; //!< Buffer for outgoing FT1.2 frames which are waiting for an ACK
+uint8_t ftFrameOutBufferLength[FT_OUTBUFFER_COUNT];       //!< Length of the data in ftFrameOutBuffer
+
+byte repeatCounter;             //! Decrement on every repeat until its zero, initialized with @ref FT12_REPEAT_LIMIT
+
+uint32_t lastSerialRecvTime;
+uint32_t lastSerialSendTime;
 
 byte* telegramOut1; //!< 1.Buffer for outgoing telegrams
 byte* telegramOut2; //!< 2.Buffer for outgoing telegrams
 
 int telegramOutId; //!< Index of the next buffer for an outgoing knx telegram
 
-uint8_t ftFrameInLen;       //!< Length of the data in ftFrameIn
-uint8_t ftFrameOutLen;      //!< Length of the data in ftFrameOut
+
+
 
 bool sendFrameCountBit;
 bool rcvFrameCountBit;
 int16_t lastChecksum;
 
+Timeout ft12AckTimeout;     //!< waiting for ft12 ACK timeout
 Timeout knxRxTimeout;       //!< KNX-Rx LED blinking timeout
-Timeout knxSerialTimeout;   //!< Serial-Rx LED blinking timeout
 
 FtFrameType frameType = FT_NONE;
 
@@ -69,6 +82,78 @@ void debugFatal()
 }
 
 /**
+ * Sends a @ref FT_ACK
+ */
+void sendft12Ack()
+{
+    serial.write(FT_ACK);
+    serial.flush();
+    digitalWrite(LED_SERIAL_RX, LED_OFF);
+}
+
+/**
+ * Sends a ft12 frame and starts the ack-timeout timer
+ * @param frame     ft12 frame to send
+ * @param frameSize size of the frame
+ */
+void sendft12withAckWaiting(byte* frame, int32_t frameSize)
+{
+    uint8_t sendSize = 15;
+    digitalWrite(LED_SERIAL_RX, LED_ON);
+    ftFrameOutBufferLength[0] = frameSize;
+    memcpy(ftFrameOutBuffer, frame, ftFrameOutBufferLength[0]);
+    repeatCounter = FT12_REPEAT_LIMIT;
+    uint8_t i = 0;
+    while (frameSize >= sendSize)
+    {
+        serial.write(&frame[i], sendSize);
+        i += sendSize;
+        frameSize -= sendSize;
+    }
+    serial.write(&frame[i], frameSize);
+
+    lastSerialSendTime = millis();
+    ft12AckTimeout.start(ft12ExchangeTimeoutMs);
+}
+
+void sendft12RepeatedFrame()
+{
+    return; ///\todo repeating doesn't work reliably right now
+
+    if ((ftFrameOutBufferLength[0] == 0) || (repeatCounter <= 0))
+    {
+        ftFrameOutBufferLength[0] = 0;
+        ft12AckTimeout.stop();
+        return;
+    }
+
+    repeatCounter--;
+    digitalWrite(LED_SERIAL_RX, LED_ON);
+    serial.write(ftFrameOutBuffer[0], ftFrameOutBufferLength[0]);
+    ft12AckTimeout.start(ft12ExchangeTimeoutMs);
+}
+
+/**
+ * Send a FT frame of fixed length
+ *
+ * @param frame          The buffer that contains the frame
+ * @param funcCode       The function code, e.g. FC_RESET
+ * @param frameCountBit  Frame count bit of the control byte
+ */
+void sendFixedFrame(byte* frame, const FtFunctionCode& funcCode, const bool& frameCountBit)
+{
+    frame[0] = FT_FIXED_START;
+    frame[1] = 0xD0 | (funcCode & 0x0f);
+    if (frameCountBit)
+    {
+        frame[1] |= 0x20;
+    }
+    frame[2] = frame[1];
+    frame[3] = FT_END;
+    sendft12withAckWaiting(frame, FIXED_FRAME_LENGTH);
+}
+
+/**
  * Reset the buffers.
  */
 void reset()
@@ -77,8 +162,15 @@ void reset()
     sendFrameCountBit = true;
     lastChecksum = -1;
     ftFrameInLen = 0;
-    ftFrameOutLen = 0;
+    for (uint8_t i = 0; i < FT_OUTBUFFER_COUNT; i++)
+    {
+        ftFrameOutBufferLength[i] = 0;
+    }
+    ft12AckTimeout.stop();
     frameType = FT_NONE;
+    telegramOutId = 0;
+    lastSerialRecvTime = 0;
+    lastSerialSendTime = 0;
 }
 
 /**
@@ -89,10 +181,16 @@ BcuBase* setup()
     telegramOut1 = new byte(bcu.maxTelegramSize());
     telegramOut2 = new byte(bcu.maxTelegramSize());
 
+    // led init and test
     pinMode(LED_KNX_RX, OUTPUT);    // KNX-Rx LED
-    digitalWrite(LED_KNX_RX, false);
+    digitalWrite(LED_KNX_RX, LED_ON);
+    delay(LED_TEST_MS);
     pinMode(LED_SERIAL_RX, OUTPUT); // Serial-Rx LED
-    digitalWrite(LED_SERIAL_RX, false);
+    digitalWrite(LED_SERIAL_RX, LED_ON);
+    delay(LED_TEST_MS);
+    digitalWrite(LED_KNX_RX, LED_OFF);
+    delay(LED_TEST_MS);
+    digitalWrite(LED_SERIAL_RX, LED_OFF);
 
     bcu.begin();
     bcu.setOwnAddress(FT_OWN_KNX_ADDRESS);
@@ -109,7 +207,6 @@ BcuBase* setup()
     serial.setRxPin(PIN_FT_SERIAL_RX);
     serial.begin(FT_BAUDRATE, SERIAL_8E1);
     reset();
-    telegramOutId = 0;
     return (&bcu);
 }
 
@@ -178,7 +275,7 @@ bool dirtyCheckAndReplaceInvalidDefaultSenderAddress(byte* frame, const FtFuncti
 void sendVariableFrame(byte* frame, const FtFunctionCode& funcCode, const EmiCode& emi, const uint8_t& userDataLength,
         const bool& frameCountBit)
 {
-    // This is a VERY VERY dirty hack for older Selfbus devices
+    // This is a VERY VERY dirty hack for older Selfbus devices with default knx address 0.0.0
     dirtyCheckAndReplaceInvalidDefaultSenderAddress(frame, funcCode, emi, userDataLength);
 
     frame[4] = 0xD0;
@@ -194,9 +291,9 @@ void sendVariableFrame(byte* frame, const FtFunctionCode& funcCode, const EmiCod
     frame[4] |= (funcCode & 0x0f);
     frame[5] = emi;
 
-    frame[userDataLength + 4] = calcCheckSum(frame, userDataLength);
-    frame[userDataLength + 5] = FT_END;
-    serial.write(frame, userDataLength + 6);
+    frame[4 + userDataLength] = calcCheckSum(frame, userDataLength);
+    frame[5 + userDataLength] = FT_END;
+    sendft12withAckWaiting(frame, userDataLength + VARIABLE_FRAME_HEADER_LENGTH);
 }
 
 /**
@@ -217,20 +314,15 @@ bool processFixedFrame(uint8_t* frame)
     switch (cf.functionCode)
     {
         case FC_SEND_RESET:
+            sendft12Ack();
             reset();
-            serial.write(FT_ACK);
             return true;
             break;
-
-        case FC_SEND_UDAT:
-            return false; ///\todo FC_SEND_UDAT
-            break;
         case FC_REQ_STATUS:
-            return false; ///\todo FC_REQ_STATUS
+            sendft12Ack();
+            return true; ///\todo FC_REQ_STATUS
             break;
-
         default:
-            serial.write(FT_ACK);
             return false;
     }
     return true;
@@ -241,15 +333,17 @@ bool processFixedFrame(uint8_t* frame)
  */
 void processDataConnectedRequest()
 {
-    for (int i = 6; i < 10; ++i)
+    for (uint32_t i = VARIABLE_FRAME_HEADER_LENGTH; i < 10; ++i)
+    {
         ftFrameOut[i] = 0;
+    }
 
-    int apci = makeWord(ftFrameIn[12], ftFrameIn[13]);
+    uint16_t apci = makeWord(ftFrameIn[12], ftFrameIn[13]);
     switch (apci)
     {
     case APCI_DEVICEDESCRIPTOR_READ_PDU:
+        sendft12Ack();
         uint16_t version = 0x0012;
-        serial.write(FT_ACK);
         ftFrameOut[11] = 0x63; // DRL 3 bytes
         ftFrameOut[12] = HIGH_BYTE(APCI_DEVICEDESCRIPTOR_RESPONSE_PDU);
         ftFrameOut[13] = lowByte(APCI_DEVICEDESCRIPTOR_RESPONSE_PDU);
@@ -277,11 +371,11 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
     rcvFrameCountBit = (ftFrameIn[4] >> 5) & 0x1;
     switch (emi)  // EMI code
     {
-    case PEI_Identify_Req:
-        serial.write(FT_ACK);
-        ftFrameOut[6]  = HIGH_BYTE(bcu.ownAddress());
+    case PEI_Identify_Req: // KNX Spec. 3/6/3 3.3.9.5 p.54
+        sendft12Ack();
+        ftFrameOut[6]  = HIGH_BYTE(bcu.ownAddress()); // create PEI_Identify_con
         ftFrameOut[7]  = lowByte(bcu.ownAddress());
-        ftFrameOut[8]  = 0x00;
+        ftFrameOut[8]  = 0x00; // 6 bytes KNX serial number
         ftFrameOut[9]  = 0x01;
         ftFrameOut[10] = 0x00;
         ftFrameOut[11] = 0x01;
@@ -291,13 +385,13 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
         sendVariableFrame(ftFrameOut, FC_SEND_UDAT, PEI_Identify_Con, 10, sendFrameCountBit);
         break;
 
-    case PEI_Switch_Req: // KNX Spec. 3/6/3 3.4.1 p.14
+    case PEI_Switch_Req: // KNX Spec. 3/6/3 3.1.4 p.14
         reset();
-        serial.write(FT_ACK);
+        sendft12Ack();
         break;
 
     case T_Connect_Req:
-        serial.write(FT_ACK);
+        sendft12Ack();
         ftFrameOut[6]  = 0;
         ftFrameOut[7]  = frame[9];
         ftFrameOut[8]  = frame[10];
@@ -313,7 +407,7 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
 
     case L_Data_Req: // KNX Spec. 2.1 3/6/3 3.3.4.2 p.20
     {
-        serial.write(FT_ACK);
+        sendft12Ack();
         uint8_t userDataLength = frame[1];
         if (telegramOutId)
             telegramOut = telegramOut1;
@@ -335,7 +429,6 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
 
         bcu.bus->sendTelegram(telegramOut, userDataLength - 2);
         sendVariableFrame(ftFrameOut, FC_SEND_UDAT, L_Data_Con, userDataLength, sendFrameCountBit);
-        // serial.flush();
         break;
     }
 
@@ -352,7 +445,7 @@ void processTelegram()
 {
     for (uint8_t i = 0; i < bcu.bus->telegramLen - 1; i++)
     {
-        ftFrameOut[i + 6] = bcu.bus->telegram[i];
+        ftFrameOut[i + VARIABLE_FRAME_HEADER_LENGTH] = bcu.bus->telegram[i];
     }
     ftFrameOut[4] = 0xf0;
     sendVariableFrame(ftFrameOut, FC_SEND_UDAT, L_Data_Ind, bcu.bus->telegramLen + 1, sendFrameCountBit);
@@ -368,55 +461,57 @@ static void timeoutSerial()
 /**
  * The main processing loop.
  */
-__attribute__((optimize("O3"))) void loop()
+//__attribute__((optimize("O3"))) void loop()
+void loop()
 {
     if (knxRxTimeout.expired())
     {
-        digitalWrite(LED_KNX_RX, false);
+        digitalWrite(LED_KNX_RX, LED_OFF);
     }
 
-    if (knxSerialTimeout.expired())
-    {
-        digitalWrite(LED_SERIAL_RX, false);
-    }
-
-	if (bcu.bus->telegramReceived())
-    {
-	    digitalWrite(LED_KNX_RX, true);
-	    knxRxTimeout.start(LED_KNX_RX_BLINKTIME);
-	    processTelegram();
-        bcu.bus->discardReceivedTelegram();
-    }
-
-	// handle incoming data from the serial line
-	if (serial.available())
+	int32_t byte;
+	while ((byte = serial.read()) > -1)
 	{
-        digitalWrite(LED_SERIAL_RX, true);
-        knxSerialTimeout.start(LED_SERIAL_RX_BLINKTIME);
-	}
-
-	while (serial.available())
-	{
-	    uint8_t byte = serial.read();
 		lastSerialRecvTime = millis();
-
 		// start byte / frame detection, fixed or variable frame or just a ack
 		if (frameType == FT_NONE)
 		{
-		    if (byte == FT_ACK)
+		    switch (byte)
 		    {
-		        sendFrameCountBit = !sendFrameCountBit;
-		        continue;
+		        case FT_ACK:
+                {
+                    ft12AckTimeout.stop();
+                    ftFrameOutBufferLength[0] = 0;
+                    sendFrameCountBit = !sendFrameCountBit;
+                    digitalWrite(LED_SERIAL_RX, LED_OFF);
+                    continue;
+                }
+		        case FT_FIXED_START:
+                    frameType = FT_FIXED_START;
+                    break;
+		        case FT_VARIABLE_START:
+                    frameType = FT_VARIABLE_START;
+                    break;
+		        case 0xA0:
+		            reset();
+		            continue;
+		            break;
+		        default:
+		            frameType = FT_NONE; // we should never land here, otherwise something is really wrong
+		            // sendFixedFrame(ftFrameOut, FC_SEND_RESET, sendFrameCountBit);
+		            continue;
+		            // debugFatal();
 		    }
-		    else if (byte == FT_FIXED_START)
-		        frameType = FT_FIXED_START;
-		    else if (byte == FT_VARIABLE_START)
-                frameType = FT_VARIABLE_START;
 		}
 
 		// buffer overflow prevention
-        if (ftFrameInLen < FT_FRAME_SIZE)
-            ftFrameIn[ftFrameInLen++] = byte;
+        if (ftFrameInLen >= FT_FRAME_SIZE)
+        {
+            reset();
+            continue;
+        }
+
+        ftFrameIn[ftFrameInLen++] = byte;
 
         if (byte != FT_END)
         {
@@ -451,7 +546,23 @@ __attribute__((optimize("O3"))) void loop()
         }
 	}
 
-	if (frameType != FT_NONE && elapsed(lastSerialRecvTime) > FT_TIMEOUT_MS)
+    if (ft12AckTimeout.expired())
+    {
+        sendft12RepeatedFrame();
+    }
+
+    if (bcu.bus->telegramReceived())
+    {
+        digitalWrite(LED_KNX_RX, LED_ON);
+        knxRxTimeout.start(LED_KNX_RX_BLINKTIME);
+        if (ftFrameOutBufferLength[0] == 0)
+        {
+            processTelegram();
+            bcu.bus->discardReceivedTelegram();
+        }
+    }
+
+	if (frameType != FT_NONE && elapsed(lastSerialRecvTime) > ft12ExchangeTimeoutMs)
 	{
 	    timeoutSerial();
 	}
@@ -462,5 +573,5 @@ __attribute__((optimize("O3"))) void loop()
  */
 void loop_noapp()
 {
-
+    loop();
 }

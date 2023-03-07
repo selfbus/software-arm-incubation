@@ -23,6 +23,13 @@
 
 #include <stdint.h>
 
+#define FT12_EXCHANGE_TIMEOUT_BITS (510)  //!< Time-out for end of exchange in case of SEND/CONFIRM or REQUEST/RESPOND (KNX Spec. 2.1 3/6/2 6.4.8 p.29)
+#define FT12_REPEAT_LIMIT (3)             //!< Repeat limit the retransmissions due to transmission errors (KNX Spec. 2.1 3/6/2 6.4.8 p.29)
+#define FT12_LINE_IDLE_TIMEOUT_BITS (33)  //!< maximum bit-time between two characters, minimum line idle time before an error is detected
+
+#define FIXED_FRAME_LENGTH (4)            //!< Length of a fixed ft12 frame
+#define VARIABLE_FRAME_HEADER_LENGTH (6)  //!< Header length of a variable ft12 frame
+
 /**
  * FT frame type
  * @note KNX Spec. 2.1 3/6/2 6.4.3.2 p.23ff
@@ -45,7 +52,6 @@ enum FtFunctionCode
     FC_SEND_RESET = 0x00,  //!< Reset the remote link
     FC_SEND_UDAT  = 0x03,  //!< User data
     FC_REQ_STATUS = 0x09,  //!< Request status of link
-    // FC_RESET      = 0x40,  //!< Reset
 };
 
 /**

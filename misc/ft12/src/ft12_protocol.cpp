@@ -21,9 +21,6 @@
 
 #include "ft12_protocol.h"
 
-uint8_t fixedFrameLength = 4;
-uint8_t variableFrameHeaderLength = 6;
-
 FtControlField controlFieldFromByte(const uint8_t& controlByte)
 {
     FtControlField cf;
@@ -38,7 +35,7 @@ FtControlField controlFieldFromByte(const uint8_t& controlByte)
 bool isValidFixedFrameHeader(const uint8_t* frame, uint8_t frameLength)
 {
     // check length
-    if (frameLength != fixedFrameLength)
+    if (frameLength != FIXED_FRAME_LENGTH)
     {
         return (false);
     }
@@ -77,7 +74,7 @@ uint8_t calcCheckSum(const uint8_t* frame, const uint8_t& userDataLength)
 
 bool isValidVariableFrameHeader(const uint8_t* frame, uint8_t frameLength)
 {
-    if (frameLength < variableFrameHeaderLength)
+    if (frameLength < VARIABLE_FRAME_HEADER_LENGTH)
     {
         // to short
         return (false);
@@ -107,7 +104,7 @@ bool isValidVariableFrameHeader(const uint8_t* frame, uint8_t frameLength)
         return (false);
     }
     uint8_t userDataLength = frame[1];
-    if (frameLength != (userDataLength + variableFrameHeaderLength))
+    if (frameLength != (userDataLength + VARIABLE_FRAME_HEADER_LENGTH))
     {
         // length mismatch
         return (false);
