@@ -47,20 +47,32 @@ const HardwareVersion hardwareVersion[7] =
 { 2,  true,  0x002F, 0x16, 0x4474, 0x44D6, { 0, 0, 0, 0, 0x02, 0x1E }, "Binary input/LED 2f" },
 { 2,  false, 0x012F, 0x16, 0x4474, 0x44D6, { 0, 0, 0, 0, 0x01, 0x1E }, "Binary input 230VAC 2f" } };
 
-#ifdef BI16
-#define HARDWARE_ID 0
-#elif defined BI8
-#define HARDWARE_ID 1
-#elif defined BI4
-#define HARDWARE_ID 2
-#elif defined TI6L
-#define HARDWARE_ID 3
-#elif defined TI4L
-#define HARDWARE_ID 4
-#elif defined TI2L
-#define HARDWARE_ID 5
-#elif defined TI2
-#define HARDWARE_ID 6
+/**
+ *  @def NUM_INPUTS Sets number of inputs used. Valid values are 2, 4, 6, 8, 16
+ *  @note can be defined as a build variable in MCUxpresso/eclipse projects setting
+ *  @warning @ref LED must be defined for @ref NUM_INPUTS = 6
+ */
+#if (!defined(NUM_INPUTS)) || \
+    ((NUM_INPUTS != 2) && (NUM_INPUTS != 4) && (NUM_INPUTS != 6) && (NUM_INPUTS != 8) && (NUM_INPUTS != 16))
+#   error "NUM_INPUTS must be defined and can only have a value of 2, 4, 6, 8 or 16"
+#endif
+
+#if (NUM_INPUTS == 16)
+#   define HARDWARE_ID 0
+#elif (NUM_INPUTS == 8)
+#   define HARDWARE_ID 1
+#elif (NUM_INPUTS == 4)
+#   define HARDWARE_ID 2
+#elif (NUM_INPUTS == 6) && defined(LED)
+#   define HARDWARE_ID 3
+#elif (NUM_INPUTS == 4) && defined(LED)
+#   define HARDWARE_ID 4
+#elif (NUM_INPUTS == 2) && defined(LED)
+#   define HARDWARE_ID 5
+#elif (NUM_INPUTS == 2) && (!defined(LED))
+#   define HARDWARE_ID 6
+#else
+#   error "Configuration is not supported."
 #endif
 
 //LED output pulse/blink time in ms
@@ -76,64 +88,81 @@ const int inputPins[] =
 #ifdef __LPC11UXX__
   PIN_PWM
 , PIN_APRG
-, PIN_IO1
-
-, PIN_IO2
-, PIN_IO3
-, PIN_IO4
-, PIO_SDA
-, PIN_IO5
-
-, PIN_IO14
-, PIN_IO15
-, PIN_IO13
-, PIN_IO11
-
-, PIN_IO9
-, PIN_IO10
-, PIN_TX
-, PIN_RX
-
+#   if (NUM_INPUTS > 2)
+        , PIN_IO1
+        , PIN_IO2
+#   endif
+#   if (NUM_INPUTS > 4)
+        , PIN_IO3
+        , PIN_IO4
+#   endif
+#   if (NUM_INPUTS > 6)
+        , PIO_SDA
+        , PIN_IO5
+#   endif
+#   if (NUM_INPUTS > 8)
+        , PIN_IO14
+        , PIN_IO15
+        , PIN_IO13
+        , PIN_IO11
+        , PIN_IO9
+        , PIN_IO10
+        , PIN_TX
+        , PIN_RX
+#   endif
 #elif defined TS_ARM
     PIO2_2,  //  A ; IO2
 	PIO0_9,  //  B ; IO3
-	PIO2_11, //  C ; IO4
-	PIO1_1,  //  D ; IO5
+#   if (NUM_INPUTS > 2)
+        PIO2_11, //  C ; IO4
+        PIO1_1,  //  D ; IO5
+#   endif
+#   if (NUM_INPUTS > 4)
+        PIO3_0,  //  E ; IO6
+        PIO3_1,  //  F ; IO7
+#   endif
+#   if (NUM_INPUTS > 6)
+        PIO3_2,  //  G ; IO8
+        PIO0_5,  //  H ; IO17 -- pullup Widerstand auf TS-Arm beachten
+#   endif
+#   if (NUM_INPUTS > 8)
+        PIO2_9,  //  I ; IO9
+        PIO0_8,  //  J ; IO10
 
-	PIO3_0,  //  E ; IO6
-	PIO3_1,  //  F ; IO7
-	PIO3_2,  //  G ; IO8
-	PIO0_5,  //  H ; IO17 -- pullup Widerstand auf TS-Arm beachten
+        PIO1_10, //  K ; IO11
+        PIO0_11, //  L ; IO12
 
-	PIO2_9,  //  I ; IO9
-	PIO0_8,  //  J ; IO10
-	PIO1_10, //  K ; IO11
-	PIO0_11, //  L ; IO12
-
-	PIO1_0,  //  M ; IO13
-	PIO1_2,  //  N ; IO14
-	PIO2_3,  //  O ; IO15
-	PIO1_5,  //  P ; IO16
+        PIO1_0,  //  M ; IO13
+        PIO1_2,  //  N ; IO14
+        PIO2_3,  //  O ; IO15
+        PIO1_5,  //  P ; IO16
+#   endif
 #else
 	PIN_IO1,  //  A ; IO1
 	PIN_IO2,  //  B ; IO2
-	PIN_IO3,  //  C ; IO3
-	PIN_IO4,  //  D ; IO4
+#   if (NUM_INPUTS > 2)
+        PIN_IO3,  //  C ; IO3
+        PIN_IO4,  //  D ; IO4
+#   endif
+#   if (NUM_INPUTS > 4)
+        PIN_IO5,  //  E ; IO5
+        PIN_IO6,  //  F ; IO6
+#   endif
+#   if (NUM_INPUTS > 6)
+        PIN_IO7,  //  G ; IO7
+        PIN_IO8,  //  H ; IO8
+#   endif
+#   if (NUM_INPUTS > 8)
+        PIN_IO9,  //  I ; IO9
+        PIN_IO10, //  J ; IO10
+        PIN_IO11, //  K ; IO11
+        PIN_IO12, //  L ; IO12
 
-	PIN_IO5,  //  E ; IO5
-	PIN_IO6,  //  F ; IO6
-	PIN_IO7,  //  G ; IO7
-	PIN_IO8,  //  H ; IO8
-
-	PIN_IO9,  //  I ; IO9
-	PIN_IO10, //  J ; IO10
-	PIN_IO11, //  K ; IO11
-	PIN_IO12, //  L ; IO12
-
-	PIN_IO13, //  M ; IO13
-	PIN_IO14, //  N ; IO14
-	PIN_IO15, //  O ; IO15
-	PIO_SDA,  //  P ; SDA
+        PIN_IO13, //  M ; IO13
+        PIN_IO14, //  N ; IO14
+        PIN_IO15, //  O ; IO15
+        PIO_SDA,  //  P ; SDA
+#   endif
 #endif
 };
 
