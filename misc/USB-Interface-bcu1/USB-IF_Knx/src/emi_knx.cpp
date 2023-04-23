@@ -262,13 +262,20 @@ void EmiKnxIf::EmiIf_Tasks(void)
   if (CdcMonActive || HidIfActive)
   {
     if (bcu.userRam->status() & BCU_STATUS_TRANSPORT_LAYER)
-        bcu.userRam->status() ^= BCU_STATUS_TRANSPORT_LAYER | BCU_STATUS_PARITY; // interne Verarbeitung deaktivieren
+        bcu.userRam->status() ^= BCU_STATUS_TRANSPORT_LAYER | BCU_STATUS_PARITY; // interne TL Verarbeitung deaktivieren
+    if (bcu.userRam->status() & BCU_STATUS_LINK_LAYER)
+        bcu.userRam->status() ^= BCU_STATUS_LINK_LAYER | BCU_STATUS_PARITY; // interne LL Verarbeitung deaktivieren
   } else {
     if ((bcu.userRam->status() & BCU_STATUS_TRANSPORT_LAYER) == 0)
     {
-        bcu.userRam->status() ^= BCU_STATUS_TRANSPORT_LAYER | BCU_STATUS_PARITY; // interne Verarbeitung aktivieren
+        bcu.userRam->status() ^= BCU_STATUS_TRANSPORT_LAYER | BCU_STATUS_PARITY; // interne TL Verarbeitung aktivieren
       lastinternal = true;
     }
+    if ((bcu.userRam->status() & BCU_STATUS_LINK_LAYER) == 0)
+    {
+        bcu.userRam->status() ^= BCU_STATUS_LINK_LAYER | BCU_STATUS_PARITY; // interne LL Verarbeitung aktivieren
+    }
+
   }
   if (CdcMonActive)
     if (HidIfActive)

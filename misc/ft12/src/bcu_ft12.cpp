@@ -30,10 +30,9 @@ BcuFt12::BcuFt12(UserRamBCU1* userRamBcu1) :
 {
 }
 
-unsigned char BcuFt12::processApci(ApciCommand apciCmd, const uint16_t senderAddr, const int8_t senderSeqNo,
-        bool * sendResponse, unsigned char * telegram, uint8_t telLength)
+bool BcuFt12::processApci(ApciCommand apciCmd, unsigned char * telegram, uint8_t telLength, uint8_t * sendBuffer)
 {
-    return (T_ACK_PDU);
+    return (false);
 }
 
 void BcuFt12::begin()

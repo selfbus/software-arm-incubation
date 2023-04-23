@@ -57,6 +57,8 @@ BcuBase* setup()
  * auf und die Telegramme sind noch vorhanden, wenn loop() der Applikation aufgerufen wird.
  * Dort kann dann das Telegramm kopiert und danach bei Bedarf processTelegramm() aufgerufen werden. Muss das
  * überhaupt? Es wäre praktisch, wenn man über den Bus die Adresse schreiben kann, insofern also doch?
+ * Wenn Bit BCU_STATUS_TRANSPORT_LAYER gelöscht wird, MUSS auch BCU_STATUS_LINK_LAYER gelöscht werden,
+ * ansonsten wird jedes Telegram von uns mit einem LL_ACK beantwortet.
  */
 /*
  * The main processing loop.
