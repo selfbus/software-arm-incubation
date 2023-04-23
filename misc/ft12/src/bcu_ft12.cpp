@@ -32,7 +32,7 @@ BcuFt12::BcuFt12(UserRamBCU1* userRamBcu1) :
 
 bool BcuFt12::processApci(ApciCommand apciCmd, unsigned char * telegram, uint8_t telLength, uint8_t * sendBuffer)
 {
-    return (true);
+    return (false);
 }
 
 void BcuFt12::begin()
