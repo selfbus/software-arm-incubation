@@ -1,3 +1,4 @@
 [submodule "software-arm-lib"]
 	path = software-arm-lib
 	url = https://github.com/selfbus/software-arm-lib.git
+	branch = main
