@@ -1,7 +1,7 @@
 
 #include "common.h"
 
-APP_VERSION("SBlight ", "1", "10")
+APP_VERSION("SBlight ", "2", "10")
 
 void loop() {
     sc->readValues();

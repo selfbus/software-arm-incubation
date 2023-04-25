@@ -13,7 +13,7 @@
 #include <sblib/eibBCU1.h>
 #include <sblib/timeout.h>
 
-APP_VERSION("SBrgb_sw", "1", "10")
+APP_VERSION("SBrgb_sw", "2", "10")
 
 // Digital pin for LED
 #define PIO_LED PIO3_3

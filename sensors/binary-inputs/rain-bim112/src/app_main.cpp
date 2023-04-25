@@ -13,7 +13,7 @@ int sensCnt; // for debouncing
 
 MASK0701 bcu = MASK0701();
 
-APP_VERSION("SBrain  ", "1", "00")
+APP_VERSION("SBrain  ", "2", "00")
 
 BcuBase* setup() {
     // reset init stuff

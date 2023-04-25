@@ -11,7 +11,7 @@
 #include "params.h"
 #include <sblib/timeout.h>
 
-APP_VERSION("SBin8_12", "1", "10")
+APP_VERSION("SBin8_12", "2", "10")
 
 //	WICHTIG!!!
 //Hier muss EINE! Hardware ausgewählt werden (IN8_230V_4TE und IN8_24V_4TE werden identisch behandelt)

@@ -44,7 +44,7 @@ Timeout timeout[NUM_TIMED_VALUES];
 ExtEeprom extEeprom;
 BCU1 bcu = BCU1();
 
-APP_VERSION("SBrtrLcd", "1", "10")
+APP_VERSION("SBrtrLcd", "2", "10")
 
 /*
 * Der MemMapper bekommt einen 1kB Bereich ab 0xEA00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.

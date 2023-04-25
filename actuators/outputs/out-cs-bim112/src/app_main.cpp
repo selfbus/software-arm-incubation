@@ -75,7 +75,7 @@ bool NoAppWasRunning = false;
  */
 MemMapperMod memMapper(0xea00, 0x400);
 
-APP_VERSION("SBout_cs", "1", "20")
+APP_VERSION("SBout_cs", "2", "20")
 
 AppUsrCallback usrCallback;
 

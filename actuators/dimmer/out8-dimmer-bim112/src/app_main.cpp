@@ -23,7 +23,7 @@ const HardwareVersion hardwareVersion[] =
 
 const HardwareVersion * currentVersion;
 
-APP_VERSION("SBout8di", "0", "10");
+APP_VERSION("SBout8di", "2", "10");
 
 Timeout timeout;
 /*

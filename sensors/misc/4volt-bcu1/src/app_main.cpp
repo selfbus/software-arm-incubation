@@ -1,7 +1,7 @@
 
 #include "common.h"
 
-APP_VERSION("SB4volt ", "1", "10")
+APP_VERSION("SB4volt ", "2", "10")
 
 void loop() {
     for (auto &sc : configs) {

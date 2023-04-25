@@ -10,7 +10,7 @@
 #include "debug.h"
 #include "config.h"
 
-APP_VERSION("SBin16  ", "1", "11")
+APP_VERSION("SBin16  ", "2", "11")
 
 const HardwareVersion * currentVersion;
 

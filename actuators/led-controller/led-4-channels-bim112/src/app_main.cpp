@@ -15,7 +15,7 @@
 #include "individual_channel.h"
 #include "led-controller.h"
 
-APP_VERSION("SBLED   ", "0", "01")
+APP_VERSION("SBLED   ", "2", "01")
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const unsigned char hardwareVersion[] =

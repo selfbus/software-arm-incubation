@@ -39,7 +39,7 @@
     AppCallback callback;
 #endif
 
-APP_VERSION("O08.10  ", "5", "10");
+APP_VERSION("O08.10  ", "6", "10");
 
 /**
  * simple IO test

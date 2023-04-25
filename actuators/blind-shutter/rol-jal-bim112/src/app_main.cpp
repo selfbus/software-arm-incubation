@@ -13,7 +13,7 @@
 #include <sblib/io_pin_names.h>
 #include "app-rol-jal.h"
 
-APP_VERSION("SBrol   ", "1", "10")
+APP_VERSION("SBrol   ", "2", "10")
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const HardwareVersion hardwareVersion[] =

@@ -20,7 +20,7 @@
 #include <SHT2xItem.h>
 #include <HelperFunctions.h>
 
-APP_VERSION("MSA     ", "0", "10");
+APP_VERSION("MSA     ", "2", "10");
 #define CONFIG_ADDRESS 0x4800
 
 MASK0701 bcu = MASK0701();

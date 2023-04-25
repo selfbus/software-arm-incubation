@@ -15,7 +15,7 @@
 #   include <sblib/serial.h>
 #endif
 
-APP_VERSION("TSU/4.2 ", "0", "02")
+APP_VERSION("TSU/4.2 ", "2", "02")
 
 // Digital pin for LED
 #define PIO_LED PIO0_7

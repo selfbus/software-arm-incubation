@@ -4,7 +4,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422" moduleId="org.eclipse.cdt.core.settings" name="Debug 6Ch">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="2.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_6CH"/>
 				</macros>
 				<externalSettings/>
@@ -146,7 +146,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.1920689323">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.1920689323" moduleId="org.eclipse.cdt.core.settings" name="Debug 2Ch_wo_CS">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="2.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_2CH_WO_CS"/>
 				</macros>
 				<externalSettings/>
@@ -287,7 +287,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.330125340">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.330125340" moduleId="org.eclipse.cdt.core.settings" name="Debug 2Ch">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="2.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_2CH"/>
 				</macros>
 				<externalSettings/>
@@ -428,7 +428,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.224937521">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.224937521" moduleId="org.eclipse.cdt.core.settings" name="Release 6Ch">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="2.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_6CH"/>
 				</macros>
 				<externalSettings/>
@@ -575,7 +575,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146" moduleId="org.eclipse.cdt.core.settings" name="Release 2Ch">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="2.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_2CH"/>
 				</macros>
 				<externalSettings/>
@@ -722,7 +722,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916" moduleId="org.eclipse.cdt.core.settings" name="Release 2Ch_wo_CS">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="2.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_2CH_WO_CS"/>
 				</macros>
 				<externalSettings/>
@@ -869,7 +869,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396" moduleId="org.eclipse.cdt.core.settings" name="Debug 8Ch_wo_CS">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="2.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_8CH_WO_CS"/>
 				</macros>
 				<externalSettings/>
@@ -1010,7 +1010,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396.1627959898">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396.1627959898" moduleId="org.eclipse.cdt.core.settings" name="Release 8Ch_wo_CS">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="2.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_8CH_WO_CS"/>
 				</macros>
 				<externalSettings/>
@@ -1157,7 +1157,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.224937521.952200578">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.224937521.952200578" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release 6Ch">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="2.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_6CH"/>
 				</macros>
 				<externalSettings/>
@@ -1304,7 +1304,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1025089933">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1025089933" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release 2Ch">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="2.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_2CH"/>
 				</macros>
 				<externalSettings/>
@@ -1451,7 +1451,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916.1602184431">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.224937521.1667600146.1705778916.1602184431" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release 2Ch_wo_CS">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="2.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_2CH_WO_CS"/>
 				</macros>
 				<externalSettings/>
@@ -1598,7 +1598,7 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396.1627959898.829656119">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.894137422.1920689323.121611396.1627959898.829656119" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release 8Ch_wo_CS">
 				<macros>
-					<stringMacro name="version" type="VALUE_TEXT" value="1.2"/>
+					<stringMacro name="version" type="VALUE_TEXT" value="2.2"/>
 					<stringMacro name="hardware" type="VALUE_TEXT" value="HW_8CH_WO_CS"/>
 				</macros>
 				<externalSettings/>
