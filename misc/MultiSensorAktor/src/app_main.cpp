@@ -18,6 +18,7 @@
 #include <CCS811Item.h>
 #include <ARMPinItem.h>
 #include <SHT2xItem.h>
+#include <SHT4xItem.h>
 #include <HelperFunctions.h>
 
 APP_VERSION("MSA     ", "0", "10");
@@ -55,7 +56,7 @@ BcuBase* setup()
     byte nextComObj = 1;
     byte* configPos = memMapper.memoryPtr(0x6000, false);
 
-    if (deviceConfig->BusSwitches & BusSwitchSPI0)
+    if (deviceConfig->BusSwitches & BusSwitch::SPI0)
     {
     	SPI spi0 = SPI(SPI_PORT_0);
     	spi0.setClockDivider(120); // 400kHz
@@ -64,7 +65,7 @@ BcuBase* setup()
 
     }
 
-    if (deviceConfig->BusSwitches & BusSwitchSPI1)
+    if (deviceConfig->BusSwitches & BusSwitch::SPI1)
     {
     	SPI spi0 = SPI(SPI_PORT_1);
     	spi0.setClockDivider(120); // 400kHz
@@ -73,7 +74,7 @@ BcuBase* setup()
 
     }
 
-    if (deviceConfig->BusSwitches & BusSwitchI2C)
+    if (deviceConfig->BusSwitches & BusSwitch::I2C)
     {
     	i2c_lpcopen_init();
     	Chip_I2C_SetClockRate(I2C0, 400000);
@@ -94,11 +95,18 @@ BcuBase* setup()
 
     	if (deviceConfig->SHT2xCount)
     	{
-    		firstItem = new SHT2xItem(&bcu, nextComObj, (SHT2xConfig*)configPos, firstItem, objRamPointer);
+    		firstItem = new SHT2xItem(&bcu, nextComObj, (TempHumSensorConfig*)configPos, firstItem, objRamPointer);
     		nextComObj += firstItem->ComObjCount();
     		configPos += firstItem->ConfigLength();
     	}
-    }
+
+    	if (deviceConfig->SHT4xCount)
+    	{
+    		firstItem = new SHT4xItem(&bcu, nextComObj, (TempHumSensorConfig*)configPos, firstItem, objRamPointer);
+    		nextComObj += firstItem->ComObjCount();
+    		configPos += firstItem->ConfigLength();
+    	}
+}
 
 
     configPos = &(*bcu.userEeprom)[CONFIG_ADDRESS + sizeof(DeviceConfig)];

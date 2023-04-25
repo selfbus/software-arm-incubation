@@ -4,12 +4,11 @@
  *  published by the Free Software Foundation.
  */
 
-
-#ifndef DHTPINCONFIG_H_
-#define DHTPINCONFIG_H_
+#ifndef TEMPHUMSENSORCONFIG_H_
+#define TEMPHUMSENSORCONFIG_H_
 
 #pragma pack(1)
-struct DHTPinConfig
+struct TempHumSensorConfig
 {
 	uint16_t PreFan;
 	uint16_t PreMeasure;
@@ -18,4 +17,5 @@ struct DHTPinConfig
 };
 #pragma pack()
 
-#endif /* DHTPINCONFIG_H_ */
+
+#endif /* TEMPHUMSENSORCONFIG_H_ */

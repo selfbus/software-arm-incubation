@@ -17,7 +17,7 @@
 class ARMPinItem : public GenericItem
 {
 public:
-	ARMPinItem(BcuBase* bcu, byte firstComIndex, byte portNumber, ARMPinConfig* config, GenericItem* nextItem, uint16_t& objRamPointer);
+	ARMPinItem(BcuBase* bcu, byte firstComIndex, byte portNumber, ARMPinConfig* config, GenericItem* nextItem, uint16_t	& objRamPointer);
 	~ARMPinItem() = default;
 
 	void Loop(uint32_t now, int updatedObjectNo);

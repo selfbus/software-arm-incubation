@@ -25,32 +25,32 @@ ARMPinItem::ARMPinItem(BcuBase* bcu, byte firstComIndex, byte portNumber, ARMPin
 	port = PortPins[portNumber];
 	switch (config->BaseConfig.Type)
 	{
-	case ARMPinType::ARMPinTypeInputFloating:
+	case ARMPinType::InputFloating:
 		pinMode(port, INPUT);
 		pin = new InputPin(bcu, firstComIndex, &config->Input, objRamPointer);
 		break;
-	case ARMPinType::ARMPinTypeInputPullup:
+	case ARMPinType::InputPullup:
 		pinMode(port, INPUT | PULL_UP);
 		pin = new InputPin(bcu, firstComIndex, &config->Input, objRamPointer);
 		break;
-	case ARMPinType::ARMPinTypeInputPulldown:
+	case ARMPinType::InputPulldown:
 		pinMode(port, INPUT | PULL_DOWN);
 		pin = new InputPin(bcu, firstComIndex, &config->Input, objRamPointer);
 		break;
-	case ARMPinType::ARMPinTypeOutput:
+	case ARMPinType::Output:
 		pinMode(port, OUTPUT);
 		digitalWrite(port, !config->Output.Invert);
 		pin = new OutputPin(bcu, firstComIndex, &config->Output, objRamPointer);
 		break;
-	case ARMPinType::ARMPinTypePWM:
+	case ARMPinType::PWM:
 		pinMode(port, OUTPUT);
 		digitalWrite(port, 0);
 		pin = new PWMPin(bcu, firstComIndex, &config->PWM, this, objRamPointer);
 		break;
-	case ARMPinType::ARMPinTypeDHT11:
+	case ARMPinType::DHT11:
 		pin = new DHTPin(bcu, port, firstComIndex, &config->DHT, true, objRamPointer);
 		break;
-	case ARMPinType::ARMPinTypeDHT22:
+	case ARMPinType::DHT22:
 		pin = new DHTPin(bcu, port, firstComIndex, &config->DHT, false, objRamPointer);
 		break;
 	default:
@@ -63,20 +63,20 @@ void ARMPinItem::Loop(uint32_t now, int updatedObjectNo)
 {
 	switch (config->BaseConfig.Type)
 	{
-	case ARMPinType::ARMPinTypeInputFloating:
-	case ARMPinType::ARMPinTypeInputPullup:
-	case ARMPinType::ARMPinTypeInputPulldown:
+	case ARMPinType::InputFloating:
+	case ARMPinType::InputPullup:
+	case ARMPinType::InputPulldown:
 		pin->PutValue(now, digitalRead(port));
 		break;
-	case ARMPinType::ARMPinTypeOutput:
+	case ARMPinType::Output:
 		digitalWrite(port, pin->GetState(now, updatedObjectNo));
 		break;
-	case ARMPinType::ARMPinTypePWM:
+	case ARMPinType::PWM:
 		//digitalWrite(port, pin->GetState(now, updatedObjectNo));
 		pin->GetState(now, updatedObjectNo);
 		break;
-	case ARMPinType::ARMPinTypeDHT11:
-	case ARMPinType::ARMPinTypeDHT22:
+	case ARMPinType::DHT11:
+	case ARMPinType::DHT22:
 		pin->GetState(now, updatedObjectNo);
 		break;
 	default:

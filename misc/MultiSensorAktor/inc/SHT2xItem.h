@@ -9,21 +9,21 @@
 
 #include <sblib/eib/bcu_base.h>
 #include <GenericItem.h>
-#include <SHT2xConfig.h>
+#include <TempHumSensorConfig.h>
 #include <sblib/i2c/SHT2x.h>
 
 class SHT2xItem : public GenericItem
 {
 public:
-	SHT2xItem(BcuBase* bcu, byte firstComIndex, SHT2xConfig* config, GenericItem* nextItem, uint16_t& objRamPtr);
+	SHT2xItem(BcuBase* bcu, byte firstComIndex, TempHumSensorConfig* config, GenericItem* nextItem, uint16_t& objRamPtr);
 	~SHT2xItem() = default;
 
 	void Loop(uint32_t now, int updatedObjectNo);
-	int ConfigLength() { return sizeof(SHT2xConfig); }
+	int ConfigLength() { return sizeof(TempHumSensorConfig); }
 	int ComObjCount() { return 4; }
 
 protected:
-	SHT2xConfig *config;
+	TempHumSensorConfig *config;
     SHT2xClass sht2x;
 	uint32_t nextAction = 0;
 	byte state = 0;
