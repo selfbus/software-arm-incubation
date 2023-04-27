@@ -17,13 +17,16 @@
 # ${ProjName}_${ConfigName}_v${sw_version}
 
 # 'Project->Properties->C/C++ Build->Settings->Build steps->Post-build steps->Edit...'
-# "${ProjDirPath}/../../../script/build-script/post-build-steps.sh" "${CWD}" "${TargetChip}" "${BuildArtifactFileName}" "${BuildArtifactFileBaseName}" "${hexDir}"
+# "${ProjDirPath}/../../../script/build-script/post-build-steps.sh" "${CWD}" "${TargetChip}" "${BuildArtifactFileName}" "${BuildArtifactFileBaseName}" "${ConfigName}" "${sw_version}" "${hexDir}"
 
 # Selfbus library version
 sbLibVersion="2.02"
 
 # Selfbus library version prefix
 sbLibprefix="libv"
+
+# App version prefix
+appVersionPrefix="v"
 
 # searchstrings and subfolders for .hex output directory
 debug="debug"
@@ -34,19 +37,19 @@ CurrentWorkingDirectory="${1}"
 TargetChip="${2}"
 BuildArtifactFileName="${3}"
 BuildArtifactFileBaseName="${4}"
-hexDir="${5}"
-
-#echo "BuildArtifactFileBaseName "${BuildArtifactFileBaseName}""
+appConfigName="${5}"
+appVersion="${6}"
+hexDir="${7}"
 
 echo ""
 echo "Selfbus post build steps:"
-echo "CWD "${CurrentWorkingDirectory}""
-echo "build \""${BuildArtifactFileName}"\""
-echo "mcu "${TargetChip}""
 echo "Creating .hex/.bin files and adding sblib version "${sbLibVersion}" to filename"
 
+newName="${BuildArtifactFileBaseName}"
+# append build config name and app version
+newName="${newName}"_"${appConfigName}"_"${appVersionPrefix}""${appVersion}"
 # replace spaces with underscores
-newName="${BuildArtifactFileBaseName// /_}"
+newName="${newName// /_}"
 # replace missing options (--)
 newName="${newName//--/_}"
 # fix trailing missing option
