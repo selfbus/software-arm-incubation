@@ -19,9 +19,10 @@
 #include <ARMPinItem.h>
 #include <SHT2xItem.h>
 #include <SHT4xItem.h>
+#include <SGP4xItem.h>
 #include <HelperFunctions.h>
 
-APP_VERSION("MSA     ", "0", "10");
+APP_VERSION("MSA     ", "0", "11");
 #define CONFIG_ADDRESS 0x4800
 
 MASK0701 bcu = MASK0701();
@@ -41,7 +42,7 @@ MemMapper memMapper = MemMapper(0xe000, 0x1000, false);
 BcuBase* setup()
 {
     bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
-    bcu.begin(0x13A, 0x01, 0x02); // Manufacturer name "Not assigned", app-id 0x01, version 0.2
+    bcu.begin(0x13A, 0x01, 0x03); // Manufacturer name "Not assigned", app-id 0x01, version 0.3
 
     pinMode(PIO_LED, OUTPUT);
     digitalWrite(PIO_LED, 1);
@@ -93,16 +94,23 @@ BcuBase* setup()
     		configPos += firstItem->ConfigLength();
     	}
 
-    	if (deviceConfig->SHT2xCount)
+    	if (deviceConfig->SHTOption & SHTSwitch::SHT2x)
     	{
     		firstItem = new SHT2xItem(&bcu, nextComObj, (TempHumSensorConfig*)configPos, firstItem, objRamPointer);
     		nextComObj += firstItem->ComObjCount();
     		configPos += firstItem->ConfigLength();
     	}
 
-    	if (deviceConfig->SHT4xCount)
+    	if (deviceConfig->SHTOption & SHTSwitch::SHT4x)
     	{
     		firstItem = new SHT4xItem(&bcu, nextComObj, (TempHumSensorConfig*)configPos, firstItem, objRamPointer);
+    		nextComObj += firstItem->ComObjCount();
+    		configPos += firstItem->ConfigLength();
+    	}
+
+    	if (deviceConfig->SHTOption & SHTSwitch::SGP4x)
+    	{
+    		firstItem = new SGP4xItem(&bcu, nextComObj, (TempHumSensorConfig*)configPos, firstItem, objRamPointer);
     		nextComObj += firstItem->ComObjCount();
     		configPos += firstItem->ConfigLength();
     	}
