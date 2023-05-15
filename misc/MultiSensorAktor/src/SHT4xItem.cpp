@@ -53,12 +53,12 @@ void SHT4xItem::Loop(uint32_t now, int updatedObjectNo)
 			state++;
 			break;
 		default:
-			if (!sht4x.measureHighPrecision())
+			if (sht4x.measureHighPrecision())
 			{
 				float fhum = sht4x.getHumidity();
 				float ftemp = sht4x.getTemperature() + offset;
 				int16_t temp = (int16_t)(ftemp * 100);
-				uint16_t hum = (uint16_t)fhum;
+				uint16_t hum = (uint16_t)(fhum * 100);
 				bcu->comObjects->objectWriteFloat(firstComIndex + 1, temp);
 				bcu->comObjects->objectWrite(firstComIndex + 2, (byte*)&ftemp);
 				bcu->comObjects->objectWriteFloat(firstComIndex + 3, hum);
