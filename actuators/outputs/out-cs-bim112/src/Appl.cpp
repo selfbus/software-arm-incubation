@@ -11,7 +11,7 @@
  */
 
 #include <sblib/platform.h>
-#include <sblib/eib/MASK0701.h>
+#include <sblib/eib/mask0701.h>
 #include <config.h>
 #include <com_objs.h>
 #include <Appl.h>
