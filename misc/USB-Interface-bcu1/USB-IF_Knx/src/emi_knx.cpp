@@ -14,8 +14,8 @@
 #include <sblib/eib/bus.h>
 #include <sblib/eib/bcu1.h>
 #include "knxusb_const.h"
-#include "genfifo.h"
-#include "buffermgr.h"
+#include "GenFifo.h"
+#include "BufferMgr.h"
 #include "emi_knx.h"
 
 EmiKnxIf emiknxif(PIO1_5);
