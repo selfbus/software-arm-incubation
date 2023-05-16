@@ -14,7 +14,7 @@
 #include "GenFifo.h"
 #include "BufferMgr.h"
 #include "UartIf.h"
-#include "Emi_Knx.h"
+#include "emi_knx.h"
 #include "device_mgnt.h"
 #include "prog_uart.h"
 

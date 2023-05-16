@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include "prog_uart.h"
 #include "knxusb_const.h"
-#include "Emi_Knx.h"
+#include "emi_knx.h"
 #include "GenFifo.h"
 #include "BufferMgr.h"
 #include "device_mgnt.h"
