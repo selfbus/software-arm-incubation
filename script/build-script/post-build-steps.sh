@@ -19,6 +19,19 @@
 # 'Project->Properties->C/C++ Build->Settings->Build steps->Post-build steps->Edit...'
 # "${ProjDirPath}/../../../script/build-script/post-build-steps.sh" "${CWD}" "${TargetChip}" "${BuildArtifactFileName}" "${BuildArtifactFileBaseName}" "${ConfigName}" "${sw_version}" "${hexDir}"
 
+# fail on error
+set -e
+
+#error handler
+exit_on_error()
+{
+    echo "Last command failed. Exiting..."
+    exit 1
+}
+
+# enable error handling
+trap exit_on_error ERR
+
 # Selfbus library version
 sbLibVersion="2.02"
 
@@ -71,6 +84,12 @@ arm-none-eabi-objcopy -v -O binary "${BuildArtifactFileName}" "${newName}.bin"
 # create .hex file
 arm-none-eabi-objcopy -v -O ihex "${BuildArtifactFileName}" "${newName}.hex"
 
+# check if hexDir is defined
+if [ -z "${hexDir}" ]; then
+    echo "Workspace build variable hexDir not defined or empty, exiting post-build-script."
+    exit 1
+fi
+
 # add release/debug to hex output directory
 case ${newName} in
   *"${debug}"*)
@@ -84,7 +103,6 @@ esac
 
 # check adding flashstart to hex output directory
 if [[ "$newName" =~ .*"$flashstart".* ]]; then
-  echo "flashstart"
   hexDir="${hexDir}"/"${flashstart}"
 fi
 
@@ -94,9 +112,9 @@ if [ ! -d "${hexDir}" ]; then
   mkdir -p "${hexDir}"
 fi
 
-cp "${CurrentWorkingDirectory}"/"${newName}.hex" "${hexDir}"/
+cp --verbose "${CurrentWorkingDirectory}"/"${newName}.hex" "${hexDir}"/
 
-# Do not activate checksum, not sure why, but at least .hex files get corrupted
+# Do not activate checksum, not sure why, but at least .hex files gets corrupted
 # see also https://community.nxp.com/t5/Blogs/Hex-file-settings-in-MCUxpresso/bc-p/1131124/highlight/true#M53
 # add checksums
 #checksum -p ${TargetChip} -d "${newName}.bin"
