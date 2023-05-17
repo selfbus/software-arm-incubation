@@ -22,18 +22,40 @@
 # fail on error
 set -e
 
-#error handler
+# error handler
 exit_on_error()
 {
     echo "Last command failed. Exiting..."
     exit 1
 }
 
+# 1. parameter directory to search the sblib version
+# return the sblib version with a dot
+get_sbLibVersionWithDot() {
+  local sbLibVersionHeaderDir="$1"
+  local sbLibVersion
+
+  if [ -d "${sbLibVersionHeaderDir}" ]; then
+    sbLibVersion="$(grep -rwh "${sbLibVersionHeaderDir}" -e "#define SBLIB_VERSION")"
+    sbLibVersion=$(echo "$sbLibVersion" | awk '{print $NF}' | sed 's/^0x//')
+    sbLibVersionWithoutLeadingZeros=$(echo "$sbLibVersion" | sed 's/^0*//')
+    result="${sbLibVersionWithoutLeadingZeros:0:-2}.${sbLibVersionWithoutLeadingZeros: -2}"
+
+    if [[ "$result" == "." ]]; then
+      result=""
+    fi
+
+    if [[ "$result" == "1." ]]; then
+      result=""
+    fi
+  else
+    result=""
+  fi
+  echo "$result"
+}
+
 # enable error handling
 trap exit_on_error ERR
-
-# Selfbus library version
-sbLibVersion="2.02"
 
 # Selfbus library version prefix
 sbLibprefix="libv"
@@ -56,7 +78,30 @@ hexDir="${7}"
 
 echo ""
 echo "Selfbus post build steps:"
-echo "Creating .hex/.bin files and adding sblib version "${sbLibVersion}" to filename"
+
+# find sbLib version in repository
+scriptDir=$(dirname "$0")
+sbLibSubModuleRepoFolder="software-arm-lib"
+scriptPathDepth="../.."
+sbLibVersionSubDir="sblib/inc/sblib/"
+
+# check if we are in the software-arm-incubation repo and search there
+sbLibVersionHeaderDir="${scriptDir}"/"${scriptPathDepth}"/"${sbLibSubModuleRepoFolder}"/"${sbLibVersionSubDir}"
+sbLibVersionWithDot=$(get_sbLibVersionWithDot "$sbLibVersionHeaderDir")
+
+if [ -z "${sbLibVersionWithDot}" ]; then
+  # check if we are in the sblib repo and seach there
+  sbLibVersionHeaderDir="${scriptDir}"/"${scriptPathDepth}"/"${sbLibVersionSubDir}"
+  sbLibVersionWithDot=$(get_sbLibVersionWithDot "$sbLibVersionHeaderDir")
+
+  # check if sbLibVersionWithDot was not found
+  if [ -z "${sbLibVersionWithDot}" ]; then
+    sbLibVersionWithDot="0.0"
+    echo "Selfbus library version was not found in repository, set to "${sbLibVersionWithDot}""
+  fi
+fi
+
+echo "Creating .hex/.bin files and adding sblib version "${sbLibVersionWithDot}" to filename"
 
 newName="${BuildArtifactFileBaseName}"
 # append build config name and app version
@@ -74,7 +119,7 @@ newName="${newName//__/_}"
 # convert to lowercase
 newName=`echo "${newName}" | tr '[:upper:]' '[:lower:]'`
 # add lib version
-newName="${newName}_${sbLibprefix}${sbLibVersion}"
+newName="${newName}_${sbLibprefix}${sbLibVersionWithDot}"
 echo "${newName}"
 
 # post-build-step from eclipse
