@@ -57,8 +57,5 @@ Work in progress:
 </li>
 </ul>
 
-Compilation:
-the project is based on the Object Oriented version of the sblib, which can be found at https://github.com/gnampf1/software-arm-lib/tree/DEV-Timing+0x07B0%2BProperties. It won't compile with the standard lib!
-
 Knxprod:
 the contents of the folder KnxProd (not the folder itself) have to zipped to MultiSensorAktor.knxprod. This file can be signed with the KnxProdEditor (https://github.com/knxprodeditor/KNXprodEditor), just open and save. Do not edit in the editor, it doesn't support all necessary features! The signed knxprod can be imported into ETS5 & 6 (maybe also 4)
