@@ -39,13 +39,9 @@ get_sbLibVersionWithDot() {
     sbLibVersion="$(grep -rwh "${sbLibVersionHeaderDir}" -e "#define SBLIB_VERSION")"
     sbLibVersion=$(echo "$sbLibVersion" | awk '{print $NF}' | sed 's/^0x//')
     sbLibVersionWithoutLeadingZeros=$(echo "$sbLibVersion" | sed 's/^0*//')
-    result="${sbLibVersionWithoutLeadingZeros:0:-2}.${sbLibVersionWithoutLeadingZeros: -2}"
-
-    if [[ "$result" == "." ]]; then
-      result=""
-    fi
-
-    if [[ "$result" == "1." ]]; then
+    if [[ ${#sbLibVersionWithoutLeadingZeros} -gt 2 ]]; then
+      result="${sbLibVersionWithoutLeadingZeros:0:-2}.${sbLibVersionWithoutLeadingZeros: -2}"
+    else
       result=""
     fi
   else
@@ -96,7 +92,7 @@ if [ -z "${sbLibVersionWithDot}" ]; then
 
   # check if sbLibVersionWithDot was not found
   if [ -z "${sbLibVersionWithDot}" ]; then
-    sbLibVersionWithDot="0.0"
+    sbLibVersionWithDot="x.x"
     echo "Selfbus library version was not found in repository, set to "${sbLibVersionWithDot}""
   fi
 fi
