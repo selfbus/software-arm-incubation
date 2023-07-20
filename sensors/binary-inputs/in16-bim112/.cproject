@@ -93,7 +93,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.1065922419" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.104538948" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.1273415777" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.1319796701" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Release.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.1319796701" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Debug_BI16_TS_ARM.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.2094565144" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.1754098815" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.1165987440" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -228,7 +228,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.1332551114" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.1064652091" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.684867039" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.477175972" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Release.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.477175972" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Debug_BI16_TS_ARM_LPC11Uxx.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.1544042831" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.59814719" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.1632107597" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -363,7 +363,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.1817442846" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.1373937121" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.1153799841" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.1217245917" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Release.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.1217245917" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Debug_BI16_4TE.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.227091724" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.1552331781" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.16554746" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -500,7 +500,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.619952796" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.1729271645" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.1103462995" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.1064215116" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Multiple_configurations.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.1064215116" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Release_BI16_TS_ARM.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.2049852541" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.728403245" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.576206821" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -644,7 +644,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.1449215787" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.1561535693" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.2146290998" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.1867534915" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Release.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.1867534915" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Debug_BI16_TS_ARM_inverted.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.240756161" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.168345914" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.1183909436" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -781,7 +781,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.784900771" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.96231791" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.1006741165" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.492249770" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Multiple_configurations.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.492249770" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Release_BI16_TS_ARM_inverted.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.1918201587" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.65885356" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.277736884" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -927,7 +927,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.1733234370" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.1917642789" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.812219292" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.1846869077" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Multiple_configurations.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.1846869077" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Release_BI8_TS_ARM_inverted.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.74119854" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.651100063" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.1965303144" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -1073,7 +1073,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.1754734983" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.1810271061" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.955983341" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.1067813837" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Multiple_configurations.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.1067813837" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Release_BI8_TS_ARM.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.555994575" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.781061825" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.1203796156" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -1219,7 +1219,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.982793373" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.478917112" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.577005690" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.1425614975" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Multiple_configurations.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.1425614975" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Release_BI4_TS_ARM_inverted.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.1840723426" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.1158073542" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.1254325897" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -1365,7 +1365,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.1983099347" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.990346739" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.2027919553" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.1017834775" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Multiple_configurations.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.1017834775" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Release_BI4_TS_ARM.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.1835796941" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.250445105" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.1555717071" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -1507,7 +1507,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.release.219874695" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.release">
 								<option id="com.crt.advproject.link.cpp.arch.2100837342" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.1559370210" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.335144488" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Multiple_configurations.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.335144488" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Release_BI16_4TE.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.1344245397" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.712621515" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.1004698995" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -1643,7 +1643,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.release.790822179" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.release">
 								<option id="com.crt.advproject.link.cpp.arch.1929218587" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.1150820671" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.765260325" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Multiple_configurations.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.765260325" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Release_BI8_4TE.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.1526176803" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.1601705109" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.566596247" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -1783,7 +1783,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.795988933" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.1670488884" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.2147239240" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.120827000" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Multiple_configurations.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.120827000" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Flashstart_0x3000_Release_BI8_TS_ARM.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.247748005" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.1490052143" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.264699146" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -1929,7 +1929,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.1822504972" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.392918153" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.105486145" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.1417407475" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Flashstart_0x3000_Release_BI16_TS_ARM.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.1417407475" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Flashstart_0x3000_Release_BI16_TS_ARM.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.757456957" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.1277873284" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.776070208" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -2073,7 +2073,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.474378126" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.1706697821" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.1030285238" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.2009712956" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Debug_BI8_4TE.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.2009712956" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Debug_BI8_4TE.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.638909766" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.1655442690" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.806870852" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -2208,7 +2208,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.1655155424" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.2070438611" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.1690028589" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.941310755" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Debug_BI8_4TE.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.941310755" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Debug_BI8_TS_ARM.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.1181421119" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.558633245" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.974171452" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -2341,7 +2341,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.release.507746198" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.release">
 								<option id="com.crt.advproject.link.cpp.arch.1484860534" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.576882562" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.729917097" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Multiple_configurations.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.729917097" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Release_BI8_4TE_inverted.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.1025419201" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.272722116" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.213380699" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -2477,7 +2477,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.release.1226122162" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.release">
 								<option id="com.crt.advproject.link.cpp.arch.1666068405" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.1202391931" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.623163269" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Multiple_configurations.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.623163269" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Release_BI16_4TE_inverted.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.1645167403" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.904270912" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.851490500" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -2615,7 +2615,7 @@
 							<tool id="com.crt.advproject.link.cpp.exe.debug.457975265" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
 								<option id="com.crt.advproject.link.cpp.arch.1853357017" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.cpp.thumb.406217513" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.cpp.script.130966173" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="&quot;in16-bim112_Release.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.script.130966173" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="in16-bim112_Debug_BI16_4TE_inverted.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.cpp.manage.197024893" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.581667587" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.2043255614" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
@@ -2664,29 +2664,29 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="com.crt.config">
-		<projectStorage>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&#13;
-&lt;TargetConfig&gt;&#13;
-&lt;Properties property_2="LPC11_12_13_64K_8K.cfx" property_3="NXP" property_4="LPC1115/303" property_count="5" version="100300"/&gt;&#13;
-&lt;infoList vendor="NXP"&gt;&#13;
-&lt;info chip="LPC1115/303" flash_driver="LPC11_12_13_64K_8K.cfx" match_id="0x00050080" name="LPC1115/303" stub="crt_emu_lpc11_13_nxp"&gt;&#13;
-&lt;chip&gt;&#13;
-&lt;name&gt;LPC1115/303&lt;/name&gt;&#13;
-&lt;family&gt;LPC11xx&lt;/family&gt;&#13;
-&lt;vendor&gt;NXP (formerly Philips)&lt;/vendor&gt;&#13;
-&lt;reset board="None" core="Real" sys="Real"/&gt;&#13;
-&lt;clock changeable="TRUE" freq="12MHz" is_accurate="TRUE"/&gt;&#13;
-&lt;memory can_program="true" id="Flash" is_ro="true" type="Flash"/&gt;&#13;
-&lt;memory id="RAM" type="RAM"/&gt;&#13;
-&lt;memory id="Periph" is_volatile="true" type="Peripheral"/&gt;&#13;
-&lt;memoryInstance derived_from="Flash" id="MFlash64" location="0x0" size="0xf000"/&gt;&#13;
-&lt;memoryInstance derived_from="RAM" id="RamLoc8" location="0x10000000" size="0x2000"/&gt;&#13;
-&lt;/chip&gt;&#13;
-&lt;processor&gt;&#13;
-&lt;name gcc_name="cortex-m0"&gt;Cortex-M0&lt;/name&gt;&#13;
-&lt;family&gt;Cortex-M&lt;/family&gt;&#13;
-&lt;/processor&gt;&#13;
-&lt;/info&gt;&#13;
-&lt;/infoList&gt;&#13;
+		<projectStorage>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;TargetConfig&gt;
+&lt;Properties property_2="LPC11_12_13_64K_8K.cfx" property_3="NXP" property_4="LPC1115/303" property_count="5" version="100300"/&gt;
+&lt;infoList vendor="NXP"&gt;
+&lt;info chip="LPC1115/303" flash_driver="LPC11_12_13_64K_8K.cfx" match_id="0x00050080" name="LPC1115/303" stub="crt_emu_lpc11_13_nxp"&gt;
+&lt;chip&gt;
+&lt;name&gt;LPC1115/303&lt;/name&gt;
+&lt;family&gt;LPC11xx&lt;/family&gt;
+&lt;vendor&gt;NXP (formerly Philips)&lt;/vendor&gt;
+&lt;reset board="None" core="Real" sys="Real"/&gt;
+&lt;clock changeable="TRUE" freq="12MHz" is_accurate="TRUE"/&gt;
+&lt;memory can_program="true" id="Flash" is_ro="true" type="Flash"/&gt;
+&lt;memory id="RAM" type="RAM"/&gt;
+&lt;memory id="Periph" is_volatile="true" type="Peripheral"/&gt;
+&lt;memoryInstance derived_from="Flash" id="MFlash64" location="0x0" size="0xf000"/&gt;
+&lt;memoryInstance derived_from="RAM" id="RamLoc8" location="0x10000000" size="0x2000"/&gt;
+&lt;/chip&gt;
+&lt;processor&gt;
+&lt;name gcc_name="cortex-m0"&gt;Cortex-M0&lt;/name&gt;
+&lt;family&gt;Cortex-M&lt;/family&gt;
+&lt;/processor&gt;
+&lt;/info&gt;
+&lt;/infoList&gt;
 &lt;/TargetConfig&gt;</projectStorage>
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">

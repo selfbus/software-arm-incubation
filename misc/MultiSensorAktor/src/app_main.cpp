@@ -44,6 +44,9 @@ BcuBase* setup()
     bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
     bcu.begin(0x13A, 0x01, 0x03); // Manufacturer name "Not assigned", app-id 0x01, version 0.3
 
+    GenericItem::BCU = &bcu;
+    GenericPin::BCU = &bcu;
+
     pinMode(PIO_LED, OUTPUT);
     digitalWrite(PIO_LED, 1);
 
@@ -82,47 +85,46 @@ BcuBase* setup()
 
     	for (int i = 0; i < deviceConfig->PCA9555DCount; i++)
     	{
-    		firstItem = new PCA9555DItem(&bcu, nextComObj, (PCA9555DConfig*)configPos, firstItem, objRamPointer);
+    		firstItem = new PCA9555DItem(nextComObj, (PCA9555DConfig*)configPos, firstItem, objRamPointer);
     		nextComObj += firstItem->ComObjCount();
     		configPos += firstItem->ConfigLength();
     	}
 
     	for (int i = 0; i < deviceConfig->CCS811Count; i++)
     	{
-    		firstItem = new CCS811Item(&bcu, nextComObj, (CCS811Config*)configPos, firstItem, objRamPointer);
+    		firstItem = new CCS811Item(nextComObj, (CCS811Config*)configPos, firstItem, objRamPointer);
     		nextComObj += firstItem->ComObjCount();
     		configPos += firstItem->ConfigLength();
     	}
 
     	if (deviceConfig->SHTOption & SHTSwitch::SHT2x)
     	{
-    		firstItem = new SHT2xItem(&bcu, nextComObj, (TempHumSensorConfig*)configPos, firstItem, objRamPointer);
+    		firstItem = new SHT2xItem(nextComObj, (TempHumSensorConfig*)configPos, firstItem, objRamPointer);
     		nextComObj += firstItem->ComObjCount();
     		configPos += firstItem->ConfigLength();
     	}
 
     	if (deviceConfig->SHTOption & SHTSwitch::SHT4x)
     	{
-    		firstItem = new SHT4xItem(&bcu, nextComObj, (TempHumSensorConfig*)configPos, firstItem, objRamPointer);
+    		firstItem = new SHT4xItem(nextComObj, (TempHumSensorConfig*)configPos, firstItem, objRamPointer);
     		nextComObj += firstItem->ComObjCount();
     		configPos += firstItem->ConfigLength();
     	}
 
     	if (deviceConfig->SHTOption & SHTSwitch::SGP4x)
     	{
-    		firstItem = new SGP4xItem(&bcu, nextComObj, (TempHumSensorConfig*)configPos, firstItem, objRamPointer);
+    		firstItem = new SGP4xItem(nextComObj, (TempHumSensorConfig*)configPos, firstItem, objRamPointer);
     		nextComObj += firstItem->ComObjCount();
     		configPos += firstItem->ConfigLength();
     	}
-}
-
+    }
 
     configPos = &(*bcu.userEeprom)[CONFIG_ADDRESS + sizeof(DeviceConfig)];
 	for (int i = 0; i < 32; i++)
 	{
 		if (deviceConfig->PortAssignment[i] > 0 && deviceConfig->PortAssignment[i] <= 32)
 		{
-			firstItem = new ARMPinItem(&bcu, nextComObj, deviceConfig->PortAssignment[i] - 1, (ARMPinConfig*)configPos, firstItem, objRamPointer);
+			firstItem = new ARMPinItem(nextComObj, deviceConfig->PortAssignment[i] - 1, (ARMPinConfig*)configPos, firstItem, objRamPointer);
 			nextComObj += firstItem->ComObjCount();
 			configPos += firstItem->ConfigLength();
 		}

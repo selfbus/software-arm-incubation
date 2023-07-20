@@ -15,7 +15,7 @@
 class SHT4xItem : public GenericItem
 {
 public:
-	SHT4xItem(BcuBase* bcu, byte firstComIndex, TempHumSensorConfig* config, GenericItem* nextItem, uint16_t& objRamPtr);
+	SHT4xItem(byte firstComIndex, TempHumSensorConfig* config, GenericItem* nextItem, uint16_t& objRamPtr);
 	~SHT4xItem() = default;
 
 	void Loop(uint32_t now, int updatedObjectNo);

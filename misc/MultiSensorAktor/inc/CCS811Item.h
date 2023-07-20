@@ -16,7 +16,7 @@
 class CCS811Item : public GenericItem
 {
 public:
-	CCS811Item(BcuBase* bcu, byte firstComIndex, CCS811Config* config, GenericItem* nextItem, uint16_t& objRamPointer);
+	CCS811Item(byte firstComIndex, CCS811Config* config, GenericItem* nextItem, uint16_t& objRamPointer);
 	~CCS811Item() = default;
 
 	void Loop(uint32_t now, int updatedObjectNo);

@@ -15,7 +15,7 @@
 class DHTPin : public GenericPin
 {
 public:
-	DHTPin(BcuBase* bcu, int port, byte firstComIndex, TempHumSensorConfig* config, bool dht11, uint16_t& objRamPointer);
+	DHTPin(int port, byte firstComIndex, TempHumSensorConfig* config, bool dht11, uint16_t& objRamPointer);
 	~DHTPin() = default;
 
 	byte GetState(uint32_t now, byte updatedObjectNo);
@@ -27,10 +27,7 @@ protected:
 	uint32_t nextAction = 0;
 	byte state = 0;
 	DHT dht;
-	float offset;
 	TempHumSensorConfig* config;
-	int port;
-	int dht11;
 };
 
 
