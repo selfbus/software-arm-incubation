@@ -64,7 +64,7 @@ release="release"
 flashstart="flashstart"
 
 currentWorkingDirectory="${1}"
-targetChip="${2}"
+#targetChip="${2}"
 buildArtifactFileName="${3}"
 buildArtifactFileBaseName="${4}"
 appConfigName="${5}"
@@ -81,26 +81,26 @@ scriptPathDepth="../.."
 sbLibVersionSubDir="sblib/inc/sblib/"
 
 # check if we are in the software-arm-incubation repo and search there
-sbLibVersionHeaderDir="${scriptDir}"/"${scriptPathDepth}"/"${sbLibSubModuleRepoFolder}"/"${sbLibVersionSubDir}"
+sbLibVersionHeaderDir="${scriptDir}/${scriptPathDepth}/${sbLibSubModuleRepoFolder}/${sbLibVersionSubDir}"
 sbLibVersionWithDot=$(get_sbLibVersionWithDot "$sbLibVersionHeaderDir")
 
 if [ -z "${sbLibVersionWithDot}" ]; then
   # check if we are in the sblib repo and search there
-  sbLibVersionHeaderDir="${scriptDir}"/"${scriptPathDepth}"/"${sbLibVersionSubDir}"
+  sbLibVersionHeaderDir="${scriptDir}/${scriptPathDepth}/${sbLibVersionSubDir}"
   sbLibVersionWithDot=$(get_sbLibVersionWithDot "$sbLibVersionHeaderDir")
 
   # check if sbLibVersionWithDot was not found
   if [ -z "${sbLibVersionWithDot}" ]; then
     sbLibVersionWithDot="x.x"
-    echo "Selfbus library version was not found in the repository, set to "${sbLibVersionWithDot}""
+    echo "Selfbus library version was not found in the repository, set to \"${sbLibVersionWithDot}\""
   fi
 fi
 
-echo "Creating .hex/.bin files and adding sblib version "${sbLibVersionWithDot}" to filename"
+echo "Creating .hex/.bin files and adding sblib version \"${sbLibVersionWithDot}\" to filename"
 
 outputFileName="${buildArtifactFileBaseName}"
 # append build config name and app version
-outputFileName="${outputFileName}"_"${appConfigName}"_"${appVersionPrefix}""${appVersion}"
+outputFileName="${outputFileName}_${appConfigName}_${appVersionPrefix}${appVersion}"
 # replace spaces with underscores
 outputFileName="${outputFileName// /_}"
 # replace missing options (--)
@@ -112,7 +112,7 @@ outputFileName="${outputFileName//_-/_}"
 # replace duplicate underscores
 outputFileName="${outputFileName//__/_}"
 # convert to lowercase
-outputFileName=`echo "${outputFileName}" | tr '[:upper:]' '[:lower:]'`
+outputFileName=$(echo "${outputFileName}" | tr '[:upper:]' '[:lower:]')
 # add lib version
 outputFileName="${outputFileName}_${sbLibprefix}${sbLibVersionWithDot}"
 echo "${outputFileName}"
@@ -148,11 +148,11 @@ fi
 
 # check for .hex output directory
 if [ ! -d "${hexDir}" ]; then
-  echo "Creating "${hexDir}""
+  echo "Creating \"${hexDir}\""
   mkdir -p "${hexDir}"
 fi
 
-cp --verbose "${currentWorkingDirectory}"/"${outputFileName}.hex" "${hexDir}"/
+cp --verbose "${currentWorkingDirectory}/${outputFileName}.hex" "${hexDir}"/
 
 # Do not activate checksum, not sure why, but at least .hex files get corrupted
 # see also https://community.nxp.com/t5/Blogs/Hex-file-settings-in-MCUxpresso/bc-p/1131124/highlight/true#M53
