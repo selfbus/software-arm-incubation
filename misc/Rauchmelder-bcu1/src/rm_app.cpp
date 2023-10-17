@@ -747,9 +747,13 @@ extern "C" void TIMER32_0_IRQHandler()
 		// Wenn keine Antwort vom Rauchmelder kommt dann den noAnswerCount Zähler
 		// erhöhen. Wenn der Zähler NO_ANSWER_MAX erreicht dann ist es ein Rauchmelder
 		// Fehler.
-		if (!answerWait && noAnswerCount < 255)
+		if (!answerWait)
 		{
-			++noAnswerCount;
+			rm_cancel_receive();
+			if (noAnswerCount < 255)
+			{
+				++noAnswerCount;
+			}
 			if (noAnswerCount >= NO_ANSWER_MAX)
 			{
 				set_errcode(errCode | ERRCODE_COMM);

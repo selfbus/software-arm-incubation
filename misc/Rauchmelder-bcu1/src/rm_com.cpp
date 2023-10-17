@@ -244,3 +244,8 @@ bool isReceiving()
 {
     return (recvCount >= 0);
 }
+
+void rm_cancel_receive()
+{
+    recvCount = -1;
+}
