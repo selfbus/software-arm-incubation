@@ -162,11 +162,18 @@ bool rm_recv_byte()
 	while (rec_ch >  -1) {
 		ch = (unsigned char) rec_ch;
 
-        // Am Anfang auf das Start Byte warten
+        // If it is the magic start byte, (re-)start message reception.
+        // It can also be a repetition of a failed previous attempt.
+        if (ch == STX)
+        {
+            recvCount = 0;
+            rec_ch = serial.read();
+            continue;
+        }
+
+        // Ignore random bytes.
         if (recvCount < 0)
         {
-            if (ch == STX)
-                ++recvCount;
             rec_ch = serial.read();
             continue;
         }
