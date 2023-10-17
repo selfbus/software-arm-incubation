@@ -156,27 +156,24 @@ bool rm_recv_byte()
     }
 
     uint8_t idx;
-	uint8_t ch;
+    uint8_t ch;
 
-	int rec_ch = serial.read();
-	while (rec_ch >  -1) {
-		ch = (unsigned char) rec_ch;
+    int rec_ch;
+    while ((rec_ch = serial.read()) > -1)
+    {
+        ch = (unsigned char) rec_ch;
 
         // If it is the magic start byte, (re-)start message reception.
         // It can also be a repetition of a failed previous attempt.
         if (ch == STX)
         {
             recvCount = 0;
-            rec_ch = serial.read();
             continue;
         }
 
         // Ignore random bytes.
         if (recvCount < 0)
-        {
-            rec_ch = serial.read();
             continue;
-        }
 
         idx = recvCount >> 1;
 
@@ -218,9 +215,8 @@ bool rm_recv_byte()
         else recvBuf[idx] = ch;
 
         ++recvCount;
-        rec_ch = serial.read();
-	} // while
-	return (true);
+    } // while
+    return (true);
 }
 
 bool rm_set_alarm_state(RmAlarmState newState)
