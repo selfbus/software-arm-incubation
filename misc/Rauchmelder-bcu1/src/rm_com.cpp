@@ -14,6 +14,7 @@
 #include <sblib/serial.h>
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
+#include <sblib/timer.h>
 
 #include "rm_com.h"
 #include "rm_const.h"
@@ -29,6 +30,12 @@ uint8_t recvBuf[RECV_MAX_CHARS >> 1];
 
 // Zähler für die empfangenen Zeichen vom Rauchmelder
 int recvCount;
+
+// Last time a byte was received from the serial port.
+uint32_t lastSerialRecvTime = 0;
+
+// Timeout of serial port communication.
+#define RECV_TIMEOUT_MS (3000)
 
 
 // Hilfsstring für die Umschlüsselung Zahl auf Hex-String
@@ -143,12 +150,24 @@ void rm_send_cmd(unsigned char cmd)
 	rm_send_hexstr(bytes);
 }
 
+/**
+ * Cancel an ongoing message reception, e.g. due to timeout.
+ */
+void rm_cancel_receive()
+{
+    recvCount = -1;
+}
 
 /**
  * Ein Byte über die Serielle vom Rauchmelder empfangen.
  */
 bool rm_recv_byte()
 {
+    if (isReceiving() && elapsed(lastSerialRecvTime) > RECV_TIMEOUT_MS)
+    {
+        rm_cancel_receive();
+    }
+
     uint32_t count = serial.available();
     if (count == 0)
     {
@@ -161,6 +180,7 @@ bool rm_recv_byte()
     int rec_ch;
     while ((rec_ch = serial.read()) > -1)
     {
+        lastSerialRecvTime = millis();
         ch = (unsigned char) rec_ch;
 
         // If it is the magic start byte, (re-)start message reception.
@@ -243,9 +263,4 @@ bool rm_set_alarm_state(RmAlarmState newState)
 bool isReceiving()
 {
     return (recvCount >= 0);
-}
-
-void rm_cancel_receive()
-{
-    recvCount = -1;
 }

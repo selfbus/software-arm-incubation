@@ -90,11 +90,5 @@ void rm_send_ack();
  */
 bool isReceiving();
 
-/**
- * Cancel an ongoing message reception, e.g. due to timeout.
- *
- */
-void rm_cancel_receive();
-
 
 #endif /*rm_com_h*/

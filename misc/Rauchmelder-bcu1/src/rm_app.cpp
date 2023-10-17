@@ -749,7 +749,6 @@ extern "C" void TIMER32_0_IRQHandler()
 		// Fehler.
 		if (!answerWait)
 		{
-			rm_cancel_receive();
 			if (noAnswerCount < 255)
 			{
 				++noAnswerCount;
