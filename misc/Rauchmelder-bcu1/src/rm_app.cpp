@@ -535,7 +535,7 @@ unsigned long read_obj_value(unsigned char objno)
 		case RM_TYPE_MVOLT:
 			if ((answer[0]  == 0) && (answer[1] == 1))
 			{
-			    return (floatToDpt9(BATTERY_VOLTAGE_INVALID));
+			    return INVALID_DPT_FLOAT;
 			}
 		    lval = answer_to_int(answer);
 			lval *= 9184;
@@ -964,7 +964,9 @@ void initApplication()
     // set all comObjects to default
     for (uint8_t i = 0; i < NUM_OBJS; i++)
     {
-        bcu.comObjects->objectSetValue(i, 0);
+        auto dataType = objMappingTab[i].dataType;
+        auto defaultValue = (dataType == RM_TYPE_MVOLT || dataType == RM_TYPE_TEMP) ? INVALID_DPT_FLOAT : 0;
+        bcu.comObjects->objectSetValue(i, defaultValue);
     }
 
     pinMode(RM_ACTIVITY_PIN, INPUT); // smoke detector base plate state, no pullup or pulldown configured at this pin to not affect the smoke detector
