@@ -506,6 +506,7 @@ unsigned long read_obj_value(unsigned char objno)
 			return answer_to_short(answer);
 
 		case RM_TYPE_TEMP:
+			// Conversion per temp sensor: (answer[x] * 0.5°C - 20°C) * 100 [for DPT9]
 			lval = ((int) answer[0]) + answer[1];
 			lval *= 25;  // in lval sind zwei Temperaturen, daher halber Multiplikator
 			lval -= 2000;
@@ -517,7 +518,8 @@ unsigned long read_obj_value(unsigned char objno)
 			{
 			    return (floatToDpt9(BATTERY_VOLTAGE_INVALID));
 			}
-		    lval = answer_to_short(answer);
+			lval = answer_to_short(answer);
+			// Conversion: lval * 5.7 * 3.3V / 1024 * 1000mV/V * 100 [for DPT9]
 			lval *= 9184;
 			lval /= 5;
 			return (floatToDpt9(lval));
