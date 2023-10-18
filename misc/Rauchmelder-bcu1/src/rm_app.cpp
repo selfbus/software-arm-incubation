@@ -71,7 +71,7 @@ const struct
 	/* 5 OBJ_STAT_TALARM*/         { RM_CMD_INTERNAL,        0, RM_TYPE_NONE },
 	/* 6 OBJ_SERIAL*/              { RM_CMD_SERIAL,          0, RM_TYPE_LONG },
 	/* 7 OBJ_OPERATING_TIME*/      { RM_CMD_OPERATING_TIME,  0, RM_TYPE_QSEC },
-	/* 8 OBJ_SMOKEBOX_VALUE*/      { RM_CMD_SMOKEBOX,        0, RM_TYPE_INT  },
+	/* 8 OBJ_SMOKEBOX_VALUE*/      { RM_CMD_SMOKEBOX,        0, RM_TYPE_SHORT },
 	/* 9 OBJ_POLLUTION*/           { RM_CMD_SMOKEBOX,        3, RM_TYPE_BYTE },
 	/*10 OBJ_BAT_VOLTAGE*/         { RM_CMD_BATTEMP,         0, RM_TYPE_MVOLT },
 	/*11 OBJ_TEMP*/                { RM_CMD_BATTEMP,         2, RM_TYPE_TEMP },
@@ -409,7 +409,7 @@ void rm_process_msg(unsigned char* bytes, unsigned char len)
 /**
  * Die Rauchmelder Antwort als Long Zahl liefern.
  *
- * @param answer - das erste Byte der Rauchmelder Antwort.
+ * @param cvalue - das erste Byte der Rauchmelder Antwort.
  * @return Der Wert mit getauschten Bytes.
  */
 unsigned long answer_to_long(unsigned char* cvalue)
@@ -421,10 +421,10 @@ unsigned long answer_to_long(unsigned char* cvalue)
 /**
  * Die Rauchmelder Antwort als Integer Zahl liefern.
  *
- * @param answer - das erste Byte der Rauchmelder Antwort.
+ * @param cvalue - das erste Byte der Rauchmelder Antwort.
  * @return Der Wert mit getauschten Bytes.
  */
-unsigned int answer_to_int(unsigned char* cvalue)
+unsigned short answer_to_short(unsigned char* cvalue)
 {
 	return (cvalue[0] << 8) | cvalue[1];
 }
@@ -502,8 +502,8 @@ unsigned long read_obj_value(unsigned char objno)
 		    else
 		        return lval;        // Sekunden, 32Bit
 
-		case RM_TYPE_INT:
-			return answer_to_int(answer);
+		case RM_TYPE_SHORT:
+			return answer_to_short(answer);
 
 		case RM_TYPE_TEMP:
 			lval = ((int) answer[0]) + answer[1];
@@ -517,7 +517,7 @@ unsigned long read_obj_value(unsigned char objno)
 			{
 			    return (floatToDpt9(BATTERY_VOLTAGE_INVALID));
 			}
-		    lval = answer_to_int(answer);
+		    lval = answer_to_short(answer);
 			lval *= 9184;
 			lval /= 5;
 			return (floatToDpt9(lval));

@@ -165,7 +165,7 @@ const uint32_t STARTUP_DELAY_MS = 500;  //!< Delay time in milliseconds we wait 
 #define RM_TYPE_LONG 1
 
 // Rauchmelder Antwort: 2 Byte Zahl
-#define RM_TYPE_INT  2
+#define RM_TYPE_SHORT 2
 
 // Rauchmelder Antwort: 1 Byte Zahl
 #define RM_TYPE_BYTE 3
