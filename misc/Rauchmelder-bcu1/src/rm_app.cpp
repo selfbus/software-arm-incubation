@@ -414,18 +414,7 @@ void rm_process_msg(unsigned char* bytes, unsigned char len)
  */
 unsigned long answer_to_long(unsigned char* cvalue)
 {
-	union
-	{
-		unsigned long l;
-		unsigned char c[4];
-	} result;
-
-	result.c[3] = cvalue[0];
-	result.c[2] = cvalue[1];
-	result.c[1] = cvalue[2];
-	result.c[0] = cvalue[3];
-
-	return result.l;
+	return (cvalue[0] << 24) | (cvalue[1] << 16) | (cvalue[2] << 8) | cvalue[3];
 }
 
 
@@ -437,16 +426,7 @@ unsigned long answer_to_long(unsigned char* cvalue)
  */
 unsigned int answer_to_int(unsigned char* cvalue)
 {
-	union
-	{
-		unsigned int i;
-		unsigned char c[2];
-	} result;
-
-	result.c[1] = cvalue[0];
-	result.c[0] = cvalue[1];
-
-	return result.i;
+	return (cvalue[0] << 8) | cvalue[1];
 }
 
 
