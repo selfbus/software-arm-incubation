@@ -52,7 +52,7 @@ bool rm_set_alarm_state(RmAlarmState newState);
  * zur Verarbeitung der Nachricht aufgerufen. Diese Funktion muss aus main()
  * aufgerufen werden wenn ein Byte empfangen wurde.
  */
-bool rm_recv_byte();
+void rm_recv_byte();
 
 /**
  * Die empfangene Nachricht vom Rauchmelder verarbeiten.

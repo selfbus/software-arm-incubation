@@ -161,7 +161,7 @@ void rm_cancel_receive()
 /**
  * Ein Byte über die Serielle vom Rauchmelder empfangen.
  */
-bool rm_recv_byte()
+void rm_recv_byte()
 {
     if (isReceiving() && elapsed(lastSerialRecvTime) > RECV_TIMEOUT_MS)
     {
@@ -171,7 +171,7 @@ bool rm_recv_byte()
     uint32_t count = serial.available();
     if (count == 0)
     {
-        return (false);
+        return;
     }
 
     uint8_t idx;
@@ -207,7 +207,7 @@ bool rm_recv_byte()
 
             recvCount = -1;
 
-            return (true);
+            return;
         }
 
         // Bei Überlauf die restlichen Zeichen ignorieren
@@ -246,7 +246,6 @@ bool rm_recv_byte()
 
         ++recvCount;
     } // while
-    return (true);
 }
 
 bool rm_set_alarm_state(RmAlarmState newState)
