@@ -200,4 +200,6 @@ const uint32_t STARTUP_DELAY_MS = 500;  //!< Delay time in milliseconds we wait 
 #define NAK	 	0x15
 
 
+const int8_t BATTERY_VOLTAGE_INVALID = -1; //!< Value representing a invalid battery voltage
+
 #endif /*rm_const_h*/
