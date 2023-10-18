@@ -212,7 +212,10 @@ bool rm_recv_byte()
 
         // Bei Überlauf die restlichen Zeichen ignorieren
         if (recvCount >= RECV_MAX_CHARS)
-            return (true);
+        {
+            rm_cancel_receive();
+            continue;
+        }
 
         // Die empfangenen Zeichen sind ein Hex String.
         // D.h. jeweils zwei Zeichen ergeben ein Byte.
@@ -225,14 +228,21 @@ bool rm_recv_byte()
             ch -= '0';
         else if (ch >= 'A' && ch <= 'F')
             ch -= 'A' - 10;
-        else return (true); // Ungültige Zeichen ignorieren
+        else // Ungültige Zeichen ignorieren
+        {
+            rm_cancel_receive();
+            continue;
+        }
 
         if (recvCount & 1)
         {
             recvBuf[idx] <<= 4;
             recvBuf[idx] |= ch;
         }
-        else recvBuf[idx] = ch;
+        else
+        {
+            recvBuf[idx] = ch;
+        }
 
         ++recvCount;
     } // while
