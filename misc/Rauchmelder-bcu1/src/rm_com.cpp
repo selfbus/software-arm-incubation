@@ -159,6 +159,40 @@ void rm_cancel_receive()
 }
 
 /**
+ * Validate the checksum of the message in recvBuf.
+ */
+bool rm_is_valid_message(uint8_t length)
+{
+    // Message has at least one control code and a checksum byte.
+    if (length < 2)
+        return false;
+
+    // There are a few invalid messages captured in RM_Protokoll.txt:
+    //
+    //      <STX>822080F4<ETX>
+    //      C2 30 00 00 00 FD
+    //      <STX>CC01DB52533B<ETX>
+    //      <STX>CE020448<ETX>
+    //
+    // Also, every entry in the long list of the "02 - Status abfragen" section was
+    // actually recorded with first byte 82 instead of C2, and consequently the
+    // checksums in this list are all wrong.
+    // Nevertheless, the description is correct and all other captured messages
+    // have correct checksums, so it's pretty safe to throw away messages with an
+    // incorrect checksum.
+
+    uint8_t expectedChecksum = 0;
+
+    for (auto i = 0; i < length - 1; ++i)
+    {
+        uint8_t b = recvBuf[i];
+        expectedChecksum += hexDigits[b >> 4] + hexDigits[b & 0x0F];
+    }
+
+    return expectedChecksum == recvBuf[length - 1];
+}
+
+/**
  * Ein Byte über die Serielle vom Rauchmelder empfangen.
  */
 void rm_recv_byte()
@@ -202,11 +236,10 @@ void rm_recv_byte()
         {
             rm_send_ack();
 
-            if (idx > 1)
-                rm_process_msg(recvBuf, idx - 1); // Verarbeitung aufrufen (ohne Prüfsumme)
+            if (rm_is_valid_message(idx))
+                rm_process_msg(recvBuf, idx - 1); // Verarbeitung aufrufen
 
-            recvCount = -1;
-
+            rm_cancel_receive();
             return;
         }
 
