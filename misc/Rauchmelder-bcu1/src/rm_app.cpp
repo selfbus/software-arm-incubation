@@ -952,6 +952,11 @@ void initApplication()
         bcu.comObjects->objectSetValue(i, 0);
     }
 
+    pinMode(LED_BASEPLATE_DETACHED, OUTPUT);
+    digitalWrite(LED_BASEPLATE_DETACHED, false);
+    pinMode(LED_SUPPLY_VOLTAGE_DISABLED, OUTPUT);
+    digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED, false);
+
     pinMode(RM_ACTIVITY_PIN, INPUT); // smoke detector base plate state, no pullup or pulldown configured at this pin to not affect the smoke detector
     pinMode(RM_COMM_ENABLE_PIN, OUTPUT);
     digitalWrite(RM_COMM_ENABLE_PIN, RM_COMM_ENABLE); // Kommunikation mit dem RM aktivieren

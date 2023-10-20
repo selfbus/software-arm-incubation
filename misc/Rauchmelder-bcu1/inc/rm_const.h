@@ -16,8 +16,10 @@
 #include <stdint.h>
 
 
-const uint32_t TIMER_INTERVAL_MS = 500; //!< Periodic timer interval in milliseconds (handles all periodic tasks)
-const uint32_t STARTUP_DELAY_MS = 500;  //!< Delay time in milliseconds we wait for the serial port initialization of the smoke detector
+const uint32_t TIMER_INTERVAL_MS = 500;           //!< Periodic timer interval in milliseconds (handles all periodic tasks)
+const uint32_t STARTUP_DELAY_MS = 500;             //!< Delay time in milliseconds we wait for the serial port initialization of the smoke detector
+const uint32_t SUPPLY_VOLTAGE_DELAY = 500;         //!< Delay time in milliseconds we wait after enabling the 12V supply
+const uint32_t SUPPLY_VOLTAGE_TIMEOUT_MS = 120000; //!< Maximum waiting time in milliseconds to enable 12V supply
 
 // counters are in half seconds (1=0.5s, 120=60.0s)
 #ifdef DEBUG
@@ -200,6 +202,8 @@ const uint32_t STARTUP_DELAY_MS = 500;  //!< Delay time in milliseconds we wait 
 #define NAK	 	0x15
 
 
-const int8_t BATTERY_VOLTAGE_INVALID = -1; //!< Value representing a invalid battery voltage
+const int8_t BATTERY_VOLTAGE_INVALID = -1;            //!< Value representing a invalid battery voltage
+const uint32_t LED_BASEPLATE_DETACHED = PIO2_6;       //!< LED is on, while base plate is not attached means @ref RM_ACTIVITY_PIN is false / off
+const uint32_t LED_SUPPLY_VOLTAGE_DISABLED = PIO3_3;  //!< LED is on, while supply voltage is "disconnected" means @ref RM_SUPPORT_VOLTAGE_PIN is true
 
 #endif /*rm_const_h*/

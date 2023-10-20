@@ -56,21 +56,27 @@ void rm_serial_init()
 }
 
 /**
- * Prüfen ob Rauchmelder aktiv ist
- *
- * @return true wenn Rauchmelder aktiv, ansonsten false
+ * Checks if the smoke detector is on the base plate and switches the supply voltage on
  */
-bool checkRmActivity(void)
+void checkRmAttached2BasePlate(void)
 {
-    //pinMode(RM_ACTIVITY_PIN, INPUT | PULL_DOWN);	//Pin als Eingang mit Pulldown Widerstand konfigurieren
-	bool rmActiv = RM_IS_ACTIVE;
-	//pinMode(RM_ACTIVITY_PIN, INPUT);
+    pinMode(RM_ACTIVITY_PIN, INPUT | PULL_DOWN);	//Pin als Eingang mit Pulldown Widerstand konfigurieren
+    bool rmActiv = digitalRead(RM_ACTIVITY_PIN);
+	pinMode(RM_ACTIVITY_PIN, INPUT);
+	digitalWrite(LED_BASEPLATE_DETACHED, rmActiv);
 
-	// falls der Rauchmelder auf die Bodenplatte gesteckt wurde, aber die Spannungsversorung noch nicht ativ ist
-	if(rmActiv == RM_IS_ACTIVE && digitalRead(RM_SUPPORT_VOLTAGE_PIN) == RM_SUPPORT_VOLTAGE_OFF){
+    if (digitalRead(RM_SUPPORT_VOLTAGE_PIN) == RM_SUPPORT_VOLTAGE_ON)
+    {
+        return; // supply voltage is already on
+    }
+
+	// der Rauchmelder wurde auf die Bodenplatte gesteckt => Spannungsversorgung aktivieren
+	if ((rmActiv == RM_IS_ACTIVE) || (millis() >= SUPPLY_VOLTAGE_TIMEOUT_MS))
+	{
 		digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_ON); // Spannungsversorgung aktivieren
+		delay(SUPPLY_VOLTAGE_DELAY);
+	    digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED, true);
 	}
-	return rmActiv;
 }
 
 /**
@@ -85,10 +91,6 @@ void rm_send_byte(unsigned char ch)
 
 void rm_send_ack()
 {
-    if (!checkRmActivity()) //prüfen, ob der Rauchmelder auf Bodenplatte gesteckt und somit aktiv ist
-    {
-        return;
-    }
     rm_send_byte(ACK);
 }
 
@@ -103,11 +105,7 @@ void rm_send_ack()
  */
 void rm_send_hexstr(unsigned char* hexstr)
 {
-    if (!checkRmActivity()) //prüfen, ob der Rauchmelder auf Bodenplatte gesteckt und somit aktiv ist
-    {
-        return;
-    }
-
+    checkRmAttached2BasePlate();
 	unsigned char checksum = 0;
 	unsigned char ch;
 
@@ -133,11 +131,7 @@ void rm_send_hexstr(unsigned char* hexstr)
  */
 void rm_send_cmd(unsigned char cmd)
 {
-    if (!checkRmActivity()) //prüfen, ob der Rauchmelder auf Bodenplatte gesteckt und somit aktiv ist
-    {
-        return;
-    }
-
+    checkRmAttached2BasePlate();
 	unsigned char b, bytes[3];
 
 	b = cmd >> 4;
