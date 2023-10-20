@@ -24,7 +24,7 @@ public:
 
 protected:
 	TempHumSensorConfig *config;
-//	SGP4xClass sgp4x;
+	SGP4xClass sgp4x;
 	uint32_t nextAction = 0;
 	byte state = 0;
 	bool configured = false;
