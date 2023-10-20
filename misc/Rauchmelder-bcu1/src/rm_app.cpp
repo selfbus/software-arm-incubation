@@ -575,6 +575,28 @@ void objectUpdated(int objno)
 }
 
 /**
+ * Checks if the smoke detector is on the base plate and switches the supply voltage on
+ */
+void checkRmAttached2BasePlate(void)
+{
+    bool rmActiv = digitalRead(RM_ACTIVITY_PIN);
+    digitalWrite(LED_BASEPLATE_DETACHED, rmActiv);
+
+    if (digitalRead(RM_SUPPORT_VOLTAGE_PIN) == RM_SUPPORT_VOLTAGE_ON)
+    {
+        return; // supply voltage is already on
+    }
+
+    // der Rauchmelder wurde auf die Bodenplatte gesteckt => Spannungsversorgung aktivieren
+    if ((rmActiv == RM_IS_ACTIVE) || (millis() >= SUPPLY_VOLTAGE_TIMEOUT_MS))
+    {
+        digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_ON); // Spannungsversorgung aktivieren
+        delay(SUPPLY_VOLTAGE_DELAY_MS);
+        digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED, true);
+    }
+}
+
+/**
  * Befehl an den Rauchmelder versenden
  * Der Empfang und die Verarbeitung der Antwort des Rauchmelders erfolgt in process_msg().
  *
@@ -585,6 +607,8 @@ void send_Cmd(unsigned char cmd){
 	{
 	    return;
 	}
+
+    checkRmAttached2BasePlate();
 
     ///\todo set remaining objValues to invalid values before sending serial command
     switch (cmd)
