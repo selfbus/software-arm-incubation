@@ -60,9 +60,7 @@ void rm_serial_init()
  */
 void checkRmAttached2BasePlate(void)
 {
-    pinMode(RM_ACTIVITY_PIN, INPUT | PULL_DOWN);	//Pin als Eingang mit Pulldown Widerstand konfigurieren
     bool rmActiv = digitalRead(RM_ACTIVITY_PIN);
-	pinMode(RM_ACTIVITY_PIN, INPUT);
 	digitalWrite(LED_BASEPLATE_DETACHED, rmActiv);
 
     if (digitalRead(RM_SUPPORT_VOLTAGE_PIN) == RM_SUPPORT_VOLTAGE_ON)
@@ -74,7 +72,7 @@ void checkRmAttached2BasePlate(void)
 	if ((rmActiv == RM_IS_ACTIVE) || (millis() >= SUPPLY_VOLTAGE_TIMEOUT_MS))
 	{
 		digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_ON); // Spannungsversorgung aktivieren
-		delay(SUPPLY_VOLTAGE_DELAY);
+		delay(SUPPLY_VOLTAGE_DELAY_MS);
 	    digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED, true);
 	}
 }

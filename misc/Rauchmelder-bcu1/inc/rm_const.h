@@ -16,10 +16,10 @@
 #include <stdint.h>
 
 
-const uint32_t TIMER_INTERVAL_MS = 500;           //!< Periodic timer interval in milliseconds (handles all periodic tasks)
-const uint32_t STARTUP_DELAY_MS = 500;             //!< Delay time in milliseconds we wait for the serial port initialization of the smoke detector
-const uint32_t SUPPLY_VOLTAGE_DELAY = 500;         //!< Delay time in milliseconds we wait after enabling the 12V supply
-const uint32_t SUPPLY_VOLTAGE_TIMEOUT_MS = 120000; //!< Maximum waiting time in milliseconds to enable 12V supply
+const uint32_t TIMER_INTERVAL_MS = 500;              //!< Periodic timer interval in milliseconds (handles all periodic tasks)
+const uint32_t STARTUP_DELAY_MS = 500;               //!< Delay time in milliseconds we wait for the serial port initialization of the smoke detector
+const uint32_t SUPPLY_VOLTAGE_DELAY_MS = 500;        //!< Delay time in milliseconds we wait after enabling the 12V supply
+const uint32_t SUPPLY_VOLTAGE_TIMEOUT_MS = 120000;   //!< Maximum waiting time in milliseconds to enable 12V supply
 
 // counters are in half seconds (1=0.5s, 120=60.0s)
 #ifdef DEBUG
