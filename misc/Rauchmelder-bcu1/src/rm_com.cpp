@@ -202,13 +202,14 @@ void rm_recv_byte()
         // Am Ende den Empfang bestätigen und die erhaltene Antwort verarbeiten
         if (ch == ETX)
         {
-            rm_send_ack();
 
             if (rm_is_valid_message(idx))
+            {
+                rm_send_ack();
                 rm_process_msg(recvBuf, idx - 1); // Verarbeitung aufrufen
-
+            }
             rm_cancel_receive();
-            return;
+            continue;
         }
 
         // Bei Überlauf die restlichen Zeichen ignorieren
