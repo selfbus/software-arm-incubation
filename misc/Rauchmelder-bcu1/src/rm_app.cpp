@@ -240,6 +240,7 @@ void set_errcode(unsigned char newErrCode)
 	else ARRAY_SET_BIT(objSendReqFlags, OBJ_MALFUNCTION);
 
 	errCode = newErrCode;
+	ARRAY_SET_BIT(objSendReqFlags, OBJ_ERRCODE);
 }
 
 
