@@ -75,4 +75,10 @@ unsigned long read_obj_value(unsigned char objno);
  */
 void objectUpdated(int objno);
 
+/**
+ * Setup and start periodid timer @ref timer32_0
+ * @param milliseconds Timer interval in milliseconds
+ */
+void setupPeriodicTimer(uint32_t milliseconds);
+
 #endif /*rm_app_h*/

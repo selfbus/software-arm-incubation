@@ -986,15 +986,7 @@ void initApplication()
     digitalWrite(RM_COMM_ENABLE_PIN, RM_COMM_ENABLE); // Kommunikation mit dem RM aktivieren
     pinMode(RM_SUPPORT_VOLTAGE_PIN, OUTPUT);
     digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_OFF); // zuerst die Spannungsversorgung ausschalten
-    // rm_send_ack();
-    // rm_send_ack(); // sending twice a ACK came from original LPC922 source, because
-    // smoke detector will answer with it's automatic message (hex) after enabling the serial e.g.:
-    // 00 02 38 32 32 30 30 30 30 30 30 30 45 43 03 = <STX>8220000000EC<ETX>
 
-    delay(STARTUP_DELAY_MS);
-
-    rm_recv_byte();
-    setupPeriodicTimer(TIMER_INTERVAL_MS);
 
 	// TODO Alarm-Status vom Rauchmelder abfragen
 }
