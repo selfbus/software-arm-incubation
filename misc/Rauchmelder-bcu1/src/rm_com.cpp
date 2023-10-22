@@ -62,7 +62,7 @@ void rm_serial_init()
  */
 void rm_send_byte(unsigned char ch)
 {
-	serial.write(ch);
+    serial.write(ch);
 }
 
 void rm_send_ack()
@@ -185,14 +185,38 @@ void rm_recv_bytes()
     while ((rec_ch = serial.read()) > -1)
     {
         lastSerialRecvTime = millis();
-        ch = (unsigned char) rec_ch;
 
-        // If it is the magic start byte, (re-)start message reception.
-        // It can also be a repetition of a failed previous attempt.
-        if (ch == STX)
+        ch = (uint8_t) rec_ch;
+        switch (ch)
         {
-            recvCount = 0;
-            continue;
+            case STX:
+                // It is the magic start byte, (re-)start message reception.
+                // It can also be a repetition of a failed previous attempt.
+                recvCount = 0;
+                continue;
+
+            case NAK: ///\todo Retransmit the last command/bytes
+                continue;
+
+            case THE_UNKNOWN: ///\todo Check if the 0x00 before the <STX> is intended behavior of the RM.
+                continue;
+
+            case ETX: // Am Ende den Empfang bestätigen und die erhaltene Antwort verarbeiten
+                idx = recvCount >> 1;
+                if (rm_is_valid_message(idx))
+                {
+                    rm_send_ack();
+                    rm_process_msg(recvBuf, idx - 1); // Verarbeitung aufrufen
+                }
+                else
+                {
+                    rm_send_nak();
+                }
+                rm_cancel_receive();
+                continue;
+
+            default:
+                ;
         }
 
         // Ignore random bytes.
@@ -200,24 +224,6 @@ void rm_recv_bytes()
             continue;
 
         idx = recvCount >> 1;
-
-        // Am Ende den Empfang bestätigen und die erhaltene Antwort verarbeiten
-        if (ch == ETX)
-        {
-
-            if (rm_is_valid_message(idx))
-            {
-                rm_send_ack();
-                rm_process_msg(recvBuf, idx - 1); // Verarbeitung aufrufen
-            }
-            else
-            {
-                rm_send_nak();
-            }
-
-            rm_cancel_receive();
-            continue;
-        }
 
         // Bei Überlauf die restlichen Zeichen ignorieren
         if (recvCount >= RECV_MAX_CHARS)

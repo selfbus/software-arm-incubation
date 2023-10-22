@@ -189,18 +189,11 @@ const uint32_t SUPPLY_VOLTAGE_TIMEOUT_MS = 120000;   //!< Maximum waiting time i
 // Kommunikations Konstanten
 //-----------------------------------------------------------------------------
 
-// Start Byte
-#define STX		0x02
-
-// Ende Byte
-#define ETX		0x03
-
-// Acknowledged
-#define ACK	 	0x06
-
-// Not Acknowledged
-#define NAK	 	0x15
-
+#define THE_UNKNOWN 0x00 //!> The unknown leading byte of the @ref STX start byte
+#define STX         0x02 //!> Start byte
+#define ETX         0x03 //!> End byte
+#define ACK         0x06 //!> Acknowledged byte
+#define NAK         0x15 //!< Not acknowledged byte
 
 const int8_t BATTERY_VOLTAGE_INVALID = -1;            //!< Value representing a invalid battery voltage
 const uint32_t LED_BASEPLATE_DETACHED = PIO2_6;       //!< LED is on, while base plate is not attached means @ref RM_ACTIVITY_PIN is false / off
