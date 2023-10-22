@@ -31,11 +31,6 @@ extern BCU1 bcu;
 #define DEVICE_ID_CHECK
 
 
-// Current Firmware Version
-#define FW_VER_MAJ  0x02    // Major
-#define FW_VER_MIN  0x42    // Minor
-
-
 
 
 
@@ -76,7 +71,7 @@ unsigned long read_obj_value(unsigned char objno);
 void objectUpdated(int objno);
 
 /**
- * Setup and start periodid timer @ref timer32_0
+ * Setup and start periodic timer @ref timer32_0
  * @param milliseconds Timer interval in milliseconds
  */
 void setupPeriodicTimer(uint32_t milliseconds);
