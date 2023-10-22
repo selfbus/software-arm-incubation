@@ -21,17 +21,9 @@
 #ifndef rm_app_h
 #define rm_app_h
 
-#include <sblib/ioports.h>
 #include <sblib/eibBCU1.h>
 
 extern BCU1 bcu;
-
-// OPTIONS
-// Enable to activate device ID checking (not implemented)
-#define DEVICE_ID_CHECK
-
-
-
 
 
 /**
@@ -45,14 +37,9 @@ extern void process_alarm_stats();
 extern void process_objs();
 
 /**
- * Der Timer ist übergelaufen.
- */
-//extern void timer_event();
-
-/**
  * Alle Applikations-Parameter zurücksetzen.
  */
-extern void initApplication(); //restart_app();
+extern void initApplication();
 
 /**
  * Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.

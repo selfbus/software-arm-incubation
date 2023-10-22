@@ -13,23 +13,43 @@
 #ifndef rm_const_h
 #define rm_const_h
 
-#include <stdint.h>
 #include <sblib/io_pin_names.h>
 
 
-const uint32_t TIMER_INTERVAL_MS = 500;              //!< Periodic timer interval in milliseconds (handles all periodic tasks)
-const uint32_t SUPPLY_VOLTAGE_DELAY_MS = 500;        //!< Delay time in milliseconds we wait after enabling the 12V supply
-const uint32_t SUPPLY_VOLTAGE_TIMEOUT_MS = 120000;   //!< Maximum waiting time in milliseconds to enable 12V supply
+// IO Pin assignments
+#define RM_COMM_ENABLE_PIN	PIO3_5
+#define RM_COMM_ENABLE false // set low to enable smoke detector's serial communication feature
+
+// Eingangspin definieren, an dem die Erkennung der internen Rauchmelder Spannung angeschlossen ist
+#define RM_ACTIVITY_PIN PIO0_11
+#define RM_IS_ACTIVE true
+
+// Ansteuerung der Spannungsversorgung zur Untertützung des Rauchmelders
+#define RM_SUPPORT_VOLTAGE_PIN PIO2_1
+#define RM_SUPPORT_VOLTAGE_ON false
+#define RM_SUPPORT_VOLTAGE_OFF true // NPN Transistor zieht die Versorgungsspannung herunter
+
+// LED pins
+#define LED_BASEPLATE_DETACHED_PIN PIO2_6       //!< LED is on, while base plate is not attached means @ref RM_ACTIVITY_PIN is false / off
+#define LED_SUPPLY_VOLTAGE_DISABLED_PIN PIO3_3  //!< LED is on, while supply voltage is "disconnected" means @ref RM_SUPPORT_VOLTAGE_PIN is true
+
+// Sentinel values
+#define BATTERY_VOLTAGE_INVALID -1              //!< Value representing an invalid battery voltage
+
+// Time-related values
+#define TIMER_INTERVAL_MS 500                   //!< Periodic timer interval in milliseconds (handles all periodic tasks)
+#define SUPPLY_VOLTAGE_DELAY_MS 500             //!< Delay time in milliseconds we wait after enabling the 12V supply
+#define SUPPLY_VOLTAGE_TIMEOUT_MS 120000        //!< Maximum waiting time in milliseconds to enable 12V supply
 
 // counters are in half seconds (1=0.5s, 120=60.0s)
 #ifdef DEBUG
-    const uint8_t DEFAULT_EVENTTIME = 60;
-    const uint8_t DEFAULT_SERIAL_COMMAND_TIME = 7;
-    const uint8_t DEFAULT_KNX_OBJECT_TIME = 1;
+    #define DEFAULT_EVENTTIME 60
+    #define DEFAULT_SERIAL_COMMAND_TIME 7
+    #define DEFAULT_KNX_OBJECT_TIME 1
 #else
-    const uint8_t DEFAULT_EVENTTIME = 120;  // Initialisierung auf 1 Minute (sonst wird im Timer Interrupt 0 minus 1 durchgeführt)
-    const uint8_t DEFAULT_SERIAL_COMMAND_TIME = 15; // half seconds
-    const uint8_t DEFAULT_KNX_OBJECT_TIME = 3; // half seconds
+    #define DEFAULT_EVENTTIME 120  // Initialisierung auf 1 Minute (sonst wird im Timer Interrupt 0 minus 1 durchgeführt)
+    #define DEFAULT_SERIAL_COMMAND_TIME 15 // half seconds
+    #define DEFAULT_KNX_OBJECT_TIME 3 // half seconds
 #endif
 
 //-----------------------------------------------------------------------------
@@ -125,7 +145,6 @@ const uint32_t SUPPLY_VOLTAGE_TIMEOUT_MS = 120000;   //!< Maximum waiting time i
 #define ERRCODE_TEMP1		    0x04 //!< Temperatursensor 1 defekt
 #define ERRCODE_TEMP2		    0x08 //!< Temperatursensor 2 defekt
 #define ERRCODE_SMOKEBOX	    0x10 //!< Rauchkammer verschmutzt / defekt
-#define ERRCODE_NOT_ATTACHED    0x20 //!< Smoke detector not attached to base plate
 
 //-----------------------------------------------------------------------------
 // Befehle an den Rauchmelder
@@ -194,9 +213,5 @@ const uint32_t SUPPLY_VOLTAGE_TIMEOUT_MS = 120000;   //!< Maximum waiting time i
 #define ETX         0x03 //!> End byte
 #define ACK         0x06 //!> Acknowledged byte
 #define NAK         0x15 //!< Not acknowledged byte
-
-const int8_t BATTERY_VOLTAGE_INVALID = -1;            //!< Value representing a invalid battery voltage
-const uint32_t LED_BASEPLATE_DETACHED = PIO2_6;       //!< LED is on, while base plate is not attached means @ref RM_ACTIVITY_PIN is false / off
-const uint32_t LED_SUPPLY_VOLTAGE_DISABLED = PIO3_3;  //!< LED is on, while supply voltage is "disconnected" means @ref RM_SUPPORT_VOLTAGE_PIN is true
 
 #endif /*rm_const_h*/

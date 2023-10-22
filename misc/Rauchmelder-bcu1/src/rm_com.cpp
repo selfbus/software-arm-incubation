@@ -41,9 +41,6 @@ uint32_t lastSerialRecvTime = 0;
 // Hilfsstring für die Umschlüsselung Zahl auf Hex-String
 unsigned const char hexDigits[] = "0123456789ABCDEF";
 
-// configure serial pins for Rauchmelder
-//Serial serial(PIO3_1, PIO3_0);
-
 /**
  * Serielle Kommunikation mit dem Rauchmelder initialisieren
  */

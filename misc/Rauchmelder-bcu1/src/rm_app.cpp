@@ -18,26 +18,12 @@
  */
 
 #include <stdint.h>
-#include <sblib/eib/datapoint_types.h>
 #include "rm_app.h"
 #include "rm_const.h"
 #include "rm_com.h"
 #include "rm_eeprom.h"
 
 BCU1 bcu = BCU1();
-
-// Befehle an den Rauchmelder
-/*
-const unsigned char CmdTab[RM_CMD_COUNT] =
-{
-	0x04,   // RM_CMD_SERIAL
-	0x09,   // RM_CMD_OPERATING_TIME
-	0x0B,   // RM_CMD_SMOKEBOX
-	0x0C,   // RM_CMD_BATTEMP
-	0x0D,   // RM_CMD_NUM_ALARMS
-	0x0E	// RM_CMD_NUM_ALARMS_2
-};
-*/
 
 const struct
 {
@@ -50,7 +36,7 @@ const struct
 	{ 0x0B, {8,  9,    15,   0xFF} },	// <STX>CB0065000111<ETX> RM_CMD_SMOKEBOX
 	{ 0x0C, {10, 11,   0xFF, 0xFF} }, 	// <STX>CC000155551B<ETX> RM_CMD_BATTEMP
 	{ 0x0D, {16, 17,   18,   19} },		// <STX>CD0000000007<ETX> RM_CMD_NUM_ALARMS
-	{ 0x0E, {20, 21,   0xFF, 0xFF} } 	// <STX>CE000048<ETX> RM_CMD_NUM_ALARMS_2
+	{ 0x0E, {20, 21,   0xFF, 0xFF} } 	// <STX>CE000048<ETX>     RM_CMD_NUM_ALARMS_2
 };
 
 // Mapping von den Kommunikations-Objekten auf die Rauchmelder Requests
@@ -144,21 +130,11 @@ unsigned char noAnswerCount;
 #define NO_ANSWER_MAX 5
 
 
-// Zähler für Alarm am JP2 - EXTRA_ALARM_PIN
-unsigned char extraAlarmCounter;
-
-// Schwelle für extraAlarmCounter in 0,5s
-#define EXTRA_ALARM_LIMIT 5
-
-
 // Countdown Zähler für zyklisches Senden eines Alarms.
 unsigned char alarmCounter;
 
 // Countdown Zähler für zyklisches Senden eines Testalarms.
 unsigned char TalarmCounter;
-
-// Countdown Zähler für zyklisches Senden des Alarm Zustands.
-unsigned char alarmStatusCounter;
 
 // Countdown Zähler für verzögertes Senden eines Alarms
 unsigned char delayedAlarmCounter;
@@ -186,10 +162,6 @@ const unsigned char pow2[8] = { 1, 2, 4, 8, 16, 32, 64, 128 };
 
 // Testen ob im Byte Array arr das bitno-te Bit gesetzt ist
 #define ARRAY_IS_BIT_SET(arr, bitno) (arr[bitno>>3] & pow2[bitno & 7])
-
-
-// Verwendet um Response Telegramme zu kennzeichnen.
-#define OBJ_RESPONSE_FLAG 0x40
 
 
 /**
@@ -441,10 +413,6 @@ unsigned long read_obj_value(unsigned char objno)
 {
 	unsigned char cmd = objMappingTab[objno].cmd;
 
-//	DEBUG_WRITE_BYTE(objno);
-//	DEBUG_WRITE_BYTE(eeprom[COMMSTABPTR]);
-//	//DEBUG_WRITE_BYTE(eeprom[eeprom[COMMSTABPTR]+objno*3+4]); // objtype
-
 	// Interne Com-Objekte behandeln
 	if (cmd == RM_CMD_INTERNAL)
 	{
@@ -544,7 +512,6 @@ void objectUpdated(int objno)
 {
  	if (objno == OBJ_ALARM_BUS) // Bus Alarm
 	{
-
  		setAlarmBus = bcu.comObjects->objectRead(objno) & 0x01; //ToDo: prüfen ob ok   //war: setAlarmBus = telegramm[7] & 0x01;
 
  		// Wenn wir lokalen Alarm haben dann Bus Alarm wieder auslösen
@@ -581,7 +548,7 @@ void objectUpdated(int objno)
 void checkRmAttached2BasePlate(void)
 {
     bool rmActiv = digitalRead(RM_ACTIVITY_PIN);
-    digitalWrite(LED_BASEPLATE_DETACHED, rmActiv);
+    digitalWrite(LED_BASEPLATE_DETACHED_PIN, rmActiv);
 
     if (digitalRead(RM_SUPPORT_VOLTAGE_PIN) == RM_SUPPORT_VOLTAGE_ON)
     {
@@ -593,7 +560,7 @@ void checkRmAttached2BasePlate(void)
     {
         digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_ON); // Spannungsversorgung aktivieren
         delay(SUPPLY_VOLTAGE_DELAY_MS);
-        digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED, true);
+        digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED_PIN, true);
     }
 }
 
@@ -603,7 +570,8 @@ void checkRmAttached2BasePlate(void)
  *
  * @param cmd - Index des zu sendenden Befehls aus der CmdTab
  */
-void send_Cmd(unsigned char cmd){
+void send_Cmd(unsigned char cmd)
+{
 	if (isReceiving())
 	{
 	    return;
@@ -923,7 +891,7 @@ void setupPeriodicTimer(uint32_t milliseconds)
     timer32_0.matchMode(MAT1, RESET | INTERRUPT);
 
     // Match MAT1 when the timer reaches this value (in milliseconds)
-    timer32_0.match(MAT1, milliseconds- 1); // -1 because counting starts from 0, e.g. 0-499=500ms
+    timer32_0.match(MAT1, milliseconds - 1); // -1 because counting starts from 0, e.g. 0-499=500ms
 
     timer32_0.start();
 }
@@ -965,9 +933,7 @@ void initApplication()
 	infoCounter = bcu.userEeprom->getUInt8(CONF_INFO_INTERVAL);
 	alarmCounter = 1;
 	TalarmCounter = 1;
-	alarmStatusCounter = 1;
 	delayedAlarmCounter = 0;
-	extraAlarmCounter = 0;
 
 	errCode = 0;
 
@@ -977,17 +943,14 @@ void initApplication()
         bcu.comObjects->objectSetValue(i, 0);
     }
 
-    pinMode(LED_BASEPLATE_DETACHED, OUTPUT);
-    digitalWrite(LED_BASEPLATE_DETACHED, false);
-    pinMode(LED_SUPPLY_VOLTAGE_DISABLED, OUTPUT);
-    digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED, false);
+    pinMode(LED_BASEPLATE_DETACHED_PIN, OUTPUT);
+    digitalWrite(LED_BASEPLATE_DETACHED_PIN, false);
+    pinMode(LED_SUPPLY_VOLTAGE_DISABLED_PIN, OUTPUT);
+    digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED_PIN, false);
 
     pinMode(RM_ACTIVITY_PIN, INPUT | PULL_DOWN); // smoke detector base plate state, pulldown configured, Pin is connected to 3,3V VCC of the RM
     pinMode(RM_COMM_ENABLE_PIN, OUTPUT);
     digitalWrite(RM_COMM_ENABLE_PIN, RM_COMM_ENABLE); // Kommunikation mit dem RM aktivieren
     pinMode(RM_SUPPORT_VOLTAGE_PIN, OUTPUT);
     digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_OFF); // zuerst die Spannungsversorgung ausschalten
-
-
-	// TODO Alarm-Status vom Rauchmelder abfragen
 }

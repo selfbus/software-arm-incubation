@@ -14,7 +14,6 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/timeout.h>
 #include "rm_const.h"
 #include "rm_com.h"
 #include "rm_app.h"
@@ -28,11 +27,6 @@ BcuBase* setup()
 {
     initApplication();
     bcu.begin(0x004C, 0x03F2, 0x24); 		//Herstellercode 0x004C = Robert Bosch, Devicetype 1010 (0x03F2), Version 2.4
-
-    // Handle power-up delay
-    //Timeout delay;
-    //delay.start(userEeprom.addrTab[0]*20); //aus LPC922 Rauchmelder übernommen
-
     setupPeriodicTimer(TIMER_INTERVAL_MS);
     return (&bcu);
 }
@@ -60,7 +54,6 @@ void loop()
     {
        objectUpdated(objno);
     }
-
 
     // Sleep up to 1 millisecond if there is nothing to do
     if (bcu.bus->idle())

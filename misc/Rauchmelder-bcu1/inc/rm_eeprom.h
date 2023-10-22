@@ -16,33 +16,32 @@
 
 //-----------------------------------------------------------------------------
 // ETS VD Konfigurations-Parameter
-// Zugriff auf diese Parameter über das globale Array eeprom[]
 //-----------------------------------------------------------------------------
 
 /**
  * Intervall für Alarm zyklisch senden in Sekunden
  */
-#define CONF_ALARM_INTERVAL 506 // war: 250
+#define CONF_ALARM_INTERVAL 506
 
 /**
  * Alarm verzögert senden in Sekunden.
  */
-#define CONF_ALARM_DELAYED 504 //war: 248
+#define CONF_ALARM_DELAYED 504
 
 /**
  * Intervall für Testalarm zyklisch senden in Sekunden.
  */
-#define CONF_TALARM_INTERVAL 503 //war: 247
+#define CONF_TALARM_INTERVAL 503
 
 /**
  * Intervall für Status-Informationen zyklisch senden in Minuten
  */
-#define CONF_INFO_INTERVAL 505 //war: 249
+#define CONF_INFO_INTERVAL 505
 
 /**
  * Konfigurationsbyte für zyklisches und verzögertes Senden.
  */
-#define CONF_SEND_ENABLE 507 //war: 251
+#define CONF_SEND_ENABLE 507
 
 /**
  * Bitmaske in CONF_SEND_ENABLE für Alarm verzögert senden.
@@ -87,17 +86,17 @@
 /**
  * Bits aktivieren das zyklische Senden der Com-Objekte 6..13
  */
-#define CONF_INFO_6TO13		508 //war: 252
+#define CONF_INFO_6TO13		508
 
 /**
  * Bits aktivieren das zyklische Senden der Com-Objekte 14..21
  */
-#define CONF_INFO_14TO21	509 // war: 253
+#define CONF_INFO_14TO21	509
 
 /**
  * Temperaturabgleich -12/+12 Grad in 0.1°C Schritten
  */
-#define CONF_TEMP_OFFSET    510 // war: 254
+#define CONF_TEMP_OFFSET    510
 
 
 #endif /* rm_eeprom_h */
