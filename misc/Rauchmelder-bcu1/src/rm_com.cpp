@@ -70,6 +70,11 @@ void rm_send_ack()
     rm_send_byte(ACK);
 }
 
+void rm_send_nak()
+{
+    rm_send_byte(NAK);
+}
+
 /**
  * Eine Nachricht an den Rauchmelder senden.
  *
@@ -205,6 +210,11 @@ void rm_recv_bytes()
                 rm_send_ack();
                 rm_process_msg(recvBuf, idx - 1); // Verarbeitung aufrufen
             }
+            else
+            {
+                rm_send_nak();
+            }
+
             rm_cancel_receive();
             continue;
         }
