@@ -74,7 +74,7 @@ void rm_send_ack()
  * Eine Nachricht an den Rauchmelder senden.
  *
  * Der Befehl wird als Hex String gesendet. Die Prüfsumme wird automatisch
- * berechnet und nach dem Befehl gesendet. Die gesammte Übertragung wird mit
+ * berechnet und nach dem Befehl gesendet. Die gesamte Übertragung wird mit
  * STX begonnnen und mit ETX beendet.
  *
  * @param hexstr - die zu sendenden Bytes als Hex String, mit Nullbyte am Ende
@@ -160,10 +160,7 @@ bool rm_is_valid_message(uint8_t length)
     return expectedChecksum == recvBuf[length - 1];
 }
 
-/**
- * Ein Byte über die Serielle vom Rauchmelder empfangen.
- */
-void rm_recv_byte()
+void rm_recv_bytes()
 {
     if (isReceiving() && elapsed(lastSerialRecvTime) > RECV_TIMEOUT_MS)
     {

@@ -44,7 +44,7 @@ void loop()
 {
     int objno;
 
-  	rm_recv_byte();
+  	rm_recv_bytes();
 
 	if (!answerWait)
 		process_alarm_stats();
@@ -72,5 +72,5 @@ void loop()
  */
 void loop_noapp()
 {
-    rm_recv_byte(); // timer32_0 is still running, so we should read the received bytes
+    rm_recv_bytes(); // timer32_0 is still running, so we should read the received bytes
 }

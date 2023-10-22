@@ -46,13 +46,12 @@ enum RmAlarmState : uint8_t
 bool rm_set_alarm_state(RmAlarmState newState);
 
 /**
- * Ein Byte über die serielle Schnittstelle vom Rauchmelder empfangen.
- *
- * Wenn die empfangene Nachricht komplett ist dann wird _process_msg()
- * zur Verarbeitung der Nachricht aufgerufen. Diese Funktion muss aus main()
- * aufgerufen werden wenn ein Byte empfangen wurde.
+ * Alle Bytes über die serielle Schnittstelle vom Rauchmelder empfangen.
+ * Diese Funktion muss zyklisch aus main() aufgerufen werden um zu prüfen ob Bytes empfangen wurden.
+ * Wenn die empfangene Nachricht komplett ist, dann wird @ref rm_process_msg()
+ * zur Verarbeitung der Nachricht aufgerufen.
  */
-void rm_recv_byte();
+void rm_recv_bytes();
 
 /**
  * Die empfangene Nachricht vom Rauchmelder verarbeiten.
