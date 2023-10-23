@@ -50,6 +50,7 @@ struct
 {
     const RmCommandByte cmdno;                  //!< Zu sendender RM_CMD Befehl
     const unsigned char objects[MAX_OBJ_CMD]; //!< Zuordnung der ComObjekte zu den Befehlen
+    unsigned long objValues;                  //!< Werte der Com-Objekte.
 } CmdTab[RM_CMD_COUNT] =
 {
     // CommandByte                           object number             raw value
@@ -123,10 +124,6 @@ unsigned char errCode;
 
 // Flags für Com-Objekte senden
 unsigned char objSendReqFlags[NUM_OBJ_FLAG_BYTES];
-
-// Werte der Com-Objekte. Index ist die der RM_CMD
-unsigned long objValues[RM_CMD_COUNT];
-
 
 // Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.
 // Ist der Zähler 0 dann wird gerade auf keine Antwort gewartet.
@@ -262,8 +259,8 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
         {
             // Copy values over atomically.
             timer32_0.noInterrupts();
-            objValues[cmd] = 0;
-            memcpy(&objValues[cmd], &bytes[1], len - 1);
+            CmdTab[cmd].objValues = 0;
+            memcpy(&CmdTab[cmd].objValues, &bytes[1], len - 1);
             timer32_0.interrupts();
 
             // Informationen aus den empfangenen Daten vom Rauchmelder der sblib zur Verfügung stellen
@@ -458,7 +455,7 @@ unsigned long read_obj_value(unsigned char objno)
         unsigned long lval;
         unsigned char *answer;
 
-        answer = (unsigned char*) &objValues[cmd];
+        answer = (unsigned char*) &CmdTab[(uint8_t)cmd].objValues;
         answer += objMappingTab[objno].offset;
 
         switch (objMappingTab[objno].dataType)
@@ -597,8 +594,8 @@ void send_Cmd(Command cmd)
         case Command::rmSmokeboxData:
             break;
 
-            objValues[RM_CMD_BATTEMP] = 0;
         case Command::rmBatteryAndTemperature:
+            CmdTab[(uint8_t)Command::rmBatteryAndTemperature].objValues = 0;
             break;
 
         case Command::rmNumberAlarms_1:
@@ -611,7 +608,7 @@ void send_Cmd(Command cmd)
             break;
     }
 
-    rm_send_cmd(CmdTab[cmd].cmdno);
+    rm_send_cmd(CmdTab[(uint8_t)cmd].cmdno);
     answerWait = INITIAL_ANSWER_WAIT;
 }
 
@@ -920,7 +917,7 @@ void initApplication()
 
     for (uint8_t i = 0; i < commandTableSize(); ++i)
     {
-        objValues[i] = 0;
+        CmdTab[i].objValues = 0;
     }
 
     answerWait = 0;
