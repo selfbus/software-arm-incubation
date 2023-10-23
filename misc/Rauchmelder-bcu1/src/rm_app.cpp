@@ -242,7 +242,7 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
             // Copy values over atomically.
             timer32_0.noInterrupts();
             objValues[cmd] = 0;
-            memcpy(&objValues[cmd], &bytes[1], len);
+            memcpy(&objValues[cmd], &bytes[1], len - 1);
             timer32_0.interrupts();
 
             // Informationen aus den empfangenen Daten vom Rauchmelder der sblib zur Verfügung stellen
