@@ -27,10 +27,29 @@
 
 BCU1 bcu = BCU1();
 
-const struct
+//-----------------------------------------------------------------------------
+// Befehle an den Rauchmelder
+//-----------------------------------------------------------------------------
+enum class Command : uint8_t // RM_CMD_COUNT must match number of rmXxxx commands
 {
-    unsigned const char objects[MAX_OBJ_CMD];    // Zuordnung der ComObjekte zu den Befehlen
+    rmSerialNumber          = 0,  //!< Gira Command: Seriennummer abfragen
+    rmOperatingTime         = 1,  //!< Gira Command: Betriebszeit abfragen
+    rmSmokeboxData          = 2,  //!< Gira Command: Rauchkammer Daten abfragen
+    rmBatteryAndTemperature = 3,  //!< Gira Command: Batteriespannung und Temperaturen
+    rmNumberAlarms_1        = 4,  //!< Gira Command: Anzahl der Alarme #1 abfragen
+    rmNumberAlarms_2        = 5,  //!< Gira Command: Anzahl der Alarme #2 abfragen
+    rmStatus                = 6,  //!< Gira Command: Status abfragen
+
+    internal                = 14, //!< intern behandelt, kein Befehl an den Rauchmelder
+    none                    = 15  //!< kein Befehl
+};
+
+#define RM_CMD_COUNT           6  //!< Anzahl der Gira Commands
+
+struct
+{
     const RmCommandByte cmdno;                  //!< Zu sendender RM_CMD Befehl
+    const unsigned char objects[MAX_OBJ_CMD]; //!< Zuordnung der ComObjekte zu den Befehlen
 } CmdTab[RM_CMD_COUNT] =
 {
     // CommandByte                           object number             raw value
@@ -48,33 +67,33 @@ const struct
 // die ID vom Kommunikations-Objekt (objid).
 const struct
 {
-    unsigned const char cmd;       // Zu sendender RM_CMD Befehl
+    Command cmd;                   // Zu sendender RM_CMD Befehl
     unsigned const char offset;    // Byte-Offset in der Antwort
     unsigned const char dataType;  // Datentyp der Antwort
 } objMappingTab[NUM_OBJS] =
 {
-    /* 0 OBJ_ALARM_BUS*/           { RM_CMD_INTERNAL,        0, RM_TYPE_NONE },
-    /* 1 OBJ_TALARM_BUS*/          { RM_CMD_INTERNAL,        0, RM_TYPE_NONE },
-    /* 2 OBJ_RESET_ALARM*/         { RM_CMD_INTERNAL,        0, RM_TYPE_NONE },
-    /* 3 OBJ_STAT_ALARM*/          { RM_CMD_INTERNAL,        0, RM_TYPE_NONE },
-    /* 4 OBJ_STAT_ALARM_DELAYED*/  { RM_CMD_INTERNAL,        0, RM_TYPE_NONE },
-    /* 5 OBJ_STAT_TALARM*/         { RM_CMD_INTERNAL,        0, RM_TYPE_NONE },
-    /* 6 OBJ_SERIAL*/              { RM_CMD_SERIAL,          0, RM_TYPE_LONG },
-    /* 7 OBJ_OPERATING_TIME*/      { RM_CMD_OPERATING_TIME,  0, RM_TYPE_QSEC },
-    /* 8 OBJ_SMOKEBOX_VALUE*/      { RM_CMD_SMOKEBOX,        0, RM_TYPE_SHORT },
-    /* 9 OBJ_POLLUTION*/           { RM_CMD_SMOKEBOX,        3, RM_TYPE_BYTE },
-    /*10 OBJ_BAT_VOLTAGE*/         { RM_CMD_BATTEMP,         0, RM_TYPE_MVOLT },
-    /*11 OBJ_TEMP*/                { RM_CMD_BATTEMP,         2, RM_TYPE_TEMP },
-    /*12 OBJ_ERRCODE*/             { RM_CMD_INTERNAL,        0, RM_TYPE_NONE },
-    /*13 OBJ_BAT_LOW*/             { RM_CMD_INTERNAL,        0, RM_TYPE_NONE },
-    /*14 OBJ_MALFUNCTION*/         { RM_CMD_INTERNAL,        0, RM_TYPE_NONE },
-    /*15 OBJ_CNT_SMOKEALARM*/      { RM_CMD_SMOKEBOX,        2, RM_TYPE_BYTE },
-    /*16 OBJ_CNT_TEMPALARM*/       { RM_CMD_NUM_ALARMS,      0, RM_TYPE_BYTE },
-    /*17 OBJ_CNT_TESTALARM*/       { RM_CMD_NUM_ALARMS,      1, RM_TYPE_BYTE },
-    /*18 OBJ_CNT_ALARM_WIRE*/      { RM_CMD_NUM_ALARMS,      2, RM_TYPE_BYTE },
-    /*19 OBJ_CNT_ALARM_BUS*/       { RM_CMD_NUM_ALARMS,      3, RM_TYPE_BYTE },
-    /*20 OBJ_CNT_TALARM_WIRE*/     { RM_CMD_NUM_ALARMS_2,    0, RM_TYPE_BYTE },
-    /*21 OBJ_CNT_TALARM_BUS*/      { RM_CMD_NUM_ALARMS_2,    1, RM_TYPE_BYTE }
+    /* 0 OBJ_ALARM_BUS*/           { Command::internal,                0, RM_TYPE_NONE },
+    /* 1 OBJ_TALARM_BUS*/          { Command::internal,                0, RM_TYPE_NONE },
+    /* 2 OBJ_RESET_ALARM*/         { Command::internal,                0, RM_TYPE_NONE },
+    /* 3 OBJ_STAT_ALARM*/          { Command::internal,                0, RM_TYPE_NONE },
+    /* 4 OBJ_STAT_ALARM_DELAYED*/  { Command::internal,                0, RM_TYPE_NONE },
+    /* 5 OBJ_STAT_TALARM*/         { Command::internal,                0, RM_TYPE_NONE },
+    /* 6 OBJ_SERIAL*/              { Command::rmSerialNumber,          0, RM_TYPE_LONG },
+    /* 7 OBJ_OPERATING_TIME*/      { Command::rmOperatingTime,         0, RM_TYPE_QSEC },
+    /* 8 OBJ_SMOKEBOX_VALUE*/      { Command::rmSmokeboxData,          0, RM_TYPE_SHORT },
+    /* 9 OBJ_POLLUTION*/           { Command::rmSmokeboxData,          3, RM_TYPE_BYTE },
+    /*10 OBJ_BAT_VOLTAGE*/         { Command::rmBatteryAndTemperature, 0, RM_TYPE_MVOLT },
+    /*11 OBJ_TEMP*/                { Command::rmBatteryAndTemperature, 2, RM_TYPE_TEMP },
+    /*12 OBJ_ERRCODE*/             { Command::internal,                0, RM_TYPE_NONE },
+    /*13 OBJ_BAT_LOW*/             { Command::internal,                0, RM_TYPE_NONE },
+    /*14 OBJ_MALFUNCTION*/         { Command::internal,                0, RM_TYPE_NONE },
+    /*15 OBJ_CNT_SMOKEALARM*/      { Command::rmSmokeboxData,          2, RM_TYPE_BYTE },
+    /*16 OBJ_CNT_TEMPALARM*/       { Command::rmNumberAlarms_1,        0, RM_TYPE_BYTE },
+    /*17 OBJ_CNT_TESTALARM*/       { Command::rmNumberAlarms_1,        1, RM_TYPE_BYTE },
+    /*18 OBJ_CNT_ALARM_WIRE*/      { Command::rmNumberAlarms_1,        2, RM_TYPE_BYTE },
+    /*19 OBJ_CNT_ALARM_BUS*/       { Command::rmNumberAlarms_1,        3, RM_TYPE_BYTE },
+    /*20 OBJ_CNT_TALARM_WIRE*/     { Command::rmNumberAlarms_2,        0, RM_TYPE_BYTE },
+    /*21 OBJ_CNT_TALARM_BUS*/      { Command::rmNumberAlarms_2,        1, RM_TYPE_BYTE }
 };
 
 
@@ -402,10 +421,10 @@ unsigned short answer_to_short(unsigned char *cvalue)
  */
 unsigned long read_obj_value(unsigned char objno)
 {
-    unsigned char cmd = objMappingTab[objno].cmd;
+    Command cmd = objMappingTab[objno].cmd;
 
     // Interne Com-Objekte behandeln
-    if (cmd == RM_CMD_INTERNAL)
+    if (cmd == Command::internal)
     {
         switch (objno)
         {
@@ -434,7 +453,7 @@ unsigned long read_obj_value(unsigned char objno)
         }
     }
     // Com-Objekte verarbeiten die Werte vom Rauchmelder darstellen
-    else if (cmd != RM_CMD_NONE)
+    else if (cmd != Command::none)
     {
         unsigned long lval;
         unsigned char *answer;
@@ -557,7 +576,7 @@ void checkRmAttached2BasePlate(void)
  *
  * @param cmd - Index des zu sendenden Befehls aus der CmdTab
  */
-void send_Cmd(unsigned char cmd)
+void send_Cmd(Command cmd)
 {
     if (isReceiving())
     {
@@ -569,23 +588,23 @@ void send_Cmd(unsigned char cmd)
     ///\todo set remaining objValues to invalid values before sending serial command
     switch (cmd)
     {
-        case RM_CMD_SERIAL:
+        case Command::rmSerialNumber:
             break;
 
-        case RM_CMD_OPERATING_TIME:
+        case Command::rmOperatingTime:
             break;
 
-        case RM_CMD_SMOKEBOX:
+        case Command::rmSmokeboxData:
             break;
 
-        case RM_CMD_BATTEMP:
             objValues[RM_CMD_BATTEMP] = 0;
+        case Command::rmBatteryAndTemperature:
             break;
 
-        case RM_CMD_NUM_ALARMS:
+        case Command::rmNumberAlarms_1:
             break;
 
-        case RM_CMD_NUM_ALARMS_2:
+        case Command::rmNumberAlarms_2:
             break;
 
         default:
@@ -626,7 +645,8 @@ void process_obj(unsigned char objno)
  */
 unsigned char do_process_objs(unsigned char *flags)
 {
-    unsigned char byteno, bitno, objno, cmd, flagsByte;
+    unsigned char byteno, bitno, objno, flagsByte;
+    Command cmd;
 
     for (byteno = 0; byteno < NUM_OBJ_FLAG_BYTES; ++byteno)
     {
@@ -640,7 +660,7 @@ unsigned char do_process_objs(unsigned char *flags)
             {
                 objno = (byteno << 3) + bitno;
                 cmd = objMappingTab[objno].cmd;
-                if (!answerWait || cmd == RM_CMD_NONE || cmd == RM_CMD_INTERNAL)
+                if (!answerWait || cmd == Command::none || cmd == Command::internal)
                 {
                     process_obj(objno);
                     return 1;
@@ -815,7 +835,7 @@ extern "C" void TIMER32_0_IRQHandler()
         if (!answerWait)
         {
             readCmdno--;
-            send_Cmd(readCmdno);
+            send_Cmd((Command)readCmdno);
         }
     }
 

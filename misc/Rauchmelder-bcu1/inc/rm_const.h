@@ -147,38 +147,6 @@
 #define ERRCODE_SMOKEBOX	    0x10 //!< Rauchkammer verschmutzt / defekt
 
 //-----------------------------------------------------------------------------
-// Befehle an den Rauchmelder
-//-----------------------------------------------------------------------------
-
-// Gira Command: Seriennummer abfragen
-#define RM_CMD_SERIAL  0
-
-// Gira Command: Betriebszeit abfragen
-#define RM_CMD_OPERATING_TIME  1
-
-// Gira Command: Rauchkammer Daten abfragen
-#define RM_CMD_SMOKEBOX 2
-
-// Gira Command: Batteriespannung und Temperaturen
-#define RM_CMD_BATTEMP  3
-
-// Gira Command: Anzahl der Alarme #1 abfragen
-#define RM_CMD_NUM_ALARMS  4
-
-// Gira Command: Anzahl der Alarme #2 abfragen
-#define RM_CMD_NUM_ALARMS_2  5
-
-// Anzahl der Gira Commands
-#define RM_CMD_COUNT  6
-
-// Gira Command: intern behandelt, kein Befehl an den Rauchmelder
-#define RM_CMD_INTERNAL 14
-
-// Gira Command: kein Befehl
-#define RM_CMD_NONE  15
-
-
-//-----------------------------------------------------------------------------
 // Datentypen der Rauchmelder Antworten
 //-----------------------------------------------------------------------------
 
