@@ -44,7 +44,7 @@ enum class Command : uint8_t // RM_CMD_COUNT must match number of rmXxxx command
     none                    = 15  //!< kein Befehl
 };
 
-#define RM_CMD_COUNT           6  //!< Anzahl der Gira Commands
+#define RM_CMD_COUNT           7  //!< Anzahl der Gira Commands
 
 struct
 {
@@ -246,6 +246,11 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
     }
 
     msgType = bytes[0];
+    if (msgType == (RmCommandByte::status | 0xc0))
+    {
+        msgType = (RmCommandByte::status | 0x80); // "cast" to automatic status message
+    }
+
     if ((msgType & 0xf0) == 0xc0) // Com-Objekt Werte empfangen
     {
         msgType &= 0x0f;
