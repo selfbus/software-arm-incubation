@@ -29,17 +29,18 @@ BCU1 bcu = BCU1();
 
 const struct
 {
-    unsigned const char cmdno;      // Zu sendender RM_CMD Befehl
     unsigned const char objects[MAX_OBJ_CMD];    // Zuordnung der ComObjekte zu den Befehlen
+    const RmCommandByte cmdno;                  //!< Zu sendender RM_CMD Befehl
 } CmdTab[RM_CMD_COUNT] =
 {
-    //CMD   objNr.
-    { 0x04, {6,  0xFF, 0xFF, 0xFF} },    // <STX>C4214710F31F<ETX> RM_CMD_SERIAL
-    { 0x09, {7,  0xFF, 0xFF, 0xFF} },    // <STX>C9000047E31F<ETX> RM_CMD_OPERATING_TIME
-    { 0x0B, {8,  9,    15,   0xFF} },    // <STX>CB0065000111<ETX> RM_CMD_SMOKEBOX
-    { 0x0C, {10, 11,   0xFF, 0xFF} },    // <STX>CC000155551B<ETX> RM_CMD_BATTEMP
-    { 0x0D, {16, 17,   18,   19} },      // <STX>CD0000000007<ETX> RM_CMD_NUM_ALARMS
-    { 0x0E, {20, 21,   0xFF, 0xFF} }     // <STX>CE000048<ETX>     RM_CMD_NUM_ALARMS_2
+    // CommandByte                           object number             raw value
+    { RmCommandByte::serialNumber,           {6,  0xFF, 0xFF, 0xFF},   0}, // <STX>C4214710F31F<ETX>
+    { RmCommandByte::operatingTime,          {7,  0xFF, 0xFF, 0xFF},   0}, // <STX>C9000047E31F<ETX>
+    { RmCommandByte::smokeboxData,           {8,  9,    15,   0xFF},   0}, // <STX>CB0065000111<ETX>
+    { RmCommandByte::batteryTemperatureData, {10, 11,   0xFF, 0xFF},   0}, // <STX>CC000155551B<ETX>
+    { RmCommandByte::numberAlarms_1,         {16, 17,   18,   19},     0}, // <STX>CD0000000007<ETX>
+    { RmCommandByte::numberAlarms_2,         {20, 21,   0xFF, 0xFF},   0}, // <STX>CE000048<ETX>
+    { RmCommandByte::status,                 {0xFF, 0xFF, 0xFF, 0xFF}, 0}  // <STX>C220000000F7<ETX>
 };
 
 // Mapping von den Kommunikations-Objekten auf die Rauchmelder Requests

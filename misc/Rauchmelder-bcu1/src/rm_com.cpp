@@ -105,7 +105,7 @@ void rm_send_hexstr(unsigned char *hexstr)
 /**
  * Einen 1 Byte Befehl an den Rauchmelder senden.
  */
-void rm_send_cmd(unsigned char cmd)
+void rm_send_cmd(RmCommandByte cmd)
 {
     unsigned char b, bytes[3];
 

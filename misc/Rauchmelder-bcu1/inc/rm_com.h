@@ -15,6 +15,20 @@
 #include <stdint.h>
 
 /**
+ *  Befehlbyte an den Rauchmelder
+ */
+enum RmCommandByte : uint8_t
+{
+    serialNumber           = 0x04,
+    operatingTime          = 0x09,
+    smokeboxData           = 0x0B,
+    batteryTemperatureData = 0x0C,
+    numberAlarms_1         = 0x0D,
+    numberAlarms_2         = 0x0E,
+    status                 = 0x02
+};
+
+/**
  * Smoke detector alarm states
  */
 enum RmAlarmState : uint8_t
@@ -59,7 +73,7 @@ void rm_serial_init();
  *
  * @param cmd - das Befehls-Byte.
  */
-void rm_send_cmd(unsigned char cmd);
+void rm_send_cmd(RmCommandByte cmd);
 
 /**
  * Check if we are currently receiving bytes from the smoke detector
