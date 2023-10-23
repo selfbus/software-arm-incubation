@@ -185,6 +185,10 @@ void send_obj_test_alarm(bool newAlarm)
     }
 }
 
+uint8_t commandTableSize()
+{
+    return sizeof(CmdTab)/sizeof(CmdTab[0]);
+}
 
 /**
  * Fehlercode setzen
@@ -230,14 +234,13 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
     if ((msgType & 0xf0) == 0xc0) // Com-Objekt Werte empfangen
     {
         msgType &= 0x0f;
-
-        for (cmd = 0; cmd < RM_CMD_COUNT; ++cmd)
+        for (cmd = 0; cmd < commandTableSize(); ++cmd)
         {
             if (CmdTab[cmd].cmdno == msgType)
                 break;
         }
 
-        if (cmd < RM_CMD_COUNT)
+        if (cmd < commandTableSize())
         {
             // Copy values over atomically.
             timer32_0.noInterrupts();
@@ -844,7 +847,7 @@ extern "C" void TIMER32_0_IRQHandler()
 
         if (!readCmdno)
         {
-            readCmdno = RM_CMD_COUNT;
+            readCmdno = commandTableSize();
         }
 
         // Status Informationen zyklisch senden
@@ -893,7 +896,7 @@ void initApplication()
         objSendReqFlags[i] = 0;
     }
 
-    for (uint8_t i = 0; i < RM_CMD_COUNT; ++i)
+    for (uint8_t i = 0; i < commandTableSize(); ++i)
     {
         objValues[i] = 0;
     }
@@ -912,7 +915,7 @@ void initApplication()
     ignoreBusAlarm = 0;
 
     infoSendObjno = 0;
-    readCmdno = RM_CMD_COUNT;
+    readCmdno = commandTableSize();
     infoCounter = bcu.userEeprom->getUInt8(CONF_INFO_INTERVAL);
     alarmCounter = 1;
     TalarmCounter = 1;
