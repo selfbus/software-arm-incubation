@@ -155,7 +155,6 @@ const unsigned char pow2[8] = { 1, 2, 4, 8, 16, 32, 64, 128 };
 // Testen ob im Byte Array arr das bitno-te Bit gesetzt ist
 #define ARRAY_IS_BIT_SET(arr, bitno) (arr[bitno>>3] & pow2[bitno & 7])
 
-
 /**
  * Den Alarm Status auf den Bus senden falls noch nicht gesendet.
  *
@@ -210,7 +209,6 @@ void set_errcode(unsigned char newErrCode)
     errCode = newErrCode;
     ARRAY_SET_BIT(objSendReqFlags, OBJ_ERRCODE);
 }
-
 
 /**
  * Die empfangene Nachricht vom Rauchmelder verarbeiten.
@@ -384,7 +382,6 @@ unsigned long answer_to_long(unsigned char *cvalue)
     return (cvalue[0] << 24) | (cvalue[1] << 16) | (cvalue[2] << 8) | cvalue[3];
 }
 
-
 /**
  * Die Rauchmelder Antwort als Integer Zahl liefern.
  *
@@ -395,7 +392,6 @@ unsigned short answer_to_short(unsigned char *cvalue)
 {
     return (cvalue[0] << 8) | cvalue[1];
 }
-
 
 /**
  * Wert eines Com-Objekts liefern.
@@ -617,7 +613,6 @@ void process_obj(unsigned char objno)
     }
 }
 
-
 /**
  * Com-Objekte bearbeiten, Worker Funktion.
  *
@@ -662,7 +657,6 @@ void process_objs()
     do_process_objs(objSendReqFlags);
 }
 
-
 /**
  * Den Zustand der Alarme bearbeiten. Wenn wir der Meinung sind der Bus-Alarm soll einen
  * bestimmten Zustand haben dann wird das dem Rauchmelder so lange gesagt bis der auch
@@ -689,7 +683,6 @@ void process_alarm_stats()
         answerWait = INITIAL_ANSWER_WAIT;
     }
 }
-
 
 /**
  * Timer Event.
