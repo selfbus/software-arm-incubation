@@ -23,6 +23,8 @@
 #include "rm_com.h"
 #include "rm_eeprom.h"
 
+#include <cstring>
+
 BCU1 bcu = BCU1();
 
 const struct
@@ -251,13 +253,8 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
             objValueCurrent = objValues[cmd];
             cmdCurrent = cmd;
 
-            ///\todo eleganter umsetzbar?
             objValues[cmd] = 0;
-            for (unsigned char lencnt = 1; lencnt < len; lencnt++)
-            {
-                objValues[cmd] |= (bytes[lencnt] << ((lencnt - 1) * 8));
-            }
-            // vorher: objValues[cmd] = *(unsigned long*)(bytes + 1); // führt zu HardFault auf ARM Controller!!!!
+            memcpy(&objValues[cmd], &bytes[1], len);
 
             cmdCurrent = RM_CMD_NONE;
 
