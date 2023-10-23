@@ -11,8 +11,8 @@ from datetime import datetime
 import keyboard
 import serial
 
-SERIAL_PORT_ARM = "COM4"
-SERIAL_PORT_SMOKE = "COM6"
+SERIAL_PORT_ARM = "COM6"
+SERIAL_PORT_SMOKE = "COM7"
 
 PAUSE_LONG = 2.0
 PAUSE = 0.1
@@ -86,19 +86,21 @@ class RMLogger(object):
         print("")
 
     def execute(self):
-        while self.ser_arm.is_open and self.ser_smoke.is_open:
-            bytes_to_read = self.ser_arm.inWaiting()
-            if bytes_to_read > 0:
-                msg_arm = bytearray(self.ser_arm.read(bytes_to_read))
-                time = datetime.now().strftime('%H:%M:%S.%f')
-                print("{0:s} ARM {1:s}".format(time, convert_to_readable_format(msg_arm)))
+        while self.ser_arm.is_open or self.ser_smoke.is_open:
+            if self.ser_arm.is_open:
+                bytes_to_read = self.ser_arm.inWaiting()
+                if bytes_to_read > 0:
+                    msg_arm = bytearray(self.ser_arm.read(bytes_to_read))
+                    time = datetime.now().strftime('%H:%M:%S.%f')
+                    print("{0:s} ARM   {1:s}".format(time, convert_to_readable_format(msg_arm)))
 
-            bytes_to_read = self.ser_smoke.inWaiting()
-            if bytes_to_read > 0:
+            if self.ser_smoke.is_open:
+                bytes_to_read = self.ser_smoke.inWaiting()
+                if bytes_to_read > 0:
 
-                msg_smoke = bytearray(self.ser_smoke.read(bytes_to_read))
-                time = datetime.now().strftime('%H:%M:%S.%f')
-                print("{0:s} Smoke {1:s}".format(time, convert_to_readable_format(msg_smoke)))
+                    msg_smoke = bytearray(self.ser_smoke.read(bytes_to_read))
+                    time = datetime.now().strftime('%H:%M:%S.%f')
+                    print("{0:s} Smoke {1:s}".format(time, convert_to_readable_format(msg_smoke)))
 
             # Check if a key was pressed
             if keyboard.is_pressed('q'):
