@@ -47,7 +47,7 @@ void rm_recv_bytes();
  * @param bytes - die empfangene Nachricht, ohne STX, ETX, Prüfsumme.
  * @param len - die Anzahl der empfangenen Bytes
  */
-void rm_process_msg(unsigned char* bytes, unsigned char len);
+void rm_process_msg(unsigned char *bytes, unsigned char len);
 
 /**
  * Serielle Kommunikation mit dem Rauchmelder initialisieren

@@ -20,7 +20,6 @@
 #include "rm_const.h"
 
 
-
 // Maximale Anzahl Zeichen einer Nachricht vom Rauchmelder, exklusive STX und ETX
 // Dekodiert brauchen je zwei Zeichen ein Byte Platz in recvBuf.
 #define RECV_MAX_CHARS 12
@@ -48,8 +47,8 @@ void rm_serial_init()
 {
     recvCount = -1;
     serial.setRxPin(PIN_RX);
-	serial.setTxPin(PIN_TX);
-	serial.begin(9600);
+    serial.setTxPin(PIN_TX);
+    serial.begin(9600);
 }
 
 /**
@@ -81,25 +80,25 @@ void rm_send_nak()
  *
  * @param hexstr - die zu sendenden Bytes als Hex String, mit Nullbyte am Ende
  */
-void rm_send_hexstr(unsigned char* hexstr)
+void rm_send_hexstr(unsigned char *hexstr)
 {
-	unsigned char checksum = 0;
-	unsigned char ch;
+    unsigned char checksum = 0;
+    unsigned char ch;
 
-	rm_send_byte(STX);
+    rm_send_byte(STX);
 
-	while (*hexstr)
-	{
-		ch = *hexstr;
-		checksum += ch;
-		rm_send_byte(ch);
-		++hexstr;
-	}
+    while (*hexstr)
+    {
+        ch = *hexstr;
+        checksum += ch;
+        rm_send_byte(ch);
+        ++hexstr;
+    }
 
-	rm_send_byte(hexDigits[checksum >> 4]);
-	rm_send_byte(hexDigits[checksum & 15]);
+    rm_send_byte(hexDigits[checksum >> 4]);
+    rm_send_byte(hexDigits[checksum & 15]);
 
-	rm_send_byte(ETX);
+    rm_send_byte(ETX);
 }
 
 
@@ -108,16 +107,16 @@ void rm_send_hexstr(unsigned char* hexstr)
  */
 void rm_send_cmd(unsigned char cmd)
 {
-	unsigned char b, bytes[3];
+    unsigned char b, bytes[3];
 
-	b = cmd >> 4;
-	bytes[0] = hexDigits[b];
+    b = cmd >> 4;
+    bytes[0] = hexDigits[b];
 
-	b = cmd & 0x0f;
-	bytes[1] = hexDigits[b];
+    b = cmd & 0x0f;
+    bytes[1] = hexDigits[b];
 
-	bytes[2] = 0;
-	rm_send_hexstr(bytes);
+    bytes[2] = 0;
+    rm_send_hexstr(bytes);
 }
 
 /**
@@ -213,7 +212,7 @@ void rm_recv_bytes()
                 continue;
 
             default:
-                ;
+                break;
         }
 
         // Ignore random bytes.
@@ -264,19 +263,20 @@ bool rm_set_alarm_state(RmAlarmState newState)
 {
     switch (newState)
     {
-        case RM_ALARM :
-            rm_send_hexstr((unsigned char*)"030210");
+        case RM_ALARM:
+            rm_send_hexstr((unsigned char*) "030210");
             break;
 
-        case RM_TEST_ALARM :
-            rm_send_hexstr((unsigned char*)"030280");
+        case RM_TEST_ALARM:
+            rm_send_hexstr((unsigned char*) "030280");
             break;
 
-        case RM_NO_ALARM :
-            rm_send_hexstr((unsigned char*)"030200");
+        case RM_NO_ALARM:
+            rm_send_hexstr((unsigned char*) "030200");
             break;
 
-        default : ;
+        default:
+            break;
     }
     return (true);
 }

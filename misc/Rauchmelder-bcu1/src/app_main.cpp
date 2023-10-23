@@ -38,21 +38,21 @@ void loop()
 {
     int objno;
 
-  	rm_recv_bytes();
+    rm_recv_bytes();
 
-	if (!answerWait)
-		process_alarm_stats();
+    if (!answerWait)
+        process_alarm_stats();
 
-	if (!answerWait)
-    	process_objs();
+    if (!answerWait)
+        process_objs();
 
-	// Empfangenes Telegramm bearbeiten, aber nur wenn wir gerade nichts
-	// vom Rauchmelder empfangen.
+    // Empfangenes Telegramm bearbeiten, aber nur wenn wir gerade nichts
+    // vom Rauchmelder empfangen.
 
     // Handle updated communication objects
     while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
-       objectUpdated(objno);
+        objectUpdated(objno);
     }
 
     // Sleep up to 1 millisecond if there is nothing to do
