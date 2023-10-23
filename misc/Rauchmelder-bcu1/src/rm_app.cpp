@@ -269,7 +269,7 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
             }
         }
     }
-    else if (msgType == 0x82 && len >= 5) // Status Meldung
+    else if (msgType == 0x82 && len == 5) // Status Meldung
     {
         unsigned char subType = bytes[1];
         bool newAlarm;
@@ -364,6 +364,12 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
 
             set_errcode(newErrCode);
         }
+    }
+    else if (msgType == 0x82 && len > 5) // zu lange Status Meldung
+    {
+#ifdef DEBUG
+        fatalError(); ///\todo we should never land here AND fatalError() can't be the final solution
+#endif
     }
 }
 
