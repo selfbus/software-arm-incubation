@@ -108,17 +108,6 @@ unsigned char objSendReqFlags[NUM_OBJ_FLAG_BYTES];
 unsigned long objValues[RM_CMD_COUNT];
 
 
-// Nummer des Befehls an den Rauchmelder der gerade ausgeführt wird.
-// RM_CMD_NONE wenn keiner.  So lange ein RM_CMD ausgeführt wird darf auf
-// objValues[cmdCurrent] nicht zugegriffen werden. Es muss stattdessen objOldValue
-// verwendet werden.
-unsigned char cmdCurrent;
-
-// Backup des Com-Objekt Wertebereichs der gerade von cmdCurrent neu vom
-// Rauchmelder geholt wird.
-unsigned long objValueCurrent;
-
-
 // Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.
 // Ist der Zähler 0 dann wird gerade auf keine Antwort gewartet.
 unsigned char answerWait;
@@ -250,13 +239,11 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
 
         if (cmd < RM_CMD_COUNT)
         {
-            objValueCurrent = objValues[cmd];
-            cmdCurrent = cmd;
-
+            // Copy values over atomically.
+            timer32_0.noInterrupts();
             objValues[cmd] = 0;
             memcpy(&objValues[cmd], &bytes[1], len);
-
-            cmdCurrent = RM_CMD_NONE;
+            timer32_0.interrupts();
 
             // Informationen aus den empfangenen Daten vom Rauchmelder der sblib zur Verfügung stellen
             // Dazu alle Com-Objekte suchen auf die die empfangenen Daten passen (mapping durch CmdTab)
@@ -446,14 +433,7 @@ unsigned long read_obj_value(unsigned char objno)
         unsigned long lval;
         unsigned char *answer;
 
-        if (cmd == cmdCurrent)
-        {
-            answer = (unsigned char*) &objValueCurrent;
-        }
-        else
-        {
-            answer = (unsigned char*) &objValues[cmd];
-        }
+        answer = (unsigned char*) &objValues[cmd];
         answer += objMappingTab[objno].offset;
 
         switch (objMappingTab[objno].dataType)
@@ -920,7 +900,6 @@ void initApplication()
 
     answerWait = 0;
     noAnswerCount = 0;
-    cmdCurrent = RM_CMD_NONE;
 
     alarmBus = 0;
     alarmLocal = 0;
