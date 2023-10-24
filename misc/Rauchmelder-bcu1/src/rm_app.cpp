@@ -133,9 +133,9 @@ void send_obj_alarm(bool newAlarm)
 {
     if (alarmLocal != newAlarm)
     {
-        objectWrite(OBJ_ALARM_BUS, newAlarm);
+        objectWrite(GroupObject::grpObjAlarmBus, newAlarm);
         if()
-        objectWrite(OBJ_STAT_ALARM, newAlarm);
+        objectWrite(GroupObject::grpObjStatusAlarm, newAlarm);
     }
 }*/
 
@@ -148,8 +148,8 @@ void send_obj_test_alarm(bool newAlarm)
 {
     if (testAlarmLocal != newAlarm)
     {
-        bcu.comObjects->objectWrite(OBJ_TALARM_BUS, newAlarm);
-        bcu.comObjects->objectWrite(OBJ_STAT_TALARM, newAlarm);
+        bcu.comObjects->objectWrite(GroupObject::grpObjTestAlarmBus, newAlarm);
+        bcu.comObjects->objectWrite(GroupObject::grpObjStatusTestAlarm, newAlarm);
     }
 }
 
@@ -168,15 +168,15 @@ void set_errcode(unsigned char newErrCode)
     if (newErrCode == errCode)
         return;
 
-    // Wenn sich der Status der Batterie geändert hat dann OBJ_BAT_LOW senden,
-    // sonst den allgemeinen Fehler Indikator OBJ_MALFUNCTION.
+    // Wenn sich der Status der Batterie geändert hat dann GroupObject::batteryLow senden,
+    // sonst den allgemeinen Fehler Indikator GroupObject::grpObjMalfunction.
     if ((errCode ^ newErrCode) & ERRCODE_BATLOW)
-        ARRAY_SET_BIT(objSendReqFlags, OBJ_BAT_LOW);
+        ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjBatteryLow);
     else
-        ARRAY_SET_BIT(objSendReqFlags, OBJ_MALFUNCTION);
+        ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjMalfunction);
 
     errCode = newErrCode;
-    ARRAY_SET_BIT(objSendReqFlags, OBJ_ERRCODE);
+    ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjErrorCode);
 }
 
 /**
@@ -255,16 +255,16 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
         if ((bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_ALARM_DELAYED) && newAlarm) // wenn Alarm verzögert gesendet werden soll und Alarm ansteht
         {
             delayedAlarmCounter = bcu.userEeprom->getUInt8(CONF_ALARM_DELAYED);
-            bcu.comObjects->objectSetValue(OBJ_STAT_ALARM_DELAYED, read_obj_value(OBJ_STAT_ALARM_DELAYED));
+            bcu.comObjects->objectSetValue(GroupObject::grpObjStatusAlarmDelayed, read_obj_value(GroupObject::grpObjStatusAlarmDelayed));
         }
         else if (alarmLocal != newAlarm) //wenn Alarm nicht verzögert gesendet werden soll oder Alarm nicht mehr ansteht (nur 1x senden)
         {
-            bcu.comObjects->objectWrite(OBJ_ALARM_BUS, newAlarm);
+            bcu.comObjects->objectWrite(GroupObject::grpObjAlarmBus, newAlarm);
         }
 
         if (alarmLocal != newAlarm) //sobald neuer AlarmStatus ansteht, soll dieser versendet werden
         {
-            bcu.comObjects->objectWrite(OBJ_STAT_ALARM, newAlarm);
+            bcu.comObjects->objectWrite(GroupObject::grpObjStatusAlarm, newAlarm);
         }
 
         alarmLocal = newAlarm;
@@ -285,7 +285,7 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
         {
             set_errcode((errCode & ~ERRCODE_BATLOW) | (status & ERRCODE_BATLOW));
 
-            // Werte für OBJ_ERRCODE (Objekt 12), OBJ_BAT_LOW (Objekt 13) und OBJ_MALFUNCTION (Objekt 14) für die sblib zur Verfügung stellen
+            // Werte für GroupObject::grpObjErrorCode (Objekt 12), GroupObject::grpObjBatteryLow (Objekt 13) und GroupObject::grpObjMalfunction (Objekt 14) für die sblib zur Verfügung stellen
             // notwendig für den Abruf von Informationen über KNX aus den Status Objekten (GroupValueRead -> GroupValueResponse)
             for (unsigned char objno = 12; objno <= 14; objno++)
             {
@@ -311,13 +311,13 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
             {
                 setAlarmBus = 0;
                 delayedAlarmCounter = 0; // verzögerten Alarm abbrechen
-                //objectWrite(OBJ_STAT_ALARM, read_obj_value(OBJ_STAT_ALARM));
+                //objectWrite(GroupObject::grpObjStatusAlarm, read_obj_value(GroupObject::grpObjStatusAlarm));
             }
 
             if (setTestAlarmBus) //wenn Testalarm auf Bus anliegt
             {
                 setTestAlarmBus = 0;
-                //objectWrite(OBJ_STAT_TALARM, read_obj_value(OBJ_STAT_TALARM));
+                //objectWrite(GroupObject::grpObjStatusTestAlarm, read_obj_value(GroupObject::grpObjStatusTestAlarm));
             }
         }
 
@@ -382,27 +382,27 @@ unsigned long read_obj_value(unsigned char objno)
     {
         switch (objno)
         {
-            case OBJ_ALARM_BUS:
-            case OBJ_STAT_ALARM:
+            case GroupObject::grpObjAlarmBus:
+            case GroupObject::grpObjStatusAlarm:
                 return alarmLocal;
 
-            case OBJ_TALARM_BUS:
-            case OBJ_STAT_TALARM:
+            case GroupObject::grpObjTestAlarmBus:
+            case GroupObject::grpObjStatusTestAlarm:
                 return testAlarmLocal;
 
-            case OBJ_RESET_ALARM:
+            case GroupObject::grpObjResetAlarm:
                 return ignoreBusAlarm;
 
-            case OBJ_STAT_ALARM_DELAYED:
+            case GroupObject::grpObjStatusAlarmDelayed:
                 return delayedAlarmCounter != 0;
 
-            case OBJ_BAT_LOW:
+            case GroupObject::grpObjBatteryLow:
                 return (errCode & ERRCODE_BATLOW) != 0;
 
-            case OBJ_MALFUNCTION:
+            case GroupObject::grpObjMalfunction:
                 return (errCode & ~ERRCODE_BATLOW) != 0;
 
-            case OBJ_ERRCODE:
+            case GroupObject::grpObjErrorCode:
                 return errCode;
 
             default:
@@ -471,31 +471,31 @@ unsigned long read_obj_value(unsigned char objno)
  */
 void objectUpdated(int objno)
 {
-    if (objno == OBJ_ALARM_BUS) // Bus Alarm
+    if (objno == GroupObject::grpObjAlarmBus) // Bus Alarm
     {
         setAlarmBus = bcu.comObjects->objectRead(objno) & 0x01; //ToDo: prüfen ob ok   //war: setAlarmBus = telegramm[7] & 0x01;
 
         // Wenn wir lokalen Alarm haben dann Bus Alarm wieder auslösen
         // damit der Status der anderen Rauchmelder stimmt
         if (!setAlarmBus && alarmLocal)
-            bcu.comObjects->objectWrite(OBJ_ALARM_BUS, read_obj_value(OBJ_ALARM_BUS)); //send_obj_value(OBJ_ALARM_BUS);
+            bcu.comObjects->objectWrite(GroupObject::grpObjAlarmBus, read_obj_value(GroupObject::grpObjAlarmBus)); //send_obj_value(GroupObject::alarmBus);
 
         if (ignoreBusAlarm)
             setAlarmBus = 0;
     }
-    else if (objno == OBJ_TALARM_BUS) // Bus Test Alarm
+    else if (objno == GroupObject::grpObjTestAlarmBus) // Bus Test Alarm
     {
         setTestAlarmBus = bcu.comObjects->objectRead(objno) & 0x01; //ToDo: prüfen ob ok   //war: setTestAlarmBus = telegramm[7] & 0x01;
 
         // Wenn wir lokalen Testalarm haben dann Bus Testalarm wieder auslösen
         // damit der Status der anderen Rauchmelder stimmt
         if (!setTestAlarmBus && testAlarmLocal)
-            bcu.comObjects->objectWrite(OBJ_TALARM_BUS, read_obj_value(OBJ_TALARM_BUS)); //send_obj_value(OBJ_TALARM_BUS);
+            bcu.comObjects->objectWrite(GroupObject::grpObjTestAlarmBus, read_obj_value(GroupObject::grpObjTestAlarmBus)); //send_obj_value(GroupObject::grpObjTestAlarmBus);
 
         if (ignoreBusAlarm)
             setTestAlarmBus = 0;
     }
-    else if (objno == OBJ_RESET_ALARM) // Bus Alarm rücksetzen
+    else if (objno == GroupObject::grpObjResetAlarm) // Bus Alarm rücksetzen
     {
         setAlarmBus = 0;
         setTestAlarmBus = 0;
@@ -710,11 +710,11 @@ extern "C" void TIMER32_0_IRQHandler()
             --delayedAlarmCounter;
             if (!delayedAlarmCounter)   // Verzögerungszeit abgelaufen
             {
-                bcu.comObjects->objectSetValue(OBJ_STAT_ALARM_DELAYED, read_obj_value(OBJ_STAT_ALARM_DELAYED)); // Status verzögerter Alarm zurücksetzen
-                //ARRAY_SET_BIT(objSendReqFlags, OBJ_ALARM_BUS);  // Vernetzung Alarm senden
-                //ARRAY_SET_BIT(objSendReqFlags, OBJ_STAT_ALARM); // Status Alarm senden
+                bcu.comObjects->objectSetValue(GroupObject::grpObjStatusAlarmDelayed, read_obj_value(GroupObject::grpObjStatusAlarmDelayed)); // Status verzögerter Alarm zurücksetzen
+                //ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjAlarmBus);  // Vernetzung Alarm senden
+                //ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjStatusAlarm); // Status Alarm senden
 
-                bcu.comObjects->objectWrite(OBJ_ALARM_BUS, alarmLocal);
+                bcu.comObjects->objectWrite(GroupObject::grpObjAlarmBus, alarmLocal);
             }
         }
         else // Alarm zyklisch senden
@@ -727,9 +727,9 @@ extern "C" void TIMER32_0_IRQHandler()
                     alarmCounter = bcu.userEeprom->getUInt8(CONF_ALARM_INTERVAL);     // Zykl. senden Zeit holen
                     if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_ALARM_INTERVAL_NW)
                     {
-                        ARRAY_SET_BIT(objSendReqFlags, OBJ_ALARM_BUS); // Vernetzung Alarm senden
+                        ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjAlarmBus); // Vernetzung Alarm senden
                     }
-                    ARRAY_SET_BIT(objSendReqFlags, OBJ_STAT_ALARM);
+                    ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjStatusAlarm);
                 }
             }
         }
@@ -743,7 +743,7 @@ extern "C" void TIMER32_0_IRQHandler()
             if (!alarmCounter)
             {
                 alarmCounter = bcu.userEeprom->getUInt8(CONF_ALARM_INTERVAL); // Zykl. senden Zeit holen
-                ARRAY_SET_BIT(objSendReqFlags, OBJ_STAT_ALARM);
+                ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjStatusAlarm);
             }
         }
     }
@@ -759,9 +759,9 @@ extern "C" void TIMER32_0_IRQHandler()
                 TalarmCounter = bcu.userEeprom->getUInt8(CONF_TALARM_INTERVAL);
                 if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_TALARM_INTERVAL_NW)
                 {
-                    ARRAY_SET_BIT(objSendReqFlags, OBJ_TALARM_BUS);
+                    ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjTestAlarmBus);
                 }
-                ARRAY_SET_BIT(objSendReqFlags, OBJ_STAT_TALARM);
+                ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjStatusTestAlarm);
             }
         }
     }

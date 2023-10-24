@@ -13,6 +13,7 @@
 #ifndef rm_const_h
 #define rm_const_h
 
+#include <stdint.h>
 #include <sblib/io_pin_names.h>
 
 
@@ -54,28 +55,31 @@
 //-----------------------------------------------------------------------------
 // Kommunikations Objekte
 //-----------------------------------------------------------------------------
-#define OBJ_ALARM_BUS           0 //!< Alarm Vernetzung
-#define OBJ_TALARM_BUS          1 //!< Testalarm Vernetzung
-#define OBJ_RESET_ALARM         2 //!< Alarm / Testalarm rücksetzen
-#define OBJ_STAT_ALARM          3 //!< Status Alarm
-#define OBJ_STAT_ALARM_DELAYED  4 //!< Status verzögerter Alarm
-#define OBJ_STAT_TALARM         5 //!< Status Testalarm
-#define OBJ_SERIAL              6 //!< Rauchmelder Seriennummer
-#define OBJ_OPERATING_TIME      7 //!< Rauchmelder Betriebsdauer in Sekunden
-#define OBJ_SMOKEBOX_VALUE      8 //!< Rauchkammer Wert
-#define OBJ_POLLUTION           9 //!< Rauchkammer Verschmutzung
-#define OBJ_BAT_VOLTAGE        10 //!< Batterie Spannung
-#define OBJ_TEMP               11 //!< Temperatur
-#define OBJ_ERRCODE            12 //!< Rauchmelder Fehlercode, siehe ERRCODE_* Konstanten
-#define OBJ_BAT_LOW            13 //!< Batterie leer
-#define OBJ_MALFUNCTION        14 //!< Rauchmelder defekt
-#define OBJ_CNT_SMOKEALARM     15 //!< Anzahl Rauchalarme
-#define OBJ_CNT_TEMPALARM      16 //!< Anzahl Temperatur Alarme
-#define OBJ_CNT_TESTALARM      17 //!< Anzahl Testalarme
-#define OBJ_CNT_ALARM_WIRE     18 //!< Anzahl Draht Alarme
-#define OBJ_CNT_ALARM_BUS      19 //!< Anzahl Bus Alarme
-#define OBJ_CNT_TALARM_WIRE    20 //!< Anzahl Draht Testalarme
-#define OBJ_CNT_TALARM_BUS     21 //!< Anzahl Bus Testalarme
+enum GroupObject : uint8_t
+{
+    grpObjAlarmBus =               0, //!< Alarm Vernetzung
+    grpObjTestAlarmBus =           1, //!< Testalarm Vernetzung
+    grpObjResetAlarm =             2, //!< Alarm / Testalarm rücksetzen
+    grpObjStatusAlarm =            3, //!< Status Alarm
+    grpObjStatusAlarmDelayed =     4, //!< Status verzögerter Alarm
+    grpObjStatusTestAlarm =        5, //!< Status Testalarm
+    grpObjSerialNumber =           6, //!< Rauchmelder Seriennummer
+    grpObjOperatingTime =          7, //!< Rauchmelder Betriebsdauer in Sekunden
+    grpObjSmokeboxValue =          8, //!< Rauchkammer Wert
+    grpObjSmokeboxPollution =      9, //!< Rauchkammer Verschmutzung
+    grpObjBatteryVoltage =        10, //!< Batterie Spannung
+    grpObjTemperature =           11, //!< Temperatur
+    grpObjErrorCode =             12, //!< Rauchmelder Fehlercode, siehe ERRCODE_* Konstanten
+    grpObjBatteryLow =            13, //!< Batterie leer
+    grpObjMalfunction =           14, //!< Rauchmelder defekt
+    grpObjCountSmokeAlarm =       15, //!< Anzahl Rauchalarme
+    grpObjCountTemperatureAlarm = 16, //!< Anzahl Temperatur Alarme
+    grpObjCountTestAlarm =        17, //!< Anzahl Testalarme
+    grpObjCountAlarmWire =        18, //!< Anzahl Draht Alarme
+    grpObjCountAlarmBus =         19, //!< Anzahl Bus Alarme
+    grpObjCountTestAlarmWire =    20, //!< Anzahl Draht Testalarme
+    grpObjCountTestAlarmBus =     21  //!< Anzahl Bus Testalarme
+};
 
 #define NUM_OBJS               22 //!< Anzahl der Com-Objekte
 
