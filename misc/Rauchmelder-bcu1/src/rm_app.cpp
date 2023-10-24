@@ -46,28 +46,47 @@ enum class Command : uint8_t // RM_CMD_COUNT must match number of rmXxxx command
 
 #define RM_CMD_COUNT           7  //!< Anzahl der Gira Commands
 
-struct
+/**
+ * @ref RmCommandByte to multiple @ref GroupObject association table
+ */
+struct AssociationTable
 {
-    const RmCommandByte cmdno;                //!< Zu sendender RM_CMD Befehl
-    const unsigned char objects[MAX_OBJ_CMD]; //!< Zuordnung der ComObjekte zu den Befehlen
-    unsigned long objValues;                  //!< Werte der Com-Objekte.
-} CmdTab[RM_CMD_COUNT] =
+    const RmCommandByte rmCommand;      //!< @ref RmCommandByte command to be sent
+    const int8_t responseLength;        //!< Expected response length in bytes
+    const uint8_t objects[MAX_OBJ_CMD]; //!< Association of the command to multiple @ref GroupObject. Use @ref grpObjInvalid to not associate
+    uint32_t objValues;                 //!< Raw serial bytes of the @GroupObject
+}
+CmdTab[RM_CMD_COUNT] =
 {
-    // CommandByte                          Object number                                     Raw value  Example response
-    {RmCommandByte::serialNumber,           {GroupObject::grpObjSerialNumber, 0xFF, 0xFF, 0xFF}, 0},  // <STX>C4214710F31F<ETX>
-    {RmCommandByte::operatingTime,          {GroupObject::grpObjOperatingTime, 0xFF, 0xFF, 0xFF}, 0}, // <STX>C9000047E31F<ETX>
-    {RmCommandByte::smokeboxData,           {GroupObject::grpObjSmokeboxValue,                        // <STX>CB0065000111<ETX>
-                                             GroupObject::grpObjSmokeboxPollution,
-                                             GroupObject::grpObjCountSmokeAlarm, 0xFF}, 0},
-    {RmCommandByte::batteryTemperatureData, {GroupObject::grpObjBatteryVoltage,                       // <STX>CC000155551B<ETX>
-                                             GroupObject::grpObjTemperature, 0xFF, 0xFF}, 0},
-    {RmCommandByte::numberAlarms_1,         {GroupObject::grpObjCountTemperatureAlarm,                // <STX>CD0000000007<ETX>
-                                             GroupObject::grpObjCountTestAlarm,
-                                             GroupObject::grpObjCountAlarmWire,
-                                             GroupObject::grpObjCountAlarmBus}, 0},
-    {RmCommandByte::numberAlarms_2,         {GroupObject::grpObjCountTestAlarmWire,
-                                             GroupObject::grpObjCountTestAlarmBus, 0xFF, 0xFF}, 0},   // <STX>CE000048<ETX>
-    {RmCommandByte::status,                 {0xFF, 0xFF, 0xFF, 0xFF}, 0}                              // <STX>C220000000F7<ETX>
+    // CommandByte                  Response length         Object number   Raw value  Example response
+    {RmCommandByte::serialNumber,           4, {GroupObject::grpObjSerialNumber,          // <STX>C4214710F31F<ETX>
+                                                GroupObject::grpObjInvalid,
+                                                GroupObject::grpObjInvalid,
+                                                GroupObject::grpObjInvalid}, 0},
+    {RmCommandByte::operatingTime,          4, {GroupObject::grpObjOperatingTime,         // <STX>C9000047E31F<ETX>
+                                                GroupObject::grpObjInvalid,
+                                                GroupObject::grpObjInvalid,
+                                                GroupObject::grpObjInvalid}, 0},
+    {RmCommandByte::smokeboxData,           4, {GroupObject::grpObjSmokeboxValue,         // <STX>CB0065000111<ETX>
+                                                GroupObject::grpObjSmokeboxPollution,
+                                                GroupObject::grpObjCountSmokeAlarm,
+                                                GroupObject::grpObjInvalid}, 0},
+    {RmCommandByte::batteryTemperatureData, 4, {GroupObject::grpObjBatteryVoltage,        // <STX>CC000155551B<ETX>
+                                                GroupObject::grpObjTemperature,
+                                                GroupObject::grpObjInvalid,
+                                                GroupObject::grpObjInvalid}, 0},
+    {RmCommandByte::numberAlarms_1,         4, {GroupObject::grpObjCountTemperatureAlarm, // <STX>CD0000000007<ETX>
+                                                GroupObject::grpObjCountTestAlarm,
+                                                GroupObject::grpObjCountAlarmWire,
+                                                GroupObject::grpObjCountAlarmBus}, 0},
+    {RmCommandByte::numberAlarms_2,         2, {GroupObject::grpObjCountTestAlarmWire,    // <STX>CE000048<ETX>
+                                                GroupObject::grpObjCountTestAlarmBus,
+                                                GroupObject::grpObjInvalid,
+                                                GroupObject::grpObjInvalid}, 0},
+    {RmCommandByte::status,                 5, {GroupObject::grpObjInvalid,               // <STX>C220000000F7<ETX>
+                                                GroupObject::grpObjInvalid,
+                                                GroupObject::grpObjInvalid,
+                                                GroupObject::grpObjInvalid}, 0}
 };
 
 /**
@@ -215,7 +234,7 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
         msgType &= 0x0f;
         for (cmd = 0; cmd < commandTableSize(); ++cmd)
         {
-            if (CmdTab[cmd].cmdno == msgType)
+            if (CmdTab[cmd].rmCommand == msgType)
                 break;
         }
 
@@ -230,7 +249,8 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
             // Informationen aus den empfangenen Daten vom Rauchmelder der sblib zur Verfügung stellen
             // Dazu alle Com-Objekte suchen auf die die empfangenen Daten passen (mapping durch CmdTab)
             // notwendig für den Abruf von Informationen über KNX aus den Status Objekten (GroupValueRead -> GroupValueResponse)
-            for (unsigned char cmdObj_cnt = 0; CmdTab[cmd].objects[cmdObj_cnt] != 0xFF && cmdObj_cnt < MAX_OBJ_CMD; cmdObj_cnt++)
+            for (unsigned char cmdObj_cnt = 0; (CmdTab[cmd].objects[cmdObj_cnt] != GroupObject::grpObjInvalid) &&
+                                               (cmdObj_cnt < MAX_OBJ_CMD); cmdObj_cnt++)
             {
                 uint8_t objno = CmdTab[cmd].objects[cmdObj_cnt];
                 bcu.comObjects->objectSetValue(objno, read_obj_value(objno));
@@ -573,7 +593,7 @@ void send_Cmd(Command cmd)
             break;
     }
 
-    rm_send_cmd(CmdTab[(uint8_t)cmd].cmdno);
+    rm_send_cmd(CmdTab[(uint8_t)cmd].rmCommand);
     answerWait = INITIAL_ANSWER_WAIT;
 }
 

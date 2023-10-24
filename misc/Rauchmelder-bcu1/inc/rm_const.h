@@ -78,7 +78,9 @@ enum GroupObject : uint8_t
     grpObjCountAlarmWire =        18, //!< Anzahl Draht Alarme
     grpObjCountAlarmBus =         19, //!< Anzahl Bus Alarme
     grpObjCountTestAlarmWire =    20, //!< Anzahl Draht Testalarme
-    grpObjCountTestAlarmBus =     21  //!< Anzahl Bus Testalarme
+    grpObjCountTestAlarmBus =     21, //!< Anzahl Bus Testalarme
+
+    grpObjInvalid =              0xff //!< Invalid groupobject
 };
 
 #define NUM_OBJS               22 //!< Anzahl der Com-Objekte
