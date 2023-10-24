@@ -291,13 +291,11 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
         if ((status ^ errCode) & ERRCODE_BATLOW)
         {
             set_errcode((errCode & ~ERRCODE_BATLOW) | (status & ERRCODE_BATLOW));
-
-            // Werte für GroupObject::grpObjErrorCode (Objekt 12), GroupObject::grpObjBatteryLow (Objekt 13) und GroupObject::grpObjMalfunction (Objekt 14) für die sblib zur Verfügung stellen
+            // Werte für die sblib zur Verfügung stellen
             // notwendig für den Abruf von Informationen über KNX aus den Status Objekten (GroupValueRead -> GroupValueResponse)
-            for (unsigned char objno = 12; objno <= 14; objno++)
-            {
-                bcu.comObjects->objectSetValue(objno, read_obj_value(objno));
-            }
+            bcu.comObjects->objectSetValue(GroupObject::grpObjErrorCode, read_obj_value(GroupObject::grpObjErrorCode));
+            bcu.comObjects->objectSetValue(GroupObject::grpObjBatteryLow, read_obj_value(GroupObject::grpObjBatteryLow));
+            bcu.comObjects->objectSetValue(GroupObject::grpObjMalfunction, read_obj_value(GroupObject::grpObjMalfunction));
         }
 
         /*
