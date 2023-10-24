@@ -59,27 +59,27 @@ struct AssociationTable
 CmdTab[RM_CMD_COUNT] =
 {
     // CommandByte                  Response length         Object number   Raw value  Example response
-    {RmCommandByte::serialNumber,           4, {GroupObject::grpObjSerialNumber,          // <STX>C4214710F31F<ETX>
+    {RmCommandByte::serialNumber,           5, {GroupObject::grpObjSerialNumber,          // <STX>C4214710F31F<ETX>
                                                 GroupObject::grpObjInvalid,
                                                 GroupObject::grpObjInvalid,
                                                 GroupObject::grpObjInvalid}, 0},
-    {RmCommandByte::operatingTime,          4, {GroupObject::grpObjOperatingTime,         // <STX>C9000047E31F<ETX>
+    {RmCommandByte::operatingTime,          5, {GroupObject::grpObjOperatingTime,         // <STX>C9000047E31F<ETX>
                                                 GroupObject::grpObjInvalid,
                                                 GroupObject::grpObjInvalid,
                                                 GroupObject::grpObjInvalid}, 0},
-    {RmCommandByte::smokeboxData,           4, {GroupObject::grpObjSmokeboxValue,         // <STX>CB0065000111<ETX>
+    {RmCommandByte::smokeboxData,           5, {GroupObject::grpObjSmokeboxValue,         // <STX>CB0065000111<ETX>
                                                 GroupObject::grpObjSmokeboxPollution,
                                                 GroupObject::grpObjCountSmokeAlarm,
                                                 GroupObject::grpObjInvalid}, 0},
-    {RmCommandByte::batteryTemperatureData, 4, {GroupObject::grpObjBatteryVoltage,        // <STX>CC000155551B<ETX>
+    {RmCommandByte::batteryTemperatureData, 5, {GroupObject::grpObjBatteryVoltage,        // <STX>CC000155551B<ETX>
                                                 GroupObject::grpObjTemperature,
                                                 GroupObject::grpObjInvalid,
                                                 GroupObject::grpObjInvalid}, 0},
-    {RmCommandByte::numberAlarms_1,         4, {GroupObject::grpObjCountTemperatureAlarm, // <STX>CD0000000007<ETX>
+    {RmCommandByte::numberAlarms_1,         5, {GroupObject::grpObjCountTemperatureAlarm, // <STX>CD0000000007<ETX>
                                                 GroupObject::grpObjCountTestAlarm,
                                                 GroupObject::grpObjCountAlarmWire,
                                                 GroupObject::grpObjCountAlarmBus}, 0},
-    {RmCommandByte::numberAlarms_2,         2, {GroupObject::grpObjCountTestAlarmWire,    // <STX>CE000048<ETX>
+    {RmCommandByte::numberAlarms_2,         3, {GroupObject::grpObjCountTestAlarmWire,    // <STX>CE000048<ETX>
                                                 GroupObject::grpObjCountTestAlarmBus,
                                                 GroupObject::grpObjInvalid,
                                                 GroupObject::grpObjInvalid}, 0},
