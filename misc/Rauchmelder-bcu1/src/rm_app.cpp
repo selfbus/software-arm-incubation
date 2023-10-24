@@ -53,14 +53,21 @@ struct
     unsigned long objValues;                  //!< Werte der Com-Objekte.
 } CmdTab[RM_CMD_COUNT] =
 {
-    // CommandByte                           object number             raw value
-    { RmCommandByte::serialNumber,           {6,  0xFF, 0xFF, 0xFF},   0}, // <STX>C4214710F31F<ETX>
-    { RmCommandByte::operatingTime,          {7,  0xFF, 0xFF, 0xFF},   0}, // <STX>C9000047E31F<ETX>
-    { RmCommandByte::smokeboxData,           {8,  9,    15,   0xFF},   0}, // <STX>CB0065000111<ETX>
-    { RmCommandByte::batteryTemperatureData, {10, 11,   0xFF, 0xFF},   0}, // <STX>CC000155551B<ETX>
-    { RmCommandByte::numberAlarms_1,         {16, 17,   18,   19},     0}, // <STX>CD0000000007<ETX>
-    { RmCommandByte::numberAlarms_2,         {20, 21,   0xFF, 0xFF},   0}, // <STX>CE000048<ETX>
-    { RmCommandByte::status,                 {0xFF, 0xFF, 0xFF, 0xFF}, 0}  // <STX>C220000000F7<ETX>
+    // CommandByte                          Object number                                     Raw value  Example response
+    {RmCommandByte::serialNumber,           {GroupObject::grpObjSerialNumber, 0xFF, 0xFF, 0xFF}, 0},  // <STX>C4214710F31F<ETX>
+    {RmCommandByte::operatingTime,          {GroupObject::grpObjOperatingTime, 0xFF, 0xFF, 0xFF}, 0}, // <STX>C9000047E31F<ETX>
+    {RmCommandByte::smokeboxData,           {GroupObject::grpObjSmokeboxValue,                        // <STX>CB0065000111<ETX>
+                                             GroupObject::grpObjSmokeboxPollution,
+                                             GroupObject::grpObjCountSmokeAlarm, 0xFF}, 0},
+    {RmCommandByte::batteryTemperatureData, {GroupObject::grpObjBatteryVoltage,                       // <STX>CC000155551B<ETX>
+                                             GroupObject::grpObjTemperature, 0xFF, 0xFF}, 0},
+    {RmCommandByte::numberAlarms_1,         {GroupObject::grpObjCountTemperatureAlarm,                // <STX>CD0000000007<ETX>
+                                             GroupObject::grpObjCountTestAlarm,
+                                             GroupObject::grpObjCountAlarmWire,
+                                             GroupObject::grpObjCountAlarmBus}, 0},
+    {RmCommandByte::numberAlarms_2,         {GroupObject::grpObjCountTestAlarmWire,
+                                             GroupObject::grpObjCountTestAlarmBus, 0xFF, 0xFF}, 0},   // <STX>CE000048<ETX>
+    {RmCommandByte::status,                 {0xFF, 0xFF, 0xFF, 0xFF}, 0}                              // <STX>C220000000F7<ETX>
 };
 
 /**
