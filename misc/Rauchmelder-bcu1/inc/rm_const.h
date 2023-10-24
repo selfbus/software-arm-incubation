@@ -37,8 +37,9 @@
 #define BATTERY_VOLTAGE_INVALID -1              //!< Value representing an invalid battery voltage
 
 // Time-related values
-#define TIMER_INTERVAL_MS 500                   //!< Periodic timer interval in milliseconds (handles all periodic tasks)
-#define SUPPLY_VOLTAGE_DELAY_MS 500             //!< Delay time in milliseconds we wait after enabling the 12V supply
+#define TIMER_INTERVAL_MS            500        //!< Periodic timer interval in milliseconds (handles all periodic tasks)
+#define SUPPLY_VOLTAGE_ON_DELAY_MS  5000        //!< Time in milliseconds the 12V supply needs to raise 
+#define SUPPLY_VOLTAGE_OFF_DELAY_MS  500        //!< Time in milliseconds the 12V supply needs to drain the capacitor
 #define SUPPLY_VOLTAGE_TIMEOUT_MS 120000        //!< Maximum waiting time in milliseconds to enable 12V supply
 
 // counters are in half seconds (1=0.5s, 120=60.0s)

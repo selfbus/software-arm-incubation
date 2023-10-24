@@ -565,7 +565,7 @@ void checkRmAttached2BasePlate(void)
     if ((rmActiv == RM_IS_ACTIVE) || (millis() >= SUPPLY_VOLTAGE_TIMEOUT_MS))
     {
         digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_ON); // Spannungsversorgung aktivieren
-        delay(SUPPLY_VOLTAGE_DELAY_MS);
+        delay(SUPPLY_VOLTAGE_ON_DELAY_MS);
         pinMode(RM_COMM_ENABLE_PIN, OUTPUT);
         digitalWrite(RM_COMM_ENABLE_PIN, RM_COMM_ENABLE); // Kommunikation mit dem RM aktivieren
         digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED_PIN, true);
@@ -961,4 +961,5 @@ void initApplication()
     pinMode(RM_ACTIVITY_PIN, INPUT | PULL_DOWN); // smoke detector base plate state, pulldown configured, Pin is connected to 3.3V VCC of the RM
     pinMode(RM_SUPPORT_VOLTAGE_PIN, OUTPUT);
     digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_OFF); // zuerst die Spannungsversorgung ausschalten
+    delay(SUPPLY_VOLTAGE_DROP_MS); ///\todo move to delayed app start, make sure it lasts at least 500ms to discharge the 12V capacitor
 }
