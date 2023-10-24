@@ -793,26 +793,6 @@ extern "C" void TIMER32_0_IRQHandler()
         }
     }
 
-    /* Hier kann die minütliche Kontrolle der Bodenplatte aktiviert werden
-
-    // Zur vollen Minute die Spannungsversorgung ausschalten, um zu prüfen, ob der RM noch auf der Bodenplatte arretiert ist
-    // Der RM_ACTIVITY_PIN wird nur low, wenn die Unterstützung der Versorgungsspannung ausgeschaltet ist
-    if (!eventTime && !(alarmLocal | alarmBus | testAlarmLocal | testAlarmBus))
-    {
-        digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_OFF);
-    }
-
-    if(eventTime == 4) //bei 2 Sekunden kontrollieren, ob der RM noch auf der Bodenplatte arretiert ist
-    {
-        pinMode(RM_ACTIVITY_PIN, INPUT | PULL_DOWN); //Pin als Eingang mit Pulldown Widerstand konfigurieren
-        if(digitalRead(RM_ACTIVITY_PIN) == RM_IS_ACTIVE)
-        {
-            digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_ON); // Spannungsversorgung wieder aktivieren
-        }
-        pinMode(RM_ACTIVITY_PIN, INPUT);
-    }
-    */
-
     if (!eventTime) // einmal pro Minute
     {
         eventTime = DEFAULT_EVENTTIME;
