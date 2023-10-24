@@ -179,6 +179,13 @@ void send_obj_test_alarm(bool newAlarm)
     }
 }
 
+void failHardInDebug() ///\todo remove on release
+{
+#ifdef DEBUG
+    fatalError();
+#endif
+}
+
 uint8_t commandTableSize()
 {
     return sizeof(CmdTab)/sizeof(CmdTab[0]);
@@ -209,7 +216,7 @@ void set_errcode(unsigned char newErrCode)
  * Die empfangene Nachricht vom Rauchmelder verarbeiten.
  * Wird von _receive() aufgerufen.
  */
-void rm_process_msg(unsigned char *bytes, unsigned char len)
+void rm_process_msg(uint8_t *bytes, int8_t len)
 {
     uint8_t cmd;
     uint8_t msgType;
@@ -224,51 +231,74 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
     }
 
     msgType = bytes[0];
-    if (msgType == (RmCommandByte::status | 0xc0))
+    if (msgType == (RmCommandByte::status | 0x80))
     {
-        msgType = (RmCommandByte::status | 0x80); // "cast" to automatic status message
+        msgType = (RmCommandByte::status | 0xc0); // "cast" automatic status message to "normal" status message
     }
 
-    if ((msgType & 0xf0) == 0xc0) // Com-Objekt Werte empfangen
+    if ((msgType & 0xf0) != 0xc0) // check for valid response byte
     {
-        msgType &= 0x0f;
-        for (cmd = 0; cmd < commandTableSize(); ++cmd)
+        failHardInDebug();  ///\todo we should never land here AND fatalError() can't be the final solution
+        return;
+    }
+
+    msgType &= 0x0f;
+    for (cmd = 0; cmd < commandTableSize(); ++cmd)
+    {
+        if (CmdTab[cmd].rmCommand == msgType)
         {
-            if (CmdTab[cmd].rmCommand == msgType)
-                break;
+            break;
+        }
+    }
+
+    if (cmd >= commandTableSize())
+    {
+        failHardInDebug(); // found a new command/response => time to implement it
+        return;
+    }
+
+    if (len != CmdTab[cmd].responseLength)
+    {
+        failHardInDebug(); // received length doesn't match expected length
+        return;
+    }
+
+    if (RmCommandByte::status != msgType)
+    {
+        if ((len - 1) > (int8_t)sizeof(CmdTab[cmd].objValues))
+        {
+            failHardInDebug(); // response is to long to fit in .objValues
+            return;
         }
 
-        if (cmd < commandTableSize())
+        // Copy values over atomically.
+        timer32_0.noInterrupts();
+        CmdTab[cmd].objValues = 0;
+        memcpy(&CmdTab[cmd].objValues, &bytes[1], len - 1);
+        timer32_0.interrupts();
+
+        // Informationen aus den empfangenen Daten vom Rauchmelder der sblib zur Verfügung stellen
+        // Dazu alle Com-Objekte suchen auf die die empfangenen Daten passen (mapping durch CmdTab)
+        // notwendig für den Abruf von Informationen über KNX aus den Status Objekten (GroupValueRead -> GroupValueResponse)
+        for (unsigned char cmdObj_cnt = 0; (CmdTab[cmd].objects[cmdObj_cnt] != GroupObject::grpObjInvalid) &&
+                                           (cmdObj_cnt < MAX_OBJ_CMD); cmdObj_cnt++)
         {
-            // Copy values over atomically.
-            timer32_0.noInterrupts();
-            CmdTab[cmd].objValues = 0;
-            memcpy(&CmdTab[cmd].objValues, &bytes[1], len - 1);
-            timer32_0.interrupts();
+            uint8_t objno = CmdTab[cmd].objects[cmdObj_cnt];
+            bcu.comObjects->objectSetValue(objno, read_obj_value(objno));
 
-            // Informationen aus den empfangenen Daten vom Rauchmelder der sblib zur Verfügung stellen
-            // Dazu alle Com-Objekte suchen auf die die empfangenen Daten passen (mapping durch CmdTab)
-            // notwendig für den Abruf von Informationen über KNX aus den Status Objekten (GroupValueRead -> GroupValueResponse)
-            for (unsigned char cmdObj_cnt = 0; (CmdTab[cmd].objects[cmdObj_cnt] != GroupObject::grpObjInvalid) &&
-                                               (cmdObj_cnt < MAX_OBJ_CMD); cmdObj_cnt++)
+            // Versand der erhaltenen Com-Objekte einleiten.
+            // Sofern sie für den Versand vorgemerkt sind.
+            byteno = objno >> 3;
+            mask = pow2[objno & 7];
+
+            if (objSendReqFlags[byteno] & mask)
             {
-                uint8_t objno = CmdTab[cmd].objects[cmdObj_cnt];
-                bcu.comObjects->objectSetValue(objno, read_obj_value(objno));
-
-                // Versand der erhaltenen Com-Objekte einleiten.
-                // Sofern sie für den Versand vorgemerkt sind.
-                byteno = objno >> 3;
-                mask = pow2[objno & 7];
-
-                if (objSendReqFlags[byteno] & mask)
-                {
-                    bcu.comObjects->objectWrite(objno, read_obj_value(objno));
-                    objSendReqFlags[byteno] &= ~mask;
-                }
+                bcu.comObjects->objectWrite(objno, read_obj_value(objno));
+                objSendReqFlags[byteno] &= ~mask;
             }
         }
     }
-    else if (msgType == 0x82 && len == 5) // Status Meldung
+    else // status command gets special treatment
     {
         unsigned char subType = bytes[1];
         bool newAlarm;
@@ -361,12 +391,6 @@ void rm_process_msg(unsigned char *bytes, unsigned char len)
 
             set_errcode(newErrCode);
         }
-    }
-    else if (msgType == 0x82 && len > 5) // zu lange Status Meldung
-    {
-#ifdef DEBUG
-        fatalError(); ///\todo we should never land here AND fatalError() can't be the final solution
-#endif
     }
 }
 
