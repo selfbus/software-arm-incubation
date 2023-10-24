@@ -118,7 +118,7 @@ enum GroupObject : uint8_t
 //-----------------------------------------------------------------------------
 // Kommunikations Konstanten
 //-----------------------------------------------------------------------------
-#define THE_UNKNOWN 0x00 //!> The unknown leading byte of the @ref STX start byte
+#define NUL         0x00 //!> Null byte (prefix of @ref STX start byte)
 #define STX         0x02 //!> Start byte
 #define ETX         0x03 //!> End byte
 #define ACK         0x06 //!> Acknowledged byte

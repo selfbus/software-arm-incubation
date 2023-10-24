@@ -194,7 +194,7 @@ void rm_recv_bytes()
             case NAK: ///\todo Retransmit the last command/bytes
                 continue;
 
-            case THE_UNKNOWN: ///\todo Check if the 0x00 before the <STX> is intended behavior of the RM.
+            case NUL:
                 continue;
 
             case ETX: // Am Ende den Empfang bestätigen und die erhaltene Antwort verarbeiten
