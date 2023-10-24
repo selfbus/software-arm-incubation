@@ -48,7 +48,7 @@ enum class Command : uint8_t // RM_CMD_COUNT must match number of rmXxxx command
 
 struct
 {
-    const RmCommandByte cmdno;                  //!< Zu sendender RM_CMD Befehl
+    const RmCommandByte cmdno;                //!< Zu sendender RM_CMD Befehl
     const unsigned char objects[MAX_OBJ_CMD]; //!< Zuordnung der ComObjekte zu den Befehlen
     unsigned long objValues;                  //!< Werte der Com-Objekte.
 } CmdTab[RM_CMD_COUNT] =
@@ -69,109 +69,60 @@ struct
  */
 constexpr struct
 {
-    Command cmd;           //!< @ref Command to send to the smoke-detector
-    uint8_t offset;        //!< Byte-offset in the response
-    uint8_t dataType;      //!< Datatype of the response
+    Command cmd;            //!< @ref Command to send to the smoke-detector
+    uint8_t offset;         //!< Byte-offset in the response
+    uint8_t dataType;       //!< Datatype of the response
 } objMappingTab[NUM_OBJS] =
 {
-    {Command::internal,                0, RM_TYPE_NONE},  /* 0 OBJ_ALARM_BUS*/
-    {Command::internal,                0, RM_TYPE_NONE},  /* 1 OBJ_TALARM_BUS*/
-    {Command::internal,                0, RM_TYPE_NONE},  /* 2 OBJ_RESET_ALARM*/
-    {Command::internal,                0, RM_TYPE_NONE},  /* 3 OBJ_STAT_ALARM*/
-    {Command::internal,                0, RM_TYPE_NONE},  /* 4 OBJ_STAT_ALARM_DELAYED*/
-    {Command::internal,                0, RM_TYPE_NONE},  /* 5 OBJ_STAT_TALARM*/
-    {Command::rmSerialNumber,          0, RM_TYPE_LONG},  /* 6 OBJ_SERIAL*/
-    {Command::rmOperatingTime,         0, RM_TYPE_QSEC},  /* 7 OBJ_OPERATING_TIME*/
-    {Command::rmSmokeboxData,          0, RM_TYPE_SHORT}, /* 8 OBJ_SMOKEBOX_VALUE*/
-    {Command::rmSmokeboxData,          3, RM_TYPE_BYTE},  /* 9 OBJ_POLLUTION*/
-    {Command::rmBatteryAndTemperature, 0, RM_TYPE_MVOLT}, /*10 OBJ_BAT_VOLTAGE*/
-    {Command::rmBatteryAndTemperature, 2, RM_TYPE_TEMP},  /*11 OBJ_TEMP*/
-    {Command::internal,                0, RM_TYPE_NONE},  /*12 OBJ_ERRCODE*/
-    {Command::internal,                0, RM_TYPE_NONE},  /*13 OBJ_BAT_LOW*/
-    {Command::internal,                0, RM_TYPE_NONE},  /*14 OBJ_MALFUNCTION*/
-    {Command::rmSmokeboxData,          2, RM_TYPE_BYTE},  /*15 OBJ_CNT_SMOKEALARM*/
-    {Command::rmNumberAlarms_1,        0, RM_TYPE_BYTE},  /*16 OBJ_CNT_TEMPALARM*/
-    {Command::rmNumberAlarms_1,        1, RM_TYPE_BYTE},  /*17 OBJ_CNT_TESTALARM*/
-    {Command::rmNumberAlarms_1,        2, RM_TYPE_BYTE},  /*18 OBJ_CNT_ALARM_WIRE*/
-    {Command::rmNumberAlarms_1,        3, RM_TYPE_BYTE},  /*19 OBJ_CNT_ALARM_BUS*/
-    {Command::rmNumberAlarms_2,        0, RM_TYPE_BYTE},  /*20 OBJ_CNT_TALARM_WIRE*/
-    {Command::rmNumberAlarms_2,        1, RM_TYPE_BYTE}   /*21 OBJ_CNT_TALARM_BUS*/
+    {Command::internal,                0, RM_TYPE_NONE},  //!<  0 @ref OBJ_ALARM_BUS
+    {Command::internal,                0, RM_TYPE_NONE},  //!<  1 @ref OBJ_TALARM_BUS
+    {Command::internal,                0, RM_TYPE_NONE},  //!<  2 @ref OBJ_RESET_ALARM
+    {Command::internal,                0, RM_TYPE_NONE},  //!<  3 @ref OBJ_STAT_ALARM
+    {Command::internal,                0, RM_TYPE_NONE},  //!<  4 @ref OBJ_STAT_ALARM_DELAYED
+    {Command::internal,                0, RM_TYPE_NONE},  //!<  5 @ref OBJ_STAT_TALARM
+    {Command::rmSerialNumber,          0, RM_TYPE_LONG},  //!<  6 @ref OBJ_SERIAL
+    {Command::rmOperatingTime,         0, RM_TYPE_QSEC},  //!<  7 @ref OBJ_OPERATING_TIME
+    {Command::rmSmokeboxData,          0, RM_TYPE_SHORT}, //!<  8 @ref OBJ_SMOKEBOX_VALUE
+    {Command::rmSmokeboxData,          3, RM_TYPE_BYTE},  //!<  9 @ref OBJ_POLLUTION
+    {Command::rmBatteryAndTemperature, 0, RM_TYPE_MVOLT}, //!< 10 @ref OBJ_BAT_VOLTAGE
+    {Command::rmBatteryAndTemperature, 2, RM_TYPE_TEMP},  //!< 11 @ref OBJ_TEMP
+    {Command::internal,                0, RM_TYPE_NONE},  //!< 12 @ref OBJ_ERRCODE
+    {Command::internal,                0, RM_TYPE_NONE},  //!< 13 @ref OBJ_BAT_LOW
+    {Command::internal,                0, RM_TYPE_NONE},  //!< 14 @ref OBJ_MALFUNCTION
+    {Command::rmSmokeboxData,          2, RM_TYPE_BYTE},  //!< 15 @ref OBJ_CNT_SMOKEALARM
+    {Command::rmNumberAlarms_1,        0, RM_TYPE_BYTE},  //!< 16 @ref OBJ_CNT_TEMPALARM
+    {Command::rmNumberAlarms_1,        1, RM_TYPE_BYTE},  //!< 17 @ref OBJ_CNT_TESTALARM
+    {Command::rmNumberAlarms_1,        2, RM_TYPE_BYTE},  //!< 18 @ref OBJ_CNT_ALARM_WIRE
+    {Command::rmNumberAlarms_1,        3, RM_TYPE_BYTE},  //!< 19 @ref OBJ_CNT_ALARM_BUS
+    {Command::rmNumberAlarms_2,        0, RM_TYPE_BYTE},  //!< 20 @ref OBJ_CNT_TALARM_WIRE
+    {Command::rmNumberAlarms_2,        1, RM_TYPE_BYTE}   //!< 21 @ref OBJ_CNT_TALARM_BUS
 };
 
+bool alarmLocal;                   //!< Flag für lokalen Alarm und Wired Alarm (über grüne Klemme / Rauchmelderbus)
+bool alarmBus;                     //!< Flag für remote Alarm über EIB
+bool testAlarmLocal;               //!< Flag für lokalen Testalarm und Wired Testalarm
+bool testAlarmBus;                 //!< Flag für remote Testalarm über EIB
+bool setAlarmBus;                  //!< Flag für den gewünschten Alarm Status wie wir ihn über den EIB empfangen haben
+bool setTestAlarmBus;              //!< Flag für den gewünschten Testalarm Status wie wir ihn über den EIB empfangen haben
+bool ignoreBusAlarm;               //!< Flag für Bus Alarm & -Testalarm ignorieren
+unsigned char errCode;             //!< Rauchmelder Fehlercodes
+unsigned char objSendReqFlags[NUM_OBJ_FLAG_BYTES];//!< Flags für Com-Objekte senden
+unsigned char answerWait;          //!< Wenn != 0, dann Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.
+#define INITIAL_ANSWER_WAIT 6      //!< Initialwert für answerWait in 0,5s
+unsigned char noAnswerCount;       //!< Zähler für keine Antwort vom Rauchmelder
+#define NO_ANSWER_MAX 5            //!< Maximale Anzahl in noAnswerCount ab der ein Rauchmelder Fehler gemeldet wird
+unsigned char alarmCounter;        //!< Countdown Zähler für zyklisches Senden eines Alarms.
+unsigned char TalarmCounter;       //!< Countdown Zähler für zyklisches Senden eines Testalarms.
+unsigned char delayedAlarmCounter; //!< Countdown Zähler für verzögertes Senden eines Alarms
+unsigned char infoCounter;         //!< Countdown Zähler für zyklisches Senden der (Info) Com-Objekte
+unsigned char infoSendObjno;       //!< Nummer des Com-Objekts das bei zyklischem Info Senden als nächstes geprüft/gesendet wird
+unsigned char readCmdno;           //!< Nummer des Befehls, welcher als nächstes zyklisch an den Rauchmelder gesendet wird
+unsigned char eventTime = DEFAULT_EVENTTIME; //!< Halbsekunden Zähler 0..119
+const unsigned char pow2[8] = { 1, 2, 4, 8, 16, 32, 64, 128 };         //!< Tabelle für 1<<x, d.h. pow2[3] == 1<<3
 
-// Flag für lokalen Alarm und Wired Alarm (über grüne Klemme / Rauchmelderbus)
-bool alarmLocal;
-
-// Flag für remote Alarm über EIB
-bool alarmBus;
-
-// Flag für lokalen Testalarm und Wired Testalarm
-bool testAlarmLocal;
-
-// Flag für remote Testalarm über EIB
-bool testAlarmBus;
-
-// Flag für den gewünschten Alarm Status wie wir ihn über den EIB empfangen haben
-bool setAlarmBus;
-
-// Flag für den gewünschten Testalarm Status wie wir ihn über den EIB empfangen haben
-bool setTestAlarmBus;
-
-// Flag für Bus Alarm & -Testalarm ignorieren
-bool ignoreBusAlarm;
-
-// Rauchmelder Fehlercodes
-unsigned char errCode;
-
-// Flags für Com-Objekte senden
-unsigned char objSendReqFlags[NUM_OBJ_FLAG_BYTES];
-
-// Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.
-// Ist der Zähler 0 dann wird gerade auf keine Antwort gewartet.
-unsigned char answerWait;
-
-// Initialwert für answerWait in 0,5s
-#define INITIAL_ANSWER_WAIT 6
-
-// Zähler für keine Antwort vom Rauchmelder
-unsigned char noAnswerCount;
-
-// Maximale Anzahl in noAnswerCount ab der ein Rauchmelder Fehler gemeldet wird
-#define NO_ANSWER_MAX 5
-
-
-// Countdown Zähler für zyklisches Senden eines Alarms.
-unsigned char alarmCounter;
-
-// Countdown Zähler für zyklisches Senden eines Testalarms.
-unsigned char TalarmCounter;
-
-// Countdown Zähler für verzögertes Senden eines Alarms
-unsigned char delayedAlarmCounter;
-
-// Countdown Zähler für zyklisches Senden der (Info) Com-Objekte
-unsigned char infoCounter;
-
-// Nummer des Com-Objekts das bei zyklischem Info Senden als nächstes geprüft/gesendet wird
-unsigned char infoSendObjno;
-
-// Nummer des Befehls, welcher als nächstes zyklisch an den Rauchmelder gesendet wird
-unsigned char readCmdno;
-
-// Halbsekunden Zähler 0..119
-unsigned char eventTime = DEFAULT_EVENTTIME;
-
-// Tabelle für 1<<x, d.h. pow2[3] == 1<<3
-const unsigned char pow2[8] = { 1, 2, 4, 8, 16, 32, 64, 128 };
-
-// Im Byte Array arr das bitno-te Bit setzen
-#define ARRAY_SET_BIT(arr, bitno) arr[bitno>>3] |= pow2[bitno & 7]
-
-// Im Byte Array arr das bitno-te Bit löschen
-#define ARRAY_CLEAR_BIT(arr, bitno) arr[bitno>>3] &= ~pow2[bitno & 7]
-
-// Testen ob im Byte Array arr das bitno-te Bit gesetzt ist
-#define ARRAY_IS_BIT_SET(arr, bitno) (arr[bitno>>3] & pow2[bitno & 7])
+#define ARRAY_SET_BIT(arr, bitno) arr[bitno>>3] |= pow2[bitno & 7]     //!< Im Byte Array arr das bitno-te Bit setzen
+#define ARRAY_CLEAR_BIT(arr, bitno) arr[bitno>>3] &= ~pow2[bitno & 7]  //!< Im Byte Array arr das bitno-te Bit löschen
+#define ARRAY_IS_BIT_SET(arr, bitno) (arr[bitno>>3] & pow2[bitno & 7]) //!< Testen ob im Byte Array arr das bitno-te Bit gesetzt ist
 
 /**
  * Den Alarm Status auf den Bus senden falls noch nicht gesendet.
