@@ -26,7 +26,7 @@ APP_VERSION("S_RM_H6 ", "3", "00");
 BcuBase* setup()
 {
     initApplication();
-    bcu.begin(0x004C, 0x03F2, 0x24); 		//Herstellercode 0x004C = Robert Bosch, Devicetype 1010 (0x03F2), Version 2.4
+    bcu.begin(0x004C, 0x03F2, 0x24);         //Herstellercode 0x004C = Robert Bosch, Devicetype 1010 (0x03F2), Version 2.4
     setupPeriodicTimer(TIMER_INTERVAL_MS);
     return (&bcu);
 }
