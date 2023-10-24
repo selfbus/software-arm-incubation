@@ -63,38 +63,39 @@ struct
     { RmCommandByte::status,                 {0xFF, 0xFF, 0xFF, 0xFF}, 0}  // <STX>C220000000F7<ETX>
 };
 
-// Mapping von den Kommunikations-Objekten auf die Rauchmelder Requests
-// und die Daten in der Rauchmelder Antwort. Der Index in die Tabelle ist
-// die ID vom Kommunikations-Objekt (objid).
-const struct
+/**
+ * Mapping of the @ref Commands to the smoke detector's response data (bytes).\
+ * The index of @ref objMappingTab the table is the ID of the communication object (object id).
+ */
+constexpr struct
 {
-    Command cmd;                   // Zu sendender RM_CMD Befehl
-    unsigned const char offset;    // Byte-Offset in der Antwort
-    unsigned const char dataType;  // Datentyp der Antwort
+    Command cmd;           //!< @ref Command to send to the smoke-detector
+    uint8_t offset;        //!< Byte-offset in the response
+    uint8_t dataType;      //!< Datatype of the response
 } objMappingTab[NUM_OBJS] =
 {
-    /* 0 OBJ_ALARM_BUS*/           { Command::internal,                0, RM_TYPE_NONE },
-    /* 1 OBJ_TALARM_BUS*/          { Command::internal,                0, RM_TYPE_NONE },
-    /* 2 OBJ_RESET_ALARM*/         { Command::internal,                0, RM_TYPE_NONE },
-    /* 3 OBJ_STAT_ALARM*/          { Command::internal,                0, RM_TYPE_NONE },
-    /* 4 OBJ_STAT_ALARM_DELAYED*/  { Command::internal,                0, RM_TYPE_NONE },
-    /* 5 OBJ_STAT_TALARM*/         { Command::internal,                0, RM_TYPE_NONE },
-    /* 6 OBJ_SERIAL*/              { Command::rmSerialNumber,          0, RM_TYPE_LONG },
-    /* 7 OBJ_OPERATING_TIME*/      { Command::rmOperatingTime,         0, RM_TYPE_QSEC },
-    /* 8 OBJ_SMOKEBOX_VALUE*/      { Command::rmSmokeboxData,          0, RM_TYPE_SHORT },
-    /* 9 OBJ_POLLUTION*/           { Command::rmSmokeboxData,          3, RM_TYPE_BYTE },
-    /*10 OBJ_BAT_VOLTAGE*/         { Command::rmBatteryAndTemperature, 0, RM_TYPE_MVOLT },
-    /*11 OBJ_TEMP*/                { Command::rmBatteryAndTemperature, 2, RM_TYPE_TEMP },
-    /*12 OBJ_ERRCODE*/             { Command::internal,                0, RM_TYPE_NONE },
-    /*13 OBJ_BAT_LOW*/             { Command::internal,                0, RM_TYPE_NONE },
-    /*14 OBJ_MALFUNCTION*/         { Command::internal,                0, RM_TYPE_NONE },
-    /*15 OBJ_CNT_SMOKEALARM*/      { Command::rmSmokeboxData,          2, RM_TYPE_BYTE },
-    /*16 OBJ_CNT_TEMPALARM*/       { Command::rmNumberAlarms_1,        0, RM_TYPE_BYTE },
-    /*17 OBJ_CNT_TESTALARM*/       { Command::rmNumberAlarms_1,        1, RM_TYPE_BYTE },
-    /*18 OBJ_CNT_ALARM_WIRE*/      { Command::rmNumberAlarms_1,        2, RM_TYPE_BYTE },
-    /*19 OBJ_CNT_ALARM_BUS*/       { Command::rmNumberAlarms_1,        3, RM_TYPE_BYTE },
-    /*20 OBJ_CNT_TALARM_WIRE*/     { Command::rmNumberAlarms_2,        0, RM_TYPE_BYTE },
-    /*21 OBJ_CNT_TALARM_BUS*/      { Command::rmNumberAlarms_2,        1, RM_TYPE_BYTE }
+    {Command::internal,                0, RM_TYPE_NONE},  /* 0 OBJ_ALARM_BUS*/
+    {Command::internal,                0, RM_TYPE_NONE},  /* 1 OBJ_TALARM_BUS*/
+    {Command::internal,                0, RM_TYPE_NONE},  /* 2 OBJ_RESET_ALARM*/
+    {Command::internal,                0, RM_TYPE_NONE},  /* 3 OBJ_STAT_ALARM*/
+    {Command::internal,                0, RM_TYPE_NONE},  /* 4 OBJ_STAT_ALARM_DELAYED*/
+    {Command::internal,                0, RM_TYPE_NONE},  /* 5 OBJ_STAT_TALARM*/
+    {Command::rmSerialNumber,          0, RM_TYPE_LONG},  /* 6 OBJ_SERIAL*/
+    {Command::rmOperatingTime,         0, RM_TYPE_QSEC},  /* 7 OBJ_OPERATING_TIME*/
+    {Command::rmSmokeboxData,          0, RM_TYPE_SHORT}, /* 8 OBJ_SMOKEBOX_VALUE*/
+    {Command::rmSmokeboxData,          3, RM_TYPE_BYTE},  /* 9 OBJ_POLLUTION*/
+    {Command::rmBatteryAndTemperature, 0, RM_TYPE_MVOLT}, /*10 OBJ_BAT_VOLTAGE*/
+    {Command::rmBatteryAndTemperature, 2, RM_TYPE_TEMP},  /*11 OBJ_TEMP*/
+    {Command::internal,                0, RM_TYPE_NONE},  /*12 OBJ_ERRCODE*/
+    {Command::internal,                0, RM_TYPE_NONE},  /*13 OBJ_BAT_LOW*/
+    {Command::internal,                0, RM_TYPE_NONE},  /*14 OBJ_MALFUNCTION*/
+    {Command::rmSmokeboxData,          2, RM_TYPE_BYTE},  /*15 OBJ_CNT_SMOKEALARM*/
+    {Command::rmNumberAlarms_1,        0, RM_TYPE_BYTE},  /*16 OBJ_CNT_TEMPALARM*/
+    {Command::rmNumberAlarms_1,        1, RM_TYPE_BYTE},  /*17 OBJ_CNT_TESTALARM*/
+    {Command::rmNumberAlarms_1,        2, RM_TYPE_BYTE},  /*18 OBJ_CNT_ALARM_WIRE*/
+    {Command::rmNumberAlarms_1,        3, RM_TYPE_BYTE},  /*19 OBJ_CNT_ALARM_BUS*/
+    {Command::rmNumberAlarms_2,        0, RM_TYPE_BYTE},  /*20 OBJ_CNT_TALARM_WIRE*/
+    {Command::rmNumberAlarms_2,        1, RM_TYPE_BYTE}   /*21 OBJ_CNT_TALARM_BUS*/
 };
 
 
