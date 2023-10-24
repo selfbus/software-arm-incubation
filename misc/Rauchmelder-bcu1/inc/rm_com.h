@@ -55,7 +55,7 @@ void rm_recv_bytes();
 /**
  * Die empfangene Nachricht vom Rauchmelder verarbeiten.
  *
- * Wird von _receive() aufgerufen wenn eine Nachricht empfangen wurde.
+ * Wird von @ref rm_recv_bytes() aufgerufen wenn eine Nachricht empfangen wurde.
  * Muss vom Verwender implementiert werden.
  *
  * @param bytes - die empfangene Nachricht, ohne STX, ETX, Prüfsumme.
