@@ -404,6 +404,9 @@ unsigned long read_obj_value(unsigned char objno)
 
             case OBJ_ERRCODE:
                 return errCode;
+
+            default:
+                return -1; // Fehler: unbekanntes Com Objekt
         }
     }
     // Com-Objekte verarbeiten die Werte vom Rauchmelder darstellen
