@@ -238,8 +238,8 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
 
     if ((msgType & 0xf0) != 0xc0) // check for valid response byte
     {
-        failHardInDebug();  ///\todo we should never land here AND fatalError() can't be the final solution
-        return;
+                // receiving an "echo" of our own command (e.g. <STX>0262<ETX>) can bring us here.
+        return; // learned this by accidently touching the ARM's tx/rx pins
     }
 
     msgType &= 0x0f;
