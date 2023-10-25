@@ -40,32 +40,32 @@ SmokeDetectorConfig::SmokeDetectorConfig(Memory *memory)
 // Alarm page
 //-----------------------------------------------------------------------------
 
-bool SmokeDetectorConfig::alarmSendStatusPeriodically()
+bool SmokeDetectorConfig::alarmSendStatusPeriodically() const
 {
     return memory->getUInt8(ConfigAddress::SendEnable) & SendEnable::PeriodicAlarmStatus;
 }
 
-bool SmokeDetectorConfig::alarmSendStatusPeriodicallyWhenNoAlarm()
+bool SmokeDetectorConfig::alarmSendStatusPeriodicallyWhenNoAlarm() const
 {
     return memory->getUInt8(ConfigAddress::SendEnable) & SendEnable::PeriodicAlarmStatusWhenNoAlarm;
 }
 
-bool SmokeDetectorConfig::alarmSendNetworkPeriodically()
+bool SmokeDetectorConfig::alarmSendNetworkPeriodically() const
 {
     return memory->getUInt8(ConfigAddress::SendEnable) & SendEnable::PeriodicAlarmNetwork;
 }
 
-uint8_t SmokeDetectorConfig::alarmIntervalSeconds()
+uint8_t SmokeDetectorConfig::alarmIntervalSeconds() const
 {
     return memory->getUInt8(ConfigAddress::AlarmInterval);
 }
 
-bool SmokeDetectorConfig::alarmSendDelayed()
+bool SmokeDetectorConfig::alarmSendDelayed() const
 {
     return memory->getUInt8(ConfigAddress::SendEnable) & SendEnable::DelayedAlarm;
 }
 
-uint8_t SmokeDetectorConfig::alarmDelaySeconds()
+uint8_t SmokeDetectorConfig::alarmDelaySeconds() const
 {
     return memory->getUInt8(ConfigAddress::AlarmDelayed);
 }
@@ -74,17 +74,17 @@ uint8_t SmokeDetectorConfig::alarmDelaySeconds()
 // Test alarm page
 //-----------------------------------------------------------------------------
 
-bool SmokeDetectorConfig::testAlarmSendStatusPeriodically()
+bool SmokeDetectorConfig::testAlarmSendStatusPeriodically() const
 {
     return memory->getUInt8(ConfigAddress::SendEnable) & SendEnable::PeriodicTestAlarmStatus;
 }
 
-bool SmokeDetectorConfig::testAlarmSendNetworkPeriodically()
+bool SmokeDetectorConfig::testAlarmSendNetworkPeriodically() const
 {
     return memory->getUInt8(ConfigAddress::SendEnable) & SendEnable::PeriodicTestAlarmNetwork;
 }
 
-uint8_t SmokeDetectorConfig::testAlarmIntervalSeconds()
+uint8_t SmokeDetectorConfig::testAlarmIntervalSeconds() const
 {
     return memory->getUInt8(ConfigAddress::TestAlarmInterval);
 }
@@ -93,17 +93,17 @@ uint8_t SmokeDetectorConfig::testAlarmIntervalSeconds()
 // Status informations page
 //-----------------------------------------------------------------------------
 
-bool SmokeDetectorConfig::infoSendAnyPeriodically()
+bool SmokeDetectorConfig::infoSendAnyPeriodically() const
 {
     return memory->getUInt8(ConfigAddress::SendEnable) & SendEnable::PeriodicInfo;
 }
 
-uint8_t SmokeDetectorConfig::infoIntervalMinutes()
+uint8_t SmokeDetectorConfig::infoIntervalMinutes() const
 {
     return memory->getUInt8(ConfigAddress::InfoInterval);
 }
 
-bool SmokeDetectorConfig::infoSendPeriodically(GroupObject groupObject)
+bool SmokeDetectorConfig::infoSendPeriodically(GroupObject groupObject) const
 {
     auto objectNumber = static_cast<uint8_t>(groupObject);
 
@@ -119,7 +119,7 @@ bool SmokeDetectorConfig::infoSendPeriodically(GroupObject groupObject)
     return memory->getUInt16(ConfigAddress::InfoEnabledObjects) & (1 << (21 - objectNumber));
 }
 
-bool SmokeDetectorConfig::infoSendOperationTimeInHours()
+bool SmokeDetectorConfig::infoSendOperationTimeInHours() const
 {
     return memory->getUInt8(ConfigAddress::SendEnable) & SendEnable::OperationTimeInHours;
 }
@@ -128,7 +128,7 @@ bool SmokeDetectorConfig::infoSendOperationTimeInHours()
 // Temperature page
 //-----------------------------------------------------------------------------
 
-int8_t SmokeDetectorConfig::temperatureOffsetInTenthDegrees()
+int8_t SmokeDetectorConfig::temperatureOffsetInTenthDegrees() const
 {
     return static_cast<int8_t>(memory->getUInt8(ConfigAddress::TemperatureOffset));
 }

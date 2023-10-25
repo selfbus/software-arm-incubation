@@ -18,23 +18,23 @@ public:
     SmokeDetectorConfig(Memory *memory);
     ~SmokeDetectorConfig() = delete;
 
-    bool alarmSendStatusPeriodically();
-    bool alarmSendStatusPeriodicallyWhenNoAlarm();
-    bool alarmSendNetworkPeriodically();
-    uint8_t alarmIntervalSeconds();
-    bool alarmSendDelayed();
-    uint8_t alarmDelaySeconds();
+    bool alarmSendStatusPeriodically() const;
+    bool alarmSendStatusPeriodicallyWhenNoAlarm() const;
+    bool alarmSendNetworkPeriodically() const;
+    uint8_t alarmIntervalSeconds() const;
+    bool alarmSendDelayed() const;
+    uint8_t alarmDelaySeconds() const;
 
-    bool testAlarmSendStatusPeriodically();
-    bool testAlarmSendNetworkPeriodically();
-    uint8_t testAlarmIntervalSeconds();
+    bool testAlarmSendStatusPeriodically() const;
+    bool testAlarmSendNetworkPeriodically() const;
+    uint8_t testAlarmIntervalSeconds() const;
 
-    bool infoSendAnyPeriodically();
-    uint8_t infoIntervalMinutes();
-    bool infoSendPeriodically(GroupObject groupObject);
-    bool infoSendOperationTimeInHours();
+    bool infoSendAnyPeriodically() const;
+    uint8_t infoIntervalMinutes() const;
+    bool infoSendPeriodically(GroupObject groupObject) const;
+    bool infoSendOperationTimeInHours() const;
 
-    int8_t temperatureOffsetInTenthDegrees();
+    int8_t temperatureOffsetInTenthDegrees() const;
 
 private:
     Memory *memory;
