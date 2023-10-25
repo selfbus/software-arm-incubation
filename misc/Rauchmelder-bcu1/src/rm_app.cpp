@@ -17,15 +17,16 @@
  *  published by the Free Software Foundation.
  */
 
+#include <cstring>
 #include <stdint.h>
+
 #include "rm_app.h"
 #include "rm_const.h"
 #include "rm_com.h"
-#include "rm_eeprom.h"
-
-#include <cstring>
+#include "smoke_detector_config.h"
 
 BCU1 bcu = BCU1();
+SmokeDetectorConfig *config = new SmokeDetectorConfig(bcu.userEeprom);
 
 //-----------------------------------------------------------------------------
 // Befehle an den Rauchmelder
@@ -309,9 +310,9 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
 
         // Lokaler Alarm: Rauch Alarm | Temperatur Alarm | Wired Alarm
         newAlarm = (subType & 0x10) | (status & (0x04 | 0x08));
-        if ((bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_ALARM_DELAYED) && newAlarm) // wenn Alarm verzögert gesendet werden soll und Alarm ansteht
+        if (config->alarmSendDelayed() && newAlarm) // wenn Alarm verzögert gesendet werden soll und Alarm ansteht
         {
-            delayedAlarmCounter = bcu.userEeprom->getUInt8(CONF_ALARM_DELAYED);
+            delayedAlarmCounter = config->alarmDelaySeconds();
             bcu.comObjects->objectSetValue(GroupObject::grpObjStatusAlarmDelayed, read_obj_value(GroupObject::grpObjStatusAlarmDelayed));
         }
         else if (alarmLocal != newAlarm) //wenn Alarm nicht verzögert gesendet werden soll oder Alarm nicht mehr ansteht (nur 1x senden)
@@ -477,7 +478,7 @@ unsigned long read_obj_value(unsigned char objno)
 
             case RM_TYPE_QSEC:  // Betriebszeit verarbeiten
                 lval = answer_to_long(answer) >> 2; // Wert in Sekunden
-                if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_OPERATION_TIME_TYPE)
+                if (config->infoSendOperationTimeInHours())
                     return lval / 3600; // Stunden, 16Bit
                 else
                     return lval;        // Sekunden, 32Bit
@@ -490,7 +491,7 @@ unsigned long read_obj_value(unsigned char objno)
                 lval = ((int) answer[0]) + answer[1];
                 lval *= 25; // in lval sind zwei Temperaturen, daher halber Multiplikator
                 lval -= 2000;
-                lval += (signed char) bcu.userEeprom->getUInt8(CONF_TEMP_OFFSET) * 10;  // Temperaturabgleich
+                lval += config->temperatureOffsetInTenthDegrees() * 10;  // Temperaturabgleich
                 return (floatToDpt9(lval));
 
             case RM_TYPE_MVOLT:
@@ -768,13 +769,13 @@ extern "C" void TIMER32_0_IRQHandler()
         }
         else // Alarm zyklisch senden
         {
-            if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_ALARM_INTERVAL)
+            if (config->alarmSendStatusPeriodically())
             {
                 --alarmCounter;
                 if (!alarmCounter)
                 {
-                    alarmCounter = bcu.userEeprom->getUInt8(CONF_ALARM_INTERVAL);     // Zykl. senden Zeit holen
-                    if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_ALARM_INTERVAL_NW)
+                    alarmCounter = config->alarmIntervalSeconds();     // Zykl. senden Zeit holen
+                    if (config->alarmSendNetworkPeriodically())
                     {
                         ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjAlarmBus); // Vernetzung Alarm senden
                     }
@@ -786,12 +787,12 @@ extern "C" void TIMER32_0_IRQHandler()
     // Kein Alarm, zyklisch 0 senden
     else
     {
-        if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_TALARM_INTERVAL_S0)
+        if (config->alarmSendStatusPeriodicallyWhenNoAlarm())
         {
             --alarmCounter;
             if (!alarmCounter)
             {
-                alarmCounter = bcu.userEeprom->getUInt8(CONF_ALARM_INTERVAL); // Zykl. senden Zeit holen
+                alarmCounter = config->alarmIntervalSeconds(); // Zykl. senden Zeit holen
                 ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjStatusAlarm);
             }
         }
@@ -800,13 +801,13 @@ extern "C" void TIMER32_0_IRQHandler()
     // Testalarm: zyklisch senden
     if (testAlarmLocal)
     {
-        if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_TALARM_INTERVAL)
+        if (config->testAlarmSendStatusPeriodically())
         {
             --TalarmCounter;
             if (!TalarmCounter)
             {
-                TalarmCounter = bcu.userEeprom->getUInt8(CONF_TALARM_INTERVAL);
-                if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_TALARM_INTERVAL_NW)
+                TalarmCounter = config->testAlarmIntervalSeconds();
+                if (config->testAlarmSendNetworkPeriodically())
                 {
                     ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjTestAlarmBus);
                 }
@@ -822,9 +823,7 @@ extern "C" void TIMER32_0_IRQHandler()
         !(alarmLocal | alarmBus | testAlarmLocal | testAlarmBus))
     {
         // Info Objekt zum Senden vormerken wenn es dafür konfiguriert ist.
-        // Leider sind die Bits in der VD in der falschen Reihenfolge, daher 7-x
-        if ((infoSendObjno >= 14 && (bcu.userEeprom->getUInt8(CONF_INFO_14TO21) & pow2[7 - (infoSendObjno - 14)])) ||
-            (infoSendObjno < 14 && infoSendObjno >= 6 && (bcu.userEeprom->getUInt8(CONF_INFO_6TO13) & pow2[7 - (infoSendObjno - 6)])))
+        if (config->infoSendPeriodically(static_cast<GroupObject>(infoSendObjno)))
         {
             ARRAY_SET_BIT(objSendReqFlags, infoSendObjno);
         }
@@ -859,12 +858,12 @@ extern "C" void TIMER32_0_IRQHandler()
         }
 
         // Status Informationen zyklisch senden
-        if (bcu.userEeprom->getUInt8(CONF_SEND_ENABLE) & CONF_ENABLE_INFO_INTERVAL)
+        if (config->infoSendAnyPeriodically())
         {
             --infoCounter;
             if (!infoCounter)
             {
-                infoCounter = bcu.userEeprom->getUInt8(CONF_INFO_INTERVAL);
+                infoCounter = config->infoIntervalMinutes();
                 infoSendObjno = OBJ_HIGH_INFO_SEND;
             }
         }
@@ -924,7 +923,7 @@ void initApplication()
 
     infoSendObjno = 0;
     readCmdno = commandTableSize();
-    infoCounter = bcu.userEeprom->getUInt8(CONF_INFO_INTERVAL);
+    infoCounter = config->infoIntervalMinutes();
     alarmCounter = 1;
     TalarmCounter = 1;
     delayedAlarmCounter = 0;
