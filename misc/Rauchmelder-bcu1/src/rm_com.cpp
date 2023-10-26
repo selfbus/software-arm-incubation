@@ -48,6 +48,7 @@ void rm_serial_init()
     recvCount = -1;
     serial.setRxPin(PIN_RX);
     serial.setTxPin(PIN_TX);
+    pinMode(PIN_RX, SERIAL_RXD | INPUT | PULL_UP); // use internal pull-up resistor to avoid noise then not connected
     serial.begin(9600);
 }
 
