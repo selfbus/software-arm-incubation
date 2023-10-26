@@ -198,12 +198,19 @@ void rm_recv_bytes()
             case NUL:
                 continue;
 
-            case ETX: // Am Ende den Empfang bestätigen und die erhaltene Antwort verarbeiten
-                idx = recvCount >> 1;
-                if (rm_is_valid_message(idx))
+            case ETX:
+                if (isReceiving()) // ignore random end byte,
                 {
-                    rm_send_ack();
-                    rm_process_msg(recvBuf, idx - 1); // Verarbeitung aufrufen
+                    if ((recvCount & 1) == 0) // recvCount must be a multiple of 2
+                    {
+                        idx = recvCount >> 1;
+                        if (rm_is_valid_message(idx)) // verify checksum incl. minimum length
+                        {
+                            // Am Ende den Empfang bestätigen und die erhaltene Antwort verarbeiten
+                            rm_send_ack();
+                            rm_process_msg(recvBuf, idx - 1);
+                        }
+                    }
                 }
                 else
                 {
@@ -229,18 +236,16 @@ void rm_recv_bytes()
             continue;
         }
 
-        // Die empfangenen Zeichen sind ein Hex String.
-        // D.h. jeweils zwei Zeichen ergeben ein Byte.
-        // In Answer gleich die dekodierten Bytes schreiben.
-        //
-        // Dieser Algorithmus ist fehlerhaft falls die Anzahl der empfangenen
-        // Zeichen ungerade ist.
+        // The received characters are a hex string, i.e. two characters make one byte.
+        // The characters are written as decoded bytes.
+        // This algorithm is incorrect if the number of received characters is odd.
+        // This check is done finally before calling rm_process_msg.
 
         if (ch >= '0' && ch <= '9')
             ch -= '0';
         else if (ch >= 'A' && ch <= 'F')
             ch -= 'A' - 10;
-        else // Ungültige Zeichen ignorieren
+        else // ignore invalid characters
         {
             rm_cancel_receive();
             continue;
