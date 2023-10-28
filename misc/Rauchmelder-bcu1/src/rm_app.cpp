@@ -137,8 +137,6 @@ SmokeDetectorErrorCode *errorCode = new SmokeDetectorErrorCode(); //!< Smoke det
 unsigned char objSendReqFlags[NUM_OBJ_FLAG_BYTES];//!< Flags für Com-Objekte senden
 unsigned char answerWait;          //!< Wenn != 0, dann Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.
 #define INITIAL_ANSWER_WAIT 6      //!< Initialwert für answerWait in 0,5s
-unsigned char noAnswerCount;       //!< Zähler für keine Antwort vom Rauchmelder
-#define NO_ANSWER_MAX 5            //!< Maximale Anzahl in noAnswerCount ab der ein Rauchmelder Fehler gemeldet wird
 unsigned char alarmCounter;        //!< Countdown Zähler für zyklisches Senden eines Alarms.
 unsigned char TalarmCounter;       //!< Countdown Zähler für zyklisches Senden eines Testalarms.
 unsigned char delayedAlarmCounter; //!< Countdown Zähler für verzögertes Senden eines Alarms
@@ -222,11 +220,7 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
     uint8_t mask;
 
     answerWait = 0;
-    if (noAnswerCount)
-    {
-        noAnswerCount = 0;
-        sendErrorCodeOnChange(errorCode->setCommunicationTimeout(false));
-    }
+    sendErrorCodeOnChange(errorCode->setCommunicationTimeout(false));
 
     msgType = bytes[0];
     if (msgType == (RmCommandByte::status | 0x80))
@@ -779,20 +773,9 @@ extern "C" void TIMER32_0_IRQHandler()
     if (answerWait)
     {
         --answerWait;
-
-        // Wenn keine Antwort vom Rauchmelder kommt dann den noAnswerCount Zähler
-        // erhöhen. Wenn der Zähler NO_ANSWER_MAX erreicht dann ist es ein Rauchmelder
-        // Fehler.
         if (!answerWait)
         {
-            if (noAnswerCount < 255)
-            {
-                ++noAnswerCount;
-            }
-            if (noAnswerCount >= NO_ANSWER_MAX)
-            {
-                sendErrorCodeOnChange(errorCode->setCommunicationTimeout(true));
-            }
+            sendErrorCodeOnChange(errorCode->setCommunicationTimeout(true));
         }
     }
 
@@ -959,7 +942,6 @@ void initApplication()
     }
 
     answerWait = 0;
-    noAnswerCount = 0;
 
     alarmBus = 0;
     alarmLocal = 0;
