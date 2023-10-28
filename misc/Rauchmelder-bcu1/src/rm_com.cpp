@@ -164,6 +164,11 @@ bool rm_is_valid_message(uint8_t length)
 
 void rm_recv_bytes()
 {
+    if (!serial.enabled())
+    {
+        return;
+    }
+
     if (isReceiving() && elapsed(lastSerialRecvTime) > RECV_TIMEOUT_MS)
     {
         rm_cancel_receive();
