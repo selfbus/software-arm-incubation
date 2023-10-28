@@ -57,7 +57,7 @@ bool SmokeDetectorErrorCode::isSet(SdErrorCode errorToCheck) const
     return result;
 }
 
-uint8_t SmokeDetectorErrorCode::getErrorCode() const
+uint8_t SmokeDetectorErrorCode::code() const
 {
     return errorCode;
 }
@@ -78,12 +78,12 @@ bool SmokeDetectorErrorCode::wouldChangeErrorState(SdErrorCode errorToCompare, b
     return newErrorCode != errorCode;
 }
 
-bool SmokeDetectorErrorCode::getBatteryLow() const
+bool SmokeDetectorErrorCode::batteryLow() const
 {
     return isSet(SdErrorCode::batteryLow);
 }
 
-bool SmokeDetectorErrorCode::setBatteryLow(bool batteryLow)
+bool SmokeDetectorErrorCode::batteryLow(bool batteryLow)
 {
     if (batteryLow)
     {
@@ -95,7 +95,7 @@ bool SmokeDetectorErrorCode::setBatteryLow(bool batteryLow)
     }
 }
 
-bool SmokeDetectorErrorCode::setTemperature_1_state(bool sensorBroken)
+bool SmokeDetectorErrorCode::temperature_1_fault(bool sensorBroken)
 {
     if (sensorBroken)
     {
@@ -107,7 +107,7 @@ bool SmokeDetectorErrorCode::setTemperature_1_state(bool sensorBroken)
     }
 }
 
-bool SmokeDetectorErrorCode::setTemperature_2_state(bool sensorBroken)
+bool SmokeDetectorErrorCode::temperature_2_fault(bool sensorBroken)
 {
     if (sensorBroken)
     {
@@ -119,12 +119,12 @@ bool SmokeDetectorErrorCode::setTemperature_2_state(bool sensorBroken)
     }
 }
 
-bool SmokeDetectorErrorCode::getCoverPlateAttached() const
+bool SmokeDetectorErrorCode::coverPlateAttached() const
 {
     return (!isSet(SdErrorCode::coverplateNotAttached));
 }
 
-bool SmokeDetectorErrorCode::setCoverPlateAttached(bool coverPlateAttached)
+bool SmokeDetectorErrorCode::coverPlateAttached(bool coverPlateAttached)
 {
     if (coverPlateAttached)
     {
@@ -136,12 +136,12 @@ bool SmokeDetectorErrorCode::setCoverPlateAttached(bool coverPlateAttached)
     }
 }
 
-bool SmokeDetectorErrorCode::getSupplyVoltageDisabled() const
+bool SmokeDetectorErrorCode::supplyVoltageDisabled() const
 {
     return isSet(SdErrorCode::supplyVoltageDisabled);
 }
 
-bool SmokeDetectorErrorCode::setSupplyVoltageDisabled(bool disabled)
+bool SmokeDetectorErrorCode::supplyVoltageDisabled(bool disabled)
 {
     if (disabled)
     {
@@ -153,12 +153,12 @@ bool SmokeDetectorErrorCode::setSupplyVoltageDisabled(bool disabled)
     }
 }
 
-bool SmokeDetectorErrorCode::getCommunicationTimeout() const
+bool SmokeDetectorErrorCode::communicationTimeout() const
 {
     return isSet(SdErrorCode::communicationTimeout);
 }
 
-bool SmokeDetectorErrorCode::setCommunicationTimeout(bool timedout)
+bool SmokeDetectorErrorCode::communicationTimeout(bool timedout)
 {
     if (timedout)
     {
@@ -170,7 +170,7 @@ bool SmokeDetectorErrorCode::setCommunicationTimeout(bool timedout)
     }
 }
 
-bool SmokeDetectorErrorCode::getMalfunctionState() const
+bool SmokeDetectorErrorCode::malfunctionState() const
 {
     bool malFunction;
     malFunction = (errorCode & ~errorCodeToUint8(SdErrorCode::batteryLow)) != 0;

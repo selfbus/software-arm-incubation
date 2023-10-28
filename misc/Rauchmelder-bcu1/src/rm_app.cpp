@@ -200,8 +200,8 @@ void sendErrorCodeOnChange(bool changed)
     {
         return;
     }
-    bcu.comObjects->objectWrite(GroupObject::grpObjMalfunction, errorCode->getMalfunctionState());
-    bcu.comObjects->objectWrite(GroupObject::grpObjErrorCode, errorCode->getErrorCode());
+    bcu.comObjects->objectWrite(GroupObject::grpObjMalfunction, errorCode->malfunctionState());
+    bcu.comObjects->objectWrite(GroupObject::grpObjErrorCode, errorCode->code());
 }
 
 /**
@@ -220,7 +220,7 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
     uint8_t mask;
 
     answerWait = 0;
-    sendErrorCodeOnChange(errorCode->setCommunicationTimeout(false));
+    sendErrorCodeOnChange(errorCode->communicationTimeout(false));
 
     msgType = bytes[0];
     if (msgType == (RmCommandByte::status | 0x80))
@@ -331,10 +331,10 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
 
         // Battery low
         bool batteryLow = ((status & 0x01) == 1);
-        if (errorCode->setBatteryLow(batteryLow))
+        if (errorCode->batteryLow(batteryLow))
         {
             // battery state changed, send info on the bus
-            bcu.comObjects->objectWrite(GroupObject::grpObjBatteryLow, errorCode->getBatteryLow());
+            bcu.comObjects->objectWrite(GroupObject::grpObjBatteryLow, errorCode->batteryLow());
             sendErrorCodeOnChange(true);
         }
 
@@ -377,8 +377,8 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
             temperatureSensor_2_fault = (bytes[4] & 0x10); // sensor 2 state in 4. byte 4. bit
         }
 
-        sendErrorCodeOnChange(errorCode->setTemperature_1_state(temperatureSensor_1_fault));
-        sendErrorCodeOnChange(errorCode->setTemperature_2_state(temperatureSensor_2_fault));
+        sendErrorCodeOnChange(errorCode->temperature_1_fault(temperatureSensor_1_fault));
+        sendErrorCodeOnChange(errorCode->temperature_2_fault(temperatureSensor_2_fault));
 
         ///\todo handle smoke box fault
         ///
@@ -437,13 +437,13 @@ unsigned long read_obj_value(unsigned char objno)
                 return delayedAlarmCounter != 0;
 
             case GroupObject::grpObjBatteryLow:
-                return errorCode->getBatteryLow();
+                return errorCode->batteryLow();
 
             case GroupObject::grpObjMalfunction:
-                return errorCode->getMalfunctionState();
+                return errorCode->malfunctionState();
 
             case GroupObject::grpObjErrorCode:
-                return errorCode->getErrorCode();
+                return errorCode->code();
 
             default:
                 return -1; // Fehler: unbekanntes Com Objekt
@@ -572,7 +572,7 @@ void setSupplyVoltageAndWait(bool enable, uint32_t waitTimeMs)
         delay(waitTimeMs);
     }
 
-    sendErrorCodeOnChange(errorCode->setSupplyVoltageDisabled(!enable));
+    sendErrorCodeOnChange(errorCode->supplyVoltageDisabled(!enable));
 }
 
 /**
@@ -583,7 +583,7 @@ void checkRmAttached2BasePlate(void)
     bool rmActive = (digitalRead(RM_ACTIVITY_PIN) == RM_IS_ACTIVE);
     digitalWrite(LED_BASEPLATE_DETACHED_PIN, rmActive);
 
-    sendErrorCodeOnChange(errorCode->setCoverPlateAttached(rmActive));
+    sendErrorCodeOnChange(errorCode->coverPlateAttached(rmActive));
 
     if (digitalRead(RM_SUPPORT_VOLTAGE_PIN) == RM_SUPPORT_VOLTAGE_ON)
     {
@@ -763,7 +763,7 @@ extern "C" void TIMER32_0_IRQHandler()
         --answerWait;
         if (!answerWait)
         {
-            sendErrorCodeOnChange(errorCode->setCommunicationTimeout(true));
+            sendErrorCodeOnChange(errorCode->communicationTimeout(true));
         }
     }
 

@@ -46,20 +46,20 @@ public:
 
     void clearAllErrors();
 
-    bool getBatteryLow() const;
-    bool setBatteryLow(bool batteryLow);
-    bool setTemperature_1_state(bool faulty);
-    bool setTemperature_2_state(bool faulty);
-    bool getCoverPlateAttached() const;
-    bool setCoverPlateAttached(bool attached);
-    bool getSupplyVoltageDisabled() const;
-    bool setSupplyVoltageDisabled(bool disabled);
-    bool getCommunicationTimeout() const;
-    bool setCommunicationTimeout(bool timedout);
+    bool batteryLow() const;
+    bool batteryLow(bool battLow);
+    bool temperature_1_fault(bool faulty);
+    bool temperature_2_fault(bool faulty);
+    bool coverPlateAttached() const;
+    bool coverPlateAttached(bool attached);
+    bool supplyVoltageDisabled() const;
+    bool supplyVoltageDisabled(bool disabled);
+    bool communicationTimeout() const;
+    bool communicationTimeout(bool timedout);
 
-    bool getMalfunctionState() const;
+    bool malfunctionState() const;
 
-    uint8_t getErrorCode() const;
+    uint8_t code() const;
 
 private:
     bool isSet(SdErrorCode toCheck) const;
