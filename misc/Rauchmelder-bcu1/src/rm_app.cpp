@@ -721,6 +721,10 @@ unsigned char do_process_objs(unsigned char *flags)
  */
 void process_objs()
 {
+    if (answerWait)
+    {
+       return;
+    }
     do_process_objs(objSendReqFlags);
 }
 
@@ -731,6 +735,11 @@ void process_objs()
  */
 void process_alarm_stats()
 {
+    if (answerWait)
+    {
+       return;
+    }
+
     if (setAlarmBus && !alarmBus)
     {
         // Alarm auslösen

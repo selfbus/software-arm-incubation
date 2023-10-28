@@ -42,12 +42,6 @@ extern void process_objs();
 extern void initApplication();
 
 /**
- * Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.
- * Ist der Zähler 0 dann wird gerade auf keine Antwort gewartet.
- */
-extern unsigned char answerWait;
-
-/**
  * Anhand der Kommunikationsobjektnummer die passenden Daten herausgeben
  */
 unsigned long read_obj_value(unsigned char objno);

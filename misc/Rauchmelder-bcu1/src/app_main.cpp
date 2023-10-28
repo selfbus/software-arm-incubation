@@ -39,12 +39,8 @@ void loop()
     int objno;
 
     rm_recv_bytes();
-
-    if (!answerWait)
-        process_alarm_stats();
-
-    if (!answerWait)
-        process_objs();
+    process_alarm_stats();
+    process_objs();
 
     // Empfangenes Telegramm bearbeiten, aber nur wenn wir gerade nichts
     // vom Rauchmelder empfangen.
