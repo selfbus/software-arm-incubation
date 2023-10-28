@@ -18,7 +18,7 @@
 #include "rm_com.h"
 #include "rm_app.h"
 
-APP_VERSION("S_RM_H6 ", "3", "00");
+APP_VERSION("S_RM_H6 ", "3", "00")
 
 /**
  * Application setup
