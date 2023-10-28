@@ -554,6 +554,33 @@ void objectUpdated(int objno)
 }
 
 /**
+ * Enable/disable the 12V supply voltage
+ *
+ * @param enable     Set true to enable supply voltage, false to disable it
+ * @param waitTimeMs Time in milliseconds to wait after supply voltage was enabled/disabled
+ */
+void setSupplyVoltageAndWait(bool enable, uint32_t waitTimeMs)
+{
+    pinMode(RM_SUPPORT_VOLTAGE_PIN, OUTPUT);
+    pinMode(LED_SUPPLY_VOLTAGE_DISABLED_PIN, OUTPUT);
+    if (enable)
+    {
+        digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_ON);
+    }
+    else
+    {
+        digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_OFF);
+    }
+
+    if (waitTimeMs != 0)
+    {
+        delay(waitTimeMs);
+    }
+
+    digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED_PIN, enable);
+}
+
+/**
  * Checks if the smoke detector is on the base plate and switches the supply voltage on
  */
 void checkRmAttached2BasePlate(void)
@@ -569,11 +596,9 @@ void checkRmAttached2BasePlate(void)
     // der Rauchmelder wurde auf die Bodenplatte gesteckt => Spannungsversorgung aktivieren
     if ((rmActiv == RM_IS_ACTIVE) || (millis() >= SUPPLY_VOLTAGE_TIMEOUT_MS))
     {
-        digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_ON); // Spannungsversorgung aktivieren
-        delay(SUPPLY_VOLTAGE_ON_DELAY_MS);
+        setSupplyVoltageAndWait(true, SUPPLY_VOLTAGE_ON_DELAY_MS);
         pinMode(RM_COMM_ENABLE_PIN, OUTPUT);
         digitalWrite(RM_COMM_ENABLE_PIN, RM_COMM_ENABLE); // Kommunikation mit dem RM aktivieren
-        digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED_PIN, true);
     }
 }
 
@@ -947,11 +972,7 @@ void initApplication()
 
     pinMode(LED_BASEPLATE_DETACHED_PIN, OUTPUT);
     digitalWrite(LED_BASEPLATE_DETACHED_PIN, false);
-    pinMode(LED_SUPPLY_VOLTAGE_DISABLED_PIN, OUTPUT);
-    digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED_PIN, false);
-
     pinMode(RM_ACTIVITY_PIN, INPUT | PULL_DOWN); // smoke detector base plate state, pulldown configured, Pin is connected to 3.3V VCC of the RM
-    pinMode(RM_SUPPORT_VOLTAGE_PIN, OUTPUT);
-    digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_OFF); // zuerst die Spannungsversorgung ausschalten
-    delay(SUPPLY_VOLTAGE_OFF_DELAY_MS); ///\todo move to delayed app start, make sure it lasts at least 500ms to discharge the 12V capacitor
+
+    setSupplyVoltageAndWait(false, SUPPLY_VOLTAGE_OFF_DELAY_MS);  ///\todo move waiting to delayed app start, make sure it lasts at least 500ms to discharge the 12V capacitor
 }
