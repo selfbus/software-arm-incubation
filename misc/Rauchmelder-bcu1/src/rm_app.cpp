@@ -677,21 +677,24 @@ void process_obj(unsigned char objno)
 }
 
 /**
- * Com-Objekte bearbeiten, Worker Funktion.
+ * Com-Objekte bearbeiten.
  *
  * Com-Objekte, die Daten vom Rauchmelder benötigen, werden nur bearbeitet wenn
  * nicht gerade auf Antwort vom Rauchmelder gewartet wird.
- *
- * @return 1 wenn ein Com-Objekt verarbeitet wurde, sonst 0.
  */
-unsigned char do_process_objs(unsigned char *flags)
+void process_objs()
 {
+    if (answerWait)
+    {
+       return;
+    }
+
     unsigned char byteno, bitno, objno, flagsByte;
     Command cmd;
 
     for (byteno = 0; byteno < NUM_OBJ_FLAG_BYTES; ++byteno)
     {
-        flagsByte = flags[byteno];
+        flagsByte = objSendReqFlags[byteno];
         if (!flagsByte)
             continue;
 
@@ -701,28 +704,16 @@ unsigned char do_process_objs(unsigned char *flags)
             {
                 objno = (byteno << 3) + bitno;
                 cmd = objMappingTab[objno].cmd;
-                if (!answerWait || cmd == Command::none || cmd == Command::internal)
+                if (cmd == Command::none || cmd == Command::internal)
                 {
                     process_obj(objno);
-                    return 1;
+                    return;
                 }
             }
         }
     }
 
-    return 0;
-}
-
-/**
- * Com-Objekte bearbeiten.
- */
-void process_objs()
-{
-    if (answerWait)
-    {
-       return;
-    }
-    do_process_objs(objSendReqFlags);
+    return;
 }
 
 /**
