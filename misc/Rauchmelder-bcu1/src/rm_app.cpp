@@ -207,6 +207,11 @@ void sendErrorCodeOnChange(bool changed)
 }
 
 /**
+ * Anhand der Kommunikationsobjektnummer die passenden Daten herausgeben
+ */
+unsigned long read_obj_value(unsigned char objno);
+
+/**
  * For description see declaration in file @ref rm_com.h
  */
 void rm_process_msg(uint8_t *bytes, int8_t len)

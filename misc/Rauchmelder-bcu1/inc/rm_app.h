@@ -42,11 +42,6 @@ extern void process_objs();
 extern void initApplication();
 
 /**
- * Anhand der Kommunikationsobjektnummer die passenden Daten herausgeben
- */
-unsigned long read_obj_value(unsigned char objno);
-
-/**
  * Empfangene Kommunikationsobjekte verarbeiten
  */
 void objectUpdated(int objno);
