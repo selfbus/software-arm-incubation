@@ -600,8 +600,7 @@ void checkRmAttached2BasePlate(void)
     if (rmActive)
     {
         setSupplyVoltageAndWait(true, SUPPLY_VOLTAGE_ON_DELAY_MS);
-        pinMode(RM_COMM_ENABLE_PIN, OUTPUT);
-        digitalWrite(RM_COMM_ENABLE_PIN, RM_COMM_ENABLE); // Kommunikation mit dem RM aktivieren
+        rm_serial_init(); //serielle Schnittstelle für die Kommunikation mit dem Rauchmelder initialisieren
     }
 }
 
@@ -932,8 +931,6 @@ void setupPeriodicTimer(uint32_t milliseconds)
  */
 void initApplication()
 {
-    rm_serial_init(); //serielle Schnittstelle für die Kommunikation mit dem Rauchmelder initialisieren
-
     // Werte initialisieren
     for (uint8_t i = 0; i < NUM_OBJ_FLAG_BYTES; ++i)
     {

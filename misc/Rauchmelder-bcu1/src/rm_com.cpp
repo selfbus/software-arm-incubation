@@ -46,6 +46,9 @@ unsigned const char hexDigits[] = "0123456789ABCDEF";
 void rm_serial_init()
 {
     recvCount = -1;
+    pinMode(RM_COMM_ENABLE_PIN, OUTPUT);
+    digitalWrite(RM_COMM_ENABLE_PIN, RM_COMM_ENABLE); // Enable communication on the smoke detector
+
     serial.setRxPin(PIN_RX);
     serial.setTxPin(PIN_TX);
     pinMode(PIN_RX, SERIAL_RXD | INPUT | PULL_UP); // use internal pull-up resistor to avoid noise then not connected
