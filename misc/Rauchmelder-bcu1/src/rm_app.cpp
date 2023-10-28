@@ -149,8 +149,6 @@ unsigned char eventTime = DEFAULT_EVENTTIME; //!< Halbsekunden Zähler 0..119
 const unsigned char pow2[8] = { 1, 2, 4, 8, 16, 32, 64, 128 };         //!< Tabelle für 1<<x, d.h. pow2[3] == 1<<3
 
 #define ARRAY_SET_BIT(arr, bitno) arr[bitno>>3] |= pow2[bitno & 7]     //!< Im Byte Array arr das bitno-te Bit setzen
-#define ARRAY_CLEAR_BIT(arr, bitno) arr[bitno>>3] &= ~pow2[bitno & 7]  //!< Im Byte Array arr das bitno-te Bit löschen
-#define ARRAY_IS_BIT_SET(arr, bitno) (arr[bitno>>3] & pow2[bitno & 7]) //!< Testen ob im Byte Array arr das bitno-te Bit gesetzt ist
 
 /**
  * Den Alarm Status auf den Bus senden falls noch nicht gesendet.
