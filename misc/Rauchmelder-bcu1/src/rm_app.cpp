@@ -578,21 +578,27 @@ void checkRmAttached2BasePlate(void)
 }
 
 /**
- * Befehl an den Rauchmelder versenden
- * Der Empfang und die Verarbeitung der Antwort des Rauchmelders erfolgt in process_msg().
+ * Send command @ref cmd to smoke detector.\n
+ * Receiving and processing the response from the smoke detector is done in @ref rm_process_msg().
  *
- * @param cmd - Index des zu sendenden Befehls aus der CmdTab
+ * @param cmd - Index of the command to be send from the @ref CmdTab
+ * @return True if command was sent, otherwise false.
  */
-void send_Cmd(Command cmd)
+bool send_Cmd(Command cmd)
 {
     if (isReceiving())
     {
-        return;
+        return false;
     }
 
     checkRmAttached2BasePlate();
 
-    ///\todo set remaining objValues to invalid values before sending serial command
+    if (!rm_send_cmd(CmdTab[(uint8_t)cmd].rmCommand))
+    {
+        return false;
+    }
+
+    ///\todo setting objValues to invalid, should be done after a serial timeout occurred
     switch (cmd)
     {
         case Command::rmSerialNumber:
@@ -618,8 +624,8 @@ void send_Cmd(Command cmd)
             break;
     }
 
-    rm_send_cmd(CmdTab[(uint8_t)cmd].rmCommand);
     answerWait = INITIAL_ANSWER_WAIT;
+    return true;
 }
 
 /**
@@ -840,7 +846,10 @@ extern "C" void TIMER32_0_IRQHandler()
         if (!answerWait)
         {
             readCmdno--;
-            send_Cmd((Command)readCmdno);
+            if (!send_Cmd((Command)readCmdno))
+            {
+                readCmdno++;
+            }
         }
     }
 
