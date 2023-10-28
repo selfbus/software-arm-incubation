@@ -581,7 +581,7 @@ void setSupplyVoltageAndWait(bool enable, uint32_t waitTimeMs)
         delay(waitTimeMs);
     }
 
-    errorCode->setSupplyVoltageDisabled(!enable);
+    sendErrorCodeOnChange(errorCode->setSupplyVoltageDisabled(!enable));
 }
 
 /**
