@@ -738,7 +738,7 @@ void process_objs()
  */
 void process_alarm_stats()
 {
-    if (answerWait)
+    if (answerWait) ///\todo while waiting a answer we don't process alarms? rly?
     {
        return;
     }
