@@ -70,7 +70,7 @@ enum GroupObject : uint8_t
     grpObjSmokeboxPollution =      9, //!< Rauchkammer Verschmutzung
     grpObjBatteryVoltage =        10, //!< Batterie Spannung
     grpObjTemperature =           11, //!< Temperatur
-    grpObjErrorCode =             12, //!< Rauchmelder Fehlercode, siehe ERRCODE_* Konstanten
+    grpObjErrorCode =             12, //!< Rauchmelder Fehlercode, siehe @ref SdErrorCode
     grpObjBatteryLow =            13, //!< Batterie leer
     grpObjMalfunction =           14, //!< Rauchmelder defekt
     grpObjCountSmokeAlarm =       15, //!< Anzahl Rauchalarme
@@ -94,15 +94,6 @@ enum GroupObject : uint8_t
 
 //!< Maximale Anzahl von ComObjekten pro Rauchmelder-Befehl
 #define MAX_OBJ_CMD  4
-
-//-----------------------------------------------------------------------------
-// Rauchmelder Fehlercodes
-//-----------------------------------------------------------------------------
-#define ERRCODE_BATLOW    0x01 //!< Batterie schwach/leer
-#define ERRCODE_COMM      0x02 //!< Rauchmelder antwortet nicht
-#define ERRCODE_TEMP1     0x04 //!< Temperatursensor 1 defekt
-#define ERRCODE_TEMP2     0x08 //!< Temperatursensor 2 defekt
-#define ERRCODE_SMOKEBOX  0x10 //!< Rauchkammer verschmutzt / defekt
 
 //-----------------------------------------------------------------------------
 // Datentypen der Rauchmelder Antworten

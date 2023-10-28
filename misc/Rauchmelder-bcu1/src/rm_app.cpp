@@ -17,6 +17,7 @@
  *  published by the Free Software Foundation.
  */
 
+#include <smoke_detector_errorcode.h>
 #include <cstring>
 #include <stdint.h>
 
@@ -132,7 +133,7 @@ bool testAlarmBus;                 //!< Flag für remote Testalarm über EIB
 bool setAlarmBus;                  //!< Flag für den gewünschten Alarm Status wie wir ihn über den EIB empfangen haben
 bool setTestAlarmBus;              //!< Flag für den gewünschten Testalarm Status wie wir ihn über den EIB empfangen haben
 bool ignoreBusAlarm;               //!< Flag für Bus Alarm & -Testalarm ignorieren
-unsigned char errCode;             //!< Rauchmelder Fehlercodes
+SmokeDetectorErrorCode *errorCode = new SmokeDetectorErrorCode(); //!< Smoke detector error code handling
 unsigned char objSendReqFlags[NUM_OBJ_FLAG_BYTES];//!< Flags für Com-Objekte senden
 unsigned char answerWait;          //!< Wenn != 0, dann Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.
 #define INITIAL_ANSWER_WAIT 6      //!< Initialwert für answerWait in 0,5s
@@ -193,23 +194,17 @@ uint8_t commandTableSize()
 }
 
 /**
- * Fehlercode setzen
+ * Send malfunction and errorcode groupobjects to the bus
  *
- * @param newErrCode - neuer Fehlercode
+ * @param changed Set true to send the changed errorcode to the bus. Set false to do nothing
  */
-void set_errcode(unsigned char newErrCode)
+void sendErrorCodeOnChange(bool changed)
 {
-    if (newErrCode == errCode)
+    if (!changed)
+    {
         return;
-
-    // Wenn sich der Status der Batterie geändert hat dann GroupObject::batteryLow senden,
-    // sonst den allgemeinen Fehler Indikator GroupObject::grpObjMalfunction.
-    if ((errCode ^ newErrCode) & ERRCODE_BATLOW)
-        ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjBatteryLow);
-    else
-        ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjMalfunction);
-
-    errCode = newErrCode;
+    }
+    ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjMalfunction);
     ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjErrorCode);
 }
 
@@ -227,7 +222,7 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
     if (noAnswerCount)
     {
         noAnswerCount = 0;
-        set_errcode(errCode & ~ERRCODE_COMM);
+        sendErrorCodeOnChange(errorCode->clearError(SdErrorCode::communicationTimeout));
     }
 
     msgType = bytes[0];
@@ -337,10 +332,11 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
         // Bus Testalarm
         testAlarmBus = status & 0x80;
 
-        // Batterie schwach/leer
-        if ((status ^ errCode) & ERRCODE_BATLOW)
+        // Battery low
+        bool batteryLow = ((status & 0x01) == 1);
+        if (errorCode->setBatteryLow(batteryLow))
         {
-            set_errcode((errCode & ~ERRCODE_BATLOW) | (status & ERRCODE_BATLOW));
+            ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjBatteryLow); // battery state changed, send info on the bus
             // Werte für die sblib zur Verfügung stellen
             // notwendig für den Abruf von Informationen über KNX aus den Status Objekten (GroupValueRead -> GroupValueResponse)
             bcu.comObjects->objectSetValue(GroupObject::grpObjErrorCode, read_obj_value(GroupObject::grpObjErrorCode));
@@ -377,21 +373,21 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
             }
         }
 
-        if (subType & 0x02)  // Defekt am Rauchmelder
+        bool temperatureSensor_1_fault = false;
+        bool temperatureSensor_2_fault = false;
+
+        if (subType & 0x02) // general smoke detector fault is indicated in 1. byte bit 1
         {
-            unsigned char status = bytes[4];
-            unsigned char newErrCode = errCode & (ERRCODE_BATLOW | ERRCODE_COMM);
-
-            if (status & 0x04)
-                newErrCode |= ERRCODE_TEMP1;
-
-            if (status & 0x10)
-                newErrCode |= ERRCODE_TEMP2;
-
-            // TODO Rauchkammer Defekt behandeln
-
-            set_errcode(newErrCode);
+            // details are in 4. byte
+            temperatureSensor_1_fault = (bytes[4] & 0x04); // sensor 1 state in 4. byte 2. bit
+            temperatureSensor_2_fault = (bytes[4] & 0x10); // sensor 2 state in 4. byte 4. bit
         }
+
+        sendErrorCodeOnChange(errorCode->setTemperature_1_state(temperatureSensor_1_fault));
+        sendErrorCodeOnChange(errorCode->setTemperature_2_state(temperatureSensor_2_fault));
+
+        ///\todo handle smoke box fault
+        ///
     }
 }
 
@@ -447,13 +443,13 @@ unsigned long read_obj_value(unsigned char objno)
                 return delayedAlarmCounter != 0;
 
             case GroupObject::grpObjBatteryLow:
-                return (errCode & ERRCODE_BATLOW) != 0;
+                return errorCode->getBatteryLow();
 
             case GroupObject::grpObjMalfunction:
-                return (errCode & ~ERRCODE_BATLOW) != 0;
+                return errorCode->getMalfunctionState();
 
             case GroupObject::grpObjErrorCode:
-                return errCode;
+                return errorCode->getErrorCode();
 
             default:
                 return -1; // Fehler: unbekanntes Com Objekt
@@ -582,6 +578,7 @@ void setSupplyVoltageAndWait(bool enable, uint32_t waitTimeMs)
         delay(waitTimeMs);
     }
 
+    errorCode->setSupplyVoltageDisabled(!enable);
 }
 
 /**
@@ -591,6 +588,8 @@ void checkRmAttached2BasePlate(void)
 {
     bool rmActive = (digitalRead(RM_ACTIVITY_PIN) == RM_IS_ACTIVE);
     digitalWrite(LED_BASEPLATE_DETACHED_PIN, rmActive);
+
+    sendErrorCodeOnChange(errorCode->setCoverPlateAttached(rmActive));
 
     if (digitalRead(RM_SUPPORT_VOLTAGE_PIN) == RM_SUPPORT_VOLTAGE_ON)
     {
@@ -780,7 +779,7 @@ extern "C" void TIMER32_0_IRQHandler()
             }
             if (noAnswerCount >= NO_ANSWER_MAX)
             {
-                set_errcode(errCode | ERRCODE_COMM);
+                sendErrorCodeOnChange(errorCode->setError(SdErrorCode::communicationTimeout));
             }
         }
     }
@@ -967,7 +966,7 @@ void initApplication()
     TalarmCounter = 1;
     delayedAlarmCounter = 0;
 
-    errCode = 0;
+    errorCode->clearAllErrors();
 
     // set all comObjects to default
     for (uint8_t i = 0; i < NUM_OBJS; i++)
