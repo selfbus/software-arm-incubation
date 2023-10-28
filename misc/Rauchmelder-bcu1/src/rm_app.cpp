@@ -613,12 +613,12 @@ void checkRmAttached2BasePlate(void)
  */
 bool send_Cmd(Command cmd)
 {
+    checkRmAttached2BasePlate(); ///\todo If think this should be moved to TIMER32_0_IRQHandler
+
     if (isReceiving())
     {
         return false;
     }
-
-    checkRmAttached2BasePlate();
 
     if (!rm_send_cmd(CmdTab[(uint8_t)cmd].rmCommand))
     {
