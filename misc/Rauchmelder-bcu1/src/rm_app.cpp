@@ -585,16 +585,19 @@ void setSupplyVoltageAndWait(bool enable, uint32_t waitTimeMs)
  */
 void checkRmAttached2BasePlate(void)
 {
-    bool rmActiv = digitalRead(RM_ACTIVITY_PIN);
-    digitalWrite(LED_BASEPLATE_DETACHED_PIN, rmActiv);
+    bool rmActive = (digitalRead(RM_ACTIVITY_PIN) == RM_IS_ACTIVE);
+    digitalWrite(LED_BASEPLATE_DETACHED_PIN, rmActive);
 
     if (digitalRead(RM_SUPPORT_VOLTAGE_PIN) == RM_SUPPORT_VOLTAGE_ON)
     {
         return; // supply voltage is already on
     }
 
+    ///\todo check danger of this timeout. Can it show up as a working smoke detector on the bus?
+    rmActive |= (millis() >= SUPPLY_VOLTAGE_TIMEOUT_MS);
+
     // der Rauchmelder wurde auf die Bodenplatte gesteckt => Spannungsversorgung aktivieren
-    if ((rmActiv == RM_IS_ACTIVE) || (millis() >= SUPPLY_VOLTAGE_TIMEOUT_MS))
+    if (rmActive)
     {
         setSupplyVoltageAndWait(true, SUPPLY_VOLTAGE_ON_DELAY_MS);
         pinMode(RM_COMM_ENABLE_PIN, OUTPUT);
