@@ -220,7 +220,7 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
     if (noAnswerCount)
     {
         noAnswerCount = 0;
-        sendErrorCodeOnChange(errorCode->clearError(SdErrorCode::communicationTimeout));
+        sendErrorCodeOnChange(errorCode->setCommunicationTimeout(false));
     }
 
     msgType = bytes[0];
@@ -786,7 +786,7 @@ extern "C" void TIMER32_0_IRQHandler()
             }
             if (noAnswerCount >= NO_ANSWER_MAX)
             {
-                sendErrorCodeOnChange(errorCode->setError(SdErrorCode::communicationTimeout));
+                sendErrorCodeOnChange(errorCode->setCommunicationTimeout(true));
             }
         }
     }

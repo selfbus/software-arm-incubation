@@ -153,6 +153,23 @@ bool SmokeDetectorErrorCode::setSupplyVoltageDisabled(bool disabled)
     }
 }
 
+bool SmokeDetectorErrorCode::getCommunicationTimeout() const
+{
+    return isSet(SdErrorCode::communicationTimeout);
+}
+
+bool SmokeDetectorErrorCode::setCommunicationTimeout(bool timedout)
+{
+    if (timedout)
+    {
+        return setError(SdErrorCode::communicationTimeout);
+    }
+    else
+    {
+        return clearError(SdErrorCode::communicationTimeout);
+    }
+}
+
 bool SmokeDetectorErrorCode::getMalfunctionState() const
 {
     bool malFunction;

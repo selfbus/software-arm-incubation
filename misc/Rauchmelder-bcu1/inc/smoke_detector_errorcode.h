@@ -45,9 +45,6 @@ public:
     ~SmokeDetectorErrorCode() = delete;
 
     void clearAllErrors();
-    bool setError(SdErrorCode toSet);
-    bool clearError(SdErrorCode toClear);
-    bool isSet(SdErrorCode toCheck) const;
 
     bool getBatteryLow() const;
     bool setBatteryLow(bool batteryLow);
@@ -55,15 +52,19 @@ public:
     bool setTemperature_2_state(bool faulty);
     bool getCoverPlateAttached() const;
     bool setCoverPlateAttached(bool attached);
-
     bool getSupplyVoltageDisabled() const;
     bool setSupplyVoltageDisabled(bool disabled);
+    bool getCommunicationTimeout() const;
+    bool setCommunicationTimeout(bool timedout);
 
     bool getMalfunctionState() const;
 
     uint8_t getErrorCode() const;
 
 private:
+    bool isSet(SdErrorCode toCheck) const;
+    bool clearError(SdErrorCode toClear);
+    bool setError(SdErrorCode toSet);
     bool wouldChangeErrorState(SdErrorCode errorToCompare, bool set) const;
     static uint8_t errorCodeToUint8(SdErrorCode code);
 
