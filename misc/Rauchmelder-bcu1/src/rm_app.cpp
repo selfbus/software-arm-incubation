@@ -200,8 +200,8 @@ void sendErrorCodeOnChange(bool changed)
     {
         return;
     }
-    ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjMalfunction);
-    ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjErrorCode);
+    bcu.comObjects->objectWrite(GroupObject::grpObjMalfunction, errorCode->getMalfunctionState());
+    bcu.comObjects->objectWrite(GroupObject::grpObjErrorCode, errorCode->getErrorCode());
 }
 
 /**
@@ -333,12 +333,9 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
         bool batteryLow = ((status & 0x01) == 1);
         if (errorCode->setBatteryLow(batteryLow))
         {
-            ARRAY_SET_BIT(objSendReqFlags, GroupObject::grpObjBatteryLow); // battery state changed, send info on the bus
-            // Werte für die sblib zur Verfügung stellen
-            // notwendig für den Abruf von Informationen über KNX aus den Status Objekten (GroupValueRead -> GroupValueResponse)
-            bcu.comObjects->objectSetValue(GroupObject::grpObjErrorCode, read_obj_value(GroupObject::grpObjErrorCode));
-            bcu.comObjects->objectSetValue(GroupObject::grpObjBatteryLow, read_obj_value(GroupObject::grpObjBatteryLow));
-            bcu.comObjects->objectSetValue(GroupObject::grpObjMalfunction, read_obj_value(GroupObject::grpObjMalfunction));
+            // battery state changed, send info on the bus
+            bcu.comObjects->objectWrite(GroupObject::grpObjBatteryLow, errorCode->getBatteryLow());
+            sendErrorCodeOnChange(true);
         }
 
         ///\todo see below
