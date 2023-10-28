@@ -214,8 +214,7 @@ void set_errcode(unsigned char newErrCode)
 }
 
 /**
- * Die empfangene Nachricht vom Rauchmelder verarbeiten.
- * Wird von _receive() aufgerufen.
+ * For description see declaration in file @ref rm_com.h
  */
 void rm_process_msg(uint8_t *bytes, int8_t len)
 {
@@ -349,6 +348,7 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
             bcu.comObjects->objectSetValue(GroupObject::grpObjMalfunction, read_obj_value(GroupObject::grpObjMalfunction));
         }
 
+        ///\todo see below
         /*
          * In der folgenden Passage ist für mich die Versendung der Objekte nicht nachvollziehbar:
          * Es wird kontrolliert, ob die Taste am Rauchmelder gedrückt wurde, anschließend wir überprüft, ob ein Alarm oder TestAlarm vom Bus vorliegt
