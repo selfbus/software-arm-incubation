@@ -102,12 +102,13 @@ void rm_send_hexstr(unsigned char *hexstr)
     rm_send_byte(ETX);
 }
 
-
-/**
- * Einen 1 Byte Befehl an den Rauchmelder senden.
- */
-void rm_send_cmd(RmCommandByte cmd)
+bool rm_send_cmd(RmCommandByte cmd)
 {
+    if (!serial.enabled())
+    {
+        return false;
+    }
+
     unsigned char b, bytes[3];
 
     b = cmd >> 4;
@@ -118,6 +119,7 @@ void rm_send_cmd(RmCommandByte cmd)
 
     bytes[2] = 0;
     rm_send_hexstr(bytes);
+    return true;
 }
 
 /**

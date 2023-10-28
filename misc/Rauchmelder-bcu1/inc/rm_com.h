@@ -69,11 +69,13 @@ void rm_process_msg(uint8_t *bytes, int8_t len);
 void rm_serial_init();
 
 /**
- * Einen 1 Byte Befehl an den Rauchmelder senden.
+ * Send command @ref cmd to the smoke detector.\n
+ * Receiving and processing the response from the smoke detector is done in @ref rm_process_msg(), which must be defined by the application.
  *
- * @param cmd - das Befehls-Byte.
+ * @param cmd - @ref RmCommandByte to send.
+ * @return True if command was sent, otherwise false.
  */
-void rm_send_cmd(RmCommandByte cmd);
+bool rm_send_cmd(RmCommandByte cmd);
 
 /**
  * Check if we are currently receiving bytes from the smoke detector
