@@ -603,6 +603,7 @@ void checkRmAttached2BasePlate(void)
     // der Rauchmelder wurde auf die Bodenplatte gesteckt => Spannungsversorgung aktivieren
     if (rmActive)
     {
+        delay(RM_POWER_UP_TIME_MS);
         setSupplyVoltageAndWait(true, SUPPLY_VOLTAGE_ON_DELAY_MS);
         rm_serial_init(); //serielle Schnittstelle für die Kommunikation mit dem Rauchmelder initialisieren
     }

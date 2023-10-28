@@ -40,6 +40,7 @@
 #define SUPPLY_VOLTAGE_ON_DELAY_MS  5000        //!< Time in milliseconds the 12V supply needs to raise 
 #define SUPPLY_VOLTAGE_OFF_DELAY_MS  500        //!< Time in milliseconds the 12V supply needs to drain the capacitor
 #define SUPPLY_VOLTAGE_TIMEOUT_MS 120000        //!< Maximum waiting time in milliseconds to enable 12V supply
+#define RM_POWER_UP_TIME_MS         1000        //!< Time in milliseconds we give the smoke detector to startup and measure the battery voltage
 
 // counters are in half seconds (1=0.5s, 120=60.0s)
 #ifdef DEBUG
