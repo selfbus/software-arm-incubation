@@ -561,8 +561,13 @@ void objectUpdated(int objno)
  */
 void setSupplyVoltageAndWait(bool enable, uint32_t waitTimeMs)
 {
-    pinMode(RM_SUPPORT_VOLTAGE_PIN, OUTPUT);
     pinMode(LED_SUPPLY_VOLTAGE_DISABLED_PIN, OUTPUT);
+    digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED_PIN, enable); // disable/enable led first to save/drain some juice
+
+    // Running pinMode the first time, sets it by default to low
+    // which will enable the support voltage and charge the capacitor.
+    // So please put nothing in between pinMode and digitalWrite.
+    pinMode(RM_SUPPORT_VOLTAGE_PIN, OUTPUT);
     if (enable)
     {
         digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_ON);
@@ -577,7 +582,6 @@ void setSupplyVoltageAndWait(bool enable, uint32_t waitTimeMs)
         delay(waitTimeMs);
     }
 
-    digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED_PIN, enable);
 }
 
 /**
