@@ -86,9 +86,6 @@ enum GroupObject : uint8_t
 
 #define NUM_OBJS               22 //!< Anzahl der Com-Objekte
 
-//!< Anzahl der Bytes die benötigt werden um die Com-Objekte als Bits abzubilden
-#define NUM_OBJ_FLAG_BYTES ((NUM_OBJS + 7) >> 3)
-
 //!< Höchstes Com-Objekt das bei Info-Senden gesendet wird.
 #define OBJ_HIGH_INFO_SEND      21
 
