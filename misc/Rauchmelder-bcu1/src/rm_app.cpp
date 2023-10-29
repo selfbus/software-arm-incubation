@@ -276,11 +276,9 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
             return;
         }
 
-        // Copy values over atomically.
-        timer32_0.noInterrupts();
+        // Copy values over into objValues for caching.
         CmdTab[cmd].objValues = 0;
         memcpy(&CmdTab[cmd].objValues, &bytes[1], len - 1);
-        timer32_0.interrupts();
 
         // Informationen aus den empfangenen Daten vom Rauchmelder der sblib zur Verfügung stellen
         // Dazu alle Com-Objekte suchen auf die die empfangenen Daten passen (mapping durch CmdTab)
