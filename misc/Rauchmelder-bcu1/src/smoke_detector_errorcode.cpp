@@ -21,34 +21,13 @@
 #include <smoke_detector_errorcode.h>
 
 SmokeDetectorErrorCode::SmokeDetectorErrorCode()
-    : errorCode(static_cast<uint8_t>(SdErrorCode::noError))
+    : errorCode(errorCodeToUint8(SdErrorCode::noError))
 {
-
 }
 
 void SmokeDetectorErrorCode::clearAllErrors()
 {
     errorCode = errorCodeToUint8(SdErrorCode::noError);
-}
-
-bool SmokeDetectorErrorCode::setError(SdErrorCode errorToSet)
-{
-    if (!wouldChangeErrorState(errorToSet, true))
-    {
-        return false;
-    }
-    errorCode = errorCode | errorCodeToUint8(errorToSet);
-    return true;
-}
-
-bool SmokeDetectorErrorCode::clearError(SdErrorCode errorToClear)
-{
-    if (!wouldChangeErrorState(errorToClear, false))
-    {
-        return false;
-    }
-    errorCode = errorCode & static_cast<uint8_t>(~errorCodeToUint8(errorToClear));
-    return true;
 }
 
 bool SmokeDetectorErrorCode::isSet(SdErrorCode errorToCheck) const
@@ -62,20 +41,20 @@ uint8_t SmokeDetectorErrorCode::code() const
     return errorCode;
 }
 
-bool SmokeDetectorErrorCode::wouldChangeErrorState(SdErrorCode errorToCompare, bool set) const
+bool SmokeDetectorErrorCode::setError(SdErrorCode error, bool set)
 {
-    uint8_t newErrorCode = errorCode;
-    uint8_t compare = errorCodeToUint8(errorToCompare);
+    uint8_t oldErrorCode = errorCode;
 
     if (set)
     {
-        newErrorCode |= compare;
+        errorCode |= errorCodeToUint8(error);
     }
     else
     {
-        newErrorCode &= static_cast<uint8_t>(~compare);
+        errorCode &= ~errorCodeToUint8(error);
     }
-    return newErrorCode != errorCode;
+
+    return oldErrorCode != errorCode;
 }
 
 bool SmokeDetectorErrorCode::batteryLow() const
@@ -85,38 +64,17 @@ bool SmokeDetectorErrorCode::batteryLow() const
 
 bool SmokeDetectorErrorCode::batteryLow(bool batteryLow)
 {
-    if (batteryLow)
-    {
-        return setError(SdErrorCode::batteryLow);
-    }
-    else
-    {
-        return clearError(SdErrorCode::batteryLow);
-    }
+    return setError(SdErrorCode::batteryLow, batteryLow);
 }
 
-bool SmokeDetectorErrorCode::temperature_1_fault(bool sensorBroken)
+bool SmokeDetectorErrorCode::temperature_1_fault(bool faulty)
 {
-    if (sensorBroken)
-    {
-        return setError(SdErrorCode::temperatureSensor_1_fault);
-    }
-    else
-    {
-        return clearError(SdErrorCode::temperatureSensor_1_fault);
-    }
+    return setError(SdErrorCode::temperatureSensor_1_fault, faulty);
 }
 
-bool SmokeDetectorErrorCode::temperature_2_fault(bool sensorBroken)
+bool SmokeDetectorErrorCode::temperature_2_fault(bool faulty)
 {
-    if (sensorBroken)
-    {
-        return setError(SdErrorCode::temperatureSensor_2_fault);
-    }
-    else
-    {
-        return clearError(SdErrorCode::temperatureSensor_2_fault);
-    }
+    return setError(SdErrorCode::temperatureSensor_2_fault, faulty);
 }
 
 bool SmokeDetectorErrorCode::coverPlateAttached() const
@@ -126,14 +84,7 @@ bool SmokeDetectorErrorCode::coverPlateAttached() const
 
 bool SmokeDetectorErrorCode::coverPlateAttached(bool coverPlateAttached)
 {
-    if (coverPlateAttached)
-    {
-        return clearError(SdErrorCode::coverplateNotAttached);
-    }
-    else
-    {
-        return setError(SdErrorCode::coverplateNotAttached);
-    }
+    return setError(SdErrorCode::coverplateNotAttached, !coverPlateAttached);
 }
 
 bool SmokeDetectorErrorCode::supplyVoltageDisabled() const
@@ -143,14 +94,7 @@ bool SmokeDetectorErrorCode::supplyVoltageDisabled() const
 
 bool SmokeDetectorErrorCode::supplyVoltageDisabled(bool disabled)
 {
-    if (disabled)
-    {
-        return setError(SdErrorCode::supplyVoltageDisabled);
-    }
-    else
-    {
-        return clearError(SdErrorCode::supplyVoltageDisabled);
-    }
+    return setError(SdErrorCode::supplyVoltageDisabled, disabled);
 }
 
 bool SmokeDetectorErrorCode::communicationTimeout() const
@@ -160,26 +104,18 @@ bool SmokeDetectorErrorCode::communicationTimeout() const
 
 bool SmokeDetectorErrorCode::communicationTimeout(bool timedout)
 {
-    if (timedout)
-    {
-        return setError(SdErrorCode::communicationTimeout);
-    }
-    else
-    {
-        return clearError(SdErrorCode::communicationTimeout);
-    }
+    return setError(SdErrorCode::communicationTimeout, timedout);
 }
 
 bool SmokeDetectorErrorCode::malfunctionState() const
 {
-    bool malFunction;
-    malFunction = (errorCode & ~errorCodeToUint8(SdErrorCode::batteryLow)) != 0;
+    bool malFunction = (0 != (errorCode & ~errorCodeToUint8(SdErrorCode::batteryLow)));
     return malFunction;
 }
 
 uint8_t SmokeDetectorErrorCode::errorCodeToUint8(SdErrorCode code)
 {
-    return static_cast<int8_t>(code);
+    return static_cast<uint8_t>(code);
 }
 
 

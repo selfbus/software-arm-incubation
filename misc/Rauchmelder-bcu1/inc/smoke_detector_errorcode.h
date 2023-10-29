@@ -62,9 +62,7 @@ public:
 
 private:
     bool isSet(SdErrorCode toCheck) const;
-    bool clearError(SdErrorCode toClear);
-    bool setError(SdErrorCode toSet);
-    bool wouldChangeErrorState(SdErrorCode errorToCompare, bool set) const;
+    bool setError(SdErrorCode error, bool set);
     static uint8_t errorCodeToUint8(SdErrorCode code);
 
     uint8_t errorCode;
