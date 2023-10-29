@@ -278,14 +278,6 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
         {
             uint8_t objno = CmdTab[cmd].objects[cmdObj_cnt];
             bcu.comObjects->objectSetValue(objno, read_obj_value(objno));
-
-            // Versand der erhaltenen Com-Objekte einleiten.
-            // Sofern sie für den Versand vorgemerkt sind.
-            if (objSendReqFlags[objno])
-            {
-                bcu.comObjects->objectWrite(objno, read_obj_value(objno));
-                objSendReqFlags[objno] = false;
-            }
         }
     }
     else // status command gets special treatment
