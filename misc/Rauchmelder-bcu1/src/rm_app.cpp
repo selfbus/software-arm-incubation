@@ -42,8 +42,6 @@ enum class Command : uint8_t
     rmNumberAlarms_1        = 4,  //!< Gira Command: Anzahl der Alarme #1 abfragen
     rmNumberAlarms_2        = 5,  //!< Gira Command: Anzahl der Alarme #2 abfragen
     rmStatus                = 6,  //!< Gira Command: Status abfragen
-
-    internal                = 14, //!< intern behandelt, kein Befehl an den Rauchmelder
 };
 
 /**
