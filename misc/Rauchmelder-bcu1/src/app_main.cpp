@@ -40,7 +40,6 @@ void loop()
 
     rm_recv_bytes();
     process_alarm_stats();
-    process_objs();
 
     // Empfangenes Telegramm bearbeiten, aber nur wenn wir gerade nichts
     // vom Rauchmelder empfangen.

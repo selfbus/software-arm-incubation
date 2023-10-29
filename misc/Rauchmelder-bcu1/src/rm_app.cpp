@@ -18,9 +18,9 @@
  */
 
 #include <smoke_detector_errorcode.h>
-#include <bitset>
 #include <cstring>
 #include <stdint.h>
+#include <type_traits>
 
 #include "rm_app.h"
 #include "rm_const.h"
@@ -125,6 +125,7 @@ constexpr struct
 };
 
 void sendErrorCodeOnChange(bool batteryLowChanged, bool malfunctionChanged);
+void sendGroupObject(GroupObject groupObject);
 
 bool alarmLocal;                   //!< Flag für lokalen Alarm und Wired Alarm (über grüne Klemme / Rauchmelderbus)
 bool alarmBus;                     //!< Flag für remote Alarm über EIB
@@ -134,14 +135,13 @@ bool setAlarmBus;                  //!< Flag für den gewünschten Alarm Status 
 bool setTestAlarmBus;              //!< Flag für den gewünschten Testalarm Status wie wir ihn über den EIB empfangen haben
 bool ignoreBusAlarm;               //!< Flag für Bus Alarm & -Testalarm ignorieren
 SmokeDetectorErrorCode *errorCode = new SmokeDetectorErrorCode(sendErrorCodeOnChange); //!< Smoke detector error code handling
-std::bitset<NUM_OBJS> objSendReqFlags;//!< Flags für Com-Objekte senden
 unsigned char answerWait;          //!< Wenn != 0, dann Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.
 #define INITIAL_ANSWER_WAIT 6      //!< Initialwert für answerWait in 0,5s
 unsigned char alarmCounter;        //!< Countdown Zähler für zyklisches Senden eines Alarms.
 unsigned char TalarmCounter;       //!< Countdown Zähler für zyklisches Senden eines Testalarms.
 unsigned char delayedAlarmCounter; //!< Countdown Zähler für verzögertes Senden eines Alarms
 unsigned char infoCounter;         //!< Countdown Zähler für zyklisches Senden der (Info) Com-Objekte
-unsigned char infoSendObjno;       //!< Nummer des Com-Objekts das bei zyklischem Info Senden als nächstes geprüft/gesendet wird
+GroupObject infoSendObjno;         //!< Com-Objekt, das bei zyklischem Info Senden als nächstes geprüft/gesendet wird
 unsigned char readCmdno;           //!< Nummer des Befehls, welcher als nächstes zyklisch an den Rauchmelder gesendet wird
 unsigned char eventTime = DEFAULT_EVENTTIME; //!< Halbsekunden Zähler 0..119
 
@@ -205,6 +205,18 @@ void sendErrorCodeOnChange(bool batteryLowChanged, bool malfunctionChanged)
     {
         bcu.comObjects->objectWrite(GroupObject::grpObjMalfunction, errorCode->malfunction());
     }
+}
+
+/**
+ * Send any group object onto the bus with the value currently stored.
+ *
+ * @param groupObject The group object to send
+ */
+void sendGroupObject(GroupObject groupObject)
+{
+    // The communication objects already have the correct value, but there is no method to
+    // just mark them for sending. So, just write the same value again.
+    bcu.comObjects->objectWrite(groupObject, bcu.comObjects->objectRead(groupObject));
 }
 
 /**
@@ -636,42 +648,6 @@ bool send_Cmd(Command cmd)
 }
 
 /**
- * Ein Com-Objekt bearbeiten.
- *
- * @param objno - die Nummer des zu bearbeitenden Com Objekts
- */
-void process_obj(unsigned char objno)
-{
-    // Der Wert des Com-Objekts ist bekannt, also sofort senden
-    // Die Werte werden zyklisch (minütlich) alle vom Rauchmelder abgefragt, daher sind immer alle Werte aktuell vorhanden
-
-    if (objSendReqFlags[objno])
-    {
-        bcu.comObjects->objectWrite(objno, read_obj_value(objno));
-        objSendReqFlags[objno] = false;
-    }
-}
-
-/**
- * Com-Objekte bearbeiten.
- *
- * Com-Objekte, die Daten vom Rauchmelder benötigen, werden nur bearbeitet wenn
- * nicht gerade auf Antwort vom Rauchmelder gewartet wird.
- */
-void process_objs()
-{
-    if (answerWait || objSendReqFlags.none())
-    {
-       return;
-    }
-
-    for (auto objno = 0; objno < objSendReqFlags.size(); ++objno)
-    {
-        process_obj(objno);
-    }
-}
-
-/**
  * Den Zustand der Alarme bearbeiten. Wenn wir der Meinung sind der Bus-Alarm soll einen
  * bestimmten Zustand haben dann wird das dem Rauchmelder so lange gesagt bis der auch
  * der gleichen Meinung ist.
@@ -739,8 +715,8 @@ extern "C" void TIMER32_0_IRQHandler()
             if (!delayedAlarmCounter)   // Verzögerungszeit abgelaufen
             {
                 bcu.comObjects->objectSetValue(GroupObject::grpObjStatusAlarmDelayed, read_obj_value(GroupObject::grpObjStatusAlarmDelayed)); // Status verzögerter Alarm zurücksetzen
-                //objSendReqFlags[GroupObject::grpObjAlarmBus] = true;  // Vernetzung Alarm senden
-                //objSendReqFlags[GroupObject::grpObjStatusAlarm] = true; // Status Alarm senden
+                //sendGroupObject(GroupObject::grpObjAlarmBus);  // Vernetzung Alarm senden
+                //sendGroupObject(GroupObject::grpObjStatusAlarm); // Status Alarm senden
 
                 bcu.comObjects->objectWrite(GroupObject::grpObjAlarmBus, alarmLocal);
             }
@@ -755,9 +731,9 @@ extern "C" void TIMER32_0_IRQHandler()
                     alarmCounter = config->alarmIntervalSeconds();     // Zykl. senden Zeit holen
                     if (config->alarmSendNetworkPeriodically())
                     {
-                        objSendReqFlags[GroupObject::grpObjAlarmBus] = true; // Vernetzung Alarm senden
+                        sendGroupObject(GroupObject::grpObjAlarmBus); // Vernetzung Alarm senden
                     }
-                    objSendReqFlags[GroupObject::grpObjStatusAlarm] = true;
+                    sendGroupObject(GroupObject::grpObjStatusAlarm);
                 }
             }
         }
@@ -771,7 +747,7 @@ extern "C" void TIMER32_0_IRQHandler()
             if (!alarmCounter)
             {
                 alarmCounter = config->alarmIntervalSeconds(); // Zykl. senden Zeit holen
-                objSendReqFlags[GroupObject::grpObjStatusAlarm] = true;
+                sendGroupObject(GroupObject::grpObjStatusAlarm);
             }
         }
     }
@@ -787,9 +763,9 @@ extern "C" void TIMER32_0_IRQHandler()
                 TalarmCounter = config->testAlarmIntervalSeconds();
                 if (config->testAlarmSendNetworkPeriodically())
                 {
-                    objSendReqFlags[GroupObject::grpObjTestAlarmBus] = true;
+                    sendGroupObject(GroupObject::grpObjTestAlarmBus);
                 }
-                objSendReqFlags[GroupObject::grpObjStatusTestAlarm] = true;
+                sendGroupObject(GroupObject::grpObjStatusTestAlarm);
             }
         }
     }
@@ -801,12 +777,12 @@ extern "C" void TIMER32_0_IRQHandler()
         !(alarmLocal | alarmBus | testAlarmLocal | testAlarmBus))
     {
         // Info Objekt zum Senden vormerken wenn es dafür konfiguriert ist.
-        if (config->infoSendPeriodically(static_cast<GroupObject>(infoSendObjno)))
+        if (config->infoSendPeriodically(infoSendObjno))
         {
-            objSendReqFlags[infoSendObjno] = true;
+            sendGroupObject(infoSendObjno);
         }
 
-        --infoSendObjno;
+        infoSendObjno = static_cast<GroupObject>(static_cast<std::underlying_type_t<GroupObject>>(infoSendObjno) - 1);
     }
 
     // alle 8 Sekunden einen der 6 Befehle aus der CmdTab an den Rauchmelder senden, um alle Status Daten aus dem Rauchmelder abzufragen
@@ -877,8 +853,6 @@ void setupPeriodicTimer(uint32_t milliseconds)
 void initApplication()
 {
     // Werte initialisieren
-    objSendReqFlags.reset();
-
     for (uint8_t i = 0; i < commandTableSize(); ++i)
     {
         CmdTab[i].objValues = 0;
@@ -896,7 +870,7 @@ void initApplication()
     setTestAlarmBus = 0;
     ignoreBusAlarm = 0;
 
-    infoSendObjno = 0;
+    infoSendObjno = GroupObject::grpObjAlarmBus;
     readCmdno = commandTableSize();
     infoCounter = config->infoIntervalMinutes();
     alarmCounter = 1;

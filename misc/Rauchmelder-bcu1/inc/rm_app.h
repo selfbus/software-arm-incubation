@@ -32,11 +32,6 @@ extern BCU1 bcu;
 extern void process_alarm_stats();
 
 /**
- * Com-Objekte bearbeiten deren Wert gesendet werden soll.
- */
-extern void process_objs();
-
-/**
  * Alle Applikations-Parameter zurücksetzen.
  */
 extern void initApplication();

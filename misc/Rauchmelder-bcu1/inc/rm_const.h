@@ -87,7 +87,7 @@ enum GroupObject : uint8_t
 #define NUM_OBJS               22 //!< Anzahl der Com-Objekte
 
 //!< Höchstes Com-Objekt das bei Info-Senden gesendet wird.
-#define OBJ_HIGH_INFO_SEND      21
+#define OBJ_HIGH_INFO_SEND      (GroupObject::grpObjCountTestAlarmBus)
 
 //!< Maximale Anzahl von ComObjekten pro Rauchmelder-Befehl
 #define MAX_OBJ_CMD  4
