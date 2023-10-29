@@ -37,7 +37,7 @@ enum class SdErrorCode : uint8_t
     coverplateNotAttached     = 0x20, //!< Smoke detector is not attached to cover plate
 };
 
-typedef void (*errorCodeChangedCallbackPtr)();
+typedef void (*errorCodeChangedCallbackPtr)(bool batteryLowChanged, bool malfunctionChanged);
 
 class SmokeDetectorErrorCode
 {
@@ -48,23 +48,20 @@ public:
     void clearAllErrors();
 
     bool batteryLow() const;
-    bool batteryLow(bool battLow);
-    bool temperature_1_fault(bool faulty);
-    bool temperature_2_fault(bool faulty);
-    bool coverPlateAttached() const;
-    bool coverPlateAttached(bool attached);
-    bool supplyVoltageDisabled() const;
-    bool supplyVoltageDisabled(bool disabled);
-    bool communicationTimeout() const;
-    bool communicationTimeout(bool timedout);
+    void batteryLow(bool battLow);
+    void temperature_1_fault(bool faulty);
+    void temperature_2_fault(bool faulty);
+    void coverPlateAttached(bool attached);
+    void supplyVoltageDisabled(bool disabled);
+    void communicationTimeout(bool timedout);
 
-    bool malfunctionState() const;
+    bool malfunction() const;
 
     uint8_t code() const;
 
 private:
     bool isSet(SdErrorCode toCheck) const;
-    bool setError(SdErrorCode error, bool set);
+    bool set(SdErrorCode error, bool set);
     static uint8_t errorCodeToUint8(SdErrorCode code);
 
     uint8_t errorCode;

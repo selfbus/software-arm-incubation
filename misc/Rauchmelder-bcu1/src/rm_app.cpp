@@ -126,7 +126,7 @@ constexpr struct
     {Command::rmNumberAlarms_2,        1, RM_TYPE_BYTE}   //!< 21 @ref OBJ_CNT_TALARM_BUS
 };
 
-void sendErrorCodeOnChange();
+void sendErrorCodeOnChange(bool batteryLowChanged, bool malfunctionChanged);
 
 bool alarmLocal;                   //!< Flag für lokalen Alarm und Wired Alarm (über grüne Klemme / Rauchmelderbus)
 bool alarmBus;                     //!< Flag für remote Alarm über EIB
@@ -192,12 +192,24 @@ uint8_t commandTableSize()
 }
 
 /**
- * Send malfunction and errorcode groupobjects to the bus
+ * Send error code, battery low, and malfunction groupobjects to the bus
+ *
+ * @param batteryLowChanged  Whether the low battery condition changed and therefore the corresponding group object needs to be sent
+ * @param malfunctionChanged Whether the malfunction condition changed and therefore the corresponding group object needs to be sent
  */
-void sendErrorCodeOnChange()
+void sendErrorCodeOnChange(bool batteryLowChanged, bool malfunctionChanged)
 {
-    bcu.comObjects->objectWrite(GroupObject::grpObjMalfunction, errorCode->malfunctionState());
     bcu.comObjects->objectWrite(GroupObject::grpObjErrorCode, errorCode->code());
+
+    if (batteryLowChanged)
+    {
+        bcu.comObjects->objectWrite(GroupObject::grpObjBatteryLow, errorCode->batteryLow());
+    }
+
+    if (malfunctionChanged)
+    {
+        bcu.comObjects->objectWrite(GroupObject::grpObjMalfunction, errorCode->malfunction());
+    }
 }
 
 /**
@@ -327,11 +339,7 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
 
         // Battery low
         bool batteryLow = ((status & 0x01) == 1);
-        if (errorCode->batteryLow(batteryLow))
-        {
-            // battery state changed, send info on the bus
-            bcu.comObjects->objectWrite(GroupObject::grpObjBatteryLow, errorCode->batteryLow());
-        }
+        errorCode->batteryLow(batteryLow);
 
         ///\todo see below
         /*
@@ -435,7 +443,7 @@ unsigned long read_obj_value(unsigned char objno)
                 return errorCode->batteryLow();
 
             case GroupObject::grpObjMalfunction:
-                return errorCode->malfunctionState();
+                return errorCode->malfunction();
 
             case GroupObject::grpObjErrorCode:
                 return errorCode->code();
