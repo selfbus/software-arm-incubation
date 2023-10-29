@@ -37,10 +37,12 @@ enum class SdErrorCode : uint8_t
     coverplateNotAttached     = 0x20, //!< Smoke detector is not attached to cover plate
 };
 
+typedef void (*errorCodeChangedCallbackPtr)();
+
 class SmokeDetectorErrorCode
 {
 public:
-    SmokeDetectorErrorCode();
+    SmokeDetectorErrorCode(const errorCodeChangedCallbackPtr errorCodeChangedCallback);
     ~SmokeDetectorErrorCode() = delete;
 
     void clearAllErrors();
@@ -66,6 +68,7 @@ private:
     static uint8_t errorCodeToUint8(SdErrorCode code);
 
     uint8_t errorCode;
+    const errorCodeChangedCallbackPtr errorCodeChangedCallback;
 };
 
 
