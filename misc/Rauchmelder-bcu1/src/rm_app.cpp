@@ -673,7 +673,7 @@ void process_objs()
        return;
     }
 
-    for (auto objno = 0; objno < NUM_OBJS; ++objno)
+    for (auto objno = 0; objno < objSendReqFlags.size(); ++objno)
     {
         process_obj(objno);
     }
@@ -885,10 +885,7 @@ void setupPeriodicTimer(uint32_t milliseconds)
 void initApplication()
 {
     // Werte initialisieren
-    for (uint8_t i = 0; i < NUM_OBJS; ++i)
-    {
-        objSendReqFlags[i] = false;
-    }
+    objSendReqFlags.reset();
 
     for (uint8_t i = 0; i < commandTableSize(); ++i)
     {
