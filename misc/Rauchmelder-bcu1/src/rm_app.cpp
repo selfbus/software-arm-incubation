@@ -32,7 +32,7 @@ SmokeDetectorConfig *config = new SmokeDetectorConfig(bcu.userEeprom);
 //-----------------------------------------------------------------------------
 // Befehle an den Rauchmelder
 //-----------------------------------------------------------------------------
-enum class Command : uint8_t // RM_CMD_COUNT must match number of rmXxxx commands
+enum class Command : uint8_t
 {
     rmSerialNumber          = 0,  //!< Gira Command: Seriennummer abfragen
     rmOperatingTime         = 1,  //!< Gira Command: Betriebszeit abfragen
@@ -46,8 +46,6 @@ enum class Command : uint8_t // RM_CMD_COUNT must match number of rmXxxx command
     none                    = 15  //!< kein Befehl
 };
 
-#define RM_CMD_COUNT           7  //!< Anzahl der Gira Commands
-
 /**
  * @ref RmCommandByte to multiple @ref GroupObject association table
  */
@@ -58,7 +56,7 @@ struct AssociationTable
     const uint8_t objects[MAX_OBJ_CMD]; //!< Association of the command to multiple @ref GroupObject. Use @ref grpObjInvalid to not associate
     uint32_t objValues;                 //!< Raw serial bytes of the @GroupObject
 }
-CmdTab[RM_CMD_COUNT] =
+CmdTab[] =
 {
     // CommandByte                  Response length         Object number   Raw value  Example response
     {RmCommandByte::serialNumber,           5, {GroupObject::grpObjSerialNumber,          // <STX>C4214710F31F<ETX>
