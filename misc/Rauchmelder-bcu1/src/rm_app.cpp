@@ -44,7 +44,6 @@ enum class Command : uint8_t
     rmStatus                = 6,  //!< Gira Command: Status abfragen
 
     internal                = 14, //!< intern behandelt, kein Befehl an den Rauchmelder
-    none                    = 15  //!< kein Befehl
 };
 
 /**
@@ -444,7 +443,7 @@ unsigned long read_obj_value(unsigned char objno)
         }
     }
     // Com-Objekte verarbeiten die Werte vom Rauchmelder darstellen
-    else if (cmd != Command::none)
+    else
     {
         unsigned long lval;
         unsigned char *answer;
@@ -493,9 +492,6 @@ unsigned long read_obj_value(unsigned char objno)
                 return -2;
         }
     }
-
-    // Fehler: unbekanntes Com Objekt
-    return -1;
 }
 
 /**
