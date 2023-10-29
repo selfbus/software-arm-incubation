@@ -49,79 +49,48 @@ enum class Command : uint8_t
 /**
  * @ref RmCommandByte to multiple @ref GroupObject association table
  */
-struct AssociationTable
+constexpr struct
 {
-    const RmCommandByte rmCommand;      //!< @ref RmCommandByte command to be sent
-    const int8_t responseLength;        //!< Expected response length in bytes
-    const uint8_t objects[MAX_OBJ_CMD]; //!< Association of the command to multiple @ref GroupObject. Use @ref grpObjInvalid to not associate
-    uint32_t objValues;                 //!< Raw serial bytes of the @GroupObject
+    RmCommandByte rmCommand;      //!< @ref RmCommandByte command to be sent
+    int8_t responseLength;        //!< Expected response length in bytes
+    struct
+    {
+        GroupObject object;       //!< @ref GroupObject in the response
+        uint8_t offset;           //!< Byte-offset in the response
+        uint8_t dataType;         //!< Datatype of the object in the response
+    } objects[MAX_OBJ_CMD];       //!< Association of the command to multiple @ref GroupObject. Use @ref grpObjInvalid to not associate
 }
 CmdTab[] =
 {
     // CommandByte                  Response length         Object number   Raw value  Example response
-    {RmCommandByte::serialNumber,           5, {GroupObject::grpObjSerialNumber,          // <STX>C4214710F31F<ETX>
-                                                GroupObject::grpObjInvalid,
-                                                GroupObject::grpObjInvalid,
-                                                GroupObject::grpObjInvalid}, 0},
-    {RmCommandByte::operatingTime,          5, {GroupObject::grpObjOperatingTime,         // <STX>C9000047E31F<ETX>
-                                                GroupObject::grpObjInvalid,
-                                                GroupObject::grpObjInvalid,
-                                                GroupObject::grpObjInvalid}, 0},
-    {RmCommandByte::smokeboxData,           5, {GroupObject::grpObjSmokeboxValue,         // <STX>CB0065000111<ETX>
-                                                GroupObject::grpObjSmokeboxPollution,
-                                                GroupObject::grpObjCountSmokeAlarm,
-                                                GroupObject::grpObjInvalid}, 0},
-    {RmCommandByte::batteryTemperatureData, 5, {GroupObject::grpObjBatteryVoltage,        // <STX>CC000155551B<ETX>
-                                                GroupObject::grpObjTemperature,
-                                                GroupObject::grpObjInvalid,
-                                                GroupObject::grpObjInvalid}, 0},
-    {RmCommandByte::numberAlarms_1,         5, {GroupObject::grpObjCountTemperatureAlarm, // <STX>CD0000000007<ETX>
-                                                GroupObject::grpObjCountTestAlarm,
-                                                GroupObject::grpObjCountAlarmWire,
-                                                GroupObject::grpObjCountAlarmBus}, 0},
-    {RmCommandByte::numberAlarms_2,         3, {GroupObject::grpObjCountTestAlarmWire,    // <STX>CE000048<ETX>
-                                                GroupObject::grpObjCountTestAlarmBus,
-                                                GroupObject::grpObjInvalid,
-                                                GroupObject::grpObjInvalid}, 0},
-    {RmCommandByte::status,                 5, {GroupObject::grpObjInvalid,               // <STX>C220000000F7<ETX>
-                                                GroupObject::grpObjInvalid,
-                                                GroupObject::grpObjInvalid,
-                                                GroupObject::grpObjInvalid}, 0}
-};
-
-/**
- * Mapping of the @ref Commands to the smoke detector's response data (bytes).\
- * The index of @ref objMappingTab the table is the ID of the communication object (object id).
- */
-constexpr struct
-{
-    Command cmd;            //!< @ref Command to send to the smoke-detector
-    uint8_t offset;         //!< Byte-offset in the response
-    uint8_t dataType;       //!< Datatype of the response
-} objMappingTab[NUM_OBJS] =
-{
-    {Command::internal,                0, RM_TYPE_NONE},  //!<  0 @ref OBJ_ALARM_BUS
-    {Command::internal,                0, RM_TYPE_NONE},  //!<  1 @ref OBJ_TALARM_BUS
-    {Command::internal,                0, RM_TYPE_NONE},  //!<  2 @ref OBJ_RESET_ALARM
-    {Command::internal,                0, RM_TYPE_NONE},  //!<  3 @ref OBJ_STAT_ALARM
-    {Command::internal,                0, RM_TYPE_NONE},  //!<  4 @ref OBJ_STAT_ALARM_DELAYED
-    {Command::internal,                0, RM_TYPE_NONE},  //!<  5 @ref OBJ_STAT_TALARM
-    {Command::rmSerialNumber,          0, RM_TYPE_LONG},  //!<  6 @ref OBJ_SERIAL
-    {Command::rmOperatingTime,         0, RM_TYPE_QSEC},  //!<  7 @ref OBJ_OPERATING_TIME
-    {Command::rmSmokeboxData,          0, RM_TYPE_SHORT}, //!<  8 @ref OBJ_SMOKEBOX_VALUE
-    {Command::rmSmokeboxData,          3, RM_TYPE_BYTE},  //!<  9 @ref OBJ_POLLUTION
-    {Command::rmBatteryAndTemperature, 0, RM_TYPE_MVOLT}, //!< 10 @ref OBJ_BAT_VOLTAGE
-    {Command::rmBatteryAndTemperature, 2, RM_TYPE_TEMP},  //!< 11 @ref OBJ_TEMP
-    {Command::internal,                0, RM_TYPE_NONE},  //!< 12 @ref OBJ_ERRCODE
-    {Command::internal,                0, RM_TYPE_NONE},  //!< 13 @ref OBJ_BAT_LOW
-    {Command::internal,                0, RM_TYPE_NONE},  //!< 14 @ref OBJ_MALFUNCTION
-    {Command::rmSmokeboxData,          2, RM_TYPE_BYTE},  //!< 15 @ref OBJ_CNT_SMOKEALARM
-    {Command::rmNumberAlarms_1,        0, RM_TYPE_BYTE},  //!< 16 @ref OBJ_CNT_TEMPALARM
-    {Command::rmNumberAlarms_1,        1, RM_TYPE_BYTE},  //!< 17 @ref OBJ_CNT_TESTALARM
-    {Command::rmNumberAlarms_1,        2, RM_TYPE_BYTE},  //!< 18 @ref OBJ_CNT_ALARM_WIRE
-    {Command::rmNumberAlarms_1,        3, RM_TYPE_BYTE},  //!< 19 @ref OBJ_CNT_ALARM_BUS
-    {Command::rmNumberAlarms_2,        0, RM_TYPE_BYTE},  //!< 20 @ref OBJ_CNT_TALARM_WIRE
-    {Command::rmNumberAlarms_2,        1, RM_TYPE_BYTE}   //!< 21 @ref OBJ_CNT_TALARM_BUS
+    {RmCommandByte::serialNumber,           5, {{GroupObject::grpObjSerialNumber,          0, RM_TYPE_LONG},      // <STX>C4214710F31F<ETX>
+                                                {GroupObject::grpObjInvalid},
+                                                {GroupObject::grpObjInvalid},
+                                                {GroupObject::grpObjInvalid}}},
+    {RmCommandByte::operatingTime,          5, {{GroupObject::grpObjOperatingTime,         0, RM_TYPE_QSEC},      // <STX>C9000047E31F<ETX>
+                                                {GroupObject::grpObjInvalid},
+                                                {GroupObject::grpObjInvalid},
+                                                {GroupObject::grpObjInvalid}}},
+    {RmCommandByte::smokeboxData,           5, {{GroupObject::grpObjSmokeboxValue,         0, RM_TYPE_SHORT},     // <STX>CB0065000111<ETX>
+                                                {GroupObject::grpObjSmokeboxPollution,     3, RM_TYPE_BYTE},
+                                                {GroupObject::grpObjCountSmokeAlarm,       2, RM_TYPE_BYTE},
+                                                {GroupObject::grpObjInvalid}}},
+    {RmCommandByte::batteryTemperatureData, 5, {{GroupObject::grpObjBatteryVoltage,        0, RM_TYPE_MVOLT},     // <STX>CC000155551B<ETX>
+                                                {GroupObject::grpObjTemperature,           2, RM_TYPE_TEMP},
+                                                {GroupObject::grpObjInvalid},
+                                                {GroupObject::grpObjInvalid}}},
+    {RmCommandByte::numberAlarms_1,         5, {{GroupObject::grpObjCountTemperatureAlarm, 0, RM_TYPE_BYTE},      // <STX>CD0000000007<ETX>
+                                                {GroupObject::grpObjCountTestAlarm,        1, RM_TYPE_BYTE},
+                                                {GroupObject::grpObjCountAlarmWire,        2, RM_TYPE_BYTE},
+                                                {GroupObject::grpObjCountAlarmBus,         3, RM_TYPE_BYTE}}},
+    {RmCommandByte::numberAlarms_2,         3, {{GroupObject::grpObjCountTestAlarmWire,    0, RM_TYPE_BYTE},      // <STX>CE000048<ETX>
+                                                {GroupObject::grpObjCountTestAlarmBus,     1, RM_TYPE_BYTE},
+                                                {GroupObject::grpObjInvalid},
+                                                {GroupObject::grpObjInvalid}}},
+    {RmCommandByte::status,                 5, {{GroupObject::grpObjInvalid},                                     // <STX>C220000000F7<ETX>
+                                                {GroupObject::grpObjInvalid},
+                                                {GroupObject::grpObjInvalid},
+                                                {GroupObject::grpObjInvalid}}}
 };
 
 void sendErrorCodeOnChange(bool batteryLowChanged, bool malfunctionChanged);
@@ -225,6 +194,11 @@ void sendGroupObject(GroupObject groupObject)
 unsigned long read_obj_value(unsigned char objno);
 
 /**
+ * Read raw value from response and convert it to corresponding group object value
+ */
+uint32_t readObjectValueFromResponse(uint8_t *rawValue, uint8_t dataType);
+
+/**
  * For description see declaration in file @ref rm_com.h
  */
 void rm_process_msg(uint8_t *bytes, int8_t len)
@@ -270,24 +244,17 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
 
     if (RmCommandByte::status != msgType)
     {
-        if ((len - 1) > (int8_t)sizeof(CmdTab[cmd].objValues))
-        {
-            failHardInDebug(); // response is to long to fit in .objValues
-            return;
-        }
-
-        // Copy values over into objValues for caching.
-        CmdTab[cmd].objValues = 0;
-        memcpy(&CmdTab[cmd].objValues, &bytes[1], len - 1);
-
         // Informationen aus den empfangenen Daten vom Rauchmelder der sblib zur Verfügung stellen
         // Dazu alle Com-Objekte suchen auf die die empfangenen Daten passen (mapping durch CmdTab)
         // notwendig für den Abruf von Informationen über KNX aus den Status Objekten (GroupValueRead -> GroupValueResponse)
-        for (unsigned char cmdObj_cnt = 0; (CmdTab[cmd].objects[cmdObj_cnt] != GroupObject::grpObjInvalid) &&
+        for (unsigned char cmdObj_cnt = 0; (CmdTab[cmd].objects[cmdObj_cnt].object != GroupObject::grpObjInvalid) &&
                                            (cmdObj_cnt < MAX_OBJ_CMD); cmdObj_cnt++)
         {
-            uint8_t objno = CmdTab[cmd].objects[cmdObj_cnt];
-            bcu.comObjects->objectSetValue(objno, read_obj_value(objno));
+            auto groupObject = CmdTab[cmd].objects[cmdObj_cnt].object;
+            auto offset = CmdTab[cmd].objects[cmdObj_cnt].offset;
+            auto dataType = CmdTab[cmd].objects[cmdObj_cnt].dataType;
+            auto value = readObjectValueFromResponse(bytes + 1 + offset, dataType);
+            bcu.comObjects->objectSetValue(groupObject, value);
         }
     }
     else // status command gets special treatment
@@ -403,96 +370,94 @@ unsigned short answer_to_short(unsigned char *cvalue)
 }
 
 /**
- * Wert eines Com-Objekts liefern.
+ * Wert eines internen Com-Objekts liefern.
  *
  * @param objno - die ID des Kommunikations-Objekts
  * @return Den Wert des Kommunikations Objekts
  */
 unsigned long read_obj_value(unsigned char objno)
 {
-    Command cmd = objMappingTab[objno].cmd;
-
     // Interne Com-Objekte behandeln
-    if (cmd == Command::internal)
+    switch (objno)
     {
-        switch (objno)
-        {
-            case GroupObject::grpObjAlarmBus:
-            case GroupObject::grpObjStatusAlarm:
-                return alarmLocal;
+        case GroupObject::grpObjAlarmBus:
+        case GroupObject::grpObjStatusAlarm:
+            return alarmLocal;
 
-            case GroupObject::grpObjTestAlarmBus:
-            case GroupObject::grpObjStatusTestAlarm:
-                return testAlarmLocal;
+        case GroupObject::grpObjTestAlarmBus:
+        case GroupObject::grpObjStatusTestAlarm:
+            return testAlarmLocal;
 
-            case GroupObject::grpObjResetAlarm:
-                return ignoreBusAlarm;
+        case GroupObject::grpObjResetAlarm:
+            return ignoreBusAlarm;
 
-            case GroupObject::grpObjStatusAlarmDelayed:
-                return delayedAlarmCounter != 0;
+        case GroupObject::grpObjStatusAlarmDelayed:
+            return delayedAlarmCounter != 0;
 
-            case GroupObject::grpObjBatteryLow:
-                return errorCode->batteryLow();
+        case GroupObject::grpObjBatteryLow:
+            return errorCode->batteryLow();
 
-            case GroupObject::grpObjMalfunction:
-                return errorCode->malfunction();
+        case GroupObject::grpObjMalfunction:
+            return errorCode->malfunction();
 
-            case GroupObject::grpObjErrorCode:
-                return errorCode->code();
+        case GroupObject::grpObjErrorCode:
+            return errorCode->code();
 
-            default:
-                return -1; // Fehler: unbekanntes Com Objekt
-        }
+        default:
+            return -1; // Fehler: unbekanntes Com Objekt
     }
-    // Com-Objekte verarbeiten die Werte vom Rauchmelder darstellen
-    else
+}
+
+/**
+ * Read raw value from response and convert it to corresponding group object value.
+ *
+ * @param rawValue Pointer to the raw value in the smoke detector response message
+ * @param dataType Data type of the value
+ * @return Group object value
+ */
+uint32_t readObjectValueFromResponse(uint8_t *rawValue, uint8_t dataType)
+{
+    uint32_t lval;
+
+    switch (dataType)
     {
-        unsigned long lval;
-        unsigned char *answer;
+        case RM_TYPE_BYTE:
+            return *rawValue;
 
-        answer = (unsigned char*) &CmdTab[(uint8_t)cmd].objValues;
-        answer += objMappingTab[objno].offset;
+        case RM_TYPE_LONG:
+            return answer_to_long(rawValue);
 
-        switch (objMappingTab[objno].dataType)
-        {
-            case RM_TYPE_BYTE:
-                return *answer;
+        case RM_TYPE_QSEC:  // Betriebszeit verarbeiten
+            lval = answer_to_long(rawValue) >> 2; // Wert in Sekunden
+            if (config->infoSendOperationTimeInHours())
+                return lval / 3600; // Stunden, 16Bit
+            else
+                return lval;        // Sekunden, 32Bit
 
-            case RM_TYPE_LONG:
-                return answer_to_long(answer);
+        case RM_TYPE_SHORT:
+            return answer_to_short(rawValue);
 
-            case RM_TYPE_QSEC:  // Betriebszeit verarbeiten
-                lval = answer_to_long(answer) >> 2; // Wert in Sekunden
-                if (config->infoSendOperationTimeInHours())
-                    return lval / 3600; // Stunden, 16Bit
-                else
-                    return lval;        // Sekunden, 32Bit
+        case RM_TYPE_TEMP:
+            // Conversion per temp sensor: (answer[x] * 0.5°C - 20°C) * 100 [for DPT9]
+            lval = ((int) rawValue[0]) + rawValue[1];
+            lval *= 25; // in lval sind zwei Temperaturen, daher halber Multiplikator
+            lval -= 2000;
+            lval += config->temperatureOffsetInTenthDegrees() * 10;  // Temperaturabgleich
+            return (floatToDpt9(lval));
 
-            case RM_TYPE_SHORT:
-                return answer_to_short(answer);
+        case RM_TYPE_MVOLT:
+            if ((rawValue[0] == 0) && (rawValue[1] == 1))
+            {
+                return (floatToDpt9(BATTERY_VOLTAGE_INVALID));
+            }
+            lval = answer_to_short(rawValue);
+            // Conversion: lval * 5.7 * 3.3V / 1024 * 1000mV/V * 100 [for DPT9]
+            lval *= 9184;
+            lval /= 5;
+            return (floatToDpt9(lval));
 
-            case RM_TYPE_TEMP:
-                // Conversion per temp sensor: (answer[x] * 0.5°C - 20°C) * 100 [for DPT9]
-                lval = ((int) answer[0]) + answer[1];
-                lval *= 25; // in lval sind zwei Temperaturen, daher halber Multiplikator
-                lval -= 2000;
-                lval += config->temperatureOffsetInTenthDegrees() * 10;  // Temperaturabgleich
-                return (floatToDpt9(lval));
-
-            case RM_TYPE_MVOLT:
-                if ((answer[0] == 0) && (answer[1] == 1))
-                {
-                    return (floatToDpt9(BATTERY_VOLTAGE_INVALID));
-                }
-                lval = answer_to_short(answer);
-                // Conversion: lval * 5.7 * 3.3V / 1024 * 1000mV/V * 100 [for DPT9]
-                lval *= 9184;
-                lval /= 5;
-                return (floatToDpt9(lval));
-
-            default: // Fehler: unbekannter Datentyp
-                return -2;
-        }
+        default: // Fehler: unbekannter Datentyp
+            return -2;
     }
 }
 
@@ -615,7 +580,7 @@ bool send_Cmd(Command cmd)
         return false;
     }
 
-    ///\todo setting objValues to invalid, should be done after a serial timeout occurred
+    ///\todo setting group obj values to invalid, should be done after a serial timeout occurred
     switch (cmd)
     {
         case Command::rmSerialNumber:
@@ -628,7 +593,8 @@ bool send_Cmd(Command cmd)
             break;
 
         case Command::rmBatteryAndTemperature:
-            CmdTab[(uint8_t)Command::rmBatteryAndTemperature].objValues = 0;
+            bcu.comObjects->objectSetValue(GroupObject::grpObjBatteryVoltage, 0);
+            bcu.comObjects->objectSetValue(GroupObject::grpObjTemperature, 0);
             break;
 
         case Command::rmNumberAlarms_1:
@@ -851,11 +817,6 @@ void setupPeriodicTimer(uint32_t milliseconds)
 void initApplication()
 {
     // Werte initialisieren
-    for (uint8_t i = 0; i < commandTableSize(); ++i)
-    {
-        CmdTab[i].objValues = 0;
-    }
-
     answerWait = 0;
 
     alarmBus = 0;
