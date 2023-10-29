@@ -677,22 +677,10 @@ void process_objs()
        return;
     }
 
-    Command cmd;
-
     for (auto objno = 0; objno < NUM_OBJS; ++objno)
     {
-        if (objSendReqFlags[objno])
-        {
-            cmd = objMappingTab[objno].cmd;
-            if (cmd == Command::none || cmd == Command::internal)
-            {
-                process_obj(objno);
-                return;
-            }
-        }
+        process_obj(objno);
     }
-
-    return;
 }
 
 /**
