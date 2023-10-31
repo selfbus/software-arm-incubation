@@ -20,9 +20,9 @@
 
 #include <smoke_detector_errorcode.h>
 
-SmokeDetectorErrorCode::SmokeDetectorErrorCode(const errorCodeChangedCallbackPtr errorCodeChangedCallback)
+SmokeDetectorErrorCode::SmokeDetectorErrorCode(const SmokeDetectorErrorCodeCallback *errorCodeCallback)
     : errorCode(errorCodeToUint8(SdErrorCode::noError)),
-      errorCodeChangedCallback(errorCodeChangedCallback)
+      errorCodeCallback(errorCodeCallback)
 {
 }
 
@@ -57,7 +57,7 @@ void SmokeDetectorErrorCode::set(SdErrorCode error, bool set)
 
     if (oldErrorCode != errorCode)
     {
-        errorCodeChangedCallback(error == SdErrorCode::batteryLow, error != SdErrorCode::batteryLow);
+        errorCodeCallback->errorCodeChanged(this, error == SdErrorCode::batteryLow, error != SdErrorCode::batteryLow);
     }
 }
 

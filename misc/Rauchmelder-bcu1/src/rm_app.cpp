@@ -17,7 +17,6 @@
  *  published by the Free Software Foundation.
  */
 
-#include <smoke_detector_errorcode.h>
 #include <cstring>
 #include <stdint.h>
 #include <type_traits>
@@ -26,8 +25,12 @@
 #include "rm_const.h"
 #include "rm_com.h"
 #include "smoke_detector_config.h"
+#include "smoke_detector_errorcode.h"
+#include "smoke_detector_group_objects.h"
 
 BCU1 bcu = BCU1();
+SmokeDetectorGroupObjects *groupObjects = new SmokeDetectorGroupObjects(bcu.comObjects);
+SmokeDetectorErrorCode *errorCode = new SmokeDetectorErrorCode(groupObjects); //!< Smoke detector error code handling
 SmokeDetectorConfig *config = new SmokeDetectorConfig(bcu.userEeprom);
 
 //-----------------------------------------------------------------------------
@@ -91,7 +94,6 @@ CmdTab[] =
                                                 {GroupObject::grpObjInvalid}}}
 };
 
-void sendErrorCodeOnChange(bool batteryLowChanged, bool malfunctionChanged);
 void sendGroupObject(GroupObject groupObject);
 
 bool alarmLocal;                   //!< Flag für lokalen Alarm und Wired Alarm (über grüne Klemme / Rauchmelderbus)
@@ -101,7 +103,6 @@ bool testAlarmBus;                 //!< Flag für remote Testalarm über EIB
 bool setAlarmBus;                  //!< Flag für den gewünschten Alarm Status wie wir ihn über den EIB empfangen haben
 bool setTestAlarmBus;              //!< Flag für den gewünschten Testalarm Status wie wir ihn über den EIB empfangen haben
 bool ignoreBusAlarm;               //!< Flag für Bus Alarm & -Testalarm ignorieren
-SmokeDetectorErrorCode *errorCode = new SmokeDetectorErrorCode(sendErrorCodeOnChange); //!< Smoke detector error code handling
 unsigned char answerWait;          //!< Wenn != 0, dann Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.
 #define INITIAL_ANSWER_WAIT 6      //!< Initialwert für answerWait in 0,5s
 unsigned char alarmCounter;        //!< Countdown Zähler für zyklisches Senden eines Alarms.
@@ -151,27 +152,6 @@ void failHardInDebug() ///\todo remove on release
 uint8_t commandTableSize()
 {
     return sizeof(CmdTab)/sizeof(CmdTab[0]);
-}
-
-/**
- * Send error code, battery low, and malfunction groupobjects to the bus
- *
- * @param batteryLowChanged  Whether the low battery condition changed and therefore the corresponding group object needs to be sent
- * @param malfunctionChanged Whether the malfunction condition changed and therefore the corresponding group object needs to be sent
- */
-void sendErrorCodeOnChange(bool batteryLowChanged, bool malfunctionChanged)
-{
-    bcu.comObjects->objectWrite(GroupObject::grpObjErrorCode, errorCode->code());
-
-    if (batteryLowChanged)
-    {
-        bcu.comObjects->objectWrite(GroupObject::grpObjBatteryLow, errorCode->batteryLow());
-    }
-
-    if (malfunctionChanged)
-    {
-        bcu.comObjects->objectWrite(GroupObject::grpObjMalfunction, errorCode->malfunction());
-    }
 }
 
 /**
@@ -391,15 +371,6 @@ unsigned long read_obj_value(unsigned char objno)
 
         case GroupObject::grpObjStatusAlarmDelayed:
             return delayedAlarmCounter != 0;
-
-        case GroupObject::grpObjBatteryLow:
-            return errorCode->batteryLow();
-
-        case GroupObject::grpObjMalfunction:
-            return errorCode->malfunction();
-
-        case GroupObject::grpObjErrorCode:
-            return errorCode->code();
 
         default:
             return -1; // Fehler: unbekanntes Com Objekt
