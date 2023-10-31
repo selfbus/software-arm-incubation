@@ -366,9 +366,6 @@ unsigned long read_obj_value(unsigned char objno)
         case GroupObject::grpObjStatusTestAlarm:
             return testAlarmLocal;
 
-        case GroupObject::grpObjResetAlarm:
-            return ignoreBusAlarm;
-
         case GroupObject::grpObjStatusAlarmDelayed:
             return delayedAlarmCounter != 0;
 
@@ -740,7 +737,10 @@ extern "C" void TIMER32_0_IRQHandler()
 
         // Bus Alarm ignorieren Flag rücksetzen wenn kein Alarm mehr anliegt
         if (ignoreBusAlarm & !(alarmBus | testAlarmBus))
+        {
             ignoreBusAlarm = 0;
+            bcu.comObjects->objectSetValue(GroupObject::grpObjResetAlarm, ignoreBusAlarm);
+        }
 
         if (!readCmdno)
         {
