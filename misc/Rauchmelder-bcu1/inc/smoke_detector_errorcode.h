@@ -61,7 +61,7 @@ public:
 
 private:
     bool isSet(SdErrorCode toCheck) const;
-    bool set(SdErrorCode error, bool set);
+    void set(SdErrorCode error, bool set);
     static uint8_t errorCodeToUint8(SdErrorCode code);
 
     uint8_t errorCode;

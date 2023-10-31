@@ -42,7 +42,7 @@ uint8_t SmokeDetectorErrorCode::code() const
     return errorCode;
 }
 
-bool SmokeDetectorErrorCode::set(SdErrorCode error, bool set)
+void SmokeDetectorErrorCode::set(SdErrorCode error, bool set)
 {
     uint8_t oldErrorCode = errorCode;
 
@@ -55,12 +55,10 @@ bool SmokeDetectorErrorCode::set(SdErrorCode error, bool set)
         errorCode &= ~errorCodeToUint8(error);
     }
 
-    bool errorCodeChanged = (oldErrorCode != errorCode);
-    if (errorCodeChanged)
+    if (oldErrorCode != errorCode)
     {
         errorCodeChangedCallback(error == SdErrorCode::batteryLow, error != SdErrorCode::batteryLow);
     }
-    return errorCodeChanged;
 }
 
 bool SmokeDetectorErrorCode::batteryLow() const
