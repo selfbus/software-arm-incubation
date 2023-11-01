@@ -26,38 +26,6 @@ SmokeDetectorErrorCode::SmokeDetectorErrorCode(const SmokeDetectorGroupObjects *
 {
 }
 
-bool SmokeDetectorErrorCode::isSet(SdErrorCode errorToCheck) const
-{
-    bool result = (0 != (errorCode & errorCodeToUint8(errorToCheck)));
-    return result;
-}
-
-uint8_t SmokeDetectorErrorCode::code() const
-{
-    return errorCode;
-}
-
-void SmokeDetectorErrorCode::set(SdErrorCode error, bool set)
-{
-    if (set)
-    {
-        errorCode |= errorCodeToUint8(error);
-    }
-    else
-    {
-        errorCode &= ~errorCodeToUint8(error);
-    }
-
-    groupObjects->writeIfChanged(GroupObject::grpObjErrorCode, errorCode);
-    groupObjects->writeIfChanged(GroupObject::grpObjBatteryLow, batteryLow());
-    groupObjects->writeIfChanged(GroupObject::grpObjMalfunction, malfunction());
-}
-
-bool SmokeDetectorErrorCode::batteryLow() const
-{
-    return isSet(SdErrorCode::batteryLow);
-}
-
 void SmokeDetectorErrorCode::batteryLow(bool batteryLow)
 {
     set(SdErrorCode::batteryLow, batteryLow);
@@ -88,10 +56,37 @@ void SmokeDetectorErrorCode::communicationTimeout(bool timedout)
     set(SdErrorCode::communicationTimeout, timedout);
 }
 
+bool SmokeDetectorErrorCode::batteryLow() const
+{
+    return isSet(SdErrorCode::batteryLow);
+}
+
 bool SmokeDetectorErrorCode::malfunction() const
 {
     bool malFunction = (0 != (errorCode & ~errorCodeToUint8(SdErrorCode::batteryLow)));
     return malFunction;
+}
+
+bool SmokeDetectorErrorCode::isSet(SdErrorCode errorToCheck) const
+{
+    bool result = (0 != (errorCode & errorCodeToUint8(errorToCheck)));
+    return result;
+}
+
+void SmokeDetectorErrorCode::set(SdErrorCode error, bool newValue)
+{
+    if (newValue)
+    {
+        errorCode |= errorCodeToUint8(error);
+    }
+    else
+    {
+        errorCode &= ~errorCodeToUint8(error);
+    }
+
+    groupObjects->writeIfChanged(GroupObject::grpObjErrorCode, errorCode);
+    groupObjects->writeIfChanged(GroupObject::grpObjBatteryLow, batteryLow());
+    groupObjects->writeIfChanged(GroupObject::grpObjMalfunction, malfunction());
 }
 
 uint8_t SmokeDetectorErrorCode::errorCodeToUint8(SdErrorCode code)

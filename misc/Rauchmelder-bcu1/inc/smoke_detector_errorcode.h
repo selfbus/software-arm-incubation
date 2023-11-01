@@ -45,7 +45,6 @@ public:
     SmokeDetectorErrorCode(const SmokeDetectorGroupObjects *groupObjects);
     ~SmokeDetectorErrorCode() = delete;
 
-    bool batteryLow() const;
     void batteryLow(bool battLow);
     void temperature_1_fault(bool faulty);
     void temperature_2_fault(bool faulty);
@@ -53,13 +52,11 @@ public:
     void supplyVoltageDisabled(bool disabled);
     void communicationTimeout(bool timedout);
 
-    bool malfunction() const;
-
-    uint8_t code() const;
-
 private:
+    bool batteryLow() const;
+    bool malfunction() const;
     bool isSet(SdErrorCode toCheck) const;
-    void set(SdErrorCode error, bool set);
+    void set(SdErrorCode error, bool newValue);
     static uint8_t errorCodeToUint8(SdErrorCode code);
 
     uint8_t errorCode;
