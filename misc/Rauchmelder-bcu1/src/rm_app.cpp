@@ -791,8 +791,6 @@ void initApplication()
     TalarmCounter = 1;
     delayedAlarmCounter = 0;
 
-    errorCode->clearAllErrors();
-
     // set all comObjects to default
     for (std::underlying_type_t<GroupObject> i = 0; i < NUM_OBJS; i++)
     {

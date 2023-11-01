@@ -45,8 +45,6 @@ public:
     SmokeDetectorErrorCode(const SmokeDetectorGroupObjects *groupObjects);
     ~SmokeDetectorErrorCode() = delete;
 
-    void clearAllErrors();
-
     bool batteryLow() const;
     void batteryLow(bool battLow);
     void temperature_1_fault(bool faulty);

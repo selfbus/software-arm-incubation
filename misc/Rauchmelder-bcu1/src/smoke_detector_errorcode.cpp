@@ -26,11 +26,6 @@ SmokeDetectorErrorCode::SmokeDetectorErrorCode(const SmokeDetectorGroupObjects *
 {
 }
 
-void SmokeDetectorErrorCode::clearAllErrors()
-{
-    errorCode = errorCodeToUint8(SdErrorCode::noError);
-}
-
 bool SmokeDetectorErrorCode::isSet(SdErrorCode errorToCheck) const
 {
     bool result = (0 != (errorCode & errorCodeToUint8(errorToCheck)));
