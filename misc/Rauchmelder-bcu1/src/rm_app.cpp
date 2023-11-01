@@ -94,8 +94,6 @@ CmdTab[] =
                                                 {GroupObject::grpObjInvalid}}}
 };
 
-void sendGroupObject(GroupObject groupObject);
-
 bool alarmLocal;                   //!< Flag für lokalen Alarm und Wired Alarm (über grüne Klemme / Rauchmelderbus)
 bool alarmBus;                     //!< Flag für remote Alarm über EIB
 bool testAlarmLocal;               //!< Flag für lokalen Testalarm und Wired Testalarm
@@ -152,18 +150,6 @@ void failHardInDebug() ///\todo remove on release
 uint8_t commandTableSize()
 {
     return sizeof(CmdTab)/sizeof(CmdTab[0]);
-}
-
-/**
- * Send any group object onto the bus with the value currently stored.
- *
- * @param groupObject The group object to send
- */
-void sendGroupObject(GroupObject groupObject)
-{
-    // The communication objects already have the correct value, but there is no method to
-    // just mark them for sending. So, just write the same value again.
-    bcu.comObjects->objectWrite(groupObject, bcu.comObjects->objectRead(groupObject));
 }
 
 /**
@@ -232,7 +218,7 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
             auto offset = CmdTab[cmd].objects[cmdObj_cnt].offset;
             auto dataType = CmdTab[cmd].objects[cmdObj_cnt].dataType;
             auto value = readObjectValueFromResponse(bytes + 1 + offset, dataType);
-            bcu.comObjects->objectSetValue(groupObject, value);
+            groupObjects->setValue(groupObject, value);
         }
     }
     else // status command gets special treatment
@@ -559,8 +545,8 @@ bool send_Cmd(Command cmd)
             break;
 
         case Command::rmBatteryAndTemperature:
-            bcu.comObjects->objectSetValue(GroupObject::grpObjBatteryVoltage, 0);
-            bcu.comObjects->objectSetValue(GroupObject::grpObjTemperature, 0);
+            groupObjects->setValue(GroupObject::grpObjBatteryVoltage, 0);
+            groupObjects->setValue(GroupObject::grpObjTemperature, 0);
             break;
 
         case Command::rmNumberAlarms_1:
@@ -645,8 +631,8 @@ extern "C" void TIMER32_0_IRQHandler()
             if (!delayedAlarmCounter)   // Verzögerungszeit abgelaufen
             {
                 bcu.comObjects->objectSetValue(GroupObject::grpObjStatusAlarmDelayed, read_obj_value(GroupObject::grpObjStatusAlarmDelayed)); // Status verzögerter Alarm zurücksetzen
-                //sendGroupObject(GroupObject::grpObjAlarmBus);  // Vernetzung Alarm senden
-                //sendGroupObject(GroupObject::grpObjStatusAlarm); // Status Alarm senden
+                //groupObjects->send(GroupObject::grpObjAlarmBus);  // Vernetzung Alarm senden
+                //groupObjects->send(GroupObject::grpObjStatusAlarm); // Status Alarm senden
 
                 bcu.comObjects->objectWrite(GroupObject::grpObjAlarmBus, alarmLocal);
             }
@@ -661,9 +647,9 @@ extern "C" void TIMER32_0_IRQHandler()
                     alarmCounter = config->alarmIntervalSeconds();     // Zykl. senden Zeit holen
                     if (config->alarmSendNetworkPeriodically())
                     {
-                        sendGroupObject(GroupObject::grpObjAlarmBus); // Vernetzung Alarm senden
+                        groupObjects->send(GroupObject::grpObjAlarmBus); // Vernetzung Alarm senden
                     }
-                    sendGroupObject(GroupObject::grpObjStatusAlarm);
+                    groupObjects->send(GroupObject::grpObjStatusAlarm);
                 }
             }
         }
@@ -677,7 +663,7 @@ extern "C" void TIMER32_0_IRQHandler()
             if (!alarmCounter)
             {
                 alarmCounter = config->alarmIntervalSeconds(); // Zykl. senden Zeit holen
-                sendGroupObject(GroupObject::grpObjStatusAlarm);
+                groupObjects->send(GroupObject::grpObjStatusAlarm);
             }
         }
     }
@@ -693,9 +679,9 @@ extern "C" void TIMER32_0_IRQHandler()
                 TalarmCounter = config->testAlarmIntervalSeconds();
                 if (config->testAlarmSendNetworkPeriodically())
                 {
-                    sendGroupObject(GroupObject::grpObjTestAlarmBus);
+                    groupObjects->send(GroupObject::grpObjTestAlarmBus);
                 }
-                sendGroupObject(GroupObject::grpObjStatusTestAlarm);
+                groupObjects->send(GroupObject::grpObjStatusTestAlarm);
             }
         }
     }
@@ -709,7 +695,7 @@ extern "C" void TIMER32_0_IRQHandler()
         // Info Objekt zum Senden vormerken wenn es dafür konfiguriert ist.
         if (config->infoSendPeriodically(infoSendObjno))
         {
-            sendGroupObject(infoSendObjno);
+            groupObjects->send(infoSendObjno);
         }
 
         infoSendObjno = static_cast<GroupObject>(static_cast<std::underlying_type_t<GroupObject>>(infoSendObjno) - 1);
@@ -808,9 +794,9 @@ void initApplication()
     errorCode->clearAllErrors();
 
     // set all comObjects to default
-    for (uint8_t i = 0; i < NUM_OBJS; i++)
+    for (std::underlying_type_t<GroupObject> i = 0; i < NUM_OBJS; i++)
     {
-        bcu.comObjects->objectSetValue(i, 0);
+        groupObjects->setValue(static_cast<GroupObject>(i), 0);
     }
 
     pinMode(LED_BASEPLATE_DETACHED_PIN, OUTPUT);
