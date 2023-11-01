@@ -23,6 +23,8 @@
 
 #include <stdint.h>
 
+#include "smoke_detector_group_objects.h"
+
 /**
  * Smoke detector module error codes
  */
@@ -37,18 +39,10 @@ enum class SdErrorCode : uint8_t
     coverplateNotAttached     = 0x20, //!< Smoke detector is not attached to cover plate
 };
 
-class SmokeDetectorErrorCode;
-
-class SmokeDetectorErrorCodeCallback
-{
-public:
-    virtual void errorCodeChanged(const SmokeDetectorErrorCode *errorCode, bool batteryLowChanged, bool malfunctionChanged) const = 0;
-};
-
 class SmokeDetectorErrorCode
 {
 public:
-    SmokeDetectorErrorCode(const SmokeDetectorErrorCodeCallback *errorCodeCallback);
+    SmokeDetectorErrorCode(const SmokeDetectorGroupObjects *groupObjects);
     ~SmokeDetectorErrorCode() = delete;
 
     void clearAllErrors();
@@ -71,7 +65,7 @@ private:
     static uint8_t errorCodeToUint8(SdErrorCode code);
 
     uint8_t errorCode;
-    const SmokeDetectorErrorCodeCallback *errorCodeCallback;
+    const SmokeDetectorGroupObjects *groupObjects;
 };
 
 

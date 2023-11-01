@@ -20,9 +20,9 @@
 
 #include <smoke_detector_errorcode.h>
 
-SmokeDetectorErrorCode::SmokeDetectorErrorCode(const SmokeDetectorErrorCodeCallback *errorCodeCallback)
+SmokeDetectorErrorCode::SmokeDetectorErrorCode(const SmokeDetectorGroupObjects *groupObjects)
     : errorCode(errorCodeToUint8(SdErrorCode::noError)),
-      errorCodeCallback(errorCodeCallback)
+      groupObjects(groupObjects)
 {
 }
 
@@ -44,8 +44,6 @@ uint8_t SmokeDetectorErrorCode::code() const
 
 void SmokeDetectorErrorCode::set(SdErrorCode error, bool set)
 {
-    uint8_t oldErrorCode = errorCode;
-
     if (set)
     {
         errorCode |= errorCodeToUint8(error);
@@ -55,10 +53,9 @@ void SmokeDetectorErrorCode::set(SdErrorCode error, bool set)
         errorCode &= ~errorCodeToUint8(error);
     }
 
-    if (oldErrorCode != errorCode)
-    {
-        errorCodeCallback->errorCodeChanged(this, error == SdErrorCode::batteryLow, error != SdErrorCode::batteryLow);
-    }
+    groupObjects->writeIfChanged(GroupObject::grpObjErrorCode, errorCode);
+    groupObjects->writeIfChanged(GroupObject::grpObjBatteryLow, batteryLow());
+    groupObjects->writeIfChanged(GroupObject::grpObjMalfunction, malfunction());
 }
 
 bool SmokeDetectorErrorCode::batteryLow() const
