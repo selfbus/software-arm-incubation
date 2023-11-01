@@ -791,12 +791,6 @@ void initApplication()
     TalarmCounter = 1;
     delayedAlarmCounter = 0;
 
-    // set all comObjects to default
-    for (std::underlying_type_t<GroupObject> i = 0; i < NUM_OBJS; i++)
-    {
-        groupObjects->setValue(static_cast<GroupObject>(i), 0);
-    }
-
     pinMode(LED_BASEPLATE_DETACHED_PIN, OUTPUT);
     digitalWrite(LED_BASEPLATE_DETACHED_PIN, false);
     pinMode(RM_ACTIVITY_PIN, INPUT | PULL_DOWN); // smoke detector base plate state, pulldown configured, Pin is connected to 3.3V VCC of the RM

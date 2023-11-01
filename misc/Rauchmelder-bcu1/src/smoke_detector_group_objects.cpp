@@ -6,11 +6,17 @@
  *  published by the Free Software Foundation.
  */
 
+#include <type_traits>
+
 #include "smoke_detector_group_objects.h"
 
 SmokeDetectorGroupObjects::SmokeDetectorGroupObjects(ComObjects *comObjects)
     : comObjects(comObjects)
 {
+    for (std::underlying_type_t<GroupObject> i = 0; i < NUM_OBJS; i++)
+    {
+        setValue(static_cast<GroupObject>(i), 0);
+    }
 }
 
 /**
