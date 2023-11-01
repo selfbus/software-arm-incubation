@@ -53,6 +53,18 @@
     #define DEFAULT_KNX_OBJECT_TIME 3 // half seconds
 #endif
 
+/**
+ * Smoke detector alarm states
+ */
+enum RmAlarmState : uint8_t
+{
+    RM_NO_ALARM,    //!< normal state, no alarm and no test alarm
+    RM_ALARM,       //!< alarm state
+    RM_TEST_ALARM,  //!< test alarm state
+
+    RM_NO_CHANGE    //!< do nothing, keep as is
+};
+
 //-----------------------------------------------------------------------------
 // Kommunikations Objekte
 //-----------------------------------------------------------------------------

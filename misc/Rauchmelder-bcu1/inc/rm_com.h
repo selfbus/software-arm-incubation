@@ -14,6 +14,8 @@
 
 #include <stdint.h>
 
+#include "rm_const.h"
+
 /**
  *  Befehlbyte an den Rauchmelder
  */
@@ -26,16 +28,6 @@ enum RmCommandByte : uint8_t
     numberAlarms_1         = 0x0D,
     numberAlarms_2         = 0x0E,
     status                 = 0x02
-};
-
-/**
- * Smoke detector alarm states
- */
-enum RmAlarmState : uint8_t
-{
-    RM_NO_ALARM,    //!< normal state, no alarm and no test alarm
-    RM_ALARM,       //!< alarm state
-    RM_TEST_ALARM   //!< test alarm state
 };
 
 //

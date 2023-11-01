@@ -24,14 +24,16 @@
 #include "rm_app.h"
 #include "rm_const.h"
 #include "rm_com.h"
+#include "smoke_detector_alarm.h"
 #include "smoke_detector_config.h"
 #include "smoke_detector_errorcode.h"
 #include "smoke_detector_group_objects.h"
 
 BCU1 bcu = BCU1();
-SmokeDetectorGroupObjects *groupObjects = new SmokeDetectorGroupObjects(bcu.comObjects);
-SmokeDetectorErrorCode *errorCode = new SmokeDetectorErrorCode(groupObjects); //!< Smoke detector error code handling
 SmokeDetectorConfig *config = new SmokeDetectorConfig(bcu.userEeprom);
+SmokeDetectorGroupObjects *groupObjects = new SmokeDetectorGroupObjects(bcu.comObjects);
+SmokeDetectorAlarm *alarm = new SmokeDetectorAlarm(config, groupObjects);
+SmokeDetectorErrorCode *errorCode = new SmokeDetectorErrorCode(groupObjects); //!< Smoke detector error code handling
 
 //-----------------------------------------------------------------------------
 // Befehle an den Rauchmelder
@@ -94,51 +96,12 @@ CmdTab[] =
                                                 {GroupObject::grpObjInvalid}}}
 };
 
-bool alarmLocal;                   //!< Flag für lokalen Alarm und Wired Alarm (über grüne Klemme / Rauchmelderbus)
-bool alarmBus;                     //!< Flag für remote Alarm über EIB
-bool testAlarmLocal;               //!< Flag für lokalen Testalarm und Wired Testalarm
-bool testAlarmBus;                 //!< Flag für remote Testalarm über EIB
-bool setAlarmBus;                  //!< Flag für den gewünschten Alarm Status wie wir ihn über den EIB empfangen haben
-bool setTestAlarmBus;              //!< Flag für den gewünschten Testalarm Status wie wir ihn über den EIB empfangen haben
-bool ignoreBusAlarm;               //!< Flag für Bus Alarm & -Testalarm ignorieren
 unsigned char answerWait;          //!< Wenn != 0, dann Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.
 #define INITIAL_ANSWER_WAIT 6      //!< Initialwert für answerWait in 0,5s
-unsigned char alarmCounter;        //!< Countdown Zähler für zyklisches Senden eines Alarms.
-unsigned char TalarmCounter;       //!< Countdown Zähler für zyklisches Senden eines Testalarms.
-unsigned char delayedAlarmCounter; //!< Countdown Zähler für verzögertes Senden eines Alarms
 unsigned char infoCounter;         //!< Countdown Zähler für zyklisches Senden der (Info) Com-Objekte
 GroupObject infoSendObjno;         //!< Com-Objekt, das bei zyklischem Info Senden als nächstes geprüft/gesendet wird
 unsigned char readCmdno;           //!< Nummer des Befehls, welcher als nächstes zyklisch an den Rauchmelder gesendet wird
 unsigned char eventTime = DEFAULT_EVENTTIME; //!< Halbsekunden Zähler 0..119
-
-/**
- * Den Alarm Status auf den Bus senden falls noch nicht gesendet.
- *
- * @param newAlarm - neuer Alarm Status
- *//*
-void send_obj_alarm(bool newAlarm)
-{
-    if (alarmLocal != newAlarm)
-    {
-        objectWrite(GroupObject::grpObjAlarmBus, newAlarm);
-        if()
-        objectWrite(GroupObject::grpObjStatusAlarm, newAlarm);
-    }
-}*/
-
-/**
- * Den Testalarm Status auf den Bus senden falls noch nicht gesendet.
- *
- * @param newAlarm - neuer Testalarm Status
- */
-void send_obj_test_alarm(bool newAlarm)
-{
-    if (testAlarmLocal != newAlarm)
-    {
-        bcu.comObjects->objectWrite(GroupObject::grpObjTestAlarmBus, newAlarm);
-        bcu.comObjects->objectWrite(GroupObject::grpObjStatusTestAlarm, newAlarm);
-    }
-}
 
 void failHardInDebug() ///\todo remove on release
 {
@@ -151,11 +114,6 @@ uint8_t commandTableSize()
 {
     return sizeof(CmdTab)/sizeof(CmdTab[0]);
 }
-
-/**
- * Anhand der Kommunikationsobjektnummer die passenden Daten herausgeben
- */
-unsigned long read_obj_value(unsigned char objno);
 
 /**
  * Read raw value from response and convert it to corresponding group object value
@@ -224,74 +182,30 @@ void rm_process_msg(uint8_t *bytes, int8_t len)
     else // status command gets special treatment
     {
         unsigned char subType = bytes[1];
-        bool newAlarm;
 
         // (Alarm) Status
 
         unsigned char status = bytes[2];
 
         // Lokaler Alarm: Rauch Alarm | Temperatur Alarm | Wired Alarm
-        newAlarm = (subType & 0x10) | (status & (0x04 | 0x08));
-        if (config->alarmSendDelayed() && newAlarm) // wenn Alarm verzögert gesendet werden soll und Alarm ansteht
-        {
-            delayedAlarmCounter = config->alarmDelaySeconds();
-            bcu.comObjects->objectSetValue(GroupObject::grpObjStatusAlarmDelayed, read_obj_value(GroupObject::grpObjStatusAlarmDelayed));
-        }
-        else if (alarmLocal != newAlarm) //wenn Alarm nicht verzögert gesendet werden soll oder Alarm nicht mehr ansteht (nur 1x senden)
-        {
-            bcu.comObjects->objectWrite(GroupObject::grpObjAlarmBus, newAlarm);
-        }
-
-        if (alarmLocal != newAlarm) //sobald neuer AlarmStatus ansteht, soll dieser versendet werden
-        {
-            bcu.comObjects->objectWrite(GroupObject::grpObjStatusAlarm, newAlarm);
-        }
-
-        alarmLocal = newAlarm;
+        auto hasAlarm = (subType & 0x10) | (status & (0x04 | 0x08));
 
         // Lokaler Testalarm: (lokaler) Testalarm || Wired Testalarm
-        newAlarm = status & (0x20 | 0x40);
-        send_obj_test_alarm(newAlarm);
-        testAlarmLocal = newAlarm;
+        auto hasTestAlarm = status & (0x20 | 0x40);
 
-        // Bus Alarm
-        alarmBus = status & 0x10;
+        auto hasAlarmFromBus = status & 0x10;
+        auto hasTestAlarmFromBus = status & 0x80;
 
-        // Bus Testalarm
-        testAlarmBus = status & 0x80;
+        alarm->deviceStatusUpdate(hasAlarm, hasTestAlarm, hasAlarmFromBus, hasTestAlarmFromBus);
+
+        if (subType & 0x08)  // Taste am Rauchmelder gedrückt
+        {
+            alarm->deviceButtonPressed();
+        }
 
         // Battery low
         bool batteryLow = ((status & 0x01) == 1);
         errorCode->batteryLow(batteryLow);
-
-        ///\todo see below
-        /*
-         * In der folgenden Passage ist für mich die Versendung der Objekte nicht nachvollziehbar:
-         * Es wird kontrolliert, ob die Taste am Rauchmelder gedrückt wurde, anschließend wir überprüft, ob ein Alarm oder TestAlarm vom Bus vorliegt
-         * Dann wird der jeweilige Status versendet.
-         * für welchen Anwendungfall ist dieses sinnvoll?
-         * zur Zeit wird vom lokalen Rauchmelder der setAlarmBus ausgelöst (quasi local loopback) und die Tastenerkennung löst aus
-         * Somit wird die Status Nachricht EIN 2x versendet (1x aus send_obj_alarm bzw. send_obj_test_alarm) und einmal hier.
-         * AUS wird hier allerdings nicht versendet, da setAlarmBus bzw. setTestAlarmBus dann false sind
-         *
-         * Daher habe ich mich entschieden, diese Versendung vorerst zu deaktivieren
-         */
-
-        if (subType & 0x08)  // Taste am Rauchmelder gedrückt
-        {
-            if (setAlarmBus) //wenn Alarm auf Bus anliegt
-            {
-                setAlarmBus = 0;
-                delayedAlarmCounter = 0; // verzögerten Alarm abbrechen
-                //objectWrite(GroupObject::grpObjStatusAlarm, read_obj_value(GroupObject::grpObjStatusAlarm));
-            }
-
-            if (setTestAlarmBus) //wenn Testalarm auf Bus anliegt
-            {
-                setTestAlarmBus = 0;
-                //objectWrite(GroupObject::grpObjStatusTestAlarm, read_obj_value(GroupObject::grpObjStatusTestAlarm));
-            }
-        }
 
         bool temperatureSensor_1_fault = false;
         bool temperatureSensor_2_fault = false;
@@ -331,33 +245,6 @@ unsigned long answer_to_long(unsigned char *cvalue)
 unsigned short answer_to_short(unsigned char *cvalue)
 {
     return (cvalue[0] << 8) | cvalue[1];
-}
-
-/**
- * Wert eines internen Com-Objekts liefern.
- *
- * @param objno - die ID des Kommunikations-Objekts
- * @return Den Wert des Kommunikations Objekts
- */
-unsigned long read_obj_value(unsigned char objno)
-{
-    // Interne Com-Objekte behandeln
-    switch (objno)
-    {
-        case GroupObject::grpObjAlarmBus:
-        case GroupObject::grpObjStatusAlarm:
-            return alarmLocal;
-
-        case GroupObject::grpObjTestAlarmBus:
-        case GroupObject::grpObjStatusTestAlarm:
-            return testAlarmLocal;
-
-        case GroupObject::grpObjStatusAlarmDelayed:
-            return delayedAlarmCounter != 0;
-
-        default:
-            return -1; // Fehler: unbekanntes Com Objekt
-    }
 }
 
 /**
@@ -420,35 +307,11 @@ uint32_t readObjectValueFromResponse(uint8_t *rawValue, uint8_t dataType)
  */
 void objectUpdated(int objno)
 {
-    if (objno == GroupObject::grpObjAlarmBus) // Bus Alarm
+    if (objno == GroupObject::grpObjAlarmBus ||         // Alarm Network
+        objno == GroupObject::grpObjTestAlarmBus ||     // Test Alarm Network
+        objno == GroupObject::grpObjResetAlarm)         // Alarm Reset
     {
-        setAlarmBus = bcu.comObjects->objectRead(objno) & 0x01; //ToDo: prüfen ob ok   //war: setAlarmBus = telegramm[7] & 0x01;
-
-        // Wenn wir lokalen Alarm haben dann Bus Alarm wieder auslösen
-        // damit der Status der anderen Rauchmelder stimmt
-        if (!setAlarmBus && alarmLocal)
-            bcu.comObjects->objectWrite(GroupObject::grpObjAlarmBus, read_obj_value(GroupObject::grpObjAlarmBus)); //send_obj_value(GroupObject::alarmBus);
-
-        if (ignoreBusAlarm)
-            setAlarmBus = 0;
-    }
-    else if (objno == GroupObject::grpObjTestAlarmBus) // Bus Test Alarm
-    {
-        setTestAlarmBus = bcu.comObjects->objectRead(objno) & 0x01; //ToDo: prüfen ob ok   //war: setTestAlarmBus = telegramm[7] & 0x01;
-
-        // Wenn wir lokalen Testalarm haben dann Bus Testalarm wieder auslösen
-        // damit der Status der anderen Rauchmelder stimmt
-        if (!setTestAlarmBus && testAlarmLocal)
-            bcu.comObjects->objectWrite(GroupObject::grpObjTestAlarmBus, read_obj_value(GroupObject::grpObjTestAlarmBus)); //send_obj_value(GroupObject::grpObjTestAlarmBus);
-
-        if (ignoreBusAlarm)
-            setTestAlarmBus = 0;
-    }
-    else if (objno == GroupObject::grpObjResetAlarm) // Bus Alarm rücksetzen
-    {
-        setAlarmBus = 0;
-        setTestAlarmBus = 0;
-        ignoreBusAlarm = 1;
+        alarm->groupObjectUpdated(static_cast<GroupObject>(objno));
     }
 }
 
@@ -575,22 +438,10 @@ void process_alarm_stats()
        return;
     }
 
-    if (setAlarmBus && !alarmBus)
+    auto alarmState = alarm->process_alarm_stats();
+    if (alarmState != RM_NO_CHANGE)
     {
-        // Alarm auslösen
-        rm_set_alarm_state(RM_ALARM);
-        answerWait = INITIAL_ANSWER_WAIT;
-    }
-    else if (setTestAlarmBus && !testAlarmBus)
-    {
-        // Testalarm auslösen
-        rm_set_alarm_state(RM_TEST_ALARM);
-        answerWait = INITIAL_ANSWER_WAIT;
-    }
-    else if ((!setAlarmBus && alarmBus) || (!setTestAlarmBus && testAlarmBus))
-    {
-        // Alarm und Testalarm beenden
-        rm_set_alarm_state(RM_NO_ALARM);
+        rm_set_alarm_state(alarmState);
         answerWait = INITIAL_ANSWER_WAIT;
     }
 }
@@ -621,76 +472,12 @@ extern "C" void TIMER32_0_IRQHandler()
     if (eventTime & 1)
         return;
 
-    // Alarm: verzögert und zyklisch senden
-    if (alarmLocal)
-    {
-        // Alarm verzögert senden
-        if (delayedAlarmCounter)
-        {
-            --delayedAlarmCounter;
-            if (!delayedAlarmCounter)   // Verzögerungszeit abgelaufen
-            {
-                bcu.comObjects->objectSetValue(GroupObject::grpObjStatusAlarmDelayed, read_obj_value(GroupObject::grpObjStatusAlarmDelayed)); // Status verzögerter Alarm zurücksetzen
-                //groupObjects->send(GroupObject::grpObjAlarmBus);  // Vernetzung Alarm senden
-                //groupObjects->send(GroupObject::grpObjStatusAlarm); // Status Alarm senden
-
-                bcu.comObjects->objectWrite(GroupObject::grpObjAlarmBus, alarmLocal);
-            }
-        }
-        else // Alarm zyklisch senden
-        {
-            if (config->alarmSendStatusPeriodically())
-            {
-                --alarmCounter;
-                if (!alarmCounter)
-                {
-                    alarmCounter = config->alarmIntervalSeconds();     // Zykl. senden Zeit holen
-                    if (config->alarmSendNetworkPeriodically())
-                    {
-                        groupObjects->send(GroupObject::grpObjAlarmBus); // Vernetzung Alarm senden
-                    }
-                    groupObjects->send(GroupObject::grpObjStatusAlarm);
-                }
-            }
-        }
-    }
-    // Kein Alarm, zyklisch 0 senden
-    else
-    {
-        if (config->alarmSendStatusPeriodicallyWhenNoAlarm())
-        {
-            --alarmCounter;
-            if (!alarmCounter)
-            {
-                alarmCounter = config->alarmIntervalSeconds(); // Zykl. senden Zeit holen
-                groupObjects->send(GroupObject::grpObjStatusAlarm);
-            }
-        }
-    }
-
-    // Testalarm: zyklisch senden
-    if (testAlarmLocal)
-    {
-        if (config->testAlarmSendStatusPeriodically())
-        {
-            --TalarmCounter;
-            if (!TalarmCounter)
-            {
-                TalarmCounter = config->testAlarmIntervalSeconds();
-                if (config->testAlarmSendNetworkPeriodically())
-                {
-                    groupObjects->send(GroupObject::grpObjTestAlarmBus);
-                }
-                groupObjects->send(GroupObject::grpObjStatusTestAlarm);
-            }
-        }
-    }
+    alarm->timerEverySecond();
 
     // Jede zweite Sekunde ein Status Com-Objekt senden.
     // (Vormals war es jede 4. Sekunde, aber dann reicht 1 Minute nicht für 16 eventuell zu sendende Status Objekte (ComOject 6 - 21))
     // Aber nur senden wenn kein Alarm anliegt.
-    if ((eventTime & DEFAULT_KNX_OBJECT_TIME) == 0 && infoSendObjno &&
-        !(alarmLocal | alarmBus | testAlarmLocal | testAlarmBus))
+    if ((eventTime & DEFAULT_KNX_OBJECT_TIME) == 0 && infoSendObjno && !alarm->hasAlarm())
     {
         // Info Objekt zum Senden vormerken wenn es dafür konfiguriert ist.
         if (config->infoSendPeriodically(infoSendObjno))
@@ -704,8 +491,7 @@ extern "C" void TIMER32_0_IRQHandler()
     // alle 8 Sekunden einen der 6 Befehle aus der CmdTab an den Rauchmelder senden, um alle Status Daten aus dem Rauchmelder abzufragen
     // notwendig, da die ARM sblib keine Funktion aufruft, wenn ein Objekt ausgelesen wird
     // daher müssen alle Informationen immer im Speicher vorliegen
-    if ((eventTime & DEFAULT_SERIAL_COMMAND_TIME) == 0 && readCmdno &&
-        !(alarmLocal | alarmBus | testAlarmLocal | testAlarmBus))
+    if ((eventTime & DEFAULT_SERIAL_COMMAND_TIME) == 0 && readCmdno && !alarm->hasAlarm())
     {
         if (!answerWait)
         {
@@ -721,12 +507,7 @@ extern "C" void TIMER32_0_IRQHandler()
     {
         eventTime = DEFAULT_EVENTTIME;
 
-        // Bus Alarm ignorieren Flag rücksetzen wenn kein Alarm mehr anliegt
-        if (ignoreBusAlarm & !(alarmBus | testAlarmBus))
-        {
-            ignoreBusAlarm = 0;
-            bcu.comObjects->objectSetValue(GroupObject::grpObjResetAlarm, ignoreBusAlarm);
-        }
+        alarm->timerEveryMinute();
 
         if (!readCmdno)
         {
@@ -777,22 +558,9 @@ void initApplication()
     // Werte initialisieren
     answerWait = 0;
 
-    alarmBus = 0;
-    alarmLocal = 0;
-
-    testAlarmBus = 0;
-    testAlarmLocal = 0;
-
-    setAlarmBus = 0;
-    setTestAlarmBus = 0;
-    ignoreBusAlarm = 0;
-
     infoSendObjno = GroupObject::grpObjAlarmBus;
     readCmdno = commandTableSize();
     infoCounter = config->infoIntervalMinutes();
-    alarmCounter = 1;
-    TalarmCounter = 1;
-    delayedAlarmCounter = 0;
 
     pinMode(LED_BASEPLATE_DETACHED_PIN, OUTPUT);
     digitalWrite(LED_BASEPLATE_DETACHED_PIN, false);

@@ -22,6 +22,8 @@ public:
 public:
     void send(GroupObject groupObject) const;
     void setValue(GroupObject groupObject, uint32_t value) const;
+    uint32_t read(GroupObject groupObject) const;
+    void write(GroupObject groupObject, uint32_t value) const;
     void writeIfChanged(GroupObject groupObject, uint32_t value) const;
 
 private:

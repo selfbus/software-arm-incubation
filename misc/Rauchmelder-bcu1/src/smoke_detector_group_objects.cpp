@@ -43,6 +43,28 @@ void SmokeDetectorGroupObjects::setValue(GroupObject groupObject, uint32_t value
 }
 
 /**
+ * Read any group object value.
+ *
+ * @param groupObject The group object to read the value of
+ * @param value       New value of the group object
+ */
+uint32_t SmokeDetectorGroupObjects::read(GroupObject groupObject) const
+{
+    return comObjects->objectRead(groupObject);
+}
+
+/**
+ * Set any group object to the respective value, and send the group object onto the bus.
+ *
+ * @param groupObject The group object to update the value of
+ * @param value       New value of the group object
+ */
+void SmokeDetectorGroupObjects::write(GroupObject groupObject, uint32_t value) const
+{
+    comObjects->objectWrite(groupObject, value);
+}
+
+/**
  * Set any group object to the respective value, and if the value differs, send the change onto the bus.
  *
  * @param groupObject The group object to update the stored value of
