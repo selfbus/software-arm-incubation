@@ -754,6 +754,9 @@ void setupPeriodicTimer(uint32_t milliseconds)
     // Begin using the timer
     timer32_0.begin();
 
+    // Smoke detector timer is important, but less important than the Bus timer.
+    timer32_0.setIRQPriority(1);
+
     // Let the timer count milliseconds
     timer32_0.prescaler((SystemCoreClock / 1000) - 1);
 
