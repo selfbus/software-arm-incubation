@@ -43,33 +43,6 @@ void SmokeDetectorAlarm::send_obj_alarm(bool newAlarm)
 }*/
 
 /**
- * Wert eines internen Com-Objekts liefern.
- *
- * @param objno - die ID des Kommunikations-Objekts
- * @return Den Wert des Kommunikations Objekts
- */
-unsigned long SmokeDetectorAlarm::read_obj_value(unsigned char objno)
-{
-    // Interne Com-Objekte behandeln
-    switch (objno)
-    {
-        case GroupObject::grpObjAlarmBus:
-        case GroupObject::grpObjStatusAlarm:
-            return alarmLocal;
-
-        case GroupObject::grpObjTestAlarmBus:
-        case GroupObject::grpObjStatusTestAlarm:
-            return testAlarmLocal;
-
-        case GroupObject::grpObjStatusAlarmDelayed:
-            return delayedAlarmCounter != 0;
-
-        default:
-            return -1; // Fehler: unbekanntes Com Objekt
-    }
-}
-
-/**
  * Den Testalarm Status auf den Bus senden falls noch nicht gesendet.
  *
  * @param newAlarm - neuer Testalarm Status
@@ -97,7 +70,7 @@ void SmokeDetectorAlarm::groupObjectUpdated(GroupObject groupObject)
         // Wenn wir lokalen Alarm haben dann Bus Alarm wieder auslösen
         // damit der Status der anderen Rauchmelder stimmt
         if (!setAlarmBus && alarmLocal)
-            groupObjects->write(GroupObject::grpObjAlarmBus, read_obj_value(GroupObject::grpObjAlarmBus)); //send_obj_value(GroupObject::alarmBus);
+            groupObjects->write(GroupObject::grpObjAlarmBus, alarmLocal);
 
         if (ignoreBusAlarm)
             setAlarmBus = 0;
@@ -109,7 +82,7 @@ void SmokeDetectorAlarm::groupObjectUpdated(GroupObject groupObject)
         // Wenn wir lokalen Testalarm haben dann Bus Testalarm wieder auslösen
         // damit der Status der anderen Rauchmelder stimmt
         if (!setTestAlarmBus && testAlarmLocal)
-            groupObjects->write(GroupObject::grpObjTestAlarmBus, read_obj_value(GroupObject::grpObjTestAlarmBus)); //send_obj_value(GroupObject::grpObjTestAlarmBus);
+            groupObjects->write(GroupObject::grpObjTestAlarmBus, testAlarmLocal);
 
         if (ignoreBusAlarm)
             setTestAlarmBus = 0;
@@ -127,7 +100,7 @@ void SmokeDetectorAlarm::deviceStatusUpdate(bool newAlarmLocal, bool newTestAlar
     if (config->alarmSendDelayed() && newAlarmLocal) // wenn Alarm verzögert gesendet werden soll und Alarm ansteht
     {
         delayedAlarmCounter = config->alarmDelaySeconds();
-        groupObjects->setValue(GroupObject::grpObjStatusAlarmDelayed, read_obj_value(GroupObject::grpObjStatusAlarmDelayed));
+        groupObjects->setValue(GroupObject::grpObjStatusAlarmDelayed, true);
     }
     else if (alarmLocal != newAlarmLocal) //wenn Alarm nicht verzögert gesendet werden soll oder Alarm nicht mehr ansteht (nur 1x senden)
     {
@@ -170,13 +143,13 @@ void SmokeDetectorAlarm::deviceButtonPressed()
     {
         setAlarmBus = 0;
         delayedAlarmCounter = 0; // verzögerten Alarm abbrechen
-        //objectWrite(GroupObject::grpObjStatusAlarm, read_obj_value(GroupObject::grpObjStatusAlarm));
+        //objectWrite(GroupObject::grpObjStatusAlarm, alarmLocal);
     }
 
     if (setTestAlarmBus) //wenn Testalarm auf Bus anliegt
     {
         setTestAlarmBus = 0;
-        //objectWrite(GroupObject::grpObjStatusTestAlarm, read_obj_value(GroupObject::grpObjStatusTestAlarm));
+        //objectWrite(GroupObject::grpObjStatusTestAlarm, testAlarmLocal);
     }
 }
 
@@ -219,7 +192,7 @@ void SmokeDetectorAlarm::timerEverySecond()
             --delayedAlarmCounter;
             if (!delayedAlarmCounter)   // Verzögerungszeit abgelaufen
             {
-                groupObjects->setValue(GroupObject::grpObjStatusAlarmDelayed, read_obj_value(GroupObject::grpObjStatusAlarmDelayed)); // Status verzögerter Alarm zurücksetzen
+                groupObjects->setValue(GroupObject::grpObjStatusAlarmDelayed, false); // Status verzögerter Alarm zurücksetzen
                 //groupObjects->send(GroupObject::grpObjAlarmBus);  // Vernetzung Alarm senden
                 //groupObjects->send(GroupObject::grpObjStatusAlarm); // Status Alarm senden
 

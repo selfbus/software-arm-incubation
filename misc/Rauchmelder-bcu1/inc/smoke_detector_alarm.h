@@ -29,7 +29,6 @@ public:
     void timerEveryMinute();
 
 private:
-    unsigned long read_obj_value(unsigned char objno);
     void send_obj_test_alarm(bool newAlarm);
 
 private:
