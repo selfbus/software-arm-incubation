@@ -65,13 +65,13 @@ BcuBase* setup()
 
 
 #if defined (__LPC11XX__)
-#   if defined(__LPC11XX_IO16__)
+#   if defined(__LPC11XX_GNAXBOARD__)
         // GNAX2 board
         bcu.setProgPin(PIO2_11); // XIO23
         bcu.setProgPinInverted(false);
         bcu.setRxPin(PIO1_8);
         bcu.setTxPin(PIO1_9);
-#   endif // __LPC11XX_IO16__
+#   endif // __LPC11XX_GNAXBOARD__
 #elif defined (__LPC11UXX__)
 #   error "set correct bcu-pins for LPCUxxx" // TODO set correct bcu-pins for LPCUxxx
 #else
