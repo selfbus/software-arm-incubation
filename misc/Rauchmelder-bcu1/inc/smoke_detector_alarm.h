@@ -17,7 +17,7 @@
 class SmokeDetectorAlarm
 {
 public:
-    SmokeDetectorAlarm(SmokeDetectorConfig *config, SmokeDetectorGroupObjects *groupObjects);
+    SmokeDetectorAlarm(const SmokeDetectorConfig *config, const SmokeDetectorGroupObjects *groupObjects);
     ~SmokeDetectorAlarm() = delete;
 
     bool hasAlarm() const;
@@ -32,8 +32,8 @@ private:
     void send_obj_test_alarm(bool newAlarm);
 
 private:
-    SmokeDetectorConfig *config;
-    SmokeDetectorGroupObjects *groupObjects;
+    const SmokeDetectorConfig *config;
+    const SmokeDetectorGroupObjects *groupObjects;
     bool alarmLocal;                   //!< Flag für lokalen Alarm und Wired Alarm (über grüne Klemme / Rauchmelderbus)
     bool alarmBus;                     //!< Flag für remote Alarm über EIB
     bool testAlarmLocal;               //!< Flag für lokalen Testalarm und Wired Testalarm

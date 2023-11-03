@@ -8,7 +8,7 @@
 
 #include "smoke_detector_alarm.h"
 
-SmokeDetectorAlarm::SmokeDetectorAlarm(SmokeDetectorConfig *config, SmokeDetectorGroupObjects *groupObjects)
+SmokeDetectorAlarm::SmokeDetectorAlarm(const SmokeDetectorConfig *config, const SmokeDetectorGroupObjects *groupObjects)
     : config(config),
       groupObjects(groupObjects)
 {
