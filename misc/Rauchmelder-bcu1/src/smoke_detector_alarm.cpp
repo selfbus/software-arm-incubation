@@ -65,7 +65,7 @@ void SmokeDetectorAlarm::groupObjectUpdated(GroupObject groupObject)
 {
     if (groupObject == GroupObject::grpObjAlarmBus) // Bus Alarm
     {
-        setAlarmBus = groupObjects->read(groupObject) & 0x01; //ToDo: prüfen ob ok   //war: setAlarmBus = telegramm[7] & 0x01;
+        setAlarmBus = groupObjects->read(groupObject) & 0x01;
 
         // Wenn wir lokalen Alarm haben dann Bus Alarm wieder auslösen
         // damit der Status der anderen Rauchmelder stimmt
@@ -77,7 +77,7 @@ void SmokeDetectorAlarm::groupObjectUpdated(GroupObject groupObject)
     }
     else if (groupObject == GroupObject::grpObjTestAlarmBus) // Bus Test Alarm
     {
-        setTestAlarmBus = groupObjects->read(groupObject) & 0x01; //ToDo: prüfen ob ok   //war: setTestAlarmBus = telegramm[7] & 0x01;
+        setTestAlarmBus = groupObjects->read(groupObject) & 0x01;
 
         // Wenn wir lokalen Testalarm haben dann Bus Testalarm wieder auslösen
         // damit der Status der anderen Rauchmelder stimmt
