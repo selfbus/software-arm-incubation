@@ -34,16 +34,16 @@ private:
 private:
     const SmokeDetectorConfig *config;
     const SmokeDetectorGroupObjects *groupObjects;
-    bool alarmLocal;                   //!< Flag für lokalen Alarm und Wired Alarm (über grüne Klemme / Rauchmelderbus)
-    bool alarmBus;                     //!< Flag für remote Alarm über EIB
-    bool testAlarmLocal;               //!< Flag für lokalen Testalarm und Wired Testalarm
-    bool testAlarmBus;                 //!< Flag für remote Testalarm über EIB
-    bool setAlarmBus;                  //!< Flag für den gewünschten Alarm Status wie wir ihn über den EIB empfangen haben
-    bool setTestAlarmBus;              //!< Flag für den gewünschten Testalarm Status wie wir ihn über den EIB empfangen haben
-    bool ignoreBusAlarm;               //!< Flag für Bus Alarm & -Testalarm ignorieren
-    uint8_t alarmCounter;        //!< Countdown Zähler für zyklisches Senden eines Alarms.
-    uint8_t TalarmCounter;       //!< Countdown Zähler für zyklisches Senden eines Testalarms.
-    uint8_t delayedAlarmCounter; //!< Countdown Zähler für verzögertes Senden eines Alarms
+    bool deviceHasAlarmLocal;     //!< Device has an alarm due to smoke, temperature, or wired trigger (green networking terminal)
+    bool deviceHasAlarmBus;       //!< Device has an alarm due to bus trigger (via KNX)
+    bool deviceHasTestAlarmLocal; //!< Device has a test alarm due to button press or wired trigger
+    bool deviceHasTestAlarmBus;   //!< Device has a test alarm due to bus trigger (via KNX)
+    bool requestedAlarmBus;       //!< Desired alarm state per KNX bus
+    bool requestedTestAlarmBus;   //!< Desired test alarm state per KNX bus
+    bool ignoreBusAlarm;          //!< After Alarm Reset via KNX bus, ignore bus alarms for some time
+    uint8_t alarmCounter;         //!< Countdown to next periodic sending of alarm in seconds
+    uint8_t testAlarmCounter;     //!< Countdown to next periodic sending of test alarm in seconds
+    uint8_t delayedAlarmCounter;  //!< Countdown to delayed alarm sending in seconds
 };
 
 

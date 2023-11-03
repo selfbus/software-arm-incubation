@@ -12,18 +12,18 @@ SmokeDetectorAlarm::SmokeDetectorAlarm(const SmokeDetectorConfig *config, const 
     : config(config),
       groupObjects(groupObjects)
 {
-    alarmBus = 0;
-    alarmLocal = 0;
+    deviceHasAlarmLocal = false;
+    deviceHasAlarmBus = false;
 
-    testAlarmBus = 0;
-    testAlarmLocal = 0;
+    deviceHasTestAlarmLocal = false;
+    deviceHasTestAlarmBus = false;
 
-    setAlarmBus = 0;
-    setTestAlarmBus = 0;
-    ignoreBusAlarm = 0;
+    requestedAlarmBus = false;
+    requestedTestAlarmBus = false;
+    ignoreBusAlarm = false;
 
     alarmCounter = 1;
-    TalarmCounter = 1;
+    testAlarmCounter = 1;
     delayedAlarmCounter = 0;
 }
 
@@ -34,7 +34,7 @@ SmokeDetectorAlarm::SmokeDetectorAlarm(const SmokeDetectorConfig *config, const 
  *//*
 void SmokeDetectorAlarm::send_obj_alarm(bool newAlarm)
 {
-    if (alarmLocal != newAlarm)
+    if (deviceHasAlarmLocal != newAlarm)
     {
         objectWrite(GroupObject::grpObjAlarmBus, newAlarm);
         if()
@@ -49,7 +49,7 @@ void SmokeDetectorAlarm::send_obj_alarm(bool newAlarm)
  */
 void SmokeDetectorAlarm::send_obj_test_alarm(bool newAlarm)
 {
-    if (testAlarmLocal != newAlarm)
+    if (deviceHasTestAlarmLocal != newAlarm)
     {
         groupObjects->write(GroupObject::grpObjTestAlarmBus, newAlarm);
         groupObjects->write(GroupObject::grpObjStatusTestAlarm, newAlarm);
@@ -58,40 +58,40 @@ void SmokeDetectorAlarm::send_obj_test_alarm(bool newAlarm)
 
 bool SmokeDetectorAlarm::hasAlarm() const
 {
-    return alarmLocal | alarmBus | testAlarmLocal | testAlarmBus;
+    return deviceHasAlarmLocal | deviceHasAlarmBus | deviceHasTestAlarmLocal | deviceHasTestAlarmBus;
 }
 
 void SmokeDetectorAlarm::groupObjectUpdated(GroupObject groupObject)
 {
-    if (groupObject == GroupObject::grpObjAlarmBus) // Bus Alarm
+    if (groupObject == GroupObject::grpObjAlarmBus) // Alarm Network
     {
-        setAlarmBus = groupObjects->read(groupObject) & 0x01;
+        requestedAlarmBus = groupObjects->read(groupObject) & 0x01;
 
         // Wenn wir lokalen Alarm haben dann Bus Alarm wieder auslösen
         // damit der Status der anderen Rauchmelder stimmt
-        if (!setAlarmBus && alarmLocal)
-            groupObjects->write(GroupObject::grpObjAlarmBus, alarmLocal);
+        if (!requestedAlarmBus && deviceHasAlarmLocal)
+            groupObjects->write(GroupObject::grpObjAlarmBus, deviceHasAlarmLocal);
 
         if (ignoreBusAlarm)
-            setAlarmBus = 0;
+            requestedAlarmBus = false;
     }
-    else if (groupObject == GroupObject::grpObjTestAlarmBus) // Bus Test Alarm
+    else if (groupObject == GroupObject::grpObjTestAlarmBus) // Test Alarm Network
     {
-        setTestAlarmBus = groupObjects->read(groupObject) & 0x01;
+        requestedTestAlarmBus = groupObjects->read(groupObject) & 0x01;
 
         // Wenn wir lokalen Testalarm haben dann Bus Testalarm wieder auslösen
         // damit der Status der anderen Rauchmelder stimmt
-        if (!setTestAlarmBus && testAlarmLocal)
-            groupObjects->write(GroupObject::grpObjTestAlarmBus, testAlarmLocal);
+        if (!requestedTestAlarmBus && deviceHasTestAlarmLocal)
+            groupObjects->write(GroupObject::grpObjTestAlarmBus, deviceHasTestAlarmLocal);
 
         if (ignoreBusAlarm)
-            setTestAlarmBus = 0;
+            requestedTestAlarmBus = false;
     }
-    else if (groupObject == GroupObject::grpObjResetAlarm) // Bus Alarm rücksetzen
+    else if (groupObject == GroupObject::grpObjResetAlarm) // Alarm Reset
     {
-        setAlarmBus = 0;
-        setTestAlarmBus = 0;
-        ignoreBusAlarm = 1;
+        requestedAlarmBus = false;
+        requestedTestAlarmBus = false;
+        ignoreBusAlarm = true;
     }
 }
 
@@ -102,26 +102,26 @@ void SmokeDetectorAlarm::deviceStatusUpdate(bool newAlarmLocal, bool newTestAlar
         delayedAlarmCounter = config->alarmDelaySeconds();
         groupObjects->setValue(GroupObject::grpObjStatusAlarmDelayed, true);
     }
-    else if (alarmLocal != newAlarmLocal) //wenn Alarm nicht verzögert gesendet werden soll oder Alarm nicht mehr ansteht (nur 1x senden)
+    else if (deviceHasAlarmLocal != newAlarmLocal) //wenn Alarm nicht verzögert gesendet werden soll oder Alarm nicht mehr ansteht (nur 1x senden)
     {
         groupObjects->write(GroupObject::grpObjAlarmBus, newAlarmLocal);
     }
 
-    if (alarmLocal != newAlarmLocal) //sobald neuer AlarmStatus ansteht, soll dieser versendet werden
+    if (deviceHasAlarmLocal != newAlarmLocal) //sobald neuer AlarmStatus ansteht, soll dieser versendet werden
     {
         groupObjects->write(GroupObject::grpObjStatusAlarm, newAlarmLocal);
     }
 
-    alarmLocal = newAlarmLocal;
+    deviceHasAlarmLocal = newAlarmLocal;
 
     send_obj_test_alarm(newTestAlarmLocal);
-    testAlarmLocal = newTestAlarmLocal;
+    deviceHasTestAlarmLocal = newTestAlarmLocal;
 
     // Bus Alarm
-    alarmBus = newAlarmFromBus;
+    deviceHasAlarmBus = newAlarmFromBus;
 
     // Bus Testalarm
-    testAlarmBus = newTestAlarmFromBus;
+    deviceHasTestAlarmBus = newTestAlarmFromBus;
 }
 
 void SmokeDetectorAlarm::deviceButtonPressed()
@@ -132,24 +132,24 @@ void SmokeDetectorAlarm::deviceButtonPressed()
      * Es wird kontrolliert, ob die Taste am Rauchmelder gedrückt wurde, anschließend wir überprüft, ob ein Alarm oder TestAlarm vom Bus vorliegt
      * Dann wird der jeweilige Status versendet.
      * für welchen Anwendungfall ist dieses sinnvoll?
-     * zur Zeit wird vom lokalen Rauchmelder der setAlarmBus ausgelöst (quasi local loopback) und die Tastenerkennung löst aus
+     * zur Zeit wird vom lokalen Rauchmelder der requestedAlarmBus ausgelöst (quasi local loopback) und die Tastenerkennung löst aus
      * Somit wird die Status Nachricht EIN 2x versendet (1x aus send_obj_alarm bzw. send_obj_test_alarm) und einmal hier.
-     * AUS wird hier allerdings nicht versendet, da setAlarmBus bzw. setTestAlarmBus dann false sind
+     * AUS wird hier allerdings nicht versendet, da requestedAlarmBus bzw. requestedTestAlarmBus dann false sind
      *
      * Daher habe ich mich entschieden, diese Versendung vorerst zu deaktivieren
      */
 
-    if (setAlarmBus) //wenn Alarm auf Bus anliegt
+    if (requestedAlarmBus) //wenn Alarm auf Bus anliegt
     {
-        setAlarmBus = 0;
+        requestedAlarmBus = false;
         delayedAlarmCounter = 0; // verzögerten Alarm abbrechen
-        //objectWrite(GroupObject::grpObjStatusAlarm, alarmLocal);
+        //objectWrite(GroupObject::grpObjStatusAlarm, deviceHasAlarmLocal);
     }
 
-    if (setTestAlarmBus) //wenn Testalarm auf Bus anliegt
+    if (requestedTestAlarmBus) //wenn Testalarm auf Bus anliegt
     {
-        setTestAlarmBus = 0;
-        //objectWrite(GroupObject::grpObjStatusTestAlarm, testAlarmLocal);
+        requestedTestAlarmBus = false;
+        //objectWrite(GroupObject::grpObjStatusTestAlarm, deviceHasTestAlarmLocal);
     }
 }
 
@@ -160,19 +160,19 @@ void SmokeDetectorAlarm::deviceButtonPressed()
  */
 RmAlarmState SmokeDetectorAlarm::process_alarm_stats()
 {
-    if (setAlarmBus && !alarmBus)
+    if (requestedAlarmBus && !deviceHasAlarmBus)
     {
         // Alarm auslösen
         return RM_ALARM;
     }
 
-    if (setTestAlarmBus && !testAlarmBus)
+    if (requestedTestAlarmBus && !deviceHasTestAlarmBus)
     {
         // Testalarm auslösen
         return RM_TEST_ALARM;
     }
 
-    if ((!setAlarmBus && alarmBus) || (!setTestAlarmBus && testAlarmBus))
+    if ((!requestedAlarmBus && deviceHasAlarmBus) || (!requestedTestAlarmBus && deviceHasTestAlarmBus))
     {
         // Alarm und Testalarm beenden
         return RM_NO_ALARM;
@@ -184,7 +184,7 @@ RmAlarmState SmokeDetectorAlarm::process_alarm_stats()
 void SmokeDetectorAlarm::timerEverySecond()
 {
     // Alarm: verzögert und zyklisch senden
-    if (alarmLocal)
+    if (deviceHasAlarmLocal)
     {
         // Alarm verzögert senden
         if (delayedAlarmCounter)
@@ -196,7 +196,7 @@ void SmokeDetectorAlarm::timerEverySecond()
                 //groupObjects->send(GroupObject::grpObjAlarmBus);  // Vernetzung Alarm senden
                 //groupObjects->send(GroupObject::grpObjStatusAlarm); // Status Alarm senden
 
-                groupObjects->write(GroupObject::grpObjAlarmBus, alarmLocal);
+                groupObjects->write(GroupObject::grpObjAlarmBus, deviceHasAlarmLocal);
             }
         }
         else // Alarm zyklisch senden
@@ -231,14 +231,14 @@ void SmokeDetectorAlarm::timerEverySecond()
     }
 
     // Testalarm: zyklisch senden
-    if (testAlarmLocal)
+    if (deviceHasTestAlarmLocal)
     {
         if (config->testAlarmSendStatusPeriodically())
         {
-            --TalarmCounter;
-            if (!TalarmCounter)
+            --testAlarmCounter;
+            if (!testAlarmCounter)
             {
-                TalarmCounter = config->testAlarmIntervalSeconds();
+                testAlarmCounter = config->testAlarmIntervalSeconds();
                 if (config->testAlarmSendNetworkPeriodically())
                 {
                     groupObjects->send(GroupObject::grpObjTestAlarmBus);
@@ -252,9 +252,9 @@ void SmokeDetectorAlarm::timerEverySecond()
 void SmokeDetectorAlarm::timerEveryMinute()
 {
     // Bus Alarm ignorieren Flag rücksetzen wenn kein Alarm mehr anliegt
-    if (ignoreBusAlarm & !(alarmBus | testAlarmBus))
+    if (ignoreBusAlarm & !(deviceHasAlarmBus | deviceHasTestAlarmBus))
     {
-        ignoreBusAlarm = 0;
+        ignoreBusAlarm = false;
         groupObjects->setValue(GroupObject::grpObjResetAlarm, ignoreBusAlarm);
     }
 }
