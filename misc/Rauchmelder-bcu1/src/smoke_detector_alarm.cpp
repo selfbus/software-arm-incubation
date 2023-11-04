@@ -154,27 +154,26 @@ void SmokeDetectorAlarm::deviceButtonPressed()
 }
 
 /**
- * Den Zustand der Alarme bearbeiten. Wenn wir der Meinung sind der Bus-Alarm soll einen
- * bestimmten Zustand haben dann wird das dem Rauchmelder so lange gesagt bis der auch
- * der gleichen Meinung ist.
+ * Continuously check device alarm state. When we think the bus alarm should have a certain
+ * state, then tell the smoke detector device until it agrees.
  */
-RmAlarmState SmokeDetectorAlarm::process_alarm_stats()
+RmAlarmState SmokeDetectorAlarm::loopCheckAlarmState()
 {
-    if (requestedAlarmBus && !deviceHasAlarmBus)
+    if (requestedAlarmBus)
     {
-        // Alarm auslösen
-        return RM_ALARM;
+        // Trigger Alarm if necessary, or fall through to No Change.
+        if (!deviceHasAlarmBus)
+            return RM_ALARM;
     }
-
-    if (requestedTestAlarmBus && !deviceHasTestAlarmBus)
+    else if (requestedTestAlarmBus)
     {
-        // Testalarm auslösen
-        return RM_TEST_ALARM;
+        // Trigger Test Alarm if necessary, or fall through to No Change.
+        if (!deviceHasTestAlarmBus)
+            return RM_TEST_ALARM;
     }
-
-    if ((!requestedAlarmBus && deviceHasAlarmBus) || (!requestedTestAlarmBus && deviceHasTestAlarmBus))
+    else if (deviceHasAlarmBus || deviceHasTestAlarmBus)
     {
-        // Alarm und Testalarm beenden
+        // Stop Alarm and Test Alarm.
         return RM_NO_ALARM;
     }
 

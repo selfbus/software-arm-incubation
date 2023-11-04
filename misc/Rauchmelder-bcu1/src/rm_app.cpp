@@ -438,7 +438,7 @@ void process_alarm_stats()
        return;
     }
 
-    auto alarmState = alarm->process_alarm_stats();
+    auto alarmState = alarm->loopCheckAlarmState();
     if (alarmState != RM_NO_CHANGE)
     {
         rm_set_alarm_state(alarmState);

@@ -24,7 +24,7 @@ public:
     void groupObjectUpdated(GroupObject groupObject);
     void deviceStatusUpdate(bool newAlarmLocal, bool newTestAlarmLocal, bool newAlarmFromBus, bool newTestAlarmFromBus);
     void deviceButtonPressed();
-    RmAlarmState process_alarm_stats();
+    RmAlarmState loopCheckAlarmState();
     void timerEverySecond();
     void timerEveryMinute();
 
