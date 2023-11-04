@@ -67,9 +67,11 @@ void SmokeDetectorAlarm::groupObjectUpdated(GroupObject groupObject)
     {
         requestedAlarmBus = groupObjects->read(groupObject) & 0x01;
 
-        // Wenn wir lokalen Alarm haben dann Bus Alarm wieder auslösen
-        // damit der Status der anderen Rauchmelder stimmt
-        if (!requestedAlarmBus && deviceHasAlarmLocal)
+        // If anybody requested Alarm Network to be cleared, but we do have an ongoing local
+        // alarm, then trigger the Alarm Network again. This ensures all connected smoke
+        // detectors are in consistent state. Only exception is a delayed alarm that is still
+        // counting down.
+        if (!requestedAlarmBus && deviceHasAlarmLocal && !delayedAlarmCounter)
             groupObjects->write(GroupObject::grpObjAlarmBus, deviceHasAlarmLocal);
 
         if (ignoreBusAlarm)
@@ -79,8 +81,9 @@ void SmokeDetectorAlarm::groupObjectUpdated(GroupObject groupObject)
     {
         requestedTestAlarmBus = groupObjects->read(groupObject) & 0x01;
 
-        // Wenn wir lokalen Testalarm haben dann Bus Testalarm wieder auslösen
-        // damit der Status der anderen Rauchmelder stimmt
+        // If anybody requested Test Alarm Network to be cleared, but we do have an ongoing local
+        // test alarm, then trigger the Test Alarm Network again. This ensures all connected smoke
+        // detectors are in consistent state.
         if (!requestedTestAlarmBus && deviceHasTestAlarmLocal)
             groupObjects->write(GroupObject::grpObjTestAlarmBus, deviceHasTestAlarmLocal);
 
@@ -104,6 +107,7 @@ void SmokeDetectorAlarm::deviceStatusUpdate(bool newAlarmLocal, bool newTestAlar
     }
     else if (deviceHasAlarmLocal != newAlarmLocal) //wenn Alarm nicht verzögert gesendet werden soll oder Alarm nicht mehr ansteht (nur 1x senden)
     {
+        delayedAlarmCounter = 0;
         groupObjects->write(GroupObject::grpObjAlarmBus, newAlarmLocal);
     }
 
