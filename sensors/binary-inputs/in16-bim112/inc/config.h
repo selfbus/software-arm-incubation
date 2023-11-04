@@ -137,6 +137,32 @@ const int inputPins[] =
         PIO2_3,  //  O ; IO15
         PIO1_5,  //  P ; IO16
 #   endif
+#elif defined FUSED_IO ///\todo verify io ports with actual pins
+    PIN_IO1,  //  A ; IO1
+    PIN_IO2,  //  B ; IO2
+#   if (NUM_INPUTS > 2)
+        PIN_IO3,  //  C ; IO3
+        PIN_IO4,  //  D ; IO4
+#   endif
+#   if (NUM_INPUTS > 4)
+        PIN_IO5,  //  E ; IO5
+        PIN_IO6,  //  F ; IO6
+#   endif
+#   if (NUM_INPUTS > 6)
+        PIN_IO7,  //  G ; IO7
+        PIN_IO8,  //  H ; IO8
+#   endif
+#   if (NUM_INPUTS > 8)
+        PIN_IO9,  //  I ; IO9
+        PIN_IO10, //  J ; IO10
+        PIN_IO11, //  K ; IO11
+        PIN_IO12, //  L ; IO12
+
+        PIN_IO13, //  M ; IO13
+        PIN_IO14, //  N ; IO14
+        PIN_IO15, //  O ; IO15
+        PIO_SDA,  //  P ; SDA
+#   endif
 #else
 	PIN_IO1,  //  A ; IO1
 	PIN_IO2,  //  B ; IO2
