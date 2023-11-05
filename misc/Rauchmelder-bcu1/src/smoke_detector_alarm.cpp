@@ -27,35 +27,6 @@ SmokeDetectorAlarm::SmokeDetectorAlarm(const SmokeDetectorConfig *config, const 
     delayedAlarmCounter = 0;
 }
 
-/**
- * Den Alarm Status auf den Bus senden falls noch nicht gesendet.
- *
- * @param newAlarm - neuer Alarm Status
- *//*
-void SmokeDetectorAlarm::send_obj_alarm(bool newAlarm)
-{
-    if (deviceHasAlarmLocal != newAlarm)
-    {
-        objectWrite(GroupObject::grpObjAlarmBus, newAlarm);
-        if()
-        objectWrite(GroupObject::grpObjStatusAlarm, newAlarm);
-    }
-}*/
-
-/**
- * Den Testalarm Status auf den Bus senden falls noch nicht gesendet.
- *
- * @param newAlarm - neuer Testalarm Status
- */
-void SmokeDetectorAlarm::send_obj_test_alarm(bool newAlarm)
-{
-    if (deviceHasTestAlarmLocal != newAlarm)
-    {
-        groupObjects->write(GroupObject::grpObjTestAlarmBus, newAlarm);
-        groupObjects->write(GroupObject::grpObjStatusTestAlarm, newAlarm);
-    }
-}
-
 bool SmokeDetectorAlarm::hasAlarm() const
 {
     return deviceHasAlarmLocal | deviceHasAlarmBus | deviceHasTestAlarmLocal | deviceHasTestAlarmBus;
@@ -118,8 +89,12 @@ void SmokeDetectorAlarm::deviceStatusUpdate(bool newAlarmLocal, bool newTestAlar
 
     deviceHasAlarmLocal = newAlarmLocal;
 
-    send_obj_test_alarm(newTestAlarmLocal);
-    deviceHasTestAlarmLocal = newTestAlarmLocal;
+    if (deviceHasTestAlarmLocal != newTestAlarmLocal)
+    {
+        groupObjects->write(GroupObject::grpObjTestAlarmBus, newTestAlarmLocal);
+        groupObjects->write(GroupObject::grpObjStatusTestAlarm, newTestAlarmLocal);
+        deviceHasTestAlarmLocal = newTestAlarmLocal;
+    }
 
     // Bus Alarm
     deviceHasAlarmBus = newAlarmFromBus;
@@ -137,7 +112,7 @@ void SmokeDetectorAlarm::deviceButtonPressed()
      * Dann wird der jeweilige Status versendet.
      * für welchen Anwendungfall ist dieses sinnvoll?
      * zur Zeit wird vom lokalen Rauchmelder der requestedAlarmBus ausgelöst (quasi local loopback) und die Tastenerkennung löst aus
-     * Somit wird die Status Nachricht EIN 2x versendet (1x aus send_obj_alarm bzw. send_obj_test_alarm) und einmal hier.
+     * Somit wird die Status Nachricht EIN 2x versendet (1x aus deviceStatusUpdate) und einmal hier.
      * AUS wird hier allerdings nicht versendet, da requestedAlarmBus bzw. requestedTestAlarmBus dann false sind
      *
      * Daher habe ich mich entschieden, diese Versendung vorerst zu deaktivieren
