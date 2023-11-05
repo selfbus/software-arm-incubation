@@ -11,6 +11,8 @@
 #ifndef TEL_DUMP_H_
 #define TEL_DUMP_H_
 
+#include <stdint.h>
+
 class TelDump
 {
 public:

@@ -11,6 +11,8 @@
 #ifndef BUFFERMGR_H_
 #define BUFFERMGR_H_
 
+#include <stdint.h>
+
 #define BUFF_CNT 8
 #define BUFF_SIZE 68
 /*
