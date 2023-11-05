@@ -82,12 +82,11 @@ void SmokeDetectorAlarm::deviceStatusUpdate(bool newAlarmLocal, bool newTestAlar
 {
     if (config->alarmSendDelayed() && newAlarmLocal) // wenn Alarm verzögert gesendet werden soll und Alarm ansteht
     {
-        delayedAlarmCounter = config->alarmDelaySeconds();
-        groupObjects->setValue(GroupObject::grpObjStatusAlarmDelayed, true);
+        setDelayedAlarmCounter(config->alarmDelaySeconds());
     }
     else if (deviceHasAlarmLocal != newAlarmLocal) //wenn Alarm nicht verzögert gesendet werden soll oder Alarm nicht mehr ansteht (nur 1x senden)
     {
-        delayedAlarmCounter = 0;
+        setDelayedAlarmCounter(0);
         groupObjects->write(GroupObject::grpObjAlarmBus, newAlarmLocal);
     }
 
@@ -130,7 +129,7 @@ void SmokeDetectorAlarm::deviceButtonPressed()
     if (requestedAlarmBus) //wenn Alarm auf Bus anliegt
     {
         requestedAlarmBus = false;
-        delayedAlarmCounter = 0; // verzögerten Alarm abbrechen
+        setDelayedAlarmCounter(0); // verzögerten Alarm abbrechen
         //objectWrite(GroupObject::grpObjStatusAlarm, deviceHasAlarmLocal);
     }
 
@@ -176,10 +175,9 @@ void SmokeDetectorAlarm::timerEverySecond()
         // Alarm verzögert senden
         if (delayedAlarmCounter)
         {
-            --delayedAlarmCounter;
+            setDelayedAlarmCounter(delayedAlarmCounter - 1);
             if (!delayedAlarmCounter)   // Verzögerungszeit abgelaufen
             {
-                groupObjects->setValue(GroupObject::grpObjStatusAlarmDelayed, false); // Status verzögerter Alarm zurücksetzen
                 //groupObjects->send(GroupObject::grpObjAlarmBus);  // Vernetzung Alarm senden
                 //groupObjects->send(GroupObject::grpObjStatusAlarm); // Status Alarm senden
 
@@ -244,4 +242,10 @@ void SmokeDetectorAlarm::timerEveryMinute()
         ignoreBusAlarm = false;
         groupObjects->setValue(GroupObject::grpObjResetAlarm, ignoreBusAlarm);
     }
+}
+
+void SmokeDetectorAlarm::setDelayedAlarmCounter(uint8_t newValue)
+{
+    delayedAlarmCounter = newValue;
+    groupObjects->writeIfChanged(GroupObject::grpObjStatusAlarmDelayed, delayedAlarmCounter != 0);
 }

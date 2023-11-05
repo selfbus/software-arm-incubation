@@ -38,6 +38,9 @@ public:
     void timerEveryMinute();
 
 private:
+    void setDelayedAlarmCounter(uint8_t newValue);
+
+private:
     const SmokeDetectorConfig *config;
     const SmokeDetectorGroupObjects *groupObjects;
     bool deviceHasAlarmLocal;     //!< Device has an alarm due to smoke, temperature, or wired trigger (green networking terminal)
