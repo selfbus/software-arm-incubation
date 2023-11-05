@@ -176,39 +176,45 @@ RmAlarmState SmokeDetectorAlarm::loopCheckAlarmState()
 
 void SmokeDetectorAlarm::timerEverySecond()
 {
-    // Alarm: verzögert und zyklisch senden
+    // Alarm: Delayed and periodic sending
     if (deviceHasAlarmLocal)
     {
-        // Alarm verzögert senden
+        // Delayed Alarm
         if (delayedAlarmCounter)
         {
             setDelayedAlarmCounter(delayedAlarmCounter - 1);
-            if (!delayedAlarmCounter)   // Verzögerungszeit abgelaufen
+            if (!delayedAlarmCounter)
             {
-                //groupObjects->send(GroupObject::grpObjAlarmBus);  // Vernetzung Alarm senden
-                //groupObjects->send(GroupObject::grpObjStatusAlarm); // Status Alarm senden
+                // Delay has expired, time to forward the alarm onto the bus.
+                // AlarmStatus was already sent in deviceStatusUpdate(), so the only thing
+                // to do here is to send AlarmNetwork.
 
                 groupObjects->write(GroupObject::grpObjAlarmBus, deviceHasAlarmLocal);
             }
         }
-        else // Alarm zyklisch senden
+        else
         {
+            // Periodic sending. This is in the else branch as it only starts after the delayed
+            // alarm (if any) has expired.
             if (config->alarmSendStatusPeriodically())
             {
                 --alarmCounter;
                 if (!alarmCounter)
                 {
-                    alarmCounter = config->alarmIntervalSeconds();     // Zykl. senden Zeit holen
+                    // Restart the timer for the next interval.
+                    alarmCounter = config->alarmIntervalSeconds();
+
+                    // Send out AlarmStatus and optionally also AlarmNetwork.
                     if (config->alarmSendNetworkPeriodically())
                     {
-                        groupObjects->send(GroupObject::grpObjAlarmBus); // Vernetzung Alarm senden
+                        groupObjects->send(GroupObject::grpObjAlarmBus);
                     }
                     groupObjects->send(GroupObject::grpObjStatusAlarm);
                 }
             }
         }
     }
-    // Kein Alarm, zyklisch 0 senden
+    // No Alarm: Periodic sending of status 0
     else
     {
         if (config->alarmSendStatusPeriodicallyWhenNoAlarm())
@@ -216,13 +222,14 @@ void SmokeDetectorAlarm::timerEverySecond()
             --alarmCounter;
             if (!alarmCounter)
             {
-                alarmCounter = config->alarmIntervalSeconds(); // Zykl. senden Zeit holen
+                // Restart the timer for the next interval.
+                alarmCounter = config->alarmIntervalSeconds();
                 groupObjects->send(GroupObject::grpObjStatusAlarm);
             }
         }
     }
 
-    // Testalarm: zyklisch senden
+    // Test Alarm: Periodic sending
     if (deviceHasTestAlarmLocal)
     {
         if (config->testAlarmSendStatusPeriodically())
@@ -243,7 +250,7 @@ void SmokeDetectorAlarm::timerEverySecond()
 
 void SmokeDetectorAlarm::timerEveryMinute()
 {
-    // Bus Alarm ignorieren Flag rücksetzen wenn kein Alarm mehr anliegt
+    // Reset ignoreBusAlarm after bus alarm has been cleared.
     if (ignoreBusAlarm & !(deviceHasAlarmBus | deviceHasTestAlarmBus))
     {
         ignoreBusAlarm = false;
