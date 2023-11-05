@@ -80,23 +80,31 @@ void SmokeDetectorAlarm::groupObjectUpdated(GroupObject groupObject)
 
 void SmokeDetectorAlarm::deviceStatusUpdate(bool newAlarmLocal, bool newTestAlarmLocal, bool newAlarmFromBus, bool newTestAlarmFromBus)
 {
-    if (config->alarmSendDelayed() && newAlarmLocal) // wenn Alarm verzögert gesendet werden soll und Alarm ansteht
+    // Local Alarm: Send out AlarmStatus and either AlarmNetwork or AlarmDelayed, depending on
+    // config, and set the delay timer correctly.
+    if (deviceHasAlarmLocal != newAlarmLocal)
     {
-        setDelayedAlarmCounter(config->alarmDelaySeconds());
-    }
-    else if (deviceHasAlarmLocal != newAlarmLocal) //wenn Alarm nicht verzögert gesendet werden soll oder Alarm nicht mehr ansteht (nur 1x senden)
-    {
-        setDelayedAlarmCounter(0);
-        groupObjects->write(GroupObject::grpObjAlarmBus, newAlarmLocal);
-    }
+        // When there is a new local alarm that should only be forwarded with some delay,
+        // start the timer.
+        if (newAlarmLocal && config->alarmSendDelayed())
+        {
+            setDelayedAlarmCounter(config->alarmDelaySeconds());
+        }
+        else
+        {
+            // Either a new local alarm that should be forwarded immediately, or a local
+            // alarm ended. Both cases go to the bus right now. If the alarm started recently
+            // and was not forwarded yet (only timer started), it's time to stop the timer.
+            setDelayedAlarmCounter(0);
+            groupObjects->write(GroupObject::grpObjAlarmBus, newAlarmLocal);
+        }
 
-    if (deviceHasAlarmLocal != newAlarmLocal) //sobald neuer AlarmStatus ansteht, soll dieser versendet werden
-    {
+        // Send out the new status immediately.
         groupObjects->write(GroupObject::grpObjStatusAlarm, newAlarmLocal);
+        deviceHasAlarmLocal = newAlarmLocal;
     }
 
-    deviceHasAlarmLocal = newAlarmLocal;
-
+    // Local Test Alarm: Send out TestAlarmStatus and TestAlarmNetwork.
     if (deviceHasTestAlarmLocal != newTestAlarmLocal)
     {
         groupObjects->write(GroupObject::grpObjTestAlarmBus, newTestAlarmLocal);
@@ -104,10 +112,9 @@ void SmokeDetectorAlarm::deviceStatusUpdate(bool newAlarmLocal, bool newTestAlar
         deviceHasTestAlarmLocal = newTestAlarmLocal;
     }
 
-    // Bus Alarm
+    // Bus Alarm and Bus Test Alarm: Just remember current status for correct behavior in
+    // loopCheckAlarmState().
     deviceHasAlarmBus = newAlarmFromBus;
-
-    // Bus Testalarm
     deviceHasTestAlarmBus = newTestAlarmFromBus;
 }
 
