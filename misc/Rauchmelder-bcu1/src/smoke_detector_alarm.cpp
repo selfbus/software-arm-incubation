@@ -112,8 +112,8 @@ void SmokeDetectorAlarm::deviceStatusUpdate(bool newAlarmLocal, bool newTestAlar
         deviceHasTestAlarmLocal = newTestAlarmLocal;
     }
 
-    // Bus Alarm and Bus Test Alarm: Just remember current status for correct behavior in
-    // loopCheckAlarmState().
+    // Bus Alarm and Bus Test Alarm: Just remember current device status so we request to send
+    // the correct alarm state in loopCheckAlarmState().
     deviceHasAlarmBus = newAlarmFromBus;
     deviceHasTestAlarmBus = newTestAlarmFromBus;
 }
