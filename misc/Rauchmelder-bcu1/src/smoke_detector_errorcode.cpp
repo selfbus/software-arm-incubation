@@ -1,16 +1,19 @@
-/**************************************************************************//**
- * @addtogroup SBAPP_MAIN_GROUP Selfbus Applications
- * @defgroup SBAPP_SUB_GROUP_1 Smoke detector KNX module
- * @ingroup SBAPP_MAIN_GROUP
- * @brief   
- * @details 
+/*  Original written for LPC922:
+ *  Copyright (c) 2015-2017 Stefan Haller
+ *  Copyright (c) 2013 Stefan Taferner <stefan.taferner@gmx.at>
  *
+ *  Modified for LPC1115 ARM processor:
+ *  Copyright (c) 2017 Oliver Stefan <o.stefan252@googlemail.com>
+ *  Copyright (c) 2020 Stefan Haller
  *
- * @{
+ *  Refactoring and bug fixes:
+ *  Copyright (c) 2023 Darthyson <darth@maptrack.de>
+ *  Copyright (c) 2023 Thomas Dallmair <dev@thomas-dallmair.de>
  *
- * @file   smoke_detector_errorcodes.cpp
- * @author Darthyson <darth@maptrack.de> Copyright (c) 2023
- ******************************************************************************/
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 2 as
+ *  published by the Free Software Foundation.
+ */
 
 /*
  This program is free software; you can redistribute it and/or modify
@@ -93,6 +96,3 @@ uint8_t SmokeDetectorErrorCode::errorCodeToUint8(SdErrorCode code)
 {
     return static_cast<uint8_t>(code);
 }
-
-
-/** @}*/
