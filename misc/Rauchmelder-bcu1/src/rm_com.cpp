@@ -288,6 +288,7 @@ bool rm_set_alarm_state(RmAlarmState newState)
             break;
 
         case RM_NO_ALARM:
+            //\todo Does this clear the status byte completely, including local test alarm and battery empty bits?
             rm_send_hexstr((unsigned char*) "030200");
             break;
 
