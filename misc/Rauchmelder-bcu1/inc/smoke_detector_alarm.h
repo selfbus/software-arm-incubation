@@ -38,6 +38,10 @@ public:
     void timerEveryMinute();
 
 private:
+    void sendAlarmNetwork();
+    void sendAlarmStatus();
+    void sendTestAlarmNetwork();
+    void sendTestAlarmStatus();
     void setDelayedAlarmCounter(uint8_t newValue);
 
 private:
@@ -50,8 +54,14 @@ private:
     bool requestedAlarmBus;       //!< Desired alarm state per KNX bus
     bool requestedTestAlarmBus;   //!< Desired test alarm state per KNX bus
     bool ignoreBusAlarm;          //!< After Alarm Reset via KNX bus, ignore bus alarms for some time
-    uint8_t alarmCounter;         //!< Countdown to next periodic sending of alarm in seconds
-    uint8_t testAlarmCounter;     //!< Countdown to next periodic sending of test alarm in seconds
+
+    // Although there is a single alarm interval in ETS, AlarmNetwork and AlarmStatus can be needed to be sent
+    // at different times. This can happen when a delayed alarm is configured: Then, AlarmStatus is sent
+    // immediately and AlarmNetwork is only sent after the delay is over. From these respective points in time
+    // on these two group objects are then sent periodically.
+    uint8_t alarmNetworkCounter;  //!< Countdown to next periodic sending of AlarmNetwork in seconds
+    uint8_t alarmStatusCounter;   //!< Countdown to next periodic sending of AlarmStatus in seconds
+    uint8_t testAlarmCounter;     //!< Countdown to next periodic sending of TestAlarmNetwork and TestAlarmStatus in seconds
     uint8_t delayedAlarmCounter;  //!< Countdown to delayed alarm sending in seconds
 };
 

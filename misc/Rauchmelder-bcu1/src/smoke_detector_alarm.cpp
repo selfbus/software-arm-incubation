@@ -31,8 +31,9 @@ SmokeDetectorAlarm::SmokeDetectorAlarm(const SmokeDetectorConfig *config, const 
     requestedTestAlarmBus = false;
     ignoreBusAlarm = false;
 
-    alarmCounter = 1;
-    testAlarmCounter = 1;
+    alarmNetworkCounter = config->alarmIntervalSeconds();
+    alarmStatusCounter = config->alarmIntervalSeconds();
+    testAlarmCounter = config->testAlarmIntervalSeconds();
     delayedAlarmCounter = 0;
 }
 
@@ -52,7 +53,7 @@ void SmokeDetectorAlarm::groupObjectUpdated(GroupObject groupObject)
         // detectors are in consistent state. Only exception is a delayed alarm that is still
         // counting down.
         if (!requestedAlarmBus && deviceHasAlarmLocal && !delayedAlarmCounter)
-            groupObjects->write(GroupObject::grpObjAlarmBus, deviceHasAlarmLocal);
+            sendAlarmNetwork();
 
         if (ignoreBusAlarm)
             requestedAlarmBus = false;
@@ -65,7 +66,7 @@ void SmokeDetectorAlarm::groupObjectUpdated(GroupObject groupObject)
         // test alarm, then trigger the Test Alarm Network again. This ensures all connected smoke
         // detectors are in consistent state.
         if (!requestedTestAlarmBus && deviceHasTestAlarmLocal)
-            groupObjects->write(GroupObject::grpObjTestAlarmBus, deviceHasTestAlarmLocal);
+            sendTestAlarmNetwork();
 
         if (ignoreBusAlarm)
             requestedTestAlarmBus = false;
@@ -84,6 +85,8 @@ void SmokeDetectorAlarm::deviceStatusUpdate(bool newAlarmLocal, bool newTestAlar
     // config, and set the delay timer correctly.
     if (deviceHasAlarmLocal != newAlarmLocal)
     {
+        deviceHasAlarmLocal = newAlarmLocal;
+
         // When there is a new local alarm that should only be forwarded with some delay,
         // start the timer.
         if (newAlarmLocal && config->alarmSendDelayed())
@@ -96,20 +99,19 @@ void SmokeDetectorAlarm::deviceStatusUpdate(bool newAlarmLocal, bool newTestAlar
             // alarm ended. Both cases go to the bus right now. If the alarm started recently
             // and was not forwarded yet (only timer started), it's time to stop the timer.
             setDelayedAlarmCounter(0);
-            groupObjects->write(GroupObject::grpObjAlarmBus, newAlarmLocal);
+            sendAlarmNetwork();
         }
 
         // Send out the new status immediately.
-        groupObjects->write(GroupObject::grpObjStatusAlarm, newAlarmLocal);
-        deviceHasAlarmLocal = newAlarmLocal;
+        sendAlarmStatus();
     }
 
     // Local Test Alarm: Send out TestAlarmStatus and TestAlarmNetwork.
     if (deviceHasTestAlarmLocal != newTestAlarmLocal)
     {
-        groupObjects->write(GroupObject::grpObjTestAlarmBus, newTestAlarmLocal);
-        groupObjects->write(GroupObject::grpObjStatusTestAlarm, newTestAlarmLocal);
         deviceHasTestAlarmLocal = newTestAlarmLocal;
+        sendTestAlarmNetwork();
+        sendTestAlarmStatus();
     }
 
     // Bus Alarm and Bus Test Alarm: Just remember current device status so we request to send
@@ -137,13 +139,13 @@ void SmokeDetectorAlarm::deviceButtonPressed()
     {
         requestedAlarmBus = false;
         setDelayedAlarmCounter(0); // verzögerten Alarm abbrechen
-        //objectWrite(GroupObject::grpObjStatusAlarm, deviceHasAlarmLocal);
+        //sendAlarmStatus();
     }
 
     if (requestedTestAlarmBus) //wenn Testalarm auf Bus anliegt
     {
         requestedTestAlarmBus = false;
-        //objectWrite(GroupObject::grpObjStatusTestAlarm, deviceHasTestAlarmLocal);
+        //sendTestAlarmStatus();
     }
 }
 
@@ -189,7 +191,7 @@ void SmokeDetectorAlarm::timerEverySecond()
                 // AlarmStatus was already sent in deviceStatusUpdate(), so the only thing
                 // to do here is to send AlarmNetwork.
 
-                groupObjects->write(GroupObject::grpObjAlarmBus, deviceHasAlarmLocal);
+                sendAlarmNetwork();
             }
         }
         else
@@ -198,18 +200,21 @@ void SmokeDetectorAlarm::timerEverySecond()
             // alarm (if any) has expired.
             if (config->alarmSendStatusPeriodically())
             {
-                --alarmCounter;
-                if (!alarmCounter)
+                --alarmStatusCounter;
+                if (!alarmStatusCounter)
                 {
-                    // Restart the timer for the next interval.
-                    alarmCounter = config->alarmIntervalSeconds();
+                    // Send out AlarmStatus and restart the timer.
+                    sendAlarmStatus();
+                }
 
-                    // Send out AlarmStatus and optionally also AlarmNetwork.
-                    if (config->alarmSendNetworkPeriodically())
+                if (config->alarmSendNetworkPeriodically())
+                {
+                    --alarmNetworkCounter;
+                    if (!alarmNetworkCounter)
                     {
-                        groupObjects->send(GroupObject::grpObjAlarmBus);
+                        // Send out AlarmNetwork and restart the timer.
+                        sendAlarmNetwork();
                     }
-                    groupObjects->send(GroupObject::grpObjStatusAlarm);
                 }
             }
         }
@@ -219,12 +224,10 @@ void SmokeDetectorAlarm::timerEverySecond()
     {
         if (config->alarmSendStatusPeriodicallyWhenNoAlarm())
         {
-            --alarmCounter;
-            if (!alarmCounter)
+            --alarmStatusCounter;
+            if (!alarmStatusCounter)
             {
-                // Restart the timer for the next interval.
-                alarmCounter = config->alarmIntervalSeconds();
-                groupObjects->send(GroupObject::grpObjStatusAlarm);
+                sendAlarmStatus();
             }
         }
     }
@@ -237,12 +240,11 @@ void SmokeDetectorAlarm::timerEverySecond()
             --testAlarmCounter;
             if (!testAlarmCounter)
             {
-                testAlarmCounter = config->testAlarmIntervalSeconds();
                 if (config->testAlarmSendNetworkPeriodically())
                 {
-                    groupObjects->send(GroupObject::grpObjTestAlarmBus);
+                    sendTestAlarmNetwork();
                 }
-                groupObjects->send(GroupObject::grpObjStatusTestAlarm);
+                sendTestAlarmStatus();
             }
         }
     }
@@ -256,6 +258,33 @@ void SmokeDetectorAlarm::timerEveryMinute()
         ignoreBusAlarm = false;
         groupObjects->setValue(GroupObject::grpObjResetAlarm, ignoreBusAlarm);
     }
+}
+
+void SmokeDetectorAlarm::sendAlarmNetwork()
+{
+    // Restart the timer for the next periodic sending interval.
+    alarmNetworkCounter = config->alarmIntervalSeconds();
+    groupObjects->write(GroupObject::grpObjAlarmBus, deviceHasAlarmLocal);
+}
+
+void SmokeDetectorAlarm::sendAlarmStatus()
+{
+    // Restart the timer for the next periodic sending interval.
+    alarmStatusCounter = config->alarmIntervalSeconds();
+    groupObjects->write(GroupObject::grpObjStatusAlarm, deviceHasAlarmLocal);
+}
+
+void SmokeDetectorAlarm::sendTestAlarmNetwork()
+{
+    // No dedicated timer for TestAlarmNetwork.
+    groupObjects->write(GroupObject::grpObjTestAlarmBus, deviceHasTestAlarmLocal);
+}
+
+void SmokeDetectorAlarm::sendTestAlarmStatus()
+{
+    // Restart the timer for the next periodic sending interval.
+    testAlarmCounter = config->testAlarmIntervalSeconds();
+    groupObjects->write(GroupObject::grpObjStatusTestAlarm, deviceHasTestAlarmLocal);
 }
 
 void SmokeDetectorAlarm::setDelayedAlarmCounter(uint8_t newValue)
