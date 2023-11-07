@@ -23,28 +23,8 @@
 
 #include <sblib/eibBCU1.h>
 
-extern BCU1 bcu;
-
-
-/**
- * Den Zustand der Alarme bearbeiten.
- */
-extern void process_alarm_stats();
-
-/**
- * Alle Applikations-Parameter zurücksetzen.
- */
-extern void initApplication();
-
-/**
- * Empfangene Kommunikationsobjekte verarbeiten
- */
-void objectUpdated(int objno);
-
-/**
- * Setup and start periodic timer @ref timer32_0
- * @param milliseconds Timer interval in milliseconds
- */
-void setupPeriodicTimer(uint32_t milliseconds);
+BcuBase* appInit();
+void appLoop();
+void appLoopNoApp();
 
 #endif /*rm_app_h*/

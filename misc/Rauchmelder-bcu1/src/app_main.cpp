@@ -14,8 +14,6 @@
  *  published by the Free Software Foundation.
  */
 
-#include "rm_const.h"
-#include "rm_com.h"
 #include "rm_app.h"
 
 APP_VERSION("S_RM_H6 ", "3", "00")
@@ -25,10 +23,7 @@ APP_VERSION("S_RM_H6 ", "3", "00")
  */
 BcuBase* setup()
 {
-    initApplication();
-    bcu.begin(0x004C, 0x03F2, 0x24);         //Herstellercode 0x004C = Robert Bosch, Devicetype 1010 (0x03F2), Version 2.4
-    setupPeriodicTimer(TIMER_INTERVAL_MS);
-    return (&bcu);
+    return appInit();
 }
 
 /**
@@ -36,23 +31,7 @@ BcuBase* setup()
  */
 void loop()
 {
-    int objno;
-
-    rm_recv_bytes();
-    process_alarm_stats();
-
-    // Empfangenes Telegramm bearbeiten, aber nur wenn wir gerade nichts
-    // vom Rauchmelder empfangen.
-
-    // Handle updated communication objects
-    while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
-    {
-        objectUpdated(objno);
-    }
-
-    // Sleep up to 1 millisecond if there is nothing to do
-    if (bcu.bus->idle())
-        waitForInterrupt();
+    appLoop();
 }
 
 /**
@@ -60,5 +39,5 @@ void loop()
  */
 void loop_noapp()
 {
-    rm_recv_bytes(); // timer32_0 is still running, so we should read the received bytes
+    appLoopNoApp();
 }

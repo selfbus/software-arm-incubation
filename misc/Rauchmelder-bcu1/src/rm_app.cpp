@@ -40,6 +40,45 @@ GroupObject infoSendObjno;         //!< Com-Objekt, das bei zyklischem Info Send
 unsigned char readCmdno;           //!< Nummer des Befehls, welcher als nächstes zyklisch an den Rauchmelder gesendet wird
 unsigned char eventTime = DEFAULT_EVENTTIME; //!< Halbsekunden Zähler 0..119
 
+void initApplication();
+void setupPeriodicTimer(uint32_t milliseconds);
+void process_alarm_stats();
+void objectUpdated(int objno);
+
+BcuBase* appInit()
+{
+    initApplication();
+    bcu.begin(0x004C, 0x03F2, 0x24);         //Herstellercode 0x004C = Robert Bosch, Devicetype 1010 (0x03F2), Version 2.4
+    setupPeriodicTimer(TIMER_INTERVAL_MS);
+    return (&bcu);
+}
+
+void appLoop()
+{
+    int objno;
+
+    device->recv_bytes();
+    process_alarm_stats();
+
+    // Empfangenes Telegramm bearbeiten, aber nur wenn wir gerade nichts
+    // vom Rauchmelder empfangen.
+
+    // Handle updated communication objects
+    while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
+    {
+        objectUpdated(objno);
+    }
+
+    // Sleep up to 1 millisecond if there is nothing to do
+    if (bcu.bus->idle())
+        waitForInterrupt();
+}
+
+void appLoopNoApp()
+{
+    device->recv_bytes(); // timer32_0 is still running, so we should read the received bytes
+}
+
 /**
  * For description see declaration in file @ref rm_com.h
  */

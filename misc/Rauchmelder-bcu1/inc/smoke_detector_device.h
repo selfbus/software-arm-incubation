@@ -51,6 +51,7 @@ public:
     bool hasOngoingMessageExchange();
     void timerEvery500ms();
     bool send_Cmd(Command cmd);
+    void recv_bytes();
     void set_alarm_state(RmAlarmState newState);
     void rm_process_msg(uint8_t *bytes, int8_t len);
 

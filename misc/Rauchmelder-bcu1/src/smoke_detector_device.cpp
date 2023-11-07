@@ -412,6 +412,11 @@ bool SmokeDetectorDevice::send_Cmd(Command cmd)
     return true;
 }
 
+void SmokeDetectorDevice::recv_bytes()
+{
+    rm_recv_bytes();
+}
+
 void SmokeDetectorDevice::set_alarm_state(RmAlarmState newState)
 {
     rm_set_alarm_state(newState);
