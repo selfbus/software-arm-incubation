@@ -1,22 +1,22 @@
 # out8-bcu1
 
 english:
-This is an application that uses the [SBLib](https://selfbus.org) with BCU1 emulation.
+This is an application that uses the [sbLib](https://selfbus.org) with BCU1 emulation.
 The emulated device is a Jung 2138 KNX switch actuator with 8 digital outputs.
 
-Please use the [Jung 2138 VD database](http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?search=2138&rpp=10) for ETS configuration from this site:
-http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?search=2138&rpp=10
+Please use the [Jung 2138 VD database](https://downloads.jung.de/public/de/software/produktdatenbanken/ets2_ets3/de_2138_10.vd1) for ETS configuration from this site:
+https://downloads.jung.de/public/de/software/produktdatenbanken/ets2_ets3/de_2138_10.vd1
 
 deutsch:
-Das ist eine Applikation welche die [SBLib](https://selfbus.org) mit BCU1 Emulation verwendet.
+Das ist eine Applikation welche die [sbLib](https://selfbus.org) mit BCU1 Emulation verwendet.
 Das simulierte Gerät ist ein Jung 2138 KNX Schaltaktor mit 8 digitalen Ausgängen.
 
-Zur ETS-Konfiguration die [Jung 2138 VD Produktdatenbank](http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?search=2138&rpp=10) verwenden. Download unter:
-http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?search=2138&rpp=10
+Zur ETS-Konfiguration die [Jung 2138 VD Produktdatenbank](https://downloads.jung.de/public/de/software/produktdatenbanken/ets2_ets3/de_2138_10.vd1) verwenden. Download unter:
+https://downloads.jung.de/public/de/software/produktdatenbanken/ets2_ets3/de_2138_10.vd1
 
 
 
-## 4TE-ARM Controller ([PCB](https://github.com/selfbus/hardware-incubation/tree/master/Controller/lpc1115_4te), [Wiki](https://selfbus.myxwiki.org/xwiki/bin/view/Technik/Controller_1115_4TE)) + out8_16A (bi-stable relays, bi-stabile relais) ([PCB](https://github.com/selfbus/hardware/tree/master/Apps/out8_16A_1.0), [Wiki](https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/8fach%20Bin%C3%A4rausgang%20230V%2016A%20f%C3%BCr%20LPC1115%20Controller/))
+## 4MU-ARM Controller ([PCB](https://github.com/selfbus/hardware-merged/tree/main/controller_lpc1115/lpc1115_4MU_MID), [Wiki](https://selfbus.org/wiki/hardware/controller/49-4te-controller-arm-lpc1115)) + out_8x_16A_bistab_4MU (bi-stable relays, bi-stabile relais) ([PCB](https://github.com/selfbus/hardware-merged/tree/main/applications_din/out_8x_16A_bistab_4MU), [Wiki](https://selfbus.org/wiki/devices/outputs/25-8-fold-binary-output-4module-units-lpc1115))
 ### used IO Ports (verwendete IO Ports):
 |Relais#|Function|Selfbus IO|Selfbus 26-pol|ARM Port |Description (Beschreibung)               |
 |:-----:|:------:|:--------:|:------------:|---------|-----------------------------------------|
@@ -42,7 +42,7 @@ http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?sear
 
 -------------
 
-## 4TE-ARM Controller ([PCB](https://github.com/selfbus/hardware-incubation/tree/master/Controller/lpc1115_4te), [Wiki](https://selfbus.myxwiki.org/xwiki/bin/view/Technik/Controller_1115_4TE)) + relais8_4te ([PCB](https://github.com/selfbus/hardware/tree/master/Apps/relais8_4te), [Wiki](https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_4TE))
+## 4MU-ARM Controller ([PCB](https://github.com/selfbus/hardware-merged/tree/main/controller_lpc1115/lpc1115_4MU_MID), [Wiki](https://selfbus.org/wiki/hardware/controller/49-4te-controller-arm-lpc1115)) + out_8x_10A_4MU ([PCB](https://github.com/selfbus/hardware-merged/tree/main/applications_din/out_8x_10A_4MU), [Wiki](https://selfbus.org/wiki/devices/outputs/23-switching-actuator-8x-230v-10a-4mount-units))
 ### used IO Ports (verwendete IO Ports):
 |Relais#|Function|Selfbus IO|Selfbus 26-pol|ARM Port |Description (Beschreibung)      |
 |:-----:|:------:|:--------:|:------------:|---------|--------------------------------|
@@ -57,7 +57,7 @@ http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?sear
 |       |        |          |              |         |                                |
 |       |        |          |3             |         |PWM                             |
 
-## optional hand actuation LedTaster_4TE ([PCB](https://github.com/selfbus/hardware/tree/master/Controller/lpc922_4te), [Wiki](https://selfbus.myxwiki.org/xwiki/bin/view/Technik/LedTasterBoard_4TE))
+## optional hand actuation LedTaster_4TE ([PCB](https://github.com/selfbus/hardware-merged/tree/main/addons/leds_buttons_lpc922ctrl_4MU), [Wiki (legacy)](https://selfbus.myxwiki.org/xwiki/bin/view/Technik/LedTasterBoard_4TE))
 ### used IO Ports (verwendete IO Ports):
 |Function     |Selfbus IO|Selfbus LT|ARM Port |Description (Beschreibung)      |
 |:-----------:|:--------:|:--------:|---------|--------------------------------|
@@ -71,4 +71,4 @@ http://www.jung.de/722/downloads/technische-downloads/technische-downloads/?sear
 |LED 8 / Btn 8|PIN_LT8   |8         |PIO0_11  |                                |
 |Readback     |PIN_LT9   |9         |PIO2_3   |                                |
 
-See inc/config.h for additional information.
+## See [config.h](inc/config.h) for additional information.
