@@ -20,6 +20,7 @@
 
 #include <stdint.h>
 
+#include "smoke_detector_com.h"
 #include "rm_const.h"
 
 class SmokeDetectorAlarm;
@@ -41,7 +42,7 @@ enum class Command : uint8_t
     rmStatus                = 6,  //!< Gira Command: Status abfragen
 };
 
-class SmokeDetectorDevice
+class SmokeDetectorDevice : private SmokeDetectorComCallback
 {
 public:
     SmokeDetectorDevice(const SmokeDetectorConfig *config, const SmokeDetectorGroupObjects *groupObjects, SmokeDetectorAlarm *alarm, SmokeDetectorErrorCode *errorCode);
@@ -53,7 +54,9 @@ public:
     bool send_Cmd(Command cmd);
     void recv_bytes();
     void set_alarm_state(RmAlarmState newState);
-    void rm_process_msg(uint8_t *bytes, int8_t len);
+
+private:
+    void receivedMessage(uint8_t *bytes, int8_t len);
 
 private:
     void failHardInDebug();
@@ -71,6 +74,7 @@ private:
     const SmokeDetectorGroupObjects *groupObjects;
     SmokeDetectorAlarm *alarm;
     SmokeDetectorErrorCode *errorCode;
+    SmokeDetectorCom *com;
     unsigned char answerWait;          //!< Wenn != 0, dann Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.
 };
 

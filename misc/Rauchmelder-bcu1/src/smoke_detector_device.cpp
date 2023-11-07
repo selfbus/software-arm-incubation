@@ -33,7 +33,8 @@ SmokeDetectorDevice::SmokeDetectorDevice(const SmokeDetectorConfig *config, cons
     : config(config),
       groupObjects(groupObjects),
       alarm(alarm),
-      errorCode(errorCode)
+      errorCode(errorCode),
+      com(new SmokeDetectorCom(this))
 {
     answerWait = 0;
 
@@ -124,7 +125,7 @@ void SmokeDetectorDevice::timerEvery500ms()
 /**
  * For description see declaration in file @ref smoke_detector_com.h
  */
-void SmokeDetectorDevice::rm_process_msg(uint8_t *bytes, int8_t len)
+void SmokeDetectorDevice::receivedMessage(uint8_t *bytes, int8_t len)
 {
     uint8_t cmd;
     uint8_t msgType;
@@ -356,13 +357,13 @@ void SmokeDetectorDevice::checkRmAttached2BasePlate()
     {
         delay(RM_POWER_UP_TIME_MS);
         setSupplyVoltageAndWait(true, SUPPLY_VOLTAGE_ON_DELAY_MS);
-        rm_serial_init(); //serielle Schnittstelle für die Kommunikation mit dem Rauchmelder initialisieren
+        com->initSerialCom(); //serielle Schnittstelle für die Kommunikation mit dem Rauchmelder initialisieren
     }
 }
 
 /**
  * Send command @ref cmd to smoke detector.\n
- * Receiving and processing the response from the smoke detector is done in @ref rm_process_msg().
+ * Receiving and processing the response from the smoke detector is done in @ref receivedMessage().
  *
  * @param cmd - Index of the command to be send from the @ref CmdTab
  * @return True if command was sent, otherwise false.
@@ -371,12 +372,12 @@ bool SmokeDetectorDevice::send_Cmd(Command cmd)
 {
     checkRmAttached2BasePlate(); ///\todo If think this should be moved to TIMER32_0_IRQHandler
 
-    if (isReceiving())
+    if (com->isReceiving())
     {
         return false;
     }
 
-    if (!rm_send_cmd(CmdTab[(uint8_t)cmd].rmCommand))
+    if (!com->sendCommand(CmdTab[(uint8_t)cmd].rmCommand))
     {
         return false;
     }
@@ -414,11 +415,11 @@ bool SmokeDetectorDevice::send_Cmd(Command cmd)
 
 void SmokeDetectorDevice::recv_bytes()
 {
-    rm_recv_bytes();
+    com->receiveBytes();
 }
 
 void SmokeDetectorDevice::set_alarm_state(RmAlarmState newState)
 {
-    rm_set_alarm_state(newState);
+    com->setAlarmState(newState);
     answerWait = INITIAL_ANSWER_WAIT;
 }

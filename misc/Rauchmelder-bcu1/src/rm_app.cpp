@@ -80,14 +80,6 @@ void appLoopNoApp()
 }
 
 /**
- * For description see declaration in file @ref smoke_detector_com.h
- */
-void rm_process_msg(uint8_t *bytes, int8_t len)
-{
-    device->rm_process_msg(bytes, len);
-}
-
-/**
  * Empfangenes write_value_request Telegramm verarbeiten
  *
  * @param objno - Nummer des betroffenen Kommunikations-Objekts

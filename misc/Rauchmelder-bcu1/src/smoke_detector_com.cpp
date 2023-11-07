@@ -5,6 +5,10 @@
  *  Modified for LPC1115 ARM processor:
  *  Copyright (c) 2017 Oliver Stefan <o.stefan252@googlemail.com>
  *
+ *  Refactoring and bug fixes:
+ *  Copyright (c) 2023 Darthyson <darth@maptrack.de>
+ *  Copyright (c) 2023 Thomas Dallmair <dev@thomas-dallmair.de>
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
@@ -40,10 +44,15 @@ uint32_t lastSerialRecvTime = 0;
 // Hilfsstring für die Umschlüsselung Zahl auf Hex-String
 unsigned const char hexDigits[] = "0123456789ABCDEF";
 
+SmokeDetectorCom::SmokeDetectorCom(SmokeDetectorComCallback *callback)
+    : callback(callback)
+{
+}
+
 /**
  * Serielle Kommunikation mit dem Rauchmelder initialisieren
  */
-void rm_serial_init()
+void SmokeDetectorCom::initSerialCom()
 {
     recvCount = -1;
     pinMode(RM_COMM_ENABLE_PIN, OUTPUT);
@@ -53,6 +62,11 @@ void rm_serial_init()
     serial.setTxPin(PIN_TX);
     pinMode(PIN_RX, SERIAL_RXD | INPUT | PULL_UP); // use internal pull-up resistor to avoid noise then not connected
     serial.begin(9600);
+}
+
+bool SmokeDetectorCom::isReceiving()
+{
+    return (recvCount >= 0);
 }
 
 /**
@@ -105,7 +119,7 @@ void rm_send_hexstr(unsigned char *hexstr)
     rm_send_byte(ETX);
 }
 
-bool rm_send_cmd(RmCommandByte cmd)
+bool SmokeDetectorCom::sendCommand(RmCommandByte cmd)
 {
     if (!serial.enabled())
     {
@@ -167,7 +181,7 @@ bool rm_is_valid_message(uint8_t length)
     return expectedChecksum == recvBuf[length - 1];
 }
 
-void rm_recv_bytes()
+void SmokeDetectorCom::receiveBytes()
 {
     if (!serial.enabled())
     {
@@ -218,7 +232,7 @@ void rm_recv_bytes()
                         {
                             // Am Ende den Empfang bestätigen und die erhaltene Antwort verarbeiten
                             rm_send_ack();
-                            rm_process_msg(recvBuf, idx - 1);
+                            callback->receivedMessage(recvBuf, idx - 1);
                         }
                     }
                 }
@@ -249,7 +263,7 @@ void rm_recv_bytes()
         // The received characters are a hex string, i.e. two characters make one byte.
         // The characters are written as decoded bytes.
         // This algorithm is incorrect if the number of received characters is odd.
-        // This check is done finally before calling rm_process_msg.
+        // This check is done finally before calling callback->receivedMessage().
 
         if (ch >= '0' && ch <= '9')
             ch -= '0';
@@ -275,7 +289,7 @@ void rm_recv_bytes()
     } // while
 }
 
-bool rm_set_alarm_state(RmAlarmState newState)
+bool SmokeDetectorCom::setAlarmState(RmAlarmState newState)
 {
     switch (newState)
     {
@@ -296,9 +310,4 @@ bool rm_set_alarm_state(RmAlarmState newState)
             break;
     }
     return (true);
-}
-
-bool isReceiving()
-{
-    return (recvCount >= 0);
 }
