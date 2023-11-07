@@ -12,6 +12,10 @@
  *  Modified for LPC1115 ARM processor:
  *  Copyright (c) 2017-2022 Oliver Stefan <o.stefan252@googlemail.com>
  *
+ *  Refactoring and bug fixes:
+ *  Copyright (c) 2023 Darthyson <darth@maptrack.de>
+ *  Copyright (c) 2023 Thomas Dallmair <dev@thomas-dallmair.de>
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
@@ -45,7 +49,11 @@ void setupPeriodicTimer(uint32_t milliseconds);
 void process_alarm_stats();
 void objectUpdated(int objno);
 
-BcuBase* appInit()
+SmokeDetectorApp::SmokeDetectorApp()
+{
+}
+
+BcuBase* SmokeDetectorApp::initialize()
 {
     initApplication();
     bcu.begin(0x004C, 0x03F2, 0x24);         //Herstellercode 0x004C = Robert Bosch, Devicetype 1010 (0x03F2), Version 2.4
@@ -53,7 +61,7 @@ BcuBase* appInit()
     return (&bcu);
 }
 
-void appLoop()
+void SmokeDetectorApp::loop()
 {
     int objno;
 
@@ -74,7 +82,7 @@ void appLoop()
         waitForInterrupt();
 }
 
-void appLoopNoApp()
+void SmokeDetectorApp::loopNoApp()
 {
     device->recv_bytes(); // timer32_0 is still running, so we should read the received bytes
 }

@@ -13,6 +13,10 @@
  *  Copyright (c) 2017 Oliver Stefan <o.stefan252@googlemail.com>
  *  Copyright (c) 2020 Stefan Haller
  *
+ *  Refactoring and bug fixes:
+ *  Copyright (c) 2023 Darthyson <darth@maptrack.de>
+ *  Copyright (c) 2023 Thomas Dallmair <dev@thomas-dallmair.de>
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
@@ -23,8 +27,14 @@
 
 #include <sblib/eibBCU1.h>
 
-BcuBase* appInit();
-void appLoop();
-void appLoopNoApp();
+class SmokeDetectorApp
+{
+public:
+    SmokeDetectorApp();
+
+    BcuBase* initialize();
+    void loop();
+    void loopNoApp();
+};
 
 #endif /*SMOKE_DETECTOR_APP_H_*/
