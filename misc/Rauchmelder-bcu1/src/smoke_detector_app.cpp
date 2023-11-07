@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <type_traits>
 
-#include "rm_app.h"
+#include "smoke_detector_app.h"
 #include "rm_const.h"
 #include "smoke_detector_alarm.h"
 #include "smoke_detector_config.h"

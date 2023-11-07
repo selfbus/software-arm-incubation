@@ -18,8 +18,8 @@
  *  published by the Free Software Foundation.
  */
 
-#ifndef rm_app_h
-#define rm_app_h
+#ifndef SMOKE_DETECTOR_APP_H_
+#define SMOKE_DETECTOR_APP_H_
 
 #include <sblib/eibBCU1.h>
 
@@ -27,4 +27,4 @@ BcuBase* appInit();
 void appLoop();
 void appLoopNoApp();
 
-#endif /*rm_app_h*/
+#endif /*SMOKE_DETECTOR_APP_H_*/
