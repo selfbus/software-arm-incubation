@@ -24,163 +24,46 @@
 #include "rm_const.h"
 
 
-// Maximale Anzahl Zeichen einer Nachricht vom Rauchmelder, exklusive STX und ETX
-// Dekodiert brauchen je zwei Zeichen ein Byte Platz in recvBuf.
-#define RECV_MAX_CHARS 12
-
-// Buffer für eine dekodierte Nachricht vom Rauchmelder
-uint8_t recvBuf[RECV_MAX_CHARS >> 1];
-
-// Zähler für die empfangenen Zeichen vom Rauchmelder
-int recvCount;
-
-// Last time a byte was received from the serial port.
-uint32_t lastSerialRecvTime = 0;
-
-// Timeout of serial port communication.
-#define RECV_TIMEOUT_MS (3000)
-
-
-// Hilfsstring für die Umschlüsselung Zahl auf Hex-String
-unsigned const char hexDigits[] = "0123456789ABCDEF";
-
 SmokeDetectorCom::SmokeDetectorCom(SmokeDetectorComCallback *callback)
-    : callback(callback)
+    : HexDigits("0123456789ABCDEF"),
+      callback(callback)
 {
+    recvCount = -1;
+    lastSerialRecvTime = 0;
 }
 
 /**
- * Serielle Kommunikation mit dem Rauchmelder initialisieren
+ * Initialize serial communication with smoke detector
  */
 void SmokeDetectorCom::initSerialCom()
 {
-    recvCount = -1;
+    // Enable communication on the smoke detector
     pinMode(RM_COMM_ENABLE_PIN, OUTPUT);
-    digitalWrite(RM_COMM_ENABLE_PIN, RM_COMM_ENABLE); // Enable communication on the smoke detector
+    digitalWrite(RM_COMM_ENABLE_PIN, RM_COMM_ENABLE);
 
+    // use internal pull-up resistor to avoid noise when not connected
     serial.setRxPin(PIN_RX);
     serial.setTxPin(PIN_TX);
-    pinMode(PIN_RX, SERIAL_RXD | INPUT | PULL_UP); // use internal pull-up resistor to avoid noise then not connected
+    pinMode(PIN_RX, SERIAL_RXD | INPUT | PULL_UP);
     serial.begin(9600);
 }
 
+/**
+ * Check if we are currently receiving bytes from the smoke detector
+ *
+ * @return true if receiving, otherwise false
+ */
 bool SmokeDetectorCom::isReceiving()
 {
     return (recvCount >= 0);
 }
 
 /**
- * Ein Byte an den Rauchmelder senden.
- *
- * @param ch - das zu sendende Byte.
+ * Receive all bytes from the smoke detector via serial port.
+ * This function must be called continuously from the main loop to receive transmitted bytes.
+ * When the received message is complete, this calls @ref SmokeDetectorComCallback::receivedMessage()
+ * to process the message.
  */
-void rm_send_byte(unsigned char ch)
-{
-    serial.write(ch);
-}
-
-void rm_send_ack()
-{
-    rm_send_byte(ACK);
-}
-
-void rm_send_nak()
-{
-    rm_send_byte(NAK);
-}
-
-/**
- * Eine Nachricht an den Rauchmelder senden.
- *
- * Der Befehl wird als Hex String gesendet. Die Prüfsumme wird automatisch
- * berechnet und nach dem Befehl gesendet. Die gesamte Übertragung wird mit
- * STX begonnnen und mit ETX beendet.
- *
- * @param hexstr - die zu sendenden Bytes als Hex String, mit Nullbyte am Ende
- */
-void rm_send_hexstr(unsigned char *hexstr)
-{
-    unsigned char checksum = 0;
-    unsigned char ch;
-
-    rm_send_byte(STX);
-
-    while (*hexstr)
-    {
-        ch = *hexstr;
-        checksum += ch;
-        rm_send_byte(ch);
-        ++hexstr;
-    }
-
-    rm_send_byte(hexDigits[checksum >> 4]);
-    rm_send_byte(hexDigits[checksum & 15]);
-
-    rm_send_byte(ETX);
-}
-
-bool SmokeDetectorCom::sendCommand(RmCommandByte cmd)
-{
-    if (!serial.enabled())
-    {
-        return false;
-    }
-
-    unsigned char b, bytes[3];
-
-    b = cmd >> 4;
-    bytes[0] = hexDigits[b];
-
-    b = cmd & 0x0f;
-    bytes[1] = hexDigits[b];
-
-    bytes[2] = 0;
-    rm_send_hexstr(bytes);
-    return true;
-}
-
-/**
- * Cancel an ongoing message reception, e.g. due to timeout.
- */
-void rm_cancel_receive()
-{
-    recvCount = -1;
-}
-
-/**
- * Validate the checksum of the message in recvBuf.
- */
-bool rm_is_valid_message(uint8_t length)
-{
-    // Message has at least one control code and a checksum byte.
-    if (length < 2)
-        return false;
-
-    // There are a few invalid messages captured in RM_Protokoll.txt:
-    //
-    //      <STX>822080F4<ETX>
-    //      C2 30 00 00 00 FD
-    //      <STX>CC01DB52533B<ETX>
-    //      <STX>CE020448<ETX>
-    //
-    // Also, every entry in the long list of the "02 - Status abfragen" section was
-    // actually recorded with first byte 82 instead of C2, and consequently the
-    // checksums in this list are all wrong.
-    // Nevertheless, the description is correct and all other captured messages
-    // have correct checksums, so it's pretty safe to throw away messages with an
-    // incorrect checksum.
-
-    uint8_t expectedChecksum = 0;
-
-    for (auto i = 0; i < length - 1; ++i)
-    {
-        uint8_t b = recvBuf[i];
-        expectedChecksum += hexDigits[b >> 4] + hexDigits[b & 0x0F];
-    }
-
-    return expectedChecksum == recvBuf[length - 1];
-}
-
 void SmokeDetectorCom::receiveBytes()
 {
     if (!serial.enabled())
@@ -188,12 +71,12 @@ void SmokeDetectorCom::receiveBytes()
         return;
     }
 
-    if (isReceiving() && elapsed(lastSerialRecvTime) > RECV_TIMEOUT_MS)
+    if (isReceiving() && elapsed(lastSerialRecvTime) > RecvTimeoutMs)
     {
-        rm_cancel_receive();
+        cancelReceive();
     }
 
-    uint32_t count = serial.available();
+    auto count = serial.available();
     if (count == 0)
     {
         return;
@@ -228,19 +111,19 @@ void SmokeDetectorCom::receiveBytes()
                     if ((recvCount & 1) == 0) // recvCount must be a multiple of 2
                     {
                         idx = recvCount >> 1;
-                        if (rm_is_valid_message(idx)) // verify checksum incl. minimum length
+                        if (isValidMessage(idx)) // verify checksum incl. minimum length
                         {
-                            // Am Ende den Empfang bestätigen und die erhaltene Antwort verarbeiten
-                            rm_send_ack();
+                            // Acknowledge reception and process message.
+                            sendAck();
                             callback->receivedMessage(recvBuf, idx - 1);
                         }
                     }
                 }
                 else
                 {
-                    rm_send_nak();
+                    sendNak();
                 }
-                rm_cancel_receive();
+                cancelReceive();
                 continue;
 
             default:
@@ -253,10 +136,10 @@ void SmokeDetectorCom::receiveBytes()
 
         idx = recvCount >> 1;
 
-        // Bei Überlauf die restlichen Zeichen ignorieren
-        if (recvCount >= RECV_MAX_CHARS)
+        // On overflow, ignore excess characters
+        if (recvCount >= RecvMaxCharacters)
         {
-            rm_cancel_receive();
+            cancelReceive();
             continue;
         }
 
@@ -271,7 +154,7 @@ void SmokeDetectorCom::receiveBytes()
             ch -= 'A' - 10;
         else // ignore invalid characters
         {
-            rm_cancel_receive();
+            cancelReceive();
             continue;
         }
 
@@ -289,25 +172,145 @@ void SmokeDetectorCom::receiveBytes()
     } // while
 }
 
-bool SmokeDetectorCom::setAlarmState(RmAlarmState newState)
+/**
+ * Send command @ref cmd to the smoke detector.\n
+ * Receiving and processing the response from the smoke detector is done in @ref SmokeDetectorComCallback::receivedMessage().
+ *
+ * @param cmd - @ref RmCommandByte to send.
+ * @return True if command was sent, otherwise false.
+ */
+bool SmokeDetectorCom::sendCommand(RmCommandByte cmd)
+{
+    if (!serial.enabled())
+    {
+        return false;
+    }
+
+    uint8_t bytes[3];
+
+    bytes[0] = HexDigits[cmd >> 4];
+    bytes[1] = HexDigits[cmd & 0x0f];
+    bytes[2] = 0;
+
+    sendHexstring(bytes);
+    return true;
+}
+
+void SmokeDetectorCom::setAlarmState(RmAlarmState newState)
 {
     switch (newState)
     {
         case RM_ALARM:
-            rm_send_hexstr((unsigned char*) "030210");
+            sendHexstring(reinterpret_cast<const uint8_t *>("030210"));
             break;
 
         case RM_TEST_ALARM:
-            rm_send_hexstr((unsigned char*) "030280");
+            sendHexstring(reinterpret_cast<const uint8_t *>("030280"));
             break;
 
         case RM_NO_ALARM:
             //\todo Does this clear the status byte completely, including local test alarm and battery empty bits?
-            rm_send_hexstr((unsigned char*) "030200");
+            sendHexstring(reinterpret_cast<const uint8_t *>("030200"));
             break;
 
         default:
             break;
     }
-    return (true);
+}
+
+/**
+ * Cancel an ongoing message reception, e.g. due to timeout.
+ */
+void SmokeDetectorCom::cancelReceive()
+{
+    recvCount = -1;
+}
+
+/**
+ * Validate the checksum of the message in @ref recvBuf.
+ */
+bool SmokeDetectorCom::isValidMessage(uint8_t length)
+{
+    // Message has at least one control code and a checksum byte.
+    if (length < 2)
+        return false;
+
+    // There are a few invalid messages captured in RM_Protokoll.txt:
+    //
+    //      <STX>822080F4<ETX>
+    //      C2 30 00 00 00 FD
+    //      <STX>CC01DB52533B<ETX>
+    //      <STX>CE020448<ETX>
+    //
+    // Also, every entry in the long list of the "02 - Status abfragen" section was
+    // actually recorded with first byte 82 instead of C2, and consequently the
+    // checksums in this list are all wrong.
+    // Nevertheless, the description is correct and all other captured messages
+    // have correct checksums, so it's pretty safe to throw away messages with an
+    // incorrect checksum.
+
+    uint8_t expectedChecksum = 0;
+
+    for (auto i = 0; i < length - 1; ++i)
+    {
+        auto b = recvBuf[i];
+        expectedChecksum += HexDigits[b >> 4] + HexDigits[b & 0x0F];
+    }
+
+    return expectedChecksum == recvBuf[length - 1];
+}
+
+/**
+ * Send a byte to the smoke detector.
+ *
+ * @param b - the byte to send.
+ */
+void SmokeDetectorCom::sendByte(uint8_t b)
+{
+    serial.write(b);
+}
+
+/**
+ * Send an ACK to the smoke detector.
+ */
+void SmokeDetectorCom::sendAck()
+{
+    sendByte(ACK);
+}
+
+/**
+ * Send a NAK to the smoke detector.
+ */
+void SmokeDetectorCom::sendNak()
+{
+    sendByte(NAK);
+}
+
+/**
+ * Send a message to the smoke detector.
+ *
+ * The command is transmitted as a hex string. The checksum is calculated and
+ * appended. The whole transmission is initiated with STX and finalized with ETX.
+ *
+ * @param hexstr - the bytes to send as hex string, with terminating NUL byte
+ */
+void SmokeDetectorCom::sendHexstring(const uint8_t * hexstr)
+{
+    uint8_t checksum = 0;
+    uint8_t b;
+
+    sendByte(STX);
+
+    while (*hexstr)
+    {
+        b = *hexstr;
+        checksum += b;
+        sendByte(b);
+        ++hexstr;
+    }
+
+    sendByte(HexDigits[checksum >> 4]);
+    sendByte(HexDigits[checksum & 15]);
+
+    sendByte(ETX);
 }

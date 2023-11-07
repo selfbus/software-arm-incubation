@@ -88,10 +88,68 @@ public:
     /**
      * Request the smoke detector to enter a specific remote alarm state.
      */
-    bool setAlarmState(RmAlarmState newState);
+    void setAlarmState(RmAlarmState newState);
+
+private:
+    /**
+     * Cancel an ongoing message reception, e.g. due to timeout.
+     */
+    void cancelReceive();
+
+    /**
+     * Validate the checksum of the message in @ref recvBuf.
+     */
+    bool isValidMessage(uint8_t length);
+
+    /**
+     * Send a byte to the smoke detector.
+     *
+     * @param b - the byte to send.
+     */
+    void sendByte(uint8_t b);
+
+    /**
+     * Send an ACK to the smoke detector.
+     */
+    void sendAck();
+
+    /**
+     * Send a NAK to the smoke detector.
+     */
+    void sendNak();
+
+    /**
+     * Send a message to the smoke detector.
+     *
+     * The command is transmitted as a hex string. The checksum is calculated and
+     * appended. The whole transmission is initiated with STX and finalized with ETX.
+     *
+     * @param hexstr - the bytes to send as hex string, with terminating NUL byte
+     */
+    void sendHexstring(const uint8_t *hexstr);
+
+private:
+    // Maximum number of characters of a message from the smoke detector, excluding STX and ETX.
+    // Two characters take equate to one byte in @ref recvBuf.
+    static constexpr int RecvMaxCharacters = 12;
+
+    // Timeout of serial port communication.
+    static constexpr int RecvTimeoutMs = 3000;
+
+    // Lookup table for translation number to hex string
+    const uint8_t HexDigits[17];
 
 private:
     SmokeDetectorComCallback *callback;
+
+    // Buffer for storing the decoded message from smoke detector
+    uint8_t recvBuf[RecvMaxCharacters >> 1];
+
+    // Number of received characters from smoke detector
+    int recvCount;
+
+    // Last time a byte was received from the serial port.
+    uint32_t lastSerialRecvTime;
 };
 
 #endif /*SMOKE_DETECTOR_COM_H*/
