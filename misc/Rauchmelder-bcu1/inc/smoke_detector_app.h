@@ -27,6 +27,14 @@
 
 #include <sblib/eibBCU1.h>
 
+#include "rm_const.h"
+
+class SmokeDetectorConfig;
+class SmokeDetectorGroupObjects;
+class SmokeDetectorAlarm;
+class SmokeDetectorErrorCode;
+class SmokeDetectorDevice;
+
 class SmokeDetectorApp
 {
 public:
@@ -35,6 +43,24 @@ public:
     BcuBase* initialize();
     void loop();
     void loopNoApp();
+    void timer();
+
+private:
+    void setupPeriodicTimer(uint32_t milliseconds);
+    void updateAlarmState();
+    void handleUpdatedGroupObjects();
+
+private:
+    BCU1 bcu;
+    SmokeDetectorConfig *config;
+    SmokeDetectorGroupObjects *groupObjects;
+    SmokeDetectorAlarm *alarm;
+    SmokeDetectorErrorCode *errorCode; //!< Smoke detector error code handling
+    SmokeDetectorDevice *device;
+    uint8_t infoCounter;               //!< Countdown to next periodic sending of informational group objects
+    GroupObject infoSendObjno;         //!< Group object to be checked/sent next on periodic sending
+    uint8_t readCmdno;                 //!< Number of the command to send to the smoke detector next
+    uint8_t eventTime;                 //!< Half-second counter 0..119
 };
 
 #endif /*SMOKE_DETECTOR_APP_H_*/
