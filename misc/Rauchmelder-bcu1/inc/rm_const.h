@@ -36,22 +36,10 @@
 #define BATTERY_VOLTAGE_INVALID -1              //!< Value representing an invalid battery voltage
 
 // Time-related values
-#define TIMER_INTERVAL_MS            500        //!< Periodic timer interval in milliseconds (handles all periodic tasks)
 #define SUPPLY_VOLTAGE_ON_DELAY_MS  5000        //!< Time in milliseconds the 12V supply needs to raise 
 #define SUPPLY_VOLTAGE_OFF_DELAY_MS  500        //!< Time in milliseconds the 12V supply needs to drain the capacitor
 #define SUPPLY_VOLTAGE_TIMEOUT_MS 120000        //!< Maximum waiting time in milliseconds to enable 12V supply
 #define RM_POWER_UP_TIME_MS         1000        //!< Time in milliseconds we give the smoke detector to startup and measure the battery voltage
-
-// counters are in half seconds (1=0.5s, 120=60.0s)
-#ifdef DEBUG
-    #define DEFAULT_EVENTTIME 60
-    #define DEFAULT_SERIAL_COMMAND_TIME 7
-    #define DEFAULT_KNX_OBJECT_TIME 1
-#else
-    #define DEFAULT_EVENTTIME 120  // Initialisierung auf 1 Minute (sonst wird im Timer Interrupt 0 minus 1 durchgeführt)
-    #define DEFAULT_SERIAL_COMMAND_TIME 15 // half seconds
-    #define DEFAULT_KNX_OBJECT_TIME 3 // half seconds
-#endif
 
 /**
  * Smoke detector alarm states

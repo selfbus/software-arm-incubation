@@ -45,14 +45,14 @@ SmokeDetectorApp::SmokeDetectorApp()
     infoSendObjno = GroupObject::grpObjAlarmBus;
     readCmdno = device->commandTableSize();
     infoCounter = config->infoIntervalMinutes();
-    eventTime = DEFAULT_EVENTTIME;
+    eventTime = DefaultEventTime;
 }
 
 BcuBase* SmokeDetectorApp::initialize()
 {
     // Manufacturer code 0x004C = Robert Bosch, Device type 1010 (0x03F2), Version 2.4
     bcu.begin(0x004C, 0x03F2, 0x24);
-    setupPeriodicTimer(TIMER_INTERVAL_MS);
+    setupPeriodicTimer(TimerIntervalMs);
     return (&bcu);
 }
 
@@ -159,7 +159,7 @@ void SmokeDetectorApp::timer()
     auto hasAlarm = alarm->hasAlarm();
 
     // Send an informational group object every other second if there is no alarm.
-    if ((eventTime & DEFAULT_KNX_OBJECT_TIME) == 0 && infoSendObjno && !hasAlarm)
+    if ((eventTime % DefaultKnxObjectTime) == 0 && infoSendObjno && !hasAlarm)
     {
         // Mark the informational group object for sending if it is configured as such.
         if (config->infoSendPeriodically(infoSendObjno))
@@ -171,7 +171,7 @@ void SmokeDetectorApp::timer()
     }
 
     // Send one of the smoke detector commands every 8 seconds in order to retrieve all status data.
-    if ((eventTime & DEFAULT_SERIAL_COMMAND_TIME) == 0 && readCmdno && !hasAlarm)
+    if ((eventTime % DefaultSerialCommandTime) == 0 && readCmdno && !hasAlarm)
     {
         if (!device->hasOngoingMessageExchange())
         {
@@ -186,7 +186,7 @@ void SmokeDetectorApp::timer()
     // Once per minute
     if (!eventTime)
     {
-        eventTime = DEFAULT_EVENTTIME;
+        eventTime = DefaultEventTime;
 
         alarm->timerEveryMinute();
 
