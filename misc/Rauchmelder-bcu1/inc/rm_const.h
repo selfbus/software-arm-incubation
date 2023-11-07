@@ -44,7 +44,7 @@
 /**
  * Smoke detector alarm states
  */
-enum RmAlarmState : uint8_t
+enum class RmAlarmState : uint8_t
 {
     RM_NO_ALARM,    //!< normal state, no alarm and no test alarm
     RM_ALARM,       //!< alarm state

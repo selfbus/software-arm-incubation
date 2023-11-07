@@ -192,15 +192,15 @@ void SmokeDetectorCom::setAlarmState(RmAlarmState newState)
 {
     switch (newState)
     {
-        case RM_ALARM:
+        case RmAlarmState::RM_ALARM:
             sendHexstring(reinterpret_cast<const uint8_t *>("030210"));
             break;
 
-        case RM_TEST_ALARM:
+        case RmAlarmState::RM_TEST_ALARM:
             sendHexstring(reinterpret_cast<const uint8_t *>("030280"));
             break;
 
-        case RM_NO_ALARM:
+        case RmAlarmState::RM_NO_ALARM:
             //\todo Does this clear the status byte completely, including local test alarm and battery empty bits?
             sendHexstring(reinterpret_cast<const uint8_t *>("030200"));
             break;
