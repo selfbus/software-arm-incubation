@@ -16,7 +16,7 @@
 #include <sblib/io_pin_names.h>
 #include <sblib/timer.h>
 
-#include "rm_com.h"
+#include "smoke_detector_com.h"
 #include "rm_const.h"
 
 

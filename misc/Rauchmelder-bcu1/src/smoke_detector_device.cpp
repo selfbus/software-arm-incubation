@@ -19,7 +19,7 @@
 #include <sblib/digital_pin.h>
 #include <sblib/timer.h>
 
-#include "rm_com.h"
+#include "smoke_detector_com.h"
 #include "rm_const.h"
 #include "smoke_detector_alarm.h"
 #include "smoke_detector_config.h"
@@ -122,7 +122,7 @@ void SmokeDetectorDevice::timerEvery500ms()
 }
 
 /**
- * For description see declaration in file @ref rm_com.h
+ * For description see declaration in file @ref smoke_detector_com.h
  */
 void SmokeDetectorDevice::rm_process_msg(uint8_t *bytes, int8_t len)
 {

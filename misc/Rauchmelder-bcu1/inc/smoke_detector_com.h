@@ -9,8 +9,8 @@
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
  */
-#ifndef rm_com_h
-#define rm_com_h
+#ifndef SMOKE_DETECTOR_COM_H
+#define SMOKE_DETECTOR_COM_H
 
 #include <stdint.h>
 
@@ -77,4 +77,4 @@ bool rm_send_cmd(RmCommandByte cmd);
 bool isReceiving();
 
 
-#endif /*rm_com_h*/
+#endif /*SMOKE_DETECTOR_COM_H*/

@@ -80,7 +80,7 @@ void appLoopNoApp()
 }
 
 /**
- * For description see declaration in file @ref rm_com.h
+ * For description see declaration in file @ref smoke_detector_com.h
  */
 void rm_process_msg(uint8_t *bytes, int8_t len)
 {
