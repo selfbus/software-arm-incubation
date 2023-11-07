@@ -73,6 +73,7 @@ void SmokeDetectorCom::receiveBytes()
 
     if (isReceiving() && elapsed(lastSerialRecvTime) > RecvTimeoutMs)
     {
+        sendNak();
         cancelReceive();
     }
 
@@ -82,15 +83,13 @@ void SmokeDetectorCom::receiveBytes()
         return;
     }
 
-    uint8_t idx;
-    uint8_t ch;
-
     int rec_ch;
     while ((rec_ch = serial.read()) > -1)
     {
         lastSerialRecvTime = millis();
 
-        ch = (uint8_t) rec_ch;
+        auto idx = recvCount >> 1;
+        auto ch = static_cast<uint8_t>(rec_ch);
         switch (ch)
         {
             case STX:
@@ -106,18 +105,13 @@ void SmokeDetectorCom::receiveBytes()
                 continue;
 
             case ETX:
-                if (isReceiving()) // ignore random end byte,
+                // Encountered an end byte. If we saw STX beforehand, and recvCount is a multiple of 2,
+                // and the length and checksum are valid, it is a valid message.
+                if (isReceiving() && (recvCount & 1) == 0 && isValidMessage(idx))
                 {
-                    if ((recvCount & 1) == 0) // recvCount must be a multiple of 2
-                    {
-                        idx = recvCount >> 1;
-                        if (isValidMessage(idx)) // verify checksum incl. minimum length
-                        {
-                            // Acknowledge reception and process message.
-                            sendAck();
-                            callback->receivedMessage(recvBuf, idx - 1);
-                        }
-                    }
+                    // Acknowledge reception and process message.
+                    sendAck();
+                    callback->receivedMessage(recvBuf, idx - 1);
                 }
                 else
                 {
@@ -133,8 +127,6 @@ void SmokeDetectorCom::receiveBytes()
         // Ignore random bytes.
         if (recvCount < 0)
             continue;
-
-        idx = recvCount >> 1;
 
         // On overflow, ignore excess characters
         if (recvCount >= RecvMaxCharacters)
