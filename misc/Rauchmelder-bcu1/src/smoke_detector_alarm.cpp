@@ -16,6 +16,8 @@
  */
 
 #include "smoke_detector_alarm.h"
+#include "smoke_detector_config.h"
+#include "smoke_detector_group_objects.h"
 
 SmokeDetectorAlarm::SmokeDetectorAlarm(const SmokeDetectorConfig *config, const SmokeDetectorGroupObjects *groupObjects)
     : config(config),

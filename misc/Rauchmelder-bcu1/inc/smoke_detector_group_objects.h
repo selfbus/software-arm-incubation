@@ -18,9 +18,9 @@
 #ifndef SMOKE_DETECTOR_GROUP_OBJECTS_H_
 #define SMOKE_DETECTOR_GROUP_OBJECTS_H_
 
-#include <sblib/eib/com_objects.h>
-
 #include "rm_const.h"
+
+class ComObjects;
 
 class SmokeDetectorGroupObjects
 {

@@ -20,7 +20,7 @@
 
 #include <stdint.h>
 
-#include "smoke_detector_group_objects.h"
+class SmokeDetectorGroupObjects;
 
 /**
  * Smoke detector module error codes
@@ -59,7 +59,5 @@ private:
     uint8_t errorCode;
     const SmokeDetectorGroupObjects *groupObjects;
 };
-
-
 
 #endif /* SMOKE_DETECTOR_ERRORCODE_H_ */

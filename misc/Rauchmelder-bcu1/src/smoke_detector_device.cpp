@@ -15,12 +15,17 @@
  *  published by the Free Software Foundation.
  */
 
+#include <sblib/eib/datapoint_types.h>
 #include <sblib/digital_pin.h>
 #include <sblib/timer.h>
 
 #include "rm_com.h"
 #include "rm_const.h"
+#include "smoke_detector_alarm.h"
+#include "smoke_detector_config.h"
 #include "smoke_detector_device.h"
+#include "smoke_detector_errorcode.h"
+#include "smoke_detector_group_objects.h"
 
 #define INITIAL_ANSWER_WAIT 6      //!< Initialwert für answerWait in 0,5s
 

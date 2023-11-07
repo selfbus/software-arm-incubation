@@ -15,6 +15,8 @@
  *  published by the Free Software Foundation.
  */
 
+#include <sblib/eib/memory.h>
+
 #include "smoke_detector_config.h"
 
 enum ConfigAddress : uint32_t

@@ -20,8 +20,10 @@
 
 #include <stdint.h>
 
-#include "smoke_detector_config.h"
-#include "smoke_detector_group_objects.h"
+#include "rm_const.h"
+
+class SmokeDetectorConfig;
+class SmokeDetectorGroupObjects;
 
 class SmokeDetectorAlarm
 {
@@ -64,7 +66,5 @@ private:
     uint8_t testAlarmCounter;     //!< Countdown to next periodic sending of TestAlarmNetwork and TestAlarmStatus in seconds
     uint8_t delayedAlarmCounter;  //!< Countdown to delayed alarm sending in seconds
 };
-
-
 
 #endif /* SMOKE_DETECTOR_ALARM_H_ */

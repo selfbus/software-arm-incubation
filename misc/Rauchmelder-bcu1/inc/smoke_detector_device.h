@@ -21,10 +21,11 @@
 #include <stdint.h>
 
 #include "rm_const.h"
-#include "smoke_detector_alarm.h"
-#include "smoke_detector_config.h"
-#include "smoke_detector_errorcode.h"
-#include "smoke_detector_group_objects.h"
+
+class SmokeDetectorAlarm;
+class SmokeDetectorConfig;
+class SmokeDetectorErrorCode;
+class SmokeDetectorGroupObjects;
 
 //-----------------------------------------------------------------------------
 // Befehle an den Rauchmelder
@@ -71,7 +72,5 @@ private:
     SmokeDetectorErrorCode *errorCode;
     unsigned char answerWait;          //!< Wenn != 0, dann Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.
 };
-
-
 
 #endif /* SMOKE_DETECTOR_DEVICE_H_ */

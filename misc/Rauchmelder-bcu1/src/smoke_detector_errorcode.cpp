@@ -21,7 +21,8 @@
  published by the Free Software Foundation.
  ---------------------------------------------------------------------------*/
 
-#include <smoke_detector_errorcode.h>
+#include "smoke_detector_errorcode.h"
+#include "smoke_detector_group_objects.h"
 
 SmokeDetectorErrorCode::SmokeDetectorErrorCode(const SmokeDetectorGroupObjects *groupObjects)
     : errorCode(errorCodeToUint8(SdErrorCode::noError)),

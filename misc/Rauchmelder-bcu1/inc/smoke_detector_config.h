@@ -15,11 +15,12 @@
  *  published by the Free Software Foundation.
  */
 
-#ifndef smoke_detector_config_h
-#define smoke_detector_config_h
+#ifndef SMOKE_DETECTOR_CONFIG_H
+#define SMOKE_DETECTOR_CONFIG_H
 
 #include "rm_const.h"
-#include <sblib/eib/memory.h>
+
+class Memory;
 
 class SmokeDetectorConfig
 {
@@ -49,4 +50,4 @@ private:
     Memory *memory;
 };
 
-#endif /* smoke_detector_config_h */
+#endif /* SMOKE_DETECTOR_CONFIG_H */

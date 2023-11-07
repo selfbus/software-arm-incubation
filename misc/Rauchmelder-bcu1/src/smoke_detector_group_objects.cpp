@@ -16,6 +16,7 @@
  */
 
 #include <type_traits>
+#include <sblib/eib/com_objects.h>
 
 #include "smoke_detector_group_objects.h"
 
