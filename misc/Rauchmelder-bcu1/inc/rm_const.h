@@ -46,11 +46,10 @@
  */
 enum class RmAlarmState : uint8_t
 {
-    RM_NO_ALARM,    //!< normal state, no alarm and no test alarm
-    RM_ALARM,       //!< alarm state
-    RM_TEST_ALARM,  //!< test alarm state
-
-    RM_NO_CHANGE    //!< do nothing, keep as is
+    noAlarm,   //!< normal state, no alarm and no test alarm
+    alarm,     //!< alarm state
+    testAlarm, //!< test alarm state
+    noChange   //!< do nothing, keep as is
 };
 
 //-----------------------------------------------------------------------------

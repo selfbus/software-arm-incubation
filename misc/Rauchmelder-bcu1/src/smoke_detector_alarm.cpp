@@ -161,21 +161,21 @@ RmAlarmState SmokeDetectorAlarm::loopCheckAlarmState()
     {
         // Trigger Alarm if necessary, or fall through to No Change.
         if (!deviceHasAlarmBus)
-            return RmAlarmState::RM_ALARM;
+            return RmAlarmState::alarm;
     }
     else if (requestedTestAlarmBus)
     {
         // Trigger Test Alarm if necessary, or fall through to No Change.
         if (!deviceHasTestAlarmBus)
-            return RmAlarmState::RM_TEST_ALARM;
+            return RmAlarmState::testAlarm;
     }
     else if (deviceHasAlarmBus || deviceHasTestAlarmBus)
     {
         // Stop Alarm and Test Alarm.
-        return RmAlarmState::RM_NO_ALARM;
+        return RmAlarmState::noAlarm;
     }
 
-    return RmAlarmState::RM_NO_CHANGE;
+    return RmAlarmState::noChange;
 }
 
 void SmokeDetectorAlarm::timerEverySecond()

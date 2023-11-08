@@ -107,7 +107,7 @@ void SmokeDetectorApp::updateAlarmState()
     }
 
     auto alarmState = alarm->loopCheckAlarmState();
-    if (alarmState != RmAlarmState::RM_NO_CHANGE)
+    if (alarmState != RmAlarmState::noChange)
     {
         device->set_alarm_state(alarmState);
     }
