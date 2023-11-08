@@ -18,6 +18,7 @@
 #include <sblib/eib/datapoint_types.h>
 #include <sblib/digital_pin.h>
 #include <sblib/timer.h>
+#include <sblib/utils.h>
 
 #include "smoke_detector_com.h"
 #include "rm_const.h"
