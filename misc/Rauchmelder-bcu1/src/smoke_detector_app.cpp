@@ -123,9 +123,9 @@ void SmokeDetectorApp::handleUpdatedGroupObjects()
     while ((objno = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
         auto groupObject = static_cast<GroupObject>(objno);
-        if (groupObject == GroupObject::grpObjAlarmBus ||         // Alarm Network
-            groupObject == GroupObject::grpObjTestAlarmBus ||     // Test Alarm Network
-            groupObject == GroupObject::grpObjResetAlarm)         // Alarm Reset
+        if (groupObject == GroupObject::alarmBus ||         // Alarm Network
+            groupObject == GroupObject::testAlarmBus ||     // Test Alarm Network
+            groupObject == GroupObject::resetAlarm)         // Alarm Reset
         {
             alarm->groupObjectUpdated(groupObject);
         }

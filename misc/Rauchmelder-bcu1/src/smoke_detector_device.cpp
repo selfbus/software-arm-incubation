@@ -63,34 +63,34 @@ constexpr struct
 CmdTab[] =
 {
     // CommandByte                  Response length         Object number   Raw value  Example response
-    {RmCommandByte::serialNumber,           5, {{GroupObject::grpObjSerialNumber,          0, RM_TYPE_LONG},      // <STX>C4214710F31F<ETX>
-                                                {GroupObject::grpObjInvalid},
-                                                {GroupObject::grpObjInvalid},
-                                                {GroupObject::grpObjInvalid}}},
-    {RmCommandByte::operatingTime,          5, {{GroupObject::grpObjOperatingTime,         0, RM_TYPE_QSEC},      // <STX>C9000047E31F<ETX>
-                                                {GroupObject::grpObjInvalid},
-                                                {GroupObject::grpObjInvalid},
-                                                {GroupObject::grpObjInvalid}}},
-    {RmCommandByte::smokeboxData,           5, {{GroupObject::grpObjSmokeboxValue,         0, RM_TYPE_SHORT},     // <STX>CB0065000111<ETX>
-                                                {GroupObject::grpObjSmokeboxPollution,     3, RM_TYPE_BYTE},
-                                                {GroupObject::grpObjCountSmokeAlarm,       2, RM_TYPE_BYTE},
-                                                {GroupObject::grpObjInvalid}}},
-    {RmCommandByte::batteryTemperatureData, 5, {{GroupObject::grpObjBatteryVoltage,        0, RM_TYPE_MVOLT},     // <STX>CC000155551B<ETX>
-                                                {GroupObject::grpObjTemperature,           2, RM_TYPE_TEMP},
-                                                {GroupObject::grpObjInvalid},
-                                                {GroupObject::grpObjInvalid}}},
-    {RmCommandByte::numberAlarms_1,         5, {{GroupObject::grpObjCountTemperatureAlarm, 0, RM_TYPE_BYTE},      // <STX>CD0000000007<ETX>
-                                                {GroupObject::grpObjCountTestAlarm,        1, RM_TYPE_BYTE},
-                                                {GroupObject::grpObjCountAlarmWire,        2, RM_TYPE_BYTE},
-                                                {GroupObject::grpObjCountAlarmBus,         3, RM_TYPE_BYTE}}},
-    {RmCommandByte::numberAlarms_2,         3, {{GroupObject::grpObjCountTestAlarmWire,    0, RM_TYPE_BYTE},      // <STX>CE000048<ETX>
-                                                {GroupObject::grpObjCountTestAlarmBus,     1, RM_TYPE_BYTE},
-                                                {GroupObject::grpObjInvalid},
-                                                {GroupObject::grpObjInvalid}}},
-    {RmCommandByte::status,                 5, {{GroupObject::grpObjInvalid},                                     // <STX>C220000000F7<ETX>
-                                                {GroupObject::grpObjInvalid},
-                                                {GroupObject::grpObjInvalid},
-                                                {GroupObject::grpObjInvalid}}}
+    {RmCommandByte::serialNumber,           5, {{GroupObject::serialNumber,          0, RM_TYPE_LONG},      // <STX>C4214710F31F<ETX>
+                                                {GroupObject::invalid},
+                                                {GroupObject::invalid},
+                                                {GroupObject::invalid}}},
+    {RmCommandByte::operatingTime,          5, {{GroupObject::operatingTime,         0, RM_TYPE_QSEC},      // <STX>C9000047E31F<ETX>
+                                                {GroupObject::invalid},
+                                                {GroupObject::invalid},
+                                                {GroupObject::invalid}}},
+    {RmCommandByte::smokeboxData,           5, {{GroupObject::smokeboxValue,         0, RM_TYPE_SHORT},     // <STX>CB0065000111<ETX>
+                                                {GroupObject::smokeboxPollution,     3, RM_TYPE_BYTE},
+                                                {GroupObject::countSmokeAlarm,       2, RM_TYPE_BYTE},
+                                                {GroupObject::invalid}}},
+    {RmCommandByte::batteryTemperatureData, 5, {{GroupObject::batteryVoltage,        0, RM_TYPE_MVOLT},     // <STX>CC000155551B<ETX>
+                                                {GroupObject::temperature,           2, RM_TYPE_TEMP},
+                                                {GroupObject::invalid},
+                                                {GroupObject::invalid}}},
+    {RmCommandByte::numberAlarms_1,         5, {{GroupObject::countTemperatureAlarm, 0, RM_TYPE_BYTE},      // <STX>CD0000000007<ETX>
+                                                {GroupObject::countTestAlarm,        1, RM_TYPE_BYTE},
+                                                {GroupObject::countAlarmWire,        2, RM_TYPE_BYTE},
+                                                {GroupObject::countAlarmBus,         3, RM_TYPE_BYTE}}},
+    {RmCommandByte::numberAlarms_2,         3, {{GroupObject::countTestAlarmWire,    0, RM_TYPE_BYTE},      // <STX>CE000048<ETX>
+                                                {GroupObject::countTestAlarmBus,     1, RM_TYPE_BYTE},
+                                                {GroupObject::invalid},
+                                                {GroupObject::invalid}}},
+    {RmCommandByte::status,                 5, {{GroupObject::invalid},                                     // <STX>C220000000F7<ETX>
+                                                {GroupObject::invalid},
+                                                {GroupObject::invalid},
+                                                {GroupObject::invalid}}}
 };
 
 void SmokeDetectorDevice::failHardInDebug() ///\todo remove on release
@@ -172,7 +172,7 @@ void SmokeDetectorDevice::receivedMessage(uint8_t *bytes, int8_t len)
         // Informationen aus den empfangenen Daten vom Rauchmelder der sblib zur Verfügung stellen
         // Dazu alle Com-Objekte suchen auf die die empfangenen Daten passen (mapping durch CmdTab)
         // notwendig für den Abruf von Informationen über KNX aus den Status Objekten (GroupValueRead -> GroupValueResponse)
-        for (unsigned char cmdObj_cnt = 0; (CmdTab[cmd].objects[cmdObj_cnt].object != GroupObject::grpObjInvalid) &&
+        for (unsigned char cmdObj_cnt = 0; (CmdTab[cmd].objects[cmdObj_cnt].object != GroupObject::invalid) &&
                                            (cmdObj_cnt < MAX_OBJ_CMD); cmdObj_cnt++)
         {
             auto groupObject = CmdTab[cmd].objects[cmdObj_cnt].object;
@@ -396,8 +396,8 @@ bool SmokeDetectorDevice::send_Cmd(Command cmd)
             break;
 
         case Command::rmBatteryAndTemperature:
-            groupObjects->setValue(GroupObject::grpObjBatteryVoltage, 0);
-            groupObjects->setValue(GroupObject::grpObjTemperature, 0);
+            groupObjects->setValue(GroupObject::batteryVoltage, 0);
+            groupObjects->setValue(GroupObject::temperature, 0);
             break;
 
         case Command::rmNumberAlarms_1:

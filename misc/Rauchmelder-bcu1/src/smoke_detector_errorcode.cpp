@@ -88,9 +88,9 @@ void SmokeDetectorErrorCode::set(SdErrorCode error, bool newValue)
         errorCode &= ~errorCodeToUint8(error);
     }
 
-    groupObjects->writeIfChanged(GroupObject::grpObjErrorCode, errorCode);
-    groupObjects->writeIfChanged(GroupObject::grpObjBatteryLow, batteryLow());
-    groupObjects->writeIfChanged(GroupObject::grpObjMalfunction, malfunction());
+    groupObjects->writeIfChanged(GroupObject::errorCode, errorCode);
+    groupObjects->writeIfChanged(GroupObject::batteryLow, batteryLow());
+    groupObjects->writeIfChanged(GroupObject::malfunction, malfunction());
 }
 
 uint8_t SmokeDetectorErrorCode::errorCodeToUint8(SdErrorCode code)

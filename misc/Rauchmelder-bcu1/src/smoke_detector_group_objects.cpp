@@ -38,7 +38,8 @@ void SmokeDetectorGroupObjects::send(GroupObject groupObject) const
 {
     // The communication objects already have the correct value, but there is no method to
     // just mark them for sending. So, just write the same value again.
-    comObjects->objectWrite(groupObject, comObjects->objectRead(groupObject));
+    auto objno = static_cast<int>(groupObject);
+    comObjects->objectWrite(objno, comObjects->objectRead(objno));
 }
 
 /**
@@ -49,7 +50,8 @@ void SmokeDetectorGroupObjects::send(GroupObject groupObject) const
  */
 void SmokeDetectorGroupObjects::setValue(GroupObject groupObject, uint32_t value) const
 {
-    comObjects->objectSetValue(groupObject, value);
+    auto objno = static_cast<int>(groupObject);
+    comObjects->objectSetValue(objno, value);
 }
 
 /**
@@ -60,7 +62,8 @@ void SmokeDetectorGroupObjects::setValue(GroupObject groupObject, uint32_t value
  */
 uint32_t SmokeDetectorGroupObjects::read(GroupObject groupObject) const
 {
-    return comObjects->objectRead(groupObject);
+    auto objno = static_cast<int>(groupObject);
+    return comObjects->objectRead(objno);
 }
 
 /**
@@ -71,7 +74,8 @@ uint32_t SmokeDetectorGroupObjects::read(GroupObject groupObject) const
  */
 void SmokeDetectorGroupObjects::write(GroupObject groupObject, uint32_t value) const
 {
-    comObjects->objectWrite(groupObject, value);
+    auto objno = static_cast<int>(groupObject);
+    comObjects->objectWrite(objno, value);
 }
 
 /**
@@ -82,9 +86,10 @@ void SmokeDetectorGroupObjects::write(GroupObject groupObject, uint32_t value) c
  */
 void SmokeDetectorGroupObjects::writeIfChanged(GroupObject groupObject, uint32_t value) const
 {
-    auto oldValue = comObjects->objectRead(groupObject);
+    auto objno = static_cast<int>(groupObject);
+    auto oldValue = comObjects->objectRead(objno);
     if (oldValue != value)
     {
-        comObjects->objectWrite(groupObject, value);
+        comObjects->objectWrite(objno, value);
     }
 }

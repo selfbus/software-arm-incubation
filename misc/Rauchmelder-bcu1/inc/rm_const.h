@@ -59,32 +59,32 @@ enum class RmAlarmState : uint8_t
 //-----------------------------------------------------------------------------
 // Kommunikations Objekte
 //-----------------------------------------------------------------------------
-enum GroupObject : uint8_t
+enum class GroupObject : uint8_t
 {
-    grpObjAlarmBus =               0, //!< Alarm Vernetzung
-    grpObjTestAlarmBus =           1, //!< Testalarm Vernetzung
-    grpObjResetAlarm =             2, //!< Alarm / Testalarm rücksetzen
-    grpObjStatusAlarm =            3, //!< Status Alarm
-    grpObjStatusAlarmDelayed =     4, //!< Status verzögerter Alarm
-    grpObjStatusTestAlarm =        5, //!< Status Testalarm
-    grpObjSerialNumber =           6, //!< Rauchmelder Seriennummer
-    grpObjOperatingTime =          7, //!< Rauchmelder Betriebsdauer in Sekunden
-    grpObjSmokeboxValue =          8, //!< Rauchkammer Wert
-    grpObjSmokeboxPollution =      9, //!< Rauchkammer Verschmutzung
-    grpObjBatteryVoltage =        10, //!< Batterie Spannung
-    grpObjTemperature =           11, //!< Temperatur
-    grpObjErrorCode =             12, //!< Rauchmelder Fehlercode, siehe @ref SdErrorCode
-    grpObjBatteryLow =            13, //!< Batterie leer
-    grpObjMalfunction =           14, //!< Rauchmelder defekt
-    grpObjCountSmokeAlarm =       15, //!< Anzahl Rauchalarme
-    grpObjCountTemperatureAlarm = 16, //!< Anzahl Temperatur Alarme
-    grpObjCountTestAlarm =        17, //!< Anzahl Testalarme
-    grpObjCountAlarmWire =        18, //!< Anzahl Draht Alarme
-    grpObjCountAlarmBus =         19, //!< Anzahl Bus Alarme
-    grpObjCountTestAlarmWire =    20, //!< Anzahl Draht Testalarme
-    grpObjCountTestAlarmBus =     21, //!< Anzahl Bus Testalarme
+    alarmBus =               0, //!< Alarm Vernetzung
+    testAlarmBus =           1, //!< Testalarm Vernetzung
+    resetAlarm =             2, //!< Alarm / Testalarm rücksetzen
+    statusAlarm =            3, //!< Status Alarm
+    statusAlarmDelayed =     4, //!< Status verzögerter Alarm
+    statusTestAlarm =        5, //!< Status Testalarm
+    serialNumber =           6, //!< Rauchmelder Seriennummer
+    operatingTime =          7, //!< Rauchmelder Betriebsdauer in Sekunden
+    smokeboxValue =          8, //!< Rauchkammer Wert
+    smokeboxPollution =      9, //!< Rauchkammer Verschmutzung
+    batteryVoltage =        10, //!< Batterie Spannung
+    temperature =           11, //!< Temperatur
+    errorCode =             12, //!< Rauchmelder Fehlercode, siehe @ref SdErrorCode
+    batteryLow =            13, //!< Batterie leer
+    malfunction =           14, //!< Rauchmelder defekt
+    countSmokeAlarm =       15, //!< Anzahl Rauchalarme
+    countTemperatureAlarm = 16, //!< Anzahl Temperatur Alarme
+    countTestAlarm =        17, //!< Anzahl Testalarme
+    countAlarmWire =        18, //!< Anzahl Draht Alarme
+    countAlarmBus =         19, //!< Anzahl Bus Alarme
+    countTestAlarmWire =    20, //!< Anzahl Draht Testalarme
+    countTestAlarmBus =     21, //!< Anzahl Bus Testalarme
 
-    grpObjInvalid =              0xff //!< Invalid groupobject
+    invalid =              0xff //!< Invalid groupobject
 };
 
 // https://stackoverflow.com/a/31836401
@@ -131,8 +131,8 @@ private:
     uint8_t value;
 };
 
-typedef GroupObjectIterator<GroupObject::grpObjAlarmBus, GroupObject::grpObjCountTestAlarmBus> AllGroupObjects;
-typedef GroupObjectIterator<GroupObject::grpObjSerialNumber, GroupObject::grpObjCountTestAlarmBus> InfoGroupObjects;
+typedef GroupObjectIterator<GroupObject::alarmBus, GroupObject::countTestAlarmBus> AllGroupObjects;
+typedef GroupObjectIterator<GroupObject::serialNumber, GroupObject::countTestAlarmBus> InfoGroupObjects;
 
 //!< Maximale Anzahl von ComObjekten pro Rauchmelder-Befehl
 #define MAX_OBJ_CMD  4
