@@ -6,6 +6,10 @@
  *  Copyright (c) 2017 Oliver Stefan <o.stefan252@googlemail.com>
  *  Copyright (c) 2020 Stefan Haller
  *
+ *  Refactoring and bug fixes:
+ *  Copyright (c) 2023 Darthyson <darth@maptrack.de>
+ *  Copyright (c) 2023 Thomas Dallmair <dev@thomas-dallmair.de>
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
@@ -83,10 +87,52 @@ enum GroupObject : uint8_t
     grpObjInvalid =              0xff //!< Invalid groupobject
 };
 
-#define NUM_OBJS               22 //!< Anzahl der Com-Objekte
+// https://stackoverflow.com/a/31836401
+template < GroupObject beginValue, GroupObject endValue>
+class GroupObjectIterator
+{
+public:
+    GroupObjectIterator() : value(static_cast<uint8_t>(beginValue))
+    {
+    }
 
-//!< Höchstes Com-Objekt das bei Info-Senden gesendet wird.
-#define OBJ_HIGH_INFO_SEND      (GroupObject::grpObjCountTestAlarmBus)
+    GroupObjectIterator(const GroupObject & groupObject) : value(static_cast<uint8_t>(groupObject))
+    {
+    }
+
+    GroupObjectIterator operator++()
+    {
+        ++value;
+        return *this;
+    }
+
+    GroupObject operator*()
+    {
+        return static_cast<GroupObject>(value);
+    }
+
+    bool operator!=(const GroupObjectIterator & groupObject)
+    {
+        return value != groupObject.value;
+    }
+
+    GroupObjectIterator begin()
+    {
+        return *this;
+    }
+
+    GroupObjectIterator end()
+    {
+        static const GroupObjectIterator endIterator = ++GroupObjectIterator(endValue);
+        return endIterator;
+    }
+
+private:
+    uint8_t value;
+};
+
+typedef GroupObjectIterator<GroupObject::grpObjAlarmBus, GroupObject::grpObjCountTestAlarmBus> AllGroupObjects;
+typedef GroupObjectIterator<GroupObject::grpObjSerialNumber, GroupObject::grpObjCountTestAlarmBus> InfoGroupObjects;
 
 //!< Maximale Anzahl von ComObjekten pro Rauchmelder-Befehl
 #define MAX_OBJ_CMD  4

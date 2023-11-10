@@ -23,9 +23,9 @@
 SmokeDetectorGroupObjects::SmokeDetectorGroupObjects(ComObjects *comObjects)
     : comObjects(comObjects)
 {
-    for (std::underlying_type_t<GroupObject> i = 0; i < NUM_OBJS; i++)
+    for (auto groupObject : AllGroupObjects())
     {
-        setValue(static_cast<GroupObject>(i), 0);
+        setValue(groupObject, 0);
     }
 }
 

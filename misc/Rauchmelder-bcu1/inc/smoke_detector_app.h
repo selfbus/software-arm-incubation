@@ -71,7 +71,7 @@ private:
     SmokeDetectorErrorCode *errorCode; //!< Smoke detector error code handling
     SmokeDetectorDevice *device;
     uint8_t infoCounter;               //!< Countdown to next periodic sending of informational group objects
-    GroupObject infoSendObjno;         //!< Group object to be checked/sent next on periodic sending
+    InfoGroupObjects infoGroupObject;  //!< Group object iterator to be checked/sent next on periodic sending
     uint8_t readCmdno;                 //!< Number of the command to send to the smoke detector next
     uint8_t eventTime;                 //!< Half-second counter 0..119
 };

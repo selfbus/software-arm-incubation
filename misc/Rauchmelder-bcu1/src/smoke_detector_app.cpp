@@ -42,9 +42,9 @@ SmokeDetectorApp::SmokeDetectorApp()
       errorCode(new SmokeDetectorErrorCode(groupObjects)),
       device(new SmokeDetectorDevice(config, groupObjects, alarm, errorCode))
 {
-    infoSendObjno = GroupObject::grpObjAlarmBus;
-    readCmdno = device->commandTableSize();
     infoCounter = config->infoIntervalMinutes();
+    infoGroupObject = InfoGroupObjects().end();
+    readCmdno = device->commandTableSize();
     eventTime = DefaultEventTime;
 }
 
@@ -159,15 +159,15 @@ void SmokeDetectorApp::timer()
     auto hasAlarm = alarm->hasAlarm();
 
     // Send an informational group object every other second if there is no alarm.
-    if ((eventTime % DefaultKnxObjectTime) == 0 && infoSendObjno && !hasAlarm)
+    if ((eventTime % DefaultKnxObjectTime) == 0 && infoGroupObject != InfoGroupObjects().end() && !hasAlarm)
     {
         // Mark the informational group object for sending if it is configured as such.
-        if (config->infoSendPeriodically(infoSendObjno))
+        if (config->infoSendPeriodically(*infoGroupObject))
         {
-            groupObjects->send(infoSendObjno);
+            groupObjects->send(*infoGroupObject);
         }
 
-        infoSendObjno = static_cast<GroupObject>(static_cast<std::underlying_type_t<GroupObject>>(infoSendObjno) - 1);
+        ++infoGroupObject;
     }
 
     // Send one of the smoke detector commands every 8 seconds in order to retrieve all status data.
@@ -202,7 +202,7 @@ void SmokeDetectorApp::timer()
             if (!infoCounter)
             {
                 infoCounter = config->infoIntervalMinutes();
-                infoSendObjno = OBJ_HIGH_INFO_SEND;
+                infoGroupObject = InfoGroupObjects();
             }
         }
     }
