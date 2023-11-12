@@ -145,7 +145,7 @@ bool SmokeDetectorDevice::sendCommand(DeviceCommand cmd)
 {
     checkRmAttached2BasePlate(); ///\todo If think this should be moved to TIMER32_0_IRQHandler
 
-    if (hasOngoingMessageExchange() || com->isReceiving())
+    if (hasOngoingMessageExchange())
     {
         return false;
     }

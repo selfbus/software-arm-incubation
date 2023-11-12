@@ -49,16 +49,6 @@ void SmokeDetectorCom::initSerialCom()
 }
 
 /**
- * Check if we are currently receiving bytes from the smoke detector
- *
- * @return true if receiving, otherwise false
- */
-bool SmokeDetectorCom::isReceiving()
-{
-    return (recvCount >= 0);
-}
-
-/**
  * Receive all bytes from the smoke detector via serial port.
  * This function must be called continuously from the main loop to receive transmitted bytes.
  * When the received message is complete, this calls @ref SmokeDetectorComCallback::receivedMessage()
@@ -173,7 +163,7 @@ void SmokeDetectorCom::receiveBytes()
  */
 bool SmokeDetectorCom::sendCommand(RmCommandByte cmd)
 {
-    if (!serial.enabled())
+    if (!serial.enabled() || isReceiving())
     {
         return false;
     }
@@ -208,6 +198,16 @@ void SmokeDetectorCom::setAlarmState(RmAlarmState newState)
         default:
             break;
     }
+}
+
+/**
+ * Check if we are currently receiving bytes from the smoke detector
+ *
+ * @return true if receiving, otherwise false
+ */
+bool SmokeDetectorCom::isReceiving()
+{
+    return (recvCount >= 0);
 }
 
 /**

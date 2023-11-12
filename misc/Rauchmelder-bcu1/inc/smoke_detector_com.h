@@ -62,13 +62,6 @@ public:
     void initSerialCom();
 
     /**
-     * Check if we are currently receiving bytes from the smoke detector
-     *
-     * @return true if receiving, otherwise false
-     */
-    bool isReceiving();
-
-    /**
      * Receive all bytes from the smoke detector via serial port.
      * This function must be called continuously from the main loop to receive transmitted bytes.
      * When the received message is complete, this calls @ref SmokeDetectorComCallback::receivedMessage()
@@ -91,6 +84,13 @@ public:
     void setAlarmState(RmAlarmState newState);
 
 private:
+    /**
+     * Check if we are currently receiving bytes from the smoke detector
+     *
+     * @return true if receiving, otherwise false
+     */
+    bool isReceiving();
+
     /**
      * Cancel an ongoing message reception, e.g. due to timeout.
      */
