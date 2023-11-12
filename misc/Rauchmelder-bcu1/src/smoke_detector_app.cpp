@@ -101,7 +101,9 @@ void SmokeDetectorApp::setupPeriodicTimer(uint32_t milliseconds)
  */
 void SmokeDetectorApp::updateAlarmState()
 {
-    if (device->hasOngoingMessageExchange()) ///\todo while waiting a answer we don't process alarms? rly?
+    // While waiting for an answer we don't process alarms to avoid overlapping message exchanges.
+    // As a message exchange is fast and this is called from loop() that's fine.
+    if (device->hasOngoingMessageExchange())
     {
        return;
     }
