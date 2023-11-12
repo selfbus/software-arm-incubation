@@ -84,7 +84,7 @@ enum class GroupObject : uint8_t
     countTestAlarmWire =    20, //!< Anzahl Draht Testalarme
     countTestAlarmBus =     21, //!< Anzahl Bus Testalarme
 
-    invalid =              0xff //!< Invalid groupobject
+    none =                 0xff //!< No group object
 };
 
 // https://stackoverflow.com/a/31836401
