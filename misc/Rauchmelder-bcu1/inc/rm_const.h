@@ -106,22 +106,22 @@ public:
         return *this;
     }
 
-    GroupObject operator*()
+    GroupObject operator*() const
     {
         return static_cast<GroupObject>(value);
     }
 
-    bool operator!=(const GroupObjectIterator & groupObject)
+    bool operator!=(const GroupObjectIterator & groupObject) const
     {
         return value != groupObject.value;
     }
 
-    GroupObjectIterator begin()
+    GroupObjectIterator begin() const
     {
         return *this;
     }
 
-    GroupObjectIterator end()
+    GroupObjectIterator end() const
     {
         static const GroupObjectIterator endIterator = ++GroupObjectIterator(endValue);
         return endIterator;
