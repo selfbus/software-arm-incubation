@@ -28,9 +28,9 @@ class SmokeDetectorConfig;
 class SmokeDetectorErrorCode;
 class SmokeDetectorGroupObjects;
 
-//-----------------------------------------------------------------------------
-// Befehle an den Rauchmelder
-//-----------------------------------------------------------------------------
+/**
+ * Possible commands to send to the smoke detector
+ */
 enum class DeviceCommand : uint8_t
 {
     serialNumber          = 0,  //!< Gira Command: Read serial number
@@ -51,10 +51,10 @@ public:
     ~SmokeDetectorDevice() = delete;
 
     bool hasOngoingMessageExchange();
+    void setAlarmState(RmAlarmState newState);
+    bool sendCommand(DeviceCommand cmd);
+    void receiveBytes();
     void timerEvery500ms();
-    bool send_Cmd(DeviceCommand cmd);
-    void recv_bytes();
-    void set_alarm_state(RmAlarmState newState);
 
 private:
     void receivedMessage(uint8_t *bytes, int8_t len);

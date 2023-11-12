@@ -58,7 +58,7 @@ BcuBase* SmokeDetectorApp::initialize()
 
 void SmokeDetectorApp::loop()
 {
-    device->recv_bytes();
+    device->receiveBytes();
     updateAlarmState();
     handleUpdatedGroupObjects();
 
@@ -69,7 +69,7 @@ void SmokeDetectorApp::loop()
 
 void SmokeDetectorApp::loopNoApp()
 {
-    device->recv_bytes(); // timer32_0 is still running, so we should read the received bytes
+    device->receiveBytes(); // timer32_0 is still running, so we should read the received bytes
 }
 
 void SmokeDetectorApp::setupPeriodicTimer(uint32_t milliseconds)
@@ -111,7 +111,7 @@ void SmokeDetectorApp::updateAlarmState()
     auto alarmState = alarm->loopCheckAlarmState();
     if (alarmState != RmAlarmState::noChange)
     {
-        device->set_alarm_state(alarmState);
+        device->setAlarmState(alarmState);
     }
 }
 
@@ -175,7 +175,7 @@ void SmokeDetectorApp::timer()
     // Send one of the smoke detector commands every 8 seconds in order to retrieve all status data.
     if ((eventTime % DefaultSerialCommandTime) == 0 && deviceCommand != deviceCommand.end() && !hasAlarm)
     {
-        if (!device->hasOngoingMessageExchange() && device->send_Cmd(*deviceCommand))
+        if (!device->hasOngoingMessageExchange() && device->sendCommand(*deviceCommand))
         {
             ++deviceCommand;
         }

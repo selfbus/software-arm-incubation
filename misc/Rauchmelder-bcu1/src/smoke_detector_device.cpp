@@ -93,21 +93,100 @@ CmdTab[] =
                                                 {GroupObject::none}}}
 };
 
-void SmokeDetectorDevice::failHardInDebug() ///\todo remove on release
-{
-#ifdef DEBUG
-    fatalError();
-#endif
-}
-
-uint8_t SmokeDetectorDevice::commandTableSize()
-{
-    return sizeof(CmdTab)/sizeof(CmdTab[0]);
-}
-
 bool SmokeDetectorDevice::hasOngoingMessageExchange()
 {
     return answerWait != 0;
+}
+
+void SmokeDetectorDevice::setAlarmState(RmAlarmState newState)
+{
+    com->setAlarmState(newState);
+    answerWait = INITIAL_ANSWER_WAIT;
+}
+
+static RmCommandByte deviceCommandToRmCommandByte(DeviceCommand cmd)
+{
+    switch (cmd)
+    {
+        case DeviceCommand::serialNumber:
+            return RmCommandByte::serialNumber;
+
+        case DeviceCommand::status:
+            return RmCommandByte::status;
+
+        case DeviceCommand::batteryAndTemperature:
+            return RmCommandByte::batteryTemperatureData;
+
+        case DeviceCommand::operatingTime:
+            return RmCommandByte::operatingTime;
+
+        case DeviceCommand::smokeboxData:
+            return RmCommandByte::smokeboxData;
+
+        case DeviceCommand::numberAlarms1:
+            return RmCommandByte::numberAlarms_1;
+
+        case DeviceCommand::numberAlarms2:
+        default:
+            return RmCommandByte::numberAlarms_2;
+    }
+}
+
+/**
+ * Send command @ref cmd to smoke detector.\n
+ * Receiving and processing the response from the smoke detector is done in @ref receivedMessage().
+ *
+ * @param cmd - Index of the command to be send from the @ref CmdTab
+ * @return True if command was sent, otherwise false.
+ */
+bool SmokeDetectorDevice::sendCommand(DeviceCommand cmd)
+{
+    checkRmAttached2BasePlate(); ///\todo If think this should be moved to TIMER32_0_IRQHandler
+
+    if (com->isReceiving())
+    {
+        return false;
+    }
+
+    if (!com->sendCommand(deviceCommandToRmCommandByte(cmd)))
+    {
+        return false;
+    }
+
+    ///\todo setting group obj values to invalid, should be done after a serial timeout occurred
+    switch (cmd)
+    {
+        case DeviceCommand::serialNumber:
+            break;
+
+        case DeviceCommand::operatingTime:
+            break;
+
+        case DeviceCommand::smokeboxData:
+            break;
+
+        case DeviceCommand::batteryAndTemperature:
+            groupObjects->setValue(GroupObject::batteryVoltage, 0);
+            groupObjects->setValue(GroupObject::temperature, 0);
+            break;
+
+        case DeviceCommand::numberAlarms1:
+            break;
+
+        case DeviceCommand::numberAlarms2:
+            break;
+
+        default:
+            break;
+    }
+
+    answerWait = INITIAL_ANSWER_WAIT;
+    return true;
+}
+
+void SmokeDetectorDevice::receiveBytes()
+{
+    com->receiveBytes();
 }
 
 void SmokeDetectorDevice::timerEvery500ms()
@@ -226,6 +305,18 @@ void SmokeDetectorDevice::receivedMessage(uint8_t *bytes, int8_t len)
         ///\todo handle smoke box fault
         ///
     }
+}
+
+void SmokeDetectorDevice::failHardInDebug() ///\todo remove on release
+{
+#ifdef DEBUG
+    fatalError();
+#endif
+}
+
+uint8_t SmokeDetectorDevice::commandTableSize()
+{
+    return sizeof(CmdTab)/sizeof(CmdTab[0]);
 }
 
 /**
@@ -360,95 +451,4 @@ void SmokeDetectorDevice::checkRmAttached2BasePlate()
         setSupplyVoltageAndWait(true, SUPPLY_VOLTAGE_ON_DELAY_MS);
         com->initSerialCom(); //serielle Schnittstelle für die Kommunikation mit dem Rauchmelder initialisieren
     }
-}
-
-static RmCommandByte deviceCommandToRmCommandByte(DeviceCommand cmd)
-{
-    switch (cmd)
-    {
-        case DeviceCommand::serialNumber:
-            return RmCommandByte::serialNumber;
-
-        case DeviceCommand::status:
-            return RmCommandByte::status;
-
-        case DeviceCommand::batteryAndTemperature:
-            return RmCommandByte::batteryTemperatureData;
-
-        case DeviceCommand::operatingTime:
-            return RmCommandByte::operatingTime;
-
-        case DeviceCommand::smokeboxData:
-            return RmCommandByte::smokeboxData;
-
-        case DeviceCommand::numberAlarms1:
-            return RmCommandByte::numberAlarms_1;
-
-        case DeviceCommand::numberAlarms2:
-        default:
-            return RmCommandByte::numberAlarms_2;
-    }
-}
-
-/**
- * Send command @ref cmd to smoke detector.\n
- * Receiving and processing the response from the smoke detector is done in @ref receivedMessage().
- *
- * @param cmd - Index of the command to be send from the @ref CmdTab
- * @return True if command was sent, otherwise false.
- */
-bool SmokeDetectorDevice::send_Cmd(DeviceCommand cmd)
-{
-    checkRmAttached2BasePlate(); ///\todo If think this should be moved to TIMER32_0_IRQHandler
-
-    if (com->isReceiving())
-    {
-        return false;
-    }
-
-    if (!com->sendCommand(deviceCommandToRmCommandByte(cmd)))
-    {
-        return false;
-    }
-
-    ///\todo setting group obj values to invalid, should be done after a serial timeout occurred
-    switch (cmd)
-    {
-        case DeviceCommand::serialNumber:
-            break;
-
-        case DeviceCommand::operatingTime:
-            break;
-
-        case DeviceCommand::smokeboxData:
-            break;
-
-        case DeviceCommand::batteryAndTemperature:
-            groupObjects->setValue(GroupObject::batteryVoltage, 0);
-            groupObjects->setValue(GroupObject::temperature, 0);
-            break;
-
-        case DeviceCommand::numberAlarms1:
-            break;
-
-        case DeviceCommand::numberAlarms2:
-            break;
-
-        default:
-            break;
-    }
-
-    answerWait = INITIAL_ANSWER_WAIT;
-    return true;
-}
-
-void SmokeDetectorDevice::recv_bytes()
-{
-    com->receiveBytes();
-}
-
-void SmokeDetectorDevice::set_alarm_state(RmAlarmState newState)
-{
-    com->setAlarmState(newState);
-    answerWait = INITIAL_ANSWER_WAIT;
 }
