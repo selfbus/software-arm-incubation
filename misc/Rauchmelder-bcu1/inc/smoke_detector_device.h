@@ -50,7 +50,6 @@ public:
     SmokeDetectorDevice(const SmokeDetectorConfig *config, const SmokeDetectorGroupObjects *groupObjects, SmokeDetectorAlarm *alarm, SmokeDetectorErrorCode *errorCode);
     ~SmokeDetectorDevice() = delete;
 
-    bool hasOngoingMessageExchange();
     void setAlarmState(RmAlarmState newState);
     bool sendCommand(DeviceCommand cmd);
     void receiveBytes();
@@ -62,6 +61,7 @@ private:
 private:
     void failHardInDebug();
     static uint8_t commandTableSize();
+    bool hasOngoingMessageExchange();
 
     /**
      * Read raw value from response and convert it to corresponding group object value

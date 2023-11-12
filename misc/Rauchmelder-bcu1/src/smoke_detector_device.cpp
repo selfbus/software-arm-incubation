@@ -93,13 +93,15 @@ CmdTab[] =
                                                 {GroupObject::none}}}
 };
 
-bool SmokeDetectorDevice::hasOngoingMessageExchange()
-{
-    return answerWait != 0;
-}
-
 void SmokeDetectorDevice::setAlarmState(RmAlarmState newState)
 {
+    // While waiting for an answer we don't process alarms to avoid overlapping message exchanges.
+    // As a message exchange is fast and this is called from the main loop that's fine.
+    if (hasOngoingMessageExchange())
+    {
+       return;
+    }
+
     com->setAlarmState(newState);
     answerWait = INITIAL_ANSWER_WAIT;
 }
@@ -143,7 +145,7 @@ bool SmokeDetectorDevice::sendCommand(DeviceCommand cmd)
 {
     checkRmAttached2BasePlate(); ///\todo If think this should be moved to TIMER32_0_IRQHandler
 
-    if (com->isReceiving())
+    if (hasOngoingMessageExchange() || com->isReceiving())
     {
         return false;
     }
@@ -317,6 +319,11 @@ void SmokeDetectorDevice::failHardInDebug() ///\todo remove on release
 uint8_t SmokeDetectorDevice::commandTableSize()
 {
     return sizeof(CmdTab)/sizeof(CmdTab[0]);
+}
+
+bool SmokeDetectorDevice::hasOngoingMessageExchange()
+{
+    return answerWait != 0;
 }
 
 /**

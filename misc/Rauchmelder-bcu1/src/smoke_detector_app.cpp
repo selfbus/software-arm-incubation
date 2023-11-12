@@ -101,13 +101,6 @@ void SmokeDetectorApp::setupPeriodicTimer(uint32_t milliseconds)
  */
 void SmokeDetectorApp::updateAlarmState()
 {
-    // While waiting for an answer we don't process alarms to avoid overlapping message exchanges.
-    // As a message exchange is fast and this is called from loop() that's fine.
-    if (device->hasOngoingMessageExchange())
-    {
-       return;
-    }
-
     auto alarmState = alarm->loopCheckAlarmState();
     if (alarmState != RmAlarmState::noChange)
     {
@@ -175,7 +168,7 @@ void SmokeDetectorApp::timer()
     // Send one of the smoke detector commands every 8 seconds in order to retrieve all status data.
     if ((eventTime % DefaultSerialCommandTime) == 0 && deviceCommand != deviceCommand.end() && !hasAlarm)
     {
-        if (!device->hasOngoingMessageExchange() && device->sendCommand(*deviceCommand))
+        if (device->sendCommand(*deviceCommand))
         {
             ++deviceCommand;
         }
