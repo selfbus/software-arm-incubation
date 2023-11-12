@@ -159,7 +159,7 @@ void SmokeDetectorApp::timer()
     auto hasAlarm = alarm->hasAlarm();
 
     // Send an informational group object every other second if there is no alarm.
-    if ((eventTime % DefaultKnxObjectTime) == 0 && infoGroupObject != InfoGroupObjects().end() && !hasAlarm)
+    if ((eventTime % DefaultKnxObjectTime) == 0 && infoGroupObject != infoGroupObject.end() && !hasAlarm)
     {
         // Mark the informational group object for sending if it is configured as such.
         if (config->infoSendPeriodically(*infoGroupObject))
@@ -202,7 +202,7 @@ void SmokeDetectorApp::timer()
             if (!infoCounter)
             {
                 infoCounter = config->infoIntervalMinutes();
-                infoGroupObject = InfoGroupObjects();
+                infoGroupObject = InfoGroupObjects().begin();
             }
         }
     }
