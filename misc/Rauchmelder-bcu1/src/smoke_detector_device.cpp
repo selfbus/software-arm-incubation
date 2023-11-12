@@ -369,7 +369,7 @@ void SmokeDetectorDevice::checkRmAttached2BasePlate()
  * @param cmd - Index of the command to be send from the @ref CmdTab
  * @return True if command was sent, otherwise false.
  */
-bool SmokeDetectorDevice::send_Cmd(Command cmd)
+bool SmokeDetectorDevice::send_Cmd(DeviceCommand cmd)
 {
     checkRmAttached2BasePlate(); ///\todo If think this should be moved to TIMER32_0_IRQHandler
 
@@ -386,24 +386,24 @@ bool SmokeDetectorDevice::send_Cmd(Command cmd)
     ///\todo setting group obj values to invalid, should be done after a serial timeout occurred
     switch (cmd)
     {
-        case Command::rmSerialNumber:
+        case DeviceCommand::serialNumber:
             break;
 
-        case Command::rmOperatingTime:
+        case DeviceCommand::operatingTime:
             break;
 
-        case Command::rmSmokeboxData:
+        case DeviceCommand::smokeboxData:
             break;
 
-        case Command::rmBatteryAndTemperature:
+        case DeviceCommand::batteryAndTemperature:
             groupObjects->setValue(GroupObject::batteryVoltage, 0);
             groupObjects->setValue(GroupObject::temperature, 0);
             break;
 
-        case Command::rmNumberAlarms_1:
+        case DeviceCommand::numberAlarms1:
             break;
 
-        case Command::rmNumberAlarms_2:
+        case DeviceCommand::numberAlarms2:
             break;
 
         default:

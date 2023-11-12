@@ -176,7 +176,7 @@ void SmokeDetectorApp::timer()
         if (!device->hasOngoingMessageExchange())
         {
             readCmdno--;
-            if (!device->send_Cmd((Command)readCmdno))
+            if (!device->send_Cmd((DeviceCommand)readCmdno))
             {
                 readCmdno++;
             }
