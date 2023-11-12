@@ -36,6 +36,9 @@ public:
     void writeIfChanged(GroupObject groupObject, uint32_t value) const;
 
 private:
+    static int groupObjectToObjNo(GroupObject groupObject);
+
+private:
     ComObjects *comObjects;
 };
 
