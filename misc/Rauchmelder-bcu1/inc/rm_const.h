@@ -18,6 +18,7 @@
 #define rm_const_h
 
 #include <stdint.h>
+#include <type_traits>
 #include <sblib/io_pin_names.h>
 
 
@@ -88,51 +89,58 @@ enum class GroupObject : uint8_t
 };
 
 // https://stackoverflow.com/a/31836401
-template < GroupObject beginValue, GroupObject endValue>
-class GroupObjectIterator
+template < typename T, T beginValue, T endValue >
+class EnumIterator
 {
+    typedef typename std::underlying_type<T>::type underlyingType;
+
 public:
-    GroupObjectIterator() : value(static_cast<uint8_t>(beginValue))
+    EnumIterator() : value(static_cast<underlyingType>(beginValue))
     {
     }
 
-    GroupObjectIterator(const GroupObject & groupObject) : value(static_cast<uint8_t>(groupObject))
+    EnumIterator(const T & value) : value(static_cast<underlyingType>(value))
     {
     }
 
-    GroupObjectIterator operator++()
+    EnumIterator operator++()
     {
         ++value;
         return *this;
     }
 
-    GroupObject operator*() const
+    T operator*() const
     {
-        return static_cast<GroupObject>(value);
+        return static_cast<T>(value);
     }
 
-    bool operator!=(const GroupObjectIterator & groupObject) const
+    bool operator==(const EnumIterator & other) const
     {
-        return value != groupObject.value;
+        return value == other.value;
     }
 
-    GroupObjectIterator begin() const
+    bool operator!=(const EnumIterator & other) const
+    {
+        return value != other.value;
+    }
+
+    EnumIterator begin() const
     {
         return *this;
     }
 
-    GroupObjectIterator end() const
+    EnumIterator end() const
     {
-        static const GroupObjectIterator endIterator = ++GroupObjectIterator(endValue);
+        static const EnumIterator endIterator = ++EnumIterator(endValue);
         return endIterator;
     }
 
 private:
-    uint8_t value;
+    underlyingType value;
 };
 
-typedef GroupObjectIterator<GroupObject::alarmBus, GroupObject::countTestAlarmBus> AllGroupObjects;
-typedef GroupObjectIterator<GroupObject::serialNumber, GroupObject::countTestAlarmBus> InfoGroupObjects;
+typedef EnumIterator<GroupObject, GroupObject::alarmBus, GroupObject::countTestAlarmBus> AllGroupObjects;
+typedef EnumIterator<GroupObject, GroupObject::serialNumber, GroupObject::countTestAlarmBus> InfoGroupObjects;
 
 //!< Maximale Anzahl von ComObjekten pro Rauchmelder-Befehl
 #define MAX_OBJ_CMD  4

@@ -42,13 +42,14 @@ enum class DeviceCommand : uint8_t
     status                = 6,  //!< Gira Command: Query status
 };
 
+typedef EnumIterator<DeviceCommand, DeviceCommand::serialNumber, DeviceCommand::status> AllDeviceCommands;
+
 class SmokeDetectorDevice : private SmokeDetectorComCallback
 {
 public:
     SmokeDetectorDevice(const SmokeDetectorConfig *config, const SmokeDetectorGroupObjects *groupObjects, SmokeDetectorAlarm *alarm, SmokeDetectorErrorCode *errorCode);
     ~SmokeDetectorDevice() = delete;
 
-    uint8_t commandTableSize();
     bool hasOngoingMessageExchange();
     void timerEvery500ms();
     bool send_Cmd(DeviceCommand cmd);
@@ -60,6 +61,7 @@ private:
 
 private:
     void failHardInDebug();
+    static uint8_t commandTableSize();
 
     /**
      * Read raw value from response and convert it to corresponding group object value

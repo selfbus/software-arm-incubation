@@ -44,7 +44,7 @@ SmokeDetectorApp::SmokeDetectorApp()
 {
     infoCounter = config->infoIntervalMinutes();
     infoGroupObject = InfoGroupObjects().end();
-    readCmdno = device->commandTableSize();
+    deviceCommand = AllDeviceCommands().begin();
     eventTime = DefaultEventTime;
 }
 
@@ -171,15 +171,11 @@ void SmokeDetectorApp::timer()
     }
 
     // Send one of the smoke detector commands every 8 seconds in order to retrieve all status data.
-    if ((eventTime % DefaultSerialCommandTime) == 0 && readCmdno && !hasAlarm)
+    if ((eventTime % DefaultSerialCommandTime) == 0 && deviceCommand != deviceCommand.end() && !hasAlarm)
     {
-        if (!device->hasOngoingMessageExchange())
+        if (!device->hasOngoingMessageExchange() && device->send_Cmd(*deviceCommand))
         {
-            readCmdno--;
-            if (!device->send_Cmd((DeviceCommand)readCmdno))
-            {
-                readCmdno++;
-            }
+            ++deviceCommand;
         }
     }
 
@@ -190,9 +186,9 @@ void SmokeDetectorApp::timer()
 
         alarm->timerEveryMinute();
 
-        if (!readCmdno)
+        if (deviceCommand == deviceCommand.end())
         {
-            readCmdno = device->commandTableSize();
+            deviceCommand = AllDeviceCommands().begin();
         }
 
         // Send status information periodically

@@ -362,6 +362,34 @@ void SmokeDetectorDevice::checkRmAttached2BasePlate()
     }
 }
 
+static RmCommandByte deviceCommandToRmCommandByte(DeviceCommand cmd)
+{
+    switch (cmd)
+    {
+        case DeviceCommand::serialNumber:
+            return RmCommandByte::serialNumber;
+
+        case DeviceCommand::status:
+            return RmCommandByte::status;
+
+        case DeviceCommand::batteryAndTemperature:
+            return RmCommandByte::batteryTemperatureData;
+
+        case DeviceCommand::operatingTime:
+            return RmCommandByte::operatingTime;
+
+        case DeviceCommand::smokeboxData:
+            return RmCommandByte::smokeboxData;
+
+        case DeviceCommand::numberAlarms1:
+            return RmCommandByte::numberAlarms_1;
+
+        case DeviceCommand::numberAlarms2:
+        default:
+            return RmCommandByte::numberAlarms_2;
+    }
+}
+
 /**
  * Send command @ref cmd to smoke detector.\n
  * Receiving and processing the response from the smoke detector is done in @ref receivedMessage().
@@ -378,7 +406,7 @@ bool SmokeDetectorDevice::send_Cmd(DeviceCommand cmd)
         return false;
     }
 
-    if (!com->sendCommand(CmdTab[(uint8_t)cmd].rmCommand))
+    if (!com->sendCommand(deviceCommandToRmCommandByte(cmd)))
     {
         return false;
     }

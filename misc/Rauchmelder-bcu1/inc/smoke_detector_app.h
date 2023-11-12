@@ -27,13 +27,12 @@
 
 #include <sblib/eibBCU1.h>
 
-#include "rm_const.h"
+#include "smoke_detector_device.h"
 
 class SmokeDetectorConfig;
 class SmokeDetectorGroupObjects;
 class SmokeDetectorAlarm;
 class SmokeDetectorErrorCode;
-class SmokeDetectorDevice;
 
 class SmokeDetectorApp
 {
@@ -72,7 +71,7 @@ private:
     SmokeDetectorDevice *device;
     uint8_t infoCounter;               //!< Countdown to next periodic sending of informational group objects
     InfoGroupObjects infoGroupObject;  //!< Group object iterator to be checked/sent next on periodic sending
-    uint8_t readCmdno;                 //!< Number of the command to send to the smoke detector next
+    AllDeviceCommands deviceCommand;   //!< Command to send to the smoke detector next
     uint8_t eventTime;                 //!< Half-second counter 0..119
 };
 
