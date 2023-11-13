@@ -139,6 +139,15 @@ private:
     // Lookup table for translation number to hex string
     const uint8_t HexDigits[17];
 
+    enum RmControlByte
+    {
+        NUL = 0x00, //!> Null byte (prefix of @ref STX start byte)
+        STX = 0x02, //!> Start byte
+        ETX = 0x03, //!> End byte
+        ACK = 0x06, //!> Acknowledged byte
+        NAK = 0x15  //!< Not acknowledged byte
+    };
+
 private:
     SmokeDetectorComCallback *callback;
 

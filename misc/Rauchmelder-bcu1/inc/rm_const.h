@@ -142,13 +142,4 @@ private:
 typedef EnumIterator<GroupObject, GroupObject::alarmBus, GroupObject::countTestAlarmBus> AllGroupObjects;
 typedef EnumIterator<GroupObject, GroupObject::serialNumber, GroupObject::countTestAlarmBus> InfoGroupObjects;
 
-//-----------------------------------------------------------------------------
-// Kommunikations Konstanten
-//-----------------------------------------------------------------------------
-#define NUL         0x00 //!> Null byte (prefix of @ref STX start byte)
-#define STX         0x02 //!> Start byte
-#define ETX         0x03 //!> End byte
-#define ACK         0x06 //!> Acknowledged byte
-#define NAK         0x15 //!< Not acknowledged byte
-
 #endif /*rm_const_h*/
