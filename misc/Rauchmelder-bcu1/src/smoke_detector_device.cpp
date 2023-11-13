@@ -251,40 +251,39 @@ void SmokeDetectorDevice::readNumberAlarms2Message(const uint8_t *bytes) const
 void SmokeDetectorDevice::readStatusMessage(const uint8_t *bytes) const
 {
     // <STX>C220000000F7<ETX>
-    unsigned char subType = bytes[0];
+    auto subType = bytes[0];
+    auto status = bytes[1];
 
-    // (Alarm) Status
+    // Local Alarm: Smoke alarm | temperature alarm | wired alarm
+    auto hasAlarmLocal = static_cast<bool>((subType & 0x10) | (status & (0x04 | 0x08)));
 
-    unsigned char status = bytes[1];
+    // Local test alarm: Button test alarm | wired test alarm
+    auto hasTestAlarmLocal = static_cast<bool>(status & (0x20 | 0x40));
 
-    // Lokaler Alarm: Rauch Alarm | Temperatur Alarm | Wired Alarm
-    auto hasAlarm = (subType & 0x10) | (status & (0x04 | 0x08));
+    auto hasAlarmFromBus = static_cast<bool>(status & 0x10);
+    auto hasTestAlarmFromBus = static_cast<bool>(status & 0x80);
 
-    // Lokaler Testalarm: (lokaler) Testalarm || Wired Testalarm
-    auto hasTestAlarm = status & (0x20 | 0x40);
+    alarm->deviceStatusUpdate(hasAlarmLocal, hasTestAlarmLocal, hasAlarmFromBus, hasTestAlarmFromBus);
 
-    auto hasAlarmFromBus = status & 0x10;
-    auto hasTestAlarmFromBus = status & 0x80;
-
-    alarm->deviceStatusUpdate(hasAlarm, hasTestAlarm, hasAlarmFromBus, hasTestAlarmFromBus);
-
-    if (subType & 0x08)  // Taste am Rauchmelder gedrückt
+    // Device button pressed
+    if (subType & 0x08)
     {
         alarm->deviceButtonPressed();
     }
 
     // Battery low
-    bool batteryLow = ((status & 0x01) == 1);
+    auto batteryLow = ((status & 0x01) == 1);
     errorCode->batteryLow(batteryLow);
 
-    bool temperatureSensor_1_fault = false;
-    bool temperatureSensor_2_fault = false;
+    auto temperatureSensor_1_fault = false;
+    auto temperatureSensor_2_fault = false;
 
-    if (subType & 0x02) // general smoke detector fault is indicated in 1. byte bit 1
+    // General smoke detector fault is indicated in 1. byte bit 1
+    if (subType & 0x02)
     {
-        // details are in 4. byte
-        temperatureSensor_1_fault = (bytes[3] & 0x04); // sensor 1 state in 4. byte 2. bit
-        temperatureSensor_2_fault = (bytes[3] & 0x10); // sensor 2 state in 4. byte 4. bit
+        // Details are in 4. byte
+        temperatureSensor_1_fault = static_cast<bool>(bytes[3] & 0x04); // sensor 1 state in 4. byte bit 2
+        temperatureSensor_2_fault = static_cast<bool>(bytes[3] & 0x10); // sensor 2 state in 4. byte bit 4
     }
 
     errorCode->temperature_1_fault(temperatureSensor_1_fault);
