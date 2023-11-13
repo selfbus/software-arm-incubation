@@ -214,10 +214,7 @@ void SmokeDetectorDevice::readSerialNumberMessage(const uint8_t *bytes) const
 void SmokeDetectorDevice::readOperatingTimeMessage(const uint8_t *bytes) const
 {
     // <STX>C9000047E31F<ETX>
-    // Raw value is in quarter seconds, so divide by 4.
-    auto seconds = readUInt32(bytes) >> 2;
-    auto value = config->infoSendOperationTimeInHours() ? seconds / 3600 : seconds;
-    groupObjects->setValue(GroupObject::operatingTime, value);
+    groupObjects->setValue(GroupObject::operatingTime, readOperatingTime(bytes));
 }
 
 void SmokeDetectorDevice::readSmokeboxDataMessage(const uint8_t *bytes) const
@@ -231,28 +228,8 @@ void SmokeDetectorDevice::readSmokeboxDataMessage(const uint8_t *bytes) const
 void SmokeDetectorDevice::readBatteryAndTemperatureMessage(const uint8_t *bytes) const
 {
     // <STX>CC000155551B<ETX>
-    uint32_t voltage;
-    uint32_t temperature;
-
-    if ((bytes[0] == 0) && (bytes[1] == 1))
-    {
-        voltage = BATTERY_VOLTAGE_INVALID;
-    }
-    else
-    {
-        auto rawVoltage = static_cast<uint32_t>(readUInt16(bytes));
-        // Conversion: lval * 5.7 * 3.3V / 1024 * 1000mV/V * 100 [for DPT9]
-        voltage = (rawVoltage * 9184) / 5;
-    }
-
-    // Conversion per temp sensor: (answer[x] * 0.5°C - 20°C) * 100 [for DPT9]
-    temperature = static_cast<uint32_t>(bytes[2]) + bytes[3];
-    temperature *= 25; // Added two temperatures, so only half the multiplier
-    temperature -= 2000;
-    temperature += config->temperatureOffsetInTenthDegrees() * 10;  // Temperature offset
-
-    groupObjects->setValue(GroupObject::batteryVoltage, floatToDpt9(voltage));
-    groupObjects->setValue(GroupObject::temperature, floatToDpt9(temperature));
+    groupObjects->setValue(GroupObject::batteryVoltage, floatToDpt9(readVoltage(bytes)));
+    groupObjects->setValue(GroupObject::temperature, floatToDpt9(readTemperature(bytes + 2)));
 }
 
 void SmokeDetectorDevice::readNumberAlarms1Message(const uint8_t *bytes) const
@@ -315,6 +292,37 @@ void SmokeDetectorDevice::readStatusMessage(const uint8_t *bytes) const
 
     ///\todo handle smoke box fault
     ///
+}
+
+uint32_t SmokeDetectorDevice::readOperatingTime(const uint8_t *bytes) const
+{
+    // Raw value is in quarter seconds, so divide by 4.
+    auto seconds = readUInt32(bytes) >> 2;
+    auto time = config->infoSendOperationTimeInHours() ? seconds / 3600 : seconds;
+    return time;
+}
+
+uint32_t SmokeDetectorDevice::readVoltage(const uint8_t *bytes) const
+{
+    if ((bytes[0] == 0) && (bytes[1] == 1))
+    {
+        return BATTERY_VOLTAGE_INVALID;
+    }
+
+    auto rawVoltage = static_cast<uint32_t>(readUInt16(bytes));
+    // Conversion: rawVoltage * 5.7 * 3.3V / 1024 * 1000mV/V * 100 [for DPT9]
+    auto voltage = (rawVoltage * 9184) / 5;
+    return voltage;
+}
+
+uint32_t SmokeDetectorDevice::readTemperature(const uint8_t *bytes) const
+{
+    // Conversion per temp sensor: (answer[x] * 0.5°C - 20°C) * 100 [for DPT9]
+    auto temperature = static_cast<uint32_t>(bytes[0]) + bytes[1];
+    temperature *= 25; // Added two temperatures, so only half the multiplier
+    temperature -= 2000;
+    temperature += config->temperatureOffsetInTenthDegrees() * 10;  // Temperature offset
+    return temperature;
 }
 
 void SmokeDetectorDevice::failHardInDebug() ///\todo remove on release
