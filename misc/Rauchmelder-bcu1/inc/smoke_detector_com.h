@@ -23,7 +23,7 @@
 /**
  * Command byte to send to the smoke detector
  */
-enum RmCommandByte : uint8_t
+enum class RmCommandByte : uint8_t
 {
     serialNumber           = 0x04,
     operatingTime          = 0x09,

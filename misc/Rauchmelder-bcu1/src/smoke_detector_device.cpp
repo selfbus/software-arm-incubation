@@ -15,6 +15,7 @@
  *  published by the Free Software Foundation.
  */
 
+#include <type_traits>
 #include <sblib/eib/datapoint_types.h>
 #include <sblib/digital_pin.h>
 #include <sblib/timer.h>
@@ -140,9 +141,10 @@ void SmokeDetectorDevice::receivedMessage(uint8_t *bytes, int8_t len)
     errorCode->communicationTimeout(false);
 
     msgType = bytes[0];
-    if (msgType == (RmCommandByte::status | 0x80))
+    const auto rmCommandByteStatus = static_cast<std::underlying_type_t<RmCommandByte>>(RmCommandByte::status);
+    if (msgType == (rmCommandByteStatus | 0x80))
     {
-        msgType = (RmCommandByte::status | 0xc0); // "cast" automatic status message to "normal" status message
+        msgType = (rmCommandByteStatus | 0xc0); // "cast" automatic status message to "normal" status message
     }
 
     if ((msgType & 0xf0) != 0xc0) // check for valid response byte

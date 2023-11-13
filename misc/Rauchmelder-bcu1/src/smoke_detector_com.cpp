@@ -15,6 +15,7 @@
  */
 
 #include <stdint.h>
+#include <type_traits>
 #include <sblib/serial.h>
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
@@ -168,10 +169,11 @@ bool SmokeDetectorCom::sendCommand(RmCommandByte cmd)
         return false;
     }
 
+    auto b = static_cast<std::underlying_type_t<RmCommandByte>>(cmd);
     uint8_t bytes[3];
 
-    bytes[0] = HexDigits[cmd >> 4];
-    bytes[1] = HexDigits[cmd & 0x0f];
+    bytes[0] = HexDigits[b >> 4];
+    bytes[1] = HexDigits[b & 0x0f];
     bytes[2] = 0;
 
     sendHexstring(bytes);
