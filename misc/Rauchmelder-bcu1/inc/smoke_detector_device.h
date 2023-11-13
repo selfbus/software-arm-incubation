@@ -19,6 +19,7 @@
 #define SMOKE_DETECTOR_DEVICE_H_
 
 #include <stdint.h>
+#include <sblib/timeout.h>
 
 #include "smoke_detector_com.h"
 #include "rm_const.h"
@@ -54,12 +55,15 @@ public:
     bool sendCommand(DeviceCommand cmd);
     void receiveBytes();
     void timerEvery500ms();
+    void checkState();
 
 private:
     void receivedMessage(uint8_t *bytes, int8_t len);
 
 private:
     bool hasOngoingMessageExchange() const;
+    void setSupplyVoltage(bool enable);
+    void checkAttachedToBasePlate();
 
     void readSerialNumberMessage(const uint8_t *bytes) const;
     void readOperatingTimeMessage(const uint8_t *bytes) const;
@@ -77,8 +81,27 @@ private:
     static uint32_t readUInt32(const uint8_t *bytes);
     static uint16_t readUInt16(const uint8_t *bytes);
 
-    void setSupplyVoltageAndWait(bool enable, uint32_t waitTimeMs);
-    void checkRmAttached2BasePlate();
+private:
+    enum class DeviceState
+    {
+        drainCapacitor,
+        attachToBasePlate,
+        powerUpDevice,
+        fillCapacitor,
+        running
+    };
+
+    //!< Time in milliseconds the 12V supply needs to drain the capacitor
+    static constexpr int SupplyVoltageOffDelayMs = 500;
+
+    //!< Time in milliseconds the 12V supply needs to fill the capacitor
+    static constexpr int SupplyVoltageOnDelayMs = 5000;
+
+    //!< Maximum waiting time in milliseconds to enable 12V supply
+    static constexpr int SupplyVoltageTimeoutMs = 120000;
+
+    //!< Time in milliseconds we give the smoke detector to startup and measure the battery voltage
+    static constexpr int DevicePowerUpDelayMs = 1000;
 
 private:
     const SmokeDetectorConfig *config;
@@ -86,6 +109,8 @@ private:
     SmokeDetectorAlarm *alarm;
     SmokeDetectorErrorCode *errorCode;
     SmokeDetectorCom *com;
+    DeviceState state;
+    Timeout timeout;
     unsigned char answerWait;          //!< Wenn != 0, dann Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.
 };
 

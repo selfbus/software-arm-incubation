@@ -18,7 +18,6 @@
 #include <type_traits>
 #include <sblib/eib/datapoint_types.h>
 #include <sblib/digital_pin.h>
-#include <sblib/timer.h>
 #include <sblib/utils.h>
 
 #include "smoke_detector_com.h"
@@ -44,7 +43,10 @@ SmokeDetectorDevice::SmokeDetectorDevice(const SmokeDetectorConfig *config, cons
     digitalWrite(LED_BASEPLATE_DETACHED_PIN, false);
     pinMode(RM_ACTIVITY_PIN, INPUT | PULL_DOWN); // smoke detector base plate state, pulldown configured, Pin is connected to 3.3V VCC of the RM
 
-    setSupplyVoltageAndWait(false, SUPPLY_VOLTAGE_OFF_DELAY_MS);  ///\todo move waiting to delayed app start, make sure it lasts at least 500ms to discharge the 12V capacitor
+    // make sure to discharge the 12V capacitor for at least 500ms
+    setSupplyVoltage(false);
+    state = DeviceState::drainCapacitor;
+    timeout.start(SupplyVoltageOffDelayMs);
 }
 
 void SmokeDetectorDevice::setAlarmState(RmAlarmState newState)
@@ -69,8 +71,6 @@ void SmokeDetectorDevice::setAlarmState(RmAlarmState newState)
  */
 bool SmokeDetectorDevice::sendCommand(DeviceCommand cmd)
 {
-    checkRmAttached2BasePlate(); ///\todo If think this should be moved to TIMER32_0_IRQHandler
-
     if (hasOngoingMessageExchange())
     {
         return false;
@@ -127,6 +127,48 @@ void SmokeDetectorDevice::timerEvery500ms()
         {
             errorCode->communicationTimeout(true);
         }
+    }
+}
+
+void SmokeDetectorDevice::checkState()
+{
+    switch (state)
+    {
+        case DeviceState::drainCapacitor:
+            if (timeout.expired())
+            {
+                state = DeviceState::attachToBasePlate;
+                timeout.start(SupplyVoltageTimeoutMs);
+            }
+            break;
+
+        case DeviceState::attachToBasePlate:
+            checkAttachedToBasePlate();
+            break;
+
+        case DeviceState::powerUpDevice:
+            if (timeout.expired())
+            {
+                setSupplyVoltage(true);
+                com->initSerialCom();
+                state = DeviceState::fillCapacitor;
+                timeout.start(SupplyVoltageOnDelayMs);
+            }
+            break;
+
+        case DeviceState::fillCapacitor:
+            if (timeout.expired())
+            {
+                state = DeviceState::running;
+            }
+            break;
+
+        case DeviceState::running:
+            break;
+
+        default:
+            failHardInDebug();
+            break;
     }
 }
 
@@ -203,6 +245,53 @@ void SmokeDetectorDevice::receivedMessage(uint8_t *bytes, int8_t len)
 bool SmokeDetectorDevice::hasOngoingMessageExchange() const
 {
     return answerWait != 0;
+}
+
+/**
+ * Enable/disable the 12V supply voltage
+ *
+ * @param enable     Set true to enable supply voltage, false to disable it
+ */
+void SmokeDetectorDevice::setSupplyVoltage(bool enable)
+{
+    pinMode(LED_SUPPLY_VOLTAGE_DISABLED_PIN, OUTPUT);
+    digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED_PIN, enable); // disable/enable led first to save/drain some juice
+
+    // Running pinMode the first time, sets it by default to low
+    // which will enable the support voltage and charge the capacitor.
+    // So please put nothing in between pinMode and digitalWrite.
+    pinMode(RM_SUPPORT_VOLTAGE_PIN, OUTPUT);
+    if (enable)
+    {
+        digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_ON);
+    }
+    else
+    {
+        digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_OFF);
+    }
+
+    errorCode->supplyVoltageDisabled(!enable);
+}
+
+/**
+ * Checks if the smoke detector is on the base plate and switches the supply voltage on
+ */
+void SmokeDetectorDevice::checkAttachedToBasePlate()
+{
+    auto isAttached = (digitalRead(RM_ACTIVITY_PIN) == RM_IS_ACTIVE);
+    digitalWrite(LED_BASEPLATE_DETACHED_PIN, isAttached);
+
+    errorCode->coverPlateAttached(isAttached);
+
+    ///\todo check danger of this timeout. Can it show up as a working smoke detector on the bus?
+    isAttached |= timeout.expired();
+
+    // der Rauchmelder wurde auf die Bodenplatte gesteckt => Spannungsversorgung aktivieren
+    if (isAttached)
+    {
+        state = DeviceState::powerUpDevice;
+        timeout.start(DevicePowerUpDelayMs);
+    }
 }
 
 void SmokeDetectorDevice::readSerialNumberMessage(const uint8_t *bytes) const
@@ -382,63 +471,4 @@ uint32_t SmokeDetectorDevice::readUInt32(const uint8_t *bytes)
 uint16_t SmokeDetectorDevice::readUInt16(const uint8_t *bytes)
 {
     return (bytes[0] << 8) | bytes[1];
-}
-
-/**
- * Enable/disable the 12V supply voltage
- *
- * @param enable     Set true to enable supply voltage, false to disable it
- * @param waitTimeMs Time in milliseconds to wait after supply voltage was enabled/disabled
- */
-void SmokeDetectorDevice::setSupplyVoltageAndWait(bool enable, uint32_t waitTimeMs)
-{
-    pinMode(LED_SUPPLY_VOLTAGE_DISABLED_PIN, OUTPUT);
-    digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED_PIN, enable); // disable/enable led first to save/drain some juice
-
-    // Running pinMode the first time, sets it by default to low
-    // which will enable the support voltage and charge the capacitor.
-    // So please put nothing in between pinMode and digitalWrite.
-    pinMode(RM_SUPPORT_VOLTAGE_PIN, OUTPUT);
-    if (enable)
-    {
-        digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_ON);
-    }
-    else
-    {
-        digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_OFF);
-    }
-
-    if (waitTimeMs != 0)
-    {
-        delay(waitTimeMs);
-    }
-
-    errorCode->supplyVoltageDisabled(!enable);
-}
-
-/**
- * Checks if the smoke detector is on the base plate and switches the supply voltage on
- */
-void SmokeDetectorDevice::checkRmAttached2BasePlate()
-{
-    bool rmActive = (digitalRead(RM_ACTIVITY_PIN) == RM_IS_ACTIVE);
-    digitalWrite(LED_BASEPLATE_DETACHED_PIN, rmActive);
-
-    errorCode->coverPlateAttached(rmActive);
-
-    if (digitalRead(RM_SUPPORT_VOLTAGE_PIN) == RM_SUPPORT_VOLTAGE_ON)
-    {
-        return; // supply voltage is already on
-    }
-
-    ///\todo check danger of this timeout. Can it show up as a working smoke detector on the bus?
-    rmActive |= (millis() >= SUPPLY_VOLTAGE_TIMEOUT_MS);
-
-    // der Rauchmelder wurde auf die Bodenplatte gesteckt => Spannungsversorgung aktivieren
-    if (rmActive)
-    {
-        delay(RM_POWER_UP_TIME_MS);
-        setSupplyVoltageAndWait(true, SUPPLY_VOLTAGE_ON_DELAY_MS);
-        com->initSerialCom(); //serielle Schnittstelle für die Kommunikation mit dem Rauchmelder initialisieren
-    }
 }
