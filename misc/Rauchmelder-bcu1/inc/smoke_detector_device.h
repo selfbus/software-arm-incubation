@@ -59,7 +59,6 @@ private:
     void receivedMessage(uint8_t *bytes, int8_t len);
 
 private:
-    void failHardInDebug() const;
     bool hasOngoingMessageExchange() const;
 
     void readSerialNumberMessage(const uint8_t *bytes) const;
@@ -70,6 +69,8 @@ private:
     void readNumberAlarms2Message(const uint8_t *bytes) const;
     void readStatusMessage(const uint8_t *bytes) const;
 
+    static void failHardInDebug();
+    static RmCommandByte deviceCommandToRmCommandByte(DeviceCommand command);
     static uint32_t readUInt32(const uint8_t *bytes);
     static uint16_t readUInt16(const uint8_t *bytes);
 
