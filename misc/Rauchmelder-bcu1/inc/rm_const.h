@@ -142,21 +142,6 @@ private:
 typedef EnumIterator<GroupObject, GroupObject::alarmBus, GroupObject::countTestAlarmBus> AllGroupObjects;
 typedef EnumIterator<GroupObject, GroupObject::serialNumber, GroupObject::countTestAlarmBus> InfoGroupObjects;
 
-//!< Maximale Anzahl von ComObjekten pro Rauchmelder-Befehl
-#define MAX_OBJ_CMD  4
-
-//-----------------------------------------------------------------------------
-// Datentypen der Rauchmelder Antworten
-//-----------------------------------------------------------------------------
-
-#define RM_TYPE_LONG   1 //!< Rauchmelder Antwort: 4 Byte Zahl
-#define RM_TYPE_SHORT  2 //!< Rauchmelder Antwort: 2 Byte Zahl
-#define RM_TYPE_BYTE   3 //!< Rauchmelder Antwort: 1 Byte Zahl
-#define RM_TYPE_TEMP   4 //!< Rauchmelder Antwort: 1 Byte Temperatur
-#define RM_TYPE_MVOLT  5 //!< Rauchmelder Antwort: 2 Byte Spannung
-#define RM_TYPE_QSEC   6 //!< Rauchmelder Antwort: 4 Byte 1/4 Sekunden
-#define RM_TYPE_NONE 127 //!< Rauchmelder Antwort: Kein Typ
-
 //-----------------------------------------------------------------------------
 // Kommunikations Konstanten
 //-----------------------------------------------------------------------------

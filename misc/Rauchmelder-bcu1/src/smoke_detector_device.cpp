@@ -46,53 +46,6 @@ SmokeDetectorDevice::SmokeDetectorDevice(const SmokeDetectorConfig *config, cons
     setSupplyVoltageAndWait(false, SUPPLY_VOLTAGE_OFF_DELAY_MS);  ///\todo move waiting to delayed app start, make sure it lasts at least 500ms to discharge the 12V capacitor
 }
 
-/**
- * @ref RmCommandByte to multiple @ref GroupObject association table
- */
-constexpr struct
-{
-    RmCommandByte rmCommand;      //!< @ref RmCommandByte command to be sent
-    int8_t responseLength;        //!< Expected response length in bytes
-    struct
-    {
-        GroupObject object;       //!< @ref GroupObject in the response
-        uint8_t offset;           //!< Byte-offset in the response
-        uint8_t dataType;         //!< Datatype of the object in the response
-    } objects[MAX_OBJ_CMD];       //!< Association of the command to multiple @ref GroupObject. Use @ref grpObjInvalid to not associate
-}
-CmdTab[] =
-{
-    // CommandByte                  Response length         Object number   Raw value  Example response
-    {RmCommandByte::serialNumber,           5, {{GroupObject::serialNumber,          0, RM_TYPE_LONG},      // <STX>C4214710F31F<ETX>
-                                                {GroupObject::none},
-                                                {GroupObject::none},
-                                                {GroupObject::none}}},
-    {RmCommandByte::operatingTime,          5, {{GroupObject::operatingTime,         0, RM_TYPE_QSEC},      // <STX>C9000047E31F<ETX>
-                                                {GroupObject::none},
-                                                {GroupObject::none},
-                                                {GroupObject::none}}},
-    {RmCommandByte::smokeboxData,           5, {{GroupObject::smokeboxValue,         0, RM_TYPE_SHORT},     // <STX>CB0065000111<ETX>
-                                                {GroupObject::smokeboxPollution,     3, RM_TYPE_BYTE},
-                                                {GroupObject::countSmokeAlarm,       2, RM_TYPE_BYTE},
-                                                {GroupObject::none}}},
-    {RmCommandByte::batteryTemperatureData, 5, {{GroupObject::batteryVoltage,        0, RM_TYPE_MVOLT},     // <STX>CC000155551B<ETX>
-                                                {GroupObject::temperature,           2, RM_TYPE_TEMP},
-                                                {GroupObject::none},
-                                                {GroupObject::none}}},
-    {RmCommandByte::numberAlarms_1,         5, {{GroupObject::countTemperatureAlarm, 0, RM_TYPE_BYTE},      // <STX>CD0000000007<ETX>
-                                                {GroupObject::countTestAlarm,        1, RM_TYPE_BYTE},
-                                                {GroupObject::countAlarmWire,        2, RM_TYPE_BYTE},
-                                                {GroupObject::countAlarmBus,         3, RM_TYPE_BYTE}}},
-    {RmCommandByte::numberAlarms_2,         3, {{GroupObject::countTestAlarmWire,    0, RM_TYPE_BYTE},      // <STX>CE000048<ETX>
-                                                {GroupObject::countTestAlarmBus,     1, RM_TYPE_BYTE},
-                                                {GroupObject::none},
-                                                {GroupObject::none}}},
-    {RmCommandByte::status,                 5, {{GroupObject::none},                                        // <STX>C220000000F7<ETX>
-                                                {GroupObject::none},
-                                                {GroupObject::none},
-                                                {GroupObject::none}}}
-};
-
 void SmokeDetectorDevice::setAlarmState(RmAlarmState newState)
 {
     // While waiting for an answer we don't process alarms to avoid overlapping message exchanges.
@@ -138,7 +91,7 @@ static RmCommandByte deviceCommandToRmCommandByte(DeviceCommand cmd)
  * Send command @ref cmd to smoke detector.\n
  * Receiving and processing the response from the smoke detector is done in @ref receivedMessage().
  *
- * @param cmd - Index of the command to be send from the @ref CmdTab
+ * @param cmd - Command to send
  * @return True if command was sent, otherwise false.
  */
 bool SmokeDetectorDevice::sendCommand(DeviceCommand cmd)
@@ -209,7 +162,6 @@ void SmokeDetectorDevice::timerEvery500ms()
  */
 void SmokeDetectorDevice::receivedMessage(uint8_t *bytes, int8_t len)
 {
-    uint8_t cmd;
     uint8_t msgType;
 
     answerWait = 0;
@@ -227,178 +179,197 @@ void SmokeDetectorDevice::receivedMessage(uint8_t *bytes, int8_t len)
         return; // learned this by accidently touching the ARM's tx/rx pins
     }
 
-    msgType &= 0x0f;
-    for (cmd = 0; cmd < commandTableSize(); ++cmd)
+    auto rmCommandByte = static_cast<RmCommandByte>(msgType & 0x0f);
+
+    // Received length must match expected length.
+    auto expectedLength = (rmCommandByte == RmCommandByte::numberAlarms_2) ? 3 : 5;
+    if (len != expectedLength)
     {
-        if (CmdTab[cmd].rmCommand == msgType)
-        {
+        failHardInDebug();
+        return;
+    }
+
+    ++bytes;
+    switch (rmCommandByte)
+    {
+        case RmCommandByte::serialNumber:
+            readSerialNumberMessage(bytes);
             break;
-        }
-    }
 
-    if (cmd >= commandTableSize())
-    {
-        failHardInDebug(); // found a new command/response => time to implement it
-        return;
-    }
+        case RmCommandByte::operatingTime:
+            readOperatingTimeMessage(bytes);
+            break;
 
-    if (len != CmdTab[cmd].responseLength)
-    {
-        failHardInDebug(); // received length doesn't match expected length
-        return;
-    }
+        case RmCommandByte::smokeboxData:
+            readSmokeboxDataMessage(bytes);
+            break;
 
-    if (RmCommandByte::status != msgType)
-    {
-        // Informationen aus den empfangenen Daten vom Rauchmelder der sblib zur Verfügung stellen
-        // Dazu alle Com-Objekte suchen auf die die empfangenen Daten passen (mapping durch CmdTab)
-        // notwendig für den Abruf von Informationen über KNX aus den Status Objekten (GroupValueRead -> GroupValueResponse)
-        for (unsigned char cmdObj_cnt = 0; (CmdTab[cmd].objects[cmdObj_cnt].object != GroupObject::none) &&
-                                           (cmdObj_cnt < MAX_OBJ_CMD); cmdObj_cnt++)
-        {
-            auto groupObject = CmdTab[cmd].objects[cmdObj_cnt].object;
-            auto offset = CmdTab[cmd].objects[cmdObj_cnt].offset;
-            auto dataType = CmdTab[cmd].objects[cmdObj_cnt].dataType;
-            auto value = readObjectValueFromResponse(bytes + 1 + offset, dataType);
-            groupObjects->setValue(groupObject, value);
-        }
-    }
-    else // status command gets special treatment
-    {
-        unsigned char subType = bytes[1];
+        case RmCommandByte::batteryTemperatureData:
+            readBatteryAndTemperatureMessage(bytes);
+            break;
 
-        // (Alarm) Status
+        case RmCommandByte::numberAlarms_1:
+            readNumberAlarms1Message(bytes);
+            break;
 
-        unsigned char status = bytes[2];
+        case RmCommandByte::numberAlarms_2:
+            readNumberAlarms2Message(bytes);
+            break;
 
-        // Lokaler Alarm: Rauch Alarm | Temperatur Alarm | Wired Alarm
-        auto hasAlarm = (subType & 0x10) | (status & (0x04 | 0x08));
+        case RmCommandByte::status:
+            readStatusMessage(bytes);
+            break;
 
-        // Lokaler Testalarm: (lokaler) Testalarm || Wired Testalarm
-        auto hasTestAlarm = status & (0x20 | 0x40);
-
-        auto hasAlarmFromBus = status & 0x10;
-        auto hasTestAlarmFromBus = status & 0x80;
-
-        alarm->deviceStatusUpdate(hasAlarm, hasTestAlarm, hasAlarmFromBus, hasTestAlarmFromBus);
-
-        if (subType & 0x08)  // Taste am Rauchmelder gedrückt
-        {
-            alarm->deviceButtonPressed();
-        }
-
-        // Battery low
-        bool batteryLow = ((status & 0x01) == 1);
-        errorCode->batteryLow(batteryLow);
-
-        bool temperatureSensor_1_fault = false;
-        bool temperatureSensor_2_fault = false;
-
-        if (subType & 0x02) // general smoke detector fault is indicated in 1. byte bit 1
-        {
-            // details are in 4. byte
-            temperatureSensor_1_fault = (bytes[4] & 0x04); // sensor 1 state in 4. byte 2. bit
-            temperatureSensor_2_fault = (bytes[4] & 0x10); // sensor 2 state in 4. byte 4. bit
-        }
-
-        errorCode->temperature_1_fault(temperatureSensor_1_fault);
-        errorCode->temperature_2_fault(temperatureSensor_2_fault);
-
-        ///\todo handle smoke box fault
-        ///
+        default:
+            failHardInDebug(); // found a new command/response => time to implement it
+            break;
     }
 }
 
-void SmokeDetectorDevice::failHardInDebug() ///\todo remove on release
+void SmokeDetectorDevice::failHardInDebug() const ///\todo remove on release
 {
 #ifdef DEBUG
     fatalError();
 #endif
 }
 
-uint8_t SmokeDetectorDevice::commandTableSize()
-{
-    return sizeof(CmdTab)/sizeof(CmdTab[0]);
-}
-
-bool SmokeDetectorDevice::hasOngoingMessageExchange()
+bool SmokeDetectorDevice::hasOngoingMessageExchange() const
 {
     return answerWait != 0;
 }
 
-/**
- * Die Rauchmelder Antwort als Long Zahl liefern.
- *
- * @param cvalue - das erste Byte der Rauchmelder Antwort.
- * @return Der Wert mit getauschten Bytes.
- */
-unsigned long answer_to_long(unsigned char *cvalue)
+void SmokeDetectorDevice::readSerialNumberMessage(const uint8_t *bytes) const
 {
-    return (cvalue[0] << 24) | (cvalue[1] << 16) | (cvalue[2] << 8) | cvalue[3];
+    // <STX>C4214710F31F<ETX>
+    groupObjects->setValue(GroupObject::serialNumber, readUInt32(bytes));
 }
 
-/**
- * Die Rauchmelder Antwort als Integer Zahl liefern.
- *
- * @param cvalue - das erste Byte der Rauchmelder Antwort.
- * @return Der Wert mit getauschten Bytes.
- */
-unsigned short answer_to_short(unsigned char *cvalue)
+void SmokeDetectorDevice::readOperatingTimeMessage(const uint8_t *bytes) const
 {
-    return (cvalue[0] << 8) | cvalue[1];
+    // <STX>C9000047E31F<ETX>
+    // Raw value is in quarter seconds, so divide by 4.
+    auto seconds = readUInt32(bytes) >> 2;
+    auto value = config->infoSendOperationTimeInHours() ? seconds / 3600 : seconds;
+    groupObjects->setValue(GroupObject::operatingTime, value);
 }
 
-/**
- * Read raw value from response and convert it to corresponding group object value.
- *
- * @param rawValue Pointer to the raw value in the smoke detector response message
- * @param dataType Data type of the value
- * @return Group object value
- */
-uint32_t SmokeDetectorDevice::readObjectValueFromResponse(uint8_t *rawValue, uint8_t dataType)
+void SmokeDetectorDevice::readSmokeboxDataMessage(const uint8_t *bytes) const
 {
-    uint32_t lval;
+    // <STX>CB0065000111<ETX>
+    groupObjects->setValue(GroupObject::smokeboxValue, readUInt16(bytes));
+    groupObjects->setValue(GroupObject::countSmokeAlarm, bytes[2]);
+    groupObjects->setValue(GroupObject::smokeboxPollution, bytes[3]);
+}
 
-    switch (dataType)
+void SmokeDetectorDevice::readBatteryAndTemperatureMessage(const uint8_t *bytes) const
+{
+    // <STX>CC000155551B<ETX>
+    uint32_t voltage;
+    uint32_t temperature;
+
+    if ((bytes[0] == 0) && (bytes[1] == 1))
     {
-        case RM_TYPE_BYTE:
-            return *rawValue;
-
-        case RM_TYPE_LONG:
-            return answer_to_long(rawValue);
-
-        case RM_TYPE_QSEC:  // Betriebszeit verarbeiten
-            lval = answer_to_long(rawValue) >> 2; // Wert in Sekunden
-            if (config->infoSendOperationTimeInHours())
-                return lval / 3600; // Stunden, 16Bit
-            else
-                return lval;        // Sekunden, 32Bit
-
-        case RM_TYPE_SHORT:
-            return answer_to_short(rawValue);
-
-        case RM_TYPE_TEMP:
-            // Conversion per temp sensor: (answer[x] * 0.5°C - 20°C) * 100 [for DPT9]
-            lval = ((int) rawValue[0]) + rawValue[1];
-            lval *= 25; // in lval sind zwei Temperaturen, daher halber Multiplikator
-            lval -= 2000;
-            lval += config->temperatureOffsetInTenthDegrees() * 10;  // Temperaturabgleich
-            return (floatToDpt9(lval));
-
-        case RM_TYPE_MVOLT:
-            if ((rawValue[0] == 0) && (rawValue[1] == 1))
-            {
-                return (floatToDpt9(BATTERY_VOLTAGE_INVALID));
-            }
-            lval = answer_to_short(rawValue);
-            // Conversion: lval * 5.7 * 3.3V / 1024 * 1000mV/V * 100 [for DPT9]
-            lval *= 9184;
-            lval /= 5;
-            return (floatToDpt9(lval));
-
-        default: // Fehler: unbekannter Datentyp
-            return -2;
+        voltage = BATTERY_VOLTAGE_INVALID;
     }
+    else
+    {
+        auto rawVoltage = static_cast<uint32_t>(readUInt16(bytes));
+        // Conversion: lval * 5.7 * 3.3V / 1024 * 1000mV/V * 100 [for DPT9]
+        voltage = (rawVoltage * 9184) / 5;
+    }
+
+    // Conversion per temp sensor: (answer[x] * 0.5°C - 20°C) * 100 [for DPT9]
+    temperature = static_cast<uint32_t>(bytes[2]) + bytes[3];
+    temperature *= 25; // Added two temperatures, so only half the multiplier
+    temperature -= 2000;
+    temperature += config->temperatureOffsetInTenthDegrees() * 10;  // Temperature offset
+
+    groupObjects->setValue(GroupObject::batteryVoltage, floatToDpt9(voltage));
+    groupObjects->setValue(GroupObject::temperature, floatToDpt9(temperature));
+}
+
+void SmokeDetectorDevice::readNumberAlarms1Message(const uint8_t *bytes) const
+{
+    // <STX>CD0000000007<ETX>
+    groupObjects->setValue(GroupObject::countTemperatureAlarm, bytes[0]);
+    groupObjects->setValue(GroupObject::countTestAlarm, bytes[1]);
+    groupObjects->setValue(GroupObject::countAlarmWire, bytes[2]);
+    groupObjects->setValue(GroupObject::countAlarmBus, bytes[3]);
+}
+
+void SmokeDetectorDevice::readNumberAlarms2Message(const uint8_t *bytes) const
+{
+    // <STX>CE000048<ETX>
+    groupObjects->setValue(GroupObject::countTestAlarmWire, bytes[0]);
+    groupObjects->setValue(GroupObject::countTestAlarmBus, bytes[1]);
+}
+
+void SmokeDetectorDevice::readStatusMessage(const uint8_t *bytes) const
+{
+    // <STX>C220000000F7<ETX>
+    unsigned char subType = bytes[0];
+
+    // (Alarm) Status
+
+    unsigned char status = bytes[1];
+
+    // Lokaler Alarm: Rauch Alarm | Temperatur Alarm | Wired Alarm
+    auto hasAlarm = (subType & 0x10) | (status & (0x04 | 0x08));
+
+    // Lokaler Testalarm: (lokaler) Testalarm || Wired Testalarm
+    auto hasTestAlarm = status & (0x20 | 0x40);
+
+    auto hasAlarmFromBus = status & 0x10;
+    auto hasTestAlarmFromBus = status & 0x80;
+
+    alarm->deviceStatusUpdate(hasAlarm, hasTestAlarm, hasAlarmFromBus, hasTestAlarmFromBus);
+
+    if (subType & 0x08)  // Taste am Rauchmelder gedrückt
+    {
+        alarm->deviceButtonPressed();
+    }
+
+    // Battery low
+    bool batteryLow = ((status & 0x01) == 1);
+    errorCode->batteryLow(batteryLow);
+
+    bool temperatureSensor_1_fault = false;
+    bool temperatureSensor_2_fault = false;
+
+    if (subType & 0x02) // general smoke detector fault is indicated in 1. byte bit 1
+    {
+        // details are in 4. byte
+        temperatureSensor_1_fault = (bytes[3] & 0x04); // sensor 1 state in 4. byte 2. bit
+        temperatureSensor_2_fault = (bytes[3] & 0x10); // sensor 2 state in 4. byte 4. bit
+    }
+
+    errorCode->temperature_1_fault(temperatureSensor_1_fault);
+    errorCode->temperature_2_fault(temperatureSensor_2_fault);
+
+    ///\todo handle smoke box fault
+    ///
+}
+
+/**
+ * Read a 32-bit unsigned number from the smoke detector.
+ *
+ * @param bytes First byte of the smoke detector response.
+ * @return The value in processor native format.
+ */
+uint32_t SmokeDetectorDevice::readUInt32(const uint8_t *bytes)
+{
+    return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+}
+
+/**
+ * Read a 16-bit unsigned number from the smoke detector.
+ *
+ * @param bytes First byte of the smoke detector response.
+ * @return The value in processor native format.
+ */
+uint16_t SmokeDetectorDevice::readUInt16(const uint8_t *bytes)
+{
+    return (bytes[0] << 8) | bytes[1];
 }
 
 /**

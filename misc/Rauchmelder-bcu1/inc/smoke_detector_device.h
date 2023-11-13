@@ -59,14 +59,19 @@ private:
     void receivedMessage(uint8_t *bytes, int8_t len);
 
 private:
-    void failHardInDebug();
-    static uint8_t commandTableSize();
-    bool hasOngoingMessageExchange();
+    void failHardInDebug() const;
+    bool hasOngoingMessageExchange() const;
 
-    /**
-     * Read raw value from response and convert it to corresponding group object value
-     */
-    uint32_t readObjectValueFromResponse(uint8_t *rawValue, uint8_t dataType);
+    void readSerialNumberMessage(const uint8_t *bytes) const;
+    void readOperatingTimeMessage(const uint8_t *bytes) const;
+    void readSmokeboxDataMessage(const uint8_t *bytes) const;
+    void readBatteryAndTemperatureMessage(const uint8_t *bytes) const;
+    void readNumberAlarms1Message(const uint8_t *bytes) const;
+    void readNumberAlarms2Message(const uint8_t *bytes) const;
+    void readStatusMessage(const uint8_t *bytes) const;
+
+    static uint32_t readUInt32(const uint8_t *bytes);
+    static uint16_t readUInt16(const uint8_t *bytes);
 
     void setSupplyVoltageAndWait(bool enable, uint32_t waitTimeMs);
     void checkRmAttached2BasePlate();
