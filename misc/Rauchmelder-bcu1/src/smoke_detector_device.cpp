@@ -418,7 +418,7 @@ uint32_t SmokeDetectorDevice::readTemperature(const uint8_t *bytes) const
     return temperature;
 }
 
-void SmokeDetectorDevice::failHardInDebug() ///\todo remove on release
+void SmokeDetectorDevice::failHardInDebug()
 {
 #ifdef DEBUG
     fatalError();
