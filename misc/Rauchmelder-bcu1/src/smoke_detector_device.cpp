@@ -39,9 +39,9 @@ SmokeDetectorDevice::SmokeDetectorDevice(const SmokeDetectorConfig *config, cons
 {
     answerWait = 0;
 
-    pinMode(LED_BASEPLATE_DETACHED_PIN, OUTPUT);
-    digitalWrite(LED_BASEPLATE_DETACHED_PIN, false);
-    pinMode(RM_ACTIVITY_PIN, INPUT | PULL_DOWN); // smoke detector base plate state, pulldown configured, Pin is connected to 3.3V VCC of the RM
+    pinMode(AttachedToBasePlate.pinLed(), OUTPUT);
+    digitalWrite(AttachedToBasePlate.pinLed(), false);
+    pinMode(AttachedToBasePlate.pin(), INPUT | PULL_DOWN); // smoke detector base plate state, pulldown configured, Pin is connected to 3.3V VCC of the RM
 
     // make sure to discharge the 12V capacitor for at least 500ms
     setSupplyVoltage(false);
@@ -150,6 +150,11 @@ void SmokeDetectorDevice::checkState()
             if (timeout.expired())
             {
                 setSupplyVoltage(true);
+
+                // Enable communication on the smoke detector
+                pinMode(CommunicationEnable.pin(), OUTPUT);
+                digitalWrite(CommunicationEnable.pin(), CommunicationEnable.on());
+
                 com->initSerialCom();
                 state = DeviceState::fillCapacitor;
                 timeout.start(SupplyVoltageOnDelayMs);
@@ -254,20 +259,20 @@ bool SmokeDetectorDevice::hasOngoingMessageExchange() const
  */
 void SmokeDetectorDevice::setSupplyVoltage(bool enable)
 {
-    pinMode(LED_SUPPLY_VOLTAGE_DISABLED_PIN, OUTPUT);
-    digitalWrite(LED_SUPPLY_VOLTAGE_DISABLED_PIN, enable); // disable/enable led first to save/drain some juice
+    pinMode(SupportVoltage.pinLed(), OUTPUT);
+    digitalWrite(SupportVoltage.pinLed(), enable); // disable/enable led first to save/drain some juice
 
     // Running pinMode the first time, sets it by default to low
     // which will enable the support voltage and charge the capacitor.
     // So please put nothing in between pinMode and digitalWrite.
-    pinMode(RM_SUPPORT_VOLTAGE_PIN, OUTPUT);
+    pinMode(SupportVoltage.pin(), OUTPUT);
     if (enable)
     {
-        digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_ON);
+        digitalWrite(SupportVoltage.pin(), SupportVoltage.on());
     }
     else
     {
-        digitalWrite(RM_SUPPORT_VOLTAGE_PIN, RM_SUPPORT_VOLTAGE_OFF);
+        digitalWrite(SupportVoltage.pin(), SupportVoltage.off());
     }
 
     errorCode->supplyVoltageDisabled(!enable);
@@ -278,8 +283,8 @@ void SmokeDetectorDevice::setSupplyVoltage(bool enable)
  */
 void SmokeDetectorDevice::checkAttachedToBasePlate()
 {
-    auto isAttached = (digitalRead(RM_ACTIVITY_PIN) == RM_IS_ACTIVE);
-    digitalWrite(LED_BASEPLATE_DETACHED_PIN, isAttached);
+    auto isAttached = (digitalRead(AttachedToBasePlate.pin()) == AttachedToBasePlate.on());
+    digitalWrite(AttachedToBasePlate.pinLed(), isAttached);
 
     errorCode->coverPlateAttached(isAttached);
 
@@ -394,7 +399,7 @@ uint32_t SmokeDetectorDevice::readVoltage(const uint8_t *bytes) const
 {
     if ((bytes[0] == 0) && (bytes[1] == 1))
     {
-        return BATTERY_VOLTAGE_INVALID;
+        return BatteryVoltageInvalid;
     }
 
     auto rawVoltage = static_cast<uint32_t>(readUInt16(bytes));

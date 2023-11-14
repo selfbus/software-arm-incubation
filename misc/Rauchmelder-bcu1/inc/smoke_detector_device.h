@@ -19,6 +19,7 @@
 #define SMOKE_DETECTOR_DEVICE_H_
 
 #include <stdint.h>
+#include <sblib/io_pin_names.h>
 #include <sblib/timeout.h>
 
 #include "smoke_detector_com.h"
@@ -91,17 +92,39 @@ private:
         running
     };
 
+    template < volatile uint32_t templatePin, bool templateOn, volatile uint32_t templatePinLed >
+    class DeviceIOPin
+    {
+    public:
+        volatile uint32_t pin() const { return templatePin; }
+        bool on() const { return templateOn; }
+        bool off() const { return !templateOn; }
+        volatile uint32_t pinLed() const { return templatePinLed; }
+    };
+
     //!< Time in milliseconds the 12V supply needs to drain the capacitor
-    static constexpr int SupplyVoltageOffDelayMs = 500;
+    static constexpr uint32_t SupplyVoltageOffDelayMs = 500;
 
     //!< Time in milliseconds the 12V supply needs to fill the capacitor
-    static constexpr int SupplyVoltageOnDelayMs = 5000;
+    static constexpr uint32_t SupplyVoltageOnDelayMs = 5000;
 
     //!< Maximum waiting time in milliseconds to enable 12V supply
-    static constexpr int SupplyVoltageTimeoutMs = 120000;
+    static constexpr uint32_t SupplyVoltageTimeoutMs = 120000;
 
     //!< Time in milliseconds we give the smoke detector to startup and measure the battery voltage
-    static constexpr int DevicePowerUpDelayMs = 1000;
+    static constexpr uint32_t DevicePowerUpDelayMs = 1000;
+
+    //!< Sentinel value representing an invalid battery voltage
+    static constexpr uint32_t BatteryVoltageInvalid = static_cast<uint32_t>(-1);
+
+    //!< set low to enable smoke detector's serial communication feature
+    static constexpr DeviceIOPin<PIO3_5, false, 0> CommunicationEnable {};
+
+    //!< 12V support voltage for the smoke detector, NPN transistor pulls down the voltage, LED is on while supply voltage is "disconnected"
+    static constexpr DeviceIOPin<PIO2_1, false, PIO3_3> SupportVoltage {};
+
+    //!< IO pin where the internal smoke detector voltage is connected, LED is on while base plate is not attached
+    static constexpr DeviceIOPin<PIO0_11, true, PIO2_6> AttachedToBasePlate {};
 
 private:
     const SmokeDetectorConfig *config;

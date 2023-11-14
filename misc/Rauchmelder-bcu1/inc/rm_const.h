@@ -19,26 +19,7 @@
 
 #include <stdint.h>
 #include <type_traits>
-#include <sblib/io_pin_names.h>
 
-
-// IO Pin assignments
-#define RM_COMM_ENABLE_PIN    PIO3_5
-#define RM_COMM_ENABLE false //!< set low to enable smoke detector's serial communication feature
-
-#define RM_ACTIVITY_PIN PIO0_11 //!< IO Pin an dem die Erkennung der internen Rauchmelder Spannung angeschlossen ist
-#define RM_IS_ACTIVE true
-
-#define RM_SUPPORT_VOLTAGE_PIN PIO2_1 //!< Ansteuerung der Spannungsversorgung zur Untertützung des Rauchmelders
-#define RM_SUPPORT_VOLTAGE_ON false
-#define RM_SUPPORT_VOLTAGE_OFF true //!< NPN Transistor zieht die Versorgungsspannung herunter
-
-// LED pins
-#define LED_BASEPLATE_DETACHED_PIN PIO2_6       //!< LED is on, while base plate is not attached means @ref RM_ACTIVITY_PIN is false / off
-#define LED_SUPPLY_VOLTAGE_DISABLED_PIN PIO3_3  //!< LED is on, while supply voltage is "disconnected" means @ref RM_SUPPORT_VOLTAGE_PIN is true
-
-// Sentinel values
-#define BATTERY_VOLTAGE_INVALID -1              //!< Value representing an invalid battery voltage
 
 /**
  * Smoke detector alarm states
@@ -52,34 +33,32 @@ enum class RmAlarmState : uint8_t
 };
 
 //-----------------------------------------------------------------------------
-// Kommunikations Objekte
+// Communication Objects
 //-----------------------------------------------------------------------------
 enum class GroupObject : uint8_t
 {
-    alarmBus =               0, //!< Alarm Vernetzung
-    testAlarmBus =           1, //!< Testalarm Vernetzung
-    resetAlarm =             2, //!< Alarm / Testalarm rücksetzen
+    alarmBus =               0, //!< Alarm Network
+    testAlarmBus =           1, //!< Test Alarm Network
+    resetAlarm =             2, //!< Alarm / Test Alarm Reset
     statusAlarm =            3, //!< Status Alarm
-    statusAlarmDelayed =     4, //!< Status verzögerter Alarm
-    statusTestAlarm =        5, //!< Status Testalarm
-    serialNumber =           6, //!< Rauchmelder Seriennummer
-    operatingTime =          7, //!< Rauchmelder Betriebsdauer in Sekunden
-    smokeboxValue =          8, //!< Rauchkammer Wert
-    smokeboxPollution =      9, //!< Rauchkammer Verschmutzung
-    batteryVoltage =        10, //!< Batterie Spannung
-    temperature =           11, //!< Temperatur
-    errorCode =             12, //!< Rauchmelder Fehlercode, siehe @ref SdErrorCode
-    batteryLow =            13, //!< Batterie leer
-    malfunction =           14, //!< Rauchmelder defekt
-    countSmokeAlarm =       15, //!< Anzahl Rauchalarme
-    countTemperatureAlarm = 16, //!< Anzahl Temperatur Alarme
-    countTestAlarm =        17, //!< Anzahl Testalarme
-    countAlarmWire =        18, //!< Anzahl Draht Alarme
-    countAlarmBus =         19, //!< Anzahl Bus Alarme
-    countTestAlarmWire =    20, //!< Anzahl Draht Testalarme
-    countTestAlarmBus =     21, //!< Anzahl Bus Testalarme
-
-    none =                 0xff //!< No group object
+    statusAlarmDelayed =     4, //!< Status Delayed Alarm
+    statusTestAlarm =        5, //!< Status Test Alarm
+    serialNumber =           6, //!< Serial number
+    operatingTime =          7, //!< Operating time in seconds or hours
+    smokeboxValue =          8, //!< Smoke box value
+    smokeboxPollution =      9, //!< Smoke box pollution
+    batteryVoltage =        10, //!< Battery voltage
+    temperature =           11, //!< Temperature
+    errorCode =             12, //!< Error code, see @ref SdErrorCode
+    batteryLow =            13, //!< Battery low
+    malfunction =           14, //!< Device defective
+    countSmokeAlarm =       15, //!< Number of smoke alarms
+    countTemperatureAlarm = 16, //!< Number of temperature alarms
+    countTestAlarm =        17, //!< Number of test alarms
+    countAlarmWire =        18, //!< Number of wire alarms
+    countAlarmBus =         19, //!< Number of bus alarms
+    countTestAlarmWire =    20, //!< Number of wire test alarms
+    countTestAlarmBus =     21, //!< Number of bus test alarms
 };
 
 // https://stackoverflow.com/a/31836401

@@ -38,10 +38,6 @@ SmokeDetectorCom::SmokeDetectorCom(SmokeDetectorComCallback *callback)
  */
 void SmokeDetectorCom::initSerialCom()
 {
-    // Enable communication on the smoke detector
-    pinMode(RM_COMM_ENABLE_PIN, OUTPUT);
-    digitalWrite(RM_COMM_ENABLE_PIN, RM_COMM_ENABLE);
-
     // use internal pull-up resistor to avoid noise when not connected
     serial.setRxPin(PIN_RX);
     serial.setTxPin(PIN_TX);
