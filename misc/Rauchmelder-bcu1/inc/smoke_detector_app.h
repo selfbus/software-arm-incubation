@@ -50,16 +50,16 @@ private:
     void handleUpdatedGroupObjects();
 
 private:
-    static constexpr uint32_t TimerIntervalMs = 500; //!< Periodic timer interval in milliseconds (handles all periodic tasks)
-    // Counters are in timer interval units, i.e. half seconds (1=0.5s, 120=60.0s)
+    static constexpr uint32_t TimerIntervalMs = 1000; //!< Periodic timer interval in milliseconds (handles all periodic tasks)
+    // Counters are in timer interval units, i.e. seconds (1=1s, 60=60s)
 #ifdef DEBUG
-    static constexpr uint8_t DefaultEventTime = 60;
-    static constexpr uint8_t DefaultSerialCommandTime = 8;
-    static constexpr uint8_t DefaultKnxObjectTime = 2;
+    static constexpr uint8_t DefaultEventTime = 30;
+    static constexpr uint8_t DefaultSerialCommandTime = 4;
+    static constexpr uint8_t DefaultKnxObjectTime = 1;
 #else
-    static constexpr uint8_t DefaultEventTime = 120;  // Initialize to 1 minute -- with 0, we'd decrement from 0 to -1 in the timer ISR
-    static constexpr uint8_t DefaultSerialCommandTime = 16; // half seconds
-    static constexpr uint8_t DefaultKnxObjectTime = 4; // half seconds
+    static constexpr uint8_t DefaultEventTime = 60;  // Initialize to 1 minute -- with 0, we'd decrement from 0 to -1 in the timer ISR
+    static constexpr uint8_t DefaultSerialCommandTime = 8; // seconds
+    static constexpr uint8_t DefaultKnxObjectTime = 2; // seconds
 #endif
 
 private:

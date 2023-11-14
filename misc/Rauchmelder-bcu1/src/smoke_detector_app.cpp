@@ -145,10 +145,6 @@ void SmokeDetectorApp::timer()
 {
     --eventTime;
 
-    // Everything else just needs to be done every second
-    if (eventTime & 1)
-        return;
-
     alarm->timerEverySecond();
     auto hasAlarm = alarm->hasAlarm();
 
