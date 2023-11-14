@@ -196,7 +196,9 @@ bool SmokeDetectorCom::sendCommand(RmCommandByte cmd)
 
 void SmokeDetectorCom::setAlarmState(RmAlarmState newState)
 {
-    if (isSending())
+    // While waiting for an answer we don't process alarms to avoid overlapping message exchanges.
+    // As a message exchange is fast and this is called from the main loop that's fine.
+    if (isReceiving() || isSending())
         return;
 
     switch (newState)

@@ -55,7 +55,6 @@ public:
     void setAlarmState(RmAlarmState newState);
     bool sendCommand(DeviceCommand cmd);
     void receiveBytes();
-    void timerEvery500ms();
     void loopCheckState();
 
 private:
@@ -63,7 +62,6 @@ private:
     void timedOut(RmCommandByte command);
 
 private:
-    bool hasOngoingMessageExchange() const;
     void setSupplyVoltage(bool enable);
     void checkAttachedToBasePlate();
 
@@ -135,7 +133,6 @@ private:
     SmokeDetectorCom *com;
     DeviceState state;
     Timeout timeout;
-    unsigned char answerWait;          //!< Wenn != 0, dann Zähler für die Zeit die auf eine Antwort vom Rauchmelder gewartet wird.
 };
 
 #endif /* SMOKE_DETECTOR_DEVICE_H_ */

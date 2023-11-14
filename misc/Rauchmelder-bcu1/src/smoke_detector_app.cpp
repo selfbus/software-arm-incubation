@@ -145,8 +145,6 @@ void SmokeDetectorApp::timer()
 {
     --eventTime;
 
-    device->timerEvery500ms();
-
     // Everything else just needs to be done every second
     if (eventTime & 1)
         return;

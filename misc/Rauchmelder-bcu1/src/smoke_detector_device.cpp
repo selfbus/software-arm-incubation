@@ -28,8 +28,6 @@
 #include "smoke_detector_errorcode.h"
 #include "smoke_detector_group_objects.h"
 
-#define INITIAL_ANSWER_WAIT 6      //!< Initialwert für answerWait in 0,5s
-
 SmokeDetectorDevice::SmokeDetectorDevice(const SmokeDetectorConfig *config, const SmokeDetectorGroupObjects *groupObjects, SmokeDetectorAlarm *alarm, SmokeDetectorErrorCode *errorCode)
     : config(config),
       groupObjects(groupObjects),
@@ -37,8 +35,6 @@ SmokeDetectorDevice::SmokeDetectorDevice(const SmokeDetectorConfig *config, cons
       errorCode(errorCode),
       com(new SmokeDetectorCom(this))
 {
-    answerWait = 0;
-
     pinMode(AttachedToBasePlate.pinLed(), OUTPUT);
     digitalWrite(AttachedToBasePlate.pinLed(), false);
     pinMode(AttachedToBasePlate.pin(), INPUT | PULL_DOWN); // smoke detector base plate state, pulldown configured, Pin is connected to 3.3V VCC of the RM
@@ -51,15 +47,7 @@ SmokeDetectorDevice::SmokeDetectorDevice(const SmokeDetectorConfig *config, cons
 
 void SmokeDetectorDevice::setAlarmState(RmAlarmState newState)
 {
-    // While waiting for an answer we don't process alarms to avoid overlapping message exchanges.
-    // As a message exchange is fast and this is called from the main loop that's fine.
-    if (hasOngoingMessageExchange())
-    {
-       return;
-    }
-
     com->setAlarmState(newState);
-    answerWait = INITIAL_ANSWER_WAIT;
 }
 
 /**
@@ -71,36 +59,12 @@ void SmokeDetectorDevice::setAlarmState(RmAlarmState newState)
  */
 bool SmokeDetectorDevice::sendCommand(DeviceCommand cmd)
 {
-    if (hasOngoingMessageExchange())
-    {
-        return false;
-    }
-
-    if (!com->sendCommand(deviceCommandToRmCommandByte(cmd)))
-    {
-        return false;
-    }
-
-    answerWait = INITIAL_ANSWER_WAIT;
-    return true;
+    return com->sendCommand(deviceCommandToRmCommandByte(cmd));
 }
 
 void SmokeDetectorDevice::receiveBytes()
 {
     com->receiveBytes();
-}
-
-void SmokeDetectorDevice::timerEvery500ms()
-{
-    // Wir warten auf eine Antwort vom Rauchmelder
-    if (answerWait)
-    {
-        --answerWait;
-        if (!answerWait)
-        {
-            errorCode->communicationTimeout(true);
-        }
-    }
 }
 
 void SmokeDetectorDevice::loopCheckState()
@@ -158,7 +122,6 @@ void SmokeDetectorDevice::receivedMessage(uint8_t *bytes, int8_t len)
 {
     uint8_t msgType;
 
-    answerWait = 0;
     errorCode->communicationTimeout(false);
 
     msgType = bytes[0];
@@ -226,6 +189,8 @@ void SmokeDetectorDevice::receivedMessage(uint8_t *bytes, int8_t len)
  */
 void SmokeDetectorDevice::timedOut(RmCommandByte command)
 {
+    errorCode->communicationTimeout(true);
+
     switch (command)
     {
         case RmCommandByte::serialNumber:
@@ -262,11 +227,6 @@ void SmokeDetectorDevice::timedOut(RmCommandByte command)
         default:
             break;
     }
-}
-
-bool SmokeDetectorDevice::hasOngoingMessageExchange() const
-{
-    return answerWait != 0;
 }
 
 /**
