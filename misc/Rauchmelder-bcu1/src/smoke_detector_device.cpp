@@ -81,33 +81,6 @@ bool SmokeDetectorDevice::sendCommand(DeviceCommand cmd)
         return false;
     }
 
-    ///\todo setting group obj values to invalid, should be done after a serial timeout occurred
-    switch (cmd)
-    {
-        case DeviceCommand::serialNumber:
-            break;
-
-        case DeviceCommand::operatingTime:
-            break;
-
-        case DeviceCommand::smokeboxData:
-            break;
-
-        case DeviceCommand::batteryAndTemperature:
-            groupObjects->setValue(GroupObject::batteryVoltage, 0);
-            groupObjects->setValue(GroupObject::temperature, 0);
-            break;
-
-        case DeviceCommand::numberAlarms1:
-            break;
-
-        case DeviceCommand::numberAlarms2:
-            break;
-
-        default:
-            break;
-    }
-
     answerWait = INITIAL_ANSWER_WAIT;
     return true;
 }
@@ -130,7 +103,7 @@ void SmokeDetectorDevice::timerEvery500ms()
     }
 }
 
-void SmokeDetectorDevice::checkState()
+void SmokeDetectorDevice::loopCheckState()
 {
     switch (state)
     {
@@ -169,6 +142,7 @@ void SmokeDetectorDevice::checkState()
             break;
 
         case DeviceState::running:
+            com->loopCheckTimeouts();
             break;
 
         default:
@@ -243,6 +217,49 @@ void SmokeDetectorDevice::receivedMessage(uint8_t *bytes, int8_t len)
 
         default:
             failHardInDebug(); // found a new command/response => time to implement it
+            break;
+    }
+}
+
+/**
+ * For description see declaration in file @ref smoke_detector_com.h
+ */
+void SmokeDetectorDevice::timedOut(RmCommandByte command)
+{
+    switch (command)
+    {
+        case RmCommandByte::serialNumber:
+            groupObjects->setValue(GroupObject::serialNumber, 0);
+            break;
+
+        case RmCommandByte::operatingTime:
+            groupObjects->setValue(GroupObject::operatingTime, 0);
+            break;
+
+        case RmCommandByte::smokeboxData:
+            groupObjects->setValue(GroupObject::smokeboxValue, -1);
+            groupObjects->setValue(GroupObject::countSmokeAlarm, -1);
+            groupObjects->setValue(GroupObject::smokeboxPollution, -1);
+            break;
+
+        case RmCommandByte::batteryTemperatureData:
+            groupObjects->setValue(GroupObject::batteryVoltage, 0);
+            groupObjects->setValue(GroupObject::temperature, 0);
+            break;
+
+        case RmCommandByte::numberAlarms_1:
+            groupObjects->setValue(GroupObject::countTemperatureAlarm, -1);
+            groupObjects->setValue(GroupObject::countTestAlarm, -1);
+            groupObjects->setValue(GroupObject::countAlarmWire, -1);
+            groupObjects->setValue(GroupObject::countAlarmBus, -1);
+            break;
+
+        case RmCommandByte::numberAlarms_2:
+            groupObjects->setValue(GroupObject::countTestAlarmWire, -1);
+            groupObjects->setValue(GroupObject::countTestAlarmBus, -1);
+            break;
+
+        default:
             break;
     }
 }

@@ -56,10 +56,11 @@ public:
     bool sendCommand(DeviceCommand cmd);
     void receiveBytes();
     void timerEvery500ms();
-    void checkState();
+    void loopCheckState();
 
 private:
     void receivedMessage(uint8_t *bytes, int8_t len);
+    void timedOut(RmCommandByte command);
 
 private:
     bool hasOngoingMessageExchange() const;

@@ -47,6 +47,17 @@ void SmokeDetectorCom::initSerialCom()
 }
 
 /**
+ * Check whether one of the timeouts expired and act accordingly.
+ */
+void SmokeDetectorCom::loopCheckTimeouts()
+{
+    if (sendTimeout.expired())
+    {
+        repeatMessageOrReportTimeout();
+    }
+}
+
+/**
  * Receive all bytes from the smoke detector via serial port.
  * This function must be called continuously from the main loop to receive transmitted bytes.
  * When the received message is complete, this calls @ref SmokeDetectorComCallback::receivedMessage()
@@ -82,16 +93,11 @@ void SmokeDetectorCom::receiveBytes()
         {
             case ACK:
                 clearSendBuffer();
+                sendTimeout.stop();
                 break;
 
             case NAK:
-                if (isSending())
-                {
-                    // Retransmit the last message stored in sendBuf, but only
-                    // retry once.
-                    sendMessage();
-                    clearSendBuffer();
-                }
+                repeatMessageOrReportTimeout();
                 continue;
 
             case NUL:
@@ -183,6 +189,7 @@ bool SmokeDetectorCom::sendCommand(RmCommandByte cmd)
     sendBuf[1] = HexDigits[b & 0x0f];
     sendBuf[2] = 0;
 
+    lastSentCommand = cmd;
     sendMessage();
     return true;
 }
@@ -210,6 +217,7 @@ void SmokeDetectorCom::setAlarmState(RmAlarmState newState)
             return;
     }
 
+    lastSentCommand = {};
     sendMessage();
 }
 
@@ -286,6 +294,25 @@ void SmokeDetectorCom::clearSendBuffer()
 }
 
 /**
+ * Sends the message in @ref sendBuf again (first time) or reports a message
+ * timeout (from second try on).
+ */
+void SmokeDetectorCom::repeatMessageOrReportTimeout()
+{
+    if (isSending())
+    {
+        // Retransmit the last message stored in sendBuf, but only retry once.
+        sendMessage();
+        clearSendBuffer();
+    }
+    else if (lastSentCommand.has_value())
+    {
+        callback->timedOut(lastSentCommand.value());
+        lastSentCommand = {};
+    }
+}
+
+/**
  * Send a byte to the smoke detector.
  *
  * @param b - the byte to send.
@@ -337,4 +364,6 @@ void SmokeDetectorCom::sendMessage()
     sendByte(HexDigits[checksum & 15]);
 
     sendByte(ETX);
+
+    sendTimeout.start(SendTimeoutMs);
 }

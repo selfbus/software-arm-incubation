@@ -58,7 +58,7 @@ BcuBase* SmokeDetectorApp::initialize()
 
 void SmokeDetectorApp::loop()
 {
-    device->checkState();
+    device->loopCheckState();
     device->receiveBytes();
     updateAlarmState();
     handleUpdatedGroupObjects();

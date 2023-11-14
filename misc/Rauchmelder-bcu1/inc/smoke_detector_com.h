@@ -17,6 +17,8 @@
 #define SMOKE_DETECTOR_COM_H
 
 #include <stdint.h>
+#include <optional>
+#include <sblib/timeout.h>
 
 #include "rm_const.h"
 
@@ -46,6 +48,14 @@ public:
      * @param len - number of received bytes
      */
     virtual void receivedMessage(uint8_t *bytes, int8_t len) = 0;
+
+    /**
+     * Communication with smoke detector timed out.
+     *
+     * Called by @ref SmokeDetectorCom::receiveBytes() or SmokeDetectorCom::loopCheckTimeouts()
+     * when communication with the device times out.
+     */
+    virtual void timedOut(RmCommandByte command) = 0;
 };
 
 /**
@@ -60,6 +70,11 @@ public:
      * Initialize serial communication with smoke detector
      */
     void initSerialCom();
+
+    /**
+     * Check whether one of the timeouts expired and act accordingly.
+     */
+    void loopCheckTimeouts();
 
     /**
      * Receive all bytes from the smoke detector via serial port.
@@ -116,6 +131,12 @@ private:
     void clearSendBuffer();
 
     /**
+     * Sends the message in @ref sendBuf again (first time) or reports a message
+     * timeout (from second try on).
+     */
+    void repeatMessageOrReportTimeout();
+
+    /**
      * Send a byte to the smoke detector.
      *
      * @param b - the byte to send.
@@ -151,6 +172,9 @@ private:
     // Maximum number of characters of a message to send to the smoke detector, excluding STX and ETX and checksum.
     static constexpr int SendMaxCharacters = 6;
 
+    // Time we give the smoke detector to respond with ACK/NAK before we repeat or report a timeout
+    static constexpr int SendTimeoutMs = 250;
+
     // Lookup table for translation number to hex string
     const uint8_t HexDigits[17];
 
@@ -177,6 +201,12 @@ private:
 
     // Buffer for storing the message to be sent to the smoke detector
     uint8_t sendBuf[SendMaxCharacters + 1];
+
+    // Timeout after sending before we repeat the message or report a timeout
+    Timeout sendTimeout;
+
+    // Last command sent to the smoke detector
+    std::optional<RmCommandByte> lastSentCommand;
 };
 
 #endif /*SMOKE_DETECTOR_COM_H*/
