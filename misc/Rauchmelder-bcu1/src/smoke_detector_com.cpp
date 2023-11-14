@@ -97,7 +97,7 @@ void SmokeDetectorCom::receiveBytes()
             case ACK:
                 clearSendBuffer();
                 sendTimeout.stop();
-                break;
+                continue;
 
             case NAK:
                 repeatMessageOrReportTimeout();
