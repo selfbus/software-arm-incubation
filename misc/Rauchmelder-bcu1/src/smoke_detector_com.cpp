@@ -32,6 +32,9 @@ SmokeDetectorCom::SmokeDetectorCom(SmokeDetectorComCallback *callback)
     recvCount = -1;
     lastSerialRecvTime = 0;
     clearSendBuffer();
+    sendTimeout.stop();
+    lastSentCommand = {};
+    capacitorChargeTimeout.stop();
 }
 
 /**
@@ -178,7 +181,7 @@ void SmokeDetectorCom::receiveBytes()
  */
 bool SmokeDetectorCom::sendCommand(RmCommandByte cmd)
 {
-    if (!serial.enabled() || isReceiving() || isSending())
+    if (!serial.enabled() || isReceiving() || isSending() || !canSend())
     {
         return false;
     }
@@ -198,7 +201,7 @@ void SmokeDetectorCom::setAlarmState(RmAlarmState newState)
 {
     // While waiting for an answer we don't process alarms to avoid overlapping message exchanges.
     // As a message exchange is fast and this is called from the main loop that's fine.
-    if (isReceiving() || isSending())
+    if (isReceiving() || isSending() || !canSend())
         return;
 
     switch (newState)
@@ -276,6 +279,17 @@ bool SmokeDetectorCom::isValidMessage(uint8_t length)
 }
 
 /**
+ * Check if we are currently waiting for the battery support capacitor to
+ * charge or are ready to send the next message.
+ *
+ * @return true if ready to send, otherwise false
+ */
+bool SmokeDetectorCom::canSend()
+{
+    return capacitorChargeTimeout.stopped() || capacitorChargeTimeout.expired();
+}
+
+/**
  * Check if we are currently sending a message to the smoke detector,
  * i.e. there is valid content in @ref sendBuf. Gets cleared after successful
  * transmission as well as after the first repetition.
@@ -330,6 +344,7 @@ void SmokeDetectorCom::sendByte(uint8_t b)
 void SmokeDetectorCom::sendAck()
 {
     sendByte(ACK);
+    capacitorChargeTimeout.start(CapacitorChargeTimeoutMs);
 }
 
 /**
@@ -338,6 +353,7 @@ void SmokeDetectorCom::sendAck()
 void SmokeDetectorCom::sendNak()
 {
     sendByte(NAK);
+    capacitorChargeTimeout.start(CapacitorChargeTimeoutMs);
 }
 
 /**

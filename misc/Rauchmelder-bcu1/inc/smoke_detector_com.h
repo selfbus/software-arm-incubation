@@ -117,6 +117,14 @@ private:
     bool isValidMessage(uint8_t length);
 
     /**
+     * Check if we are currently waiting for the battery support capacitor to
+     * charge or are ready to send the next message.
+     *
+     * @return true if ready to send, otherwise false
+     */
+    bool canSend();
+
+    /**
      * Check if we are currently sending a message to the smoke detector,
      * i.e. there is valid content in @ref sendBuf. Gets cleared after successful
      * transmission as well as after the first repetition.
@@ -175,6 +183,9 @@ private:
     // Time we give the smoke detector to respond with ACK/NAK before we repeat or report a timeout
     static constexpr int SendTimeoutMs = 250;
 
+    // Time we give the smoke detector to respond with ACK/NAK before we repeat or report a timeout
+    static constexpr int CapacitorChargeTimeoutMs = 1500;
+
     // Lookup table for translation number to hex string
     const uint8_t HexDigits[17];
 
@@ -207,6 +218,10 @@ private:
 
     // Last command sent to the smoke detector
     std::optional<RmCommandByte> lastSentCommand;
+
+    // After receiving a message from the smoke detector, allot some time
+    // for the battery support capacitor to charge
+    Timeout capacitorChargeTimeout;
 };
 
 #endif /*SMOKE_DETECTOR_COM_H*/
