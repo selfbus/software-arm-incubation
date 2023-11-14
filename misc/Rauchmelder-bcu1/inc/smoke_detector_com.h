@@ -102,6 +102,20 @@ private:
     bool isValidMessage(uint8_t length);
 
     /**
+     * Check if we are currently sending a message to the smoke detector,
+     * i.e. there is valid content in @ref sendBuf. Gets cleared after successful
+     * transmission as well as after the first repetition.
+     *
+     * @return true if sending, otherwise false
+     */
+    bool isSending();
+
+    /**
+     * Clears @ref sendBuf.
+     */
+    void clearSendBuffer();
+
+    /**
      * Send a byte to the smoke detector.
      *
      * @param b - the byte to send.
@@ -121,12 +135,10 @@ private:
     /**
      * Send a message to the smoke detector.
      *
-     * The command is transmitted as a hex string. The checksum is calculated and
+     * The command is transmitted as a hex string in @ref sendBuf. The checksum is calculated and
      * appended. The whole transmission is initiated with STX and finalized with ETX.
-     *
-     * @param hexstr - the bytes to send as hex string, with terminating NUL byte
      */
-    void sendHexstring(const uint8_t *hexstr);
+    void sendMessage();
 
 private:
     // Maximum number of characters of a message from the smoke detector, excluding STX and ETX.
@@ -135,6 +147,9 @@ private:
 
     // Timeout of serial port communication.
     static constexpr int RecvTimeoutMs = 3000;
+
+    // Maximum number of characters of a message to send to the smoke detector, excluding STX and ETX and checksum.
+    static constexpr int SendMaxCharacters = 6;
 
     // Lookup table for translation number to hex string
     const uint8_t HexDigits[17];
@@ -159,6 +174,9 @@ private:
 
     // Last time a byte was received from the serial port.
     uint32_t lastSerialRecvTime;
+
+    // Buffer for storing the message to be sent to the smoke detector
+    uint8_t sendBuf[SendMaxCharacters + 1];
 };
 
 #endif /*SMOKE_DETECTOR_COM_H*/

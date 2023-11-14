@@ -31,6 +31,7 @@ SmokeDetectorCom::SmokeDetectorCom(SmokeDetectorComCallback *callback)
 {
     recvCount = -1;
     lastSerialRecvTime = 0;
+    clearSendBuffer();
 }
 
 /**
@@ -79,16 +80,27 @@ void SmokeDetectorCom::receiveBytes()
         auto ch = static_cast<uint8_t>(rec_ch);
         switch (ch)
         {
+            case ACK:
+                clearSendBuffer();
+                break;
+
+            case NAK:
+                if (isSending())
+                {
+                    // Retransmit the last message stored in sendBuf, but only
+                    // retry once.
+                    sendMessage();
+                    clearSendBuffer();
+                }
+                continue;
+
+            case NUL:
+                continue;
+
             case STX:
                 // It is the magic start byte, (re-)start message reception.
                 // It can also be a repetition of a failed previous attempt.
                 recvCount = 0;
-                continue;
-
-            case NAK: ///\todo Retransmit the last command/bytes
-                continue;
-
-            case NUL:
                 continue;
 
             case ETX:
@@ -160,42 +172,45 @@ void SmokeDetectorCom::receiveBytes()
  */
 bool SmokeDetectorCom::sendCommand(RmCommandByte cmd)
 {
-    if (!serial.enabled() || isReceiving())
+    if (!serial.enabled() || isReceiving() || isSending())
     {
         return false;
     }
 
     auto b = static_cast<std::underlying_type_t<RmCommandByte>>(cmd);
-    uint8_t bytes[3];
 
-    bytes[0] = HexDigits[b >> 4];
-    bytes[1] = HexDigits[b & 0x0f];
-    bytes[2] = 0;
+    sendBuf[0] = HexDigits[b >> 4];
+    sendBuf[1] = HexDigits[b & 0x0f];
+    sendBuf[2] = 0;
 
-    sendHexstring(bytes);
+    sendMessage();
     return true;
 }
 
 void SmokeDetectorCom::setAlarmState(RmAlarmState newState)
 {
+    if (isSending())
+        return;
+
     switch (newState)
     {
         case RmAlarmState::alarm:
-            sendHexstring(reinterpret_cast<const uint8_t *>("030210"));
+            memcpy(sendBuf, "030210", 7);
             break;
 
         case RmAlarmState::testAlarm:
-            sendHexstring(reinterpret_cast<const uint8_t *>("030280"));
+            memcpy(sendBuf, "030280", 7);
             break;
 
         case RmAlarmState::noAlarm:
-            //\todo Does this clear the status byte completely, including local test alarm and battery empty bits?
-            sendHexstring(reinterpret_cast<const uint8_t *>("030200"));
+            memcpy(sendBuf, "030200", 7);
             break;
 
         default:
-            break;
+            return;
     }
+
+    sendMessage();
 }
 
 /**
@@ -251,6 +266,26 @@ bool SmokeDetectorCom::isValidMessage(uint8_t length)
 }
 
 /**
+ * Check if we are currently sending a message to the smoke detector,
+ * i.e. there is valid content in @ref sendBuf. Gets cleared after successful
+ * transmission as well as after the first repetition.
+ *
+ * @return true if sending, otherwise false
+ */
+bool SmokeDetectorCom::isSending()
+{
+    return (sendBuf[0] != 0);
+}
+
+/**
+ * Clears @ref sendBuf.
+ */
+void SmokeDetectorCom::clearSendBuffer()
+{
+    sendBuf[0] = 0;
+}
+
+/**
  * Send a byte to the smoke detector.
  *
  * @param b - the byte to send.
@@ -279,24 +314,23 @@ void SmokeDetectorCom::sendNak()
 /**
  * Send a message to the smoke detector.
  *
- * The command is transmitted as a hex string. The checksum is calculated and
+ * The command is transmitted as a hex string in @ref sendBuf. The checksum is calculated and
  * appended. The whole transmission is initiated with STX and finalized with ETX.
- *
- * @param hexstr - the bytes to send as hex string, with terminating NUL byte
  */
-void SmokeDetectorCom::sendHexstring(const uint8_t * hexstr)
+void SmokeDetectorCom::sendMessage()
 {
     uint8_t checksum = 0;
     uint8_t b;
+    uint8_t *bufPtr = sendBuf;
 
     sendByte(STX);
 
-    while (*hexstr)
+    while (*bufPtr)
     {
-        b = *hexstr;
+        b = *bufPtr;
         checksum += b;
         sendByte(b);
-        ++hexstr;
+        ++bufPtr;
     }
 
     sendByte(HexDigits[checksum >> 4]);
