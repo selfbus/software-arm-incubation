@@ -22,7 +22,7 @@
 #include <sblib/timer.h>
 
 #include "smoke_detector_com.h"
-#include "rm_const.h"
+#include "smoke_detector_shared_enums.h"
 
 
 SmokeDetectorCom::SmokeDetectorCom(SmokeDetectorComCallback *callback)

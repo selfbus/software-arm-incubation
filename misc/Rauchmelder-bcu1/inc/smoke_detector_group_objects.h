@@ -18,7 +18,7 @@
 #ifndef SMOKE_DETECTOR_GROUP_OBJECTS_H_
 #define SMOKE_DETECTOR_GROUP_OBJECTS_H_
 
-#include "rm_const.h"
+#include "smoke_detector_shared_enums.h"
 
 class ComObjects;
 

@@ -18,7 +18,7 @@
 #ifndef SMOKE_DETECTOR_CONFIG_H
 #define SMOKE_DETECTOR_CONFIG_H
 
-#include "rm_const.h"
+#include "smoke_detector_shared_enums.h"
 
 class Memory;
 

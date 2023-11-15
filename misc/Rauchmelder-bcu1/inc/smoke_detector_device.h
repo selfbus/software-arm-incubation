@@ -23,7 +23,7 @@
 #include <sblib/timeout.h>
 
 #include "smoke_detector_com.h"
-#include "rm_const.h"
+#include "smoke_detector_shared_enums.h"
 
 class SmokeDetectorAlarm;
 class SmokeDetectorConfig;

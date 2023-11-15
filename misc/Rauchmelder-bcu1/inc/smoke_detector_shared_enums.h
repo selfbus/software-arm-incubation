@@ -14,8 +14,8 @@
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
  */
-#ifndef rm_const_h
-#define rm_const_h
+#ifndef SMOKE_DETECTOR_SHARED_ENUMS_H_
+#define SMOKE_DETECTOR_SHARED_ENUMS_H_
 
 #include <stdint.h>
 #include <type_traits>
@@ -115,4 +115,4 @@ private:
 typedef EnumIterator<GroupObject, GroupObject::alarmBus, GroupObject::countTestAlarmBus> AllGroupObjects;
 typedef EnumIterator<GroupObject, GroupObject::serialNumber, GroupObject::countTestAlarmBus> InfoGroupObjects;
 
-#endif /*rm_const_h*/
+#endif /*SMOKE_DETECTOR_SHARED_ENUMS_H_*/

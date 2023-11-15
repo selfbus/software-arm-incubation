@@ -25,12 +25,12 @@
 #include <type_traits>
 
 #include "smoke_detector_app.h"
-#include "rm_const.h"
 #include "smoke_detector_alarm.h"
 #include "smoke_detector_config.h"
 #include "smoke_detector_device.h"
 #include "smoke_detector_errorcode.h"
 #include "smoke_detector_group_objects.h"
+#include "smoke_detector_shared_enums.h"
 
 extern SmokeDetectorApp *app;
 
