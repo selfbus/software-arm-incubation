@@ -73,6 +73,7 @@ private:
     void readNumberAlarms2Message(const uint8_t *bytes) const;
     void readStatusMessage(const uint8_t *bytes) const;
     uint32_t readOperatingTime(const uint8_t *bytes) const;
+    uint32_t readSmokeBoxValue(const uint8_t *bytes) const;
     uint32_t readVoltage(const uint8_t *bytes) const;
     uint32_t readTemperature(const uint8_t *bytes) const;
 

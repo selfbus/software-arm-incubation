@@ -273,7 +273,7 @@ void SmokeDetectorDevice::checkAttachedToBasePlate()
     ///\todo check danger of this timeout. Can it show up as a working smoke detector on the bus?
     isAttached |= timeout.expired();
 
-    // der Rauchmelder wurde auf die Bodenplatte gesteckt => Spannungsversorgung aktivieren
+    // After it has been attached to the base plate, allot some time for power-up
     if (isAttached)
     {
         state = DeviceState::powerUpDevice;
@@ -296,7 +296,7 @@ void SmokeDetectorDevice::readOperatingTimeMessage(const uint8_t *bytes) const
 void SmokeDetectorDevice::readSmokeboxDataMessage(const uint8_t *bytes) const
 {
     // <STX>CB0065000111<ETX>
-    groupObjects->setValue(GroupObject::smokeboxValue, readUInt16(bytes));
+    groupObjects->setValue(GroupObject::smokeboxValue, floatToDpt9(readSmokeBoxValue(bytes)));
     groupObjects->setValue(GroupObject::countSmokeAlarm, bytes[2]);
     groupObjects->setValue(GroupObject::smokeboxPollution, bytes[3]);
 }
@@ -375,6 +375,14 @@ uint32_t SmokeDetectorDevice::readOperatingTime(const uint8_t *bytes) const
     auto seconds = readUInt32(bytes) >> 2;
     auto time = config->infoSendOperationTimeInHours() ? seconds / 3600 : seconds;
     return time;
+}
+
+uint32_t SmokeDetectorDevice::readSmokeBoxValue(const uint8_t *bytes) const
+{
+    auto rawValue = static_cast<uint32_t>(readUInt16(bytes));
+    // Conversion: rawValue * 3.3V / 1024 * 100 [for DPT9]
+    auto smokeBoxValue = (rawValue * 330) >> 10;
+    return smokeBoxValue;
 }
 
 uint32_t SmokeDetectorDevice::readVoltage(const uint8_t *bytes) const
