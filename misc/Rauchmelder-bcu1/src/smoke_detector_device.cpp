@@ -187,11 +187,16 @@ void SmokeDetectorDevice::receivedMessage(uint8_t *bytes, int8_t len)
 /**
  * For description see declaration in file @ref smoke_detector_com.h
  */
-void SmokeDetectorDevice::timedOut(RmCommandByte command)
+void SmokeDetectorDevice::timedOut(std::optional<RmCommandByte> command)
 {
     errorCode->communicationTimeout(true);
 
-    switch (command)
+    if (!command.has_value())
+    {
+        return;
+    }
+
+    switch (command.value())
     {
         case RmCommandByte::serialNumber:
             groupObjects->setValue(GroupObject::serialNumber, 0);

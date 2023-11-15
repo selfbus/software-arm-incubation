@@ -54,8 +54,11 @@ public:
      *
      * Called by @ref SmokeDetectorCom::receiveBytes() or SmokeDetectorCom::loopCheckTimeouts()
      * when communication with the device times out.
+     *
+     * @param command The sent command that timed out, or a missing value if the sent command
+     *                was triggered by @ref SmokeDetectorCom::setAlarmState or the device itself
      */
-    virtual void timedOut(RmCommandByte command) = 0;
+    virtual void timedOut(std::optional<RmCommandByte> command) = 0;
 };
 
 /**
@@ -107,9 +110,9 @@ private:
     bool isReceiving();
 
     /**
-     * Cancel an ongoing message reception, e.g. due to timeout.
+     * Finalize an ongoing message reception, e.g. because it succeeded or due to timeout.
      */
-    void cancelReceive();
+    void finalizeReceive();
 
     /**
      * Validate the checksum of the message in @ref recvBuf.
@@ -154,12 +157,12 @@ private:
     /**
      * Send an ACK to the smoke detector.
      */
-    void sendAck();
+    void receivedMessageSuccessfully(uint8_t length);
 
     /**
      * Send a NAK to the smoke detector.
      */
-    void sendNak();
+    void receivedMessageWithFailure();
 
     /**
      * Send a message to the smoke detector.
@@ -175,7 +178,7 @@ private:
     static constexpr int RecvMaxCharacters = 12;
 
     // Timeout of serial port communication.
-    static constexpr int RecvTimeoutMs = 3000;
+    static constexpr int ReceiveTimeoutMs = 250;
 
     // Maximum number of characters of a message to send to the smoke detector, excluding STX and ETX and checksum.
     static constexpr int SendMaxCharacters = 6;
@@ -183,7 +186,7 @@ private:
     // Time we give the smoke detector to respond with ACK/NAK before we repeat or report a timeout
     static constexpr int SendTimeoutMs = 250;
 
-    // Time we give the smoke detector to respond with ACK/NAK before we repeat or report a timeout
+    // Time we reserve for the capacitor to charge before we send the next request to the device
     static constexpr int CapacitorChargeTimeoutMs = 1500;
 
     // Lookup table for translation number to hex string
@@ -207,8 +210,8 @@ private:
     // Number of received characters from smoke detector
     int recvCount;
 
-    // Last time a byte was received from the serial port.
-    uint32_t lastSerialRecvTime;
+    // Timeout for receiving a message
+    Timeout receiveTimeout;
 
     // Buffer for storing the message to be sent to the smoke detector
     uint8_t sendBuf[SendMaxCharacters + 1];

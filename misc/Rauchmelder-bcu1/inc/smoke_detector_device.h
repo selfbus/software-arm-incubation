@@ -59,7 +59,7 @@ public:
 
 private:
     void receivedMessage(uint8_t *bytes, int8_t len);
-    void timedOut(RmCommandByte command);
+    void timedOut(std::optional<RmCommandByte> command);
 
 private:
     void setSupplyVoltage(bool enable);

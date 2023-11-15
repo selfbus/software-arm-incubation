@@ -30,7 +30,7 @@ SmokeDetectorCom::SmokeDetectorCom(SmokeDetectorComCallback *callback)
       callback(callback)
 {
     recvCount = -1;
-    lastSerialRecvTime = 0;
+    receiveTimeout.stop();
     clearSendBuffer();
     sendTimeout.stop();
     lastSentCommand = {};
@@ -58,6 +58,12 @@ void SmokeDetectorCom::loopCheckTimeouts()
     {
         repeatMessageOrReportTimeout();
     }
+
+    if (receiveTimeout.expired())
+    {
+        receivedMessageWithFailure();
+        callback->timedOut(lastSentCommand);
+    }
 }
 
 /**
@@ -73,12 +79,6 @@ void SmokeDetectorCom::receiveBytes()
         return;
     }
 
-    if (isReceiving() && elapsed(lastSerialRecvTime) > RecvTimeoutMs)
-    {
-        sendNak();
-        cancelReceive();
-    }
-
     auto count = serial.available();
     if (count == 0)
     {
@@ -88,8 +88,6 @@ void SmokeDetectorCom::receiveBytes()
     int rec_ch;
     while ((rec_ch = serial.read()) > -1)
     {
-        lastSerialRecvTime = millis();
-
         auto idx = recvCount >> 1;
         auto ch = static_cast<uint8_t>(rec_ch);
         switch (ch)
@@ -110,6 +108,7 @@ void SmokeDetectorCom::receiveBytes()
                 // It is the magic start byte, (re-)start message reception.
                 // It can also be a repetition of a failed previous attempt.
                 recvCount = 0;
+                receiveTimeout.start(ReceiveTimeoutMs);
                 continue;
 
             case ETX:
@@ -118,14 +117,13 @@ void SmokeDetectorCom::receiveBytes()
                 if (isReceiving() && (recvCount & 1) == 0 && isValidMessage(idx))
                 {
                     // Acknowledge reception and process message.
-                    sendAck();
-                    callback->receivedMessage(recvBuf, idx - 1);
+                    receivedMessageSuccessfully(idx - 1);
                 }
                 else
                 {
-                    sendNak();
+                    receivedMessageWithFailure();
                 }
-                cancelReceive();
+                receiveTimeout.stop();
                 continue;
 
             default:
@@ -139,7 +137,7 @@ void SmokeDetectorCom::receiveBytes()
         // On overflow, ignore excess characters
         if (recvCount >= RecvMaxCharacters)
         {
-            cancelReceive();
+            receivedMessageWithFailure();
             continue;
         }
 
@@ -154,7 +152,7 @@ void SmokeDetectorCom::receiveBytes()
             ch -= 'A' - 10;
         else // ignore invalid characters
         {
-            cancelReceive();
+            receivedMessageWithFailure();
             continue;
         }
 
@@ -237,11 +235,12 @@ bool SmokeDetectorCom::isReceiving()
 }
 
 /**
- * Cancel an ongoing message reception, e.g. due to timeout.
+ * Finalize an ongoing message reception, e.g. because it succeeded or due to timeout.
  */
-void SmokeDetectorCom::cancelReceive()
+void SmokeDetectorCom::finalizeReceive()
 {
     recvCount = -1;
+    capacitorChargeTimeout.start(CapacitorChargeTimeoutMs);
 }
 
 /**
@@ -321,10 +320,9 @@ void SmokeDetectorCom::repeatMessageOrReportTimeout()
         sendMessage();
         clearSendBuffer();
     }
-    else if (lastSentCommand.has_value())
+    else
     {
-        callback->timedOut(lastSentCommand.value());
-        lastSentCommand = {};
+        callback->timedOut(lastSentCommand);
     }
 }
 
@@ -341,19 +339,21 @@ void SmokeDetectorCom::sendByte(uint8_t b)
 /**
  * Send an ACK to the smoke detector.
  */
-void SmokeDetectorCom::sendAck()
+void SmokeDetectorCom::receivedMessageSuccessfully(uint8_t length)
 {
     sendByte(ACK);
-    capacitorChargeTimeout.start(CapacitorChargeTimeoutMs);
+    finalizeReceive();
+    lastSentCommand = {};
+    callback->receivedMessage(recvBuf, length);
 }
 
 /**
  * Send a NAK to the smoke detector.
  */
-void SmokeDetectorCom::sendNak()
+void SmokeDetectorCom::receivedMessageWithFailure()
 {
     sendByte(NAK);
-    capacitorChargeTimeout.start(CapacitorChargeTimeoutMs);
+    finalizeReceive();
 }
 
 /**
