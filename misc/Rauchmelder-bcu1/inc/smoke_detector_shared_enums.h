@@ -76,7 +76,7 @@ public:
     {
     }
 
-    EnumIterator operator++()
+    EnumIterator& operator++()
     {
         ++value;
         return *this;

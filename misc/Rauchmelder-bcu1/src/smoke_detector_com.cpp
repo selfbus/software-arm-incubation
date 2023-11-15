@@ -88,7 +88,7 @@ void SmokeDetectorCom::receiveBytes()
     int rec_ch;
     while ((rec_ch = serial.read()) > -1)
     {
-        auto idx = recvCount >> 1;
+        auto idx = static_cast<uint8_t>(recvCount >> 1);
         auto ch = static_cast<uint8_t>(rec_ch);
         switch (ch)
         {
@@ -271,7 +271,8 @@ bool SmokeDetectorCom::isValidMessage(uint8_t length)
     for (auto i = 0; i < length - 1; ++i)
     {
         auto b = recvBuf[i];
-        expectedChecksum += HexDigits[b >> 4] + HexDigits[b & 0x0F];
+        expectedChecksum += HexDigits[b >> 4];
+        expectedChecksum += HexDigits[b & 0x0F];
     }
 
     return expectedChecksum == recvBuf[length - 1];

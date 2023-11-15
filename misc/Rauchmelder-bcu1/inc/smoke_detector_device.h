@@ -58,7 +58,7 @@ public:
     void loopCheckState();
 
 private:
-    void receivedMessage(uint8_t *bytes, int8_t len);
+    void receivedMessage(uint8_t *bytes, uint8_t len);
     void timedOut(std::optional<RmCommandByte> command);
 
 private:
@@ -73,9 +73,9 @@ private:
     void readNumberAlarms2Message(const uint8_t *bytes) const;
     void readStatusMessage(const uint8_t *bytes) const;
     uint32_t readOperatingTime(const uint8_t *bytes) const;
-    uint32_t readSmokeBoxValue(const uint8_t *bytes) const;
-    uint32_t readVoltage(const uint8_t *bytes) const;
-    uint32_t readTemperature(const uint8_t *bytes) const;
+    int32_t readSmokeBoxValue(const uint8_t *bytes) const;
+    int32_t readVoltage(const uint8_t *bytes) const;
+    int32_t readTemperature(const uint8_t *bytes) const;
 
     static void failHardInDebug();
     static RmCommandByte deviceCommandToRmCommandByte(DeviceCommand command);
@@ -92,14 +92,14 @@ private:
         running
     };
 
-    template < volatile uint32_t templatePin, bool templateOn, volatile uint32_t templatePinLed >
+    template < volatile int32_t templatePin, bool templateOn, volatile int32_t templatePinLed >
     class DeviceIOPin
     {
     public:
-        volatile uint32_t pin() const { return templatePin; }
+        int32_t pin() const { return templatePin; }
         bool on() const { return templateOn; }
         bool off() const { return !templateOn; }
-        volatile uint32_t pinLed() const { return templatePinLed; }
+        int32_t pinLed() const { return templatePinLed; }
     };
 
     //!< Time in milliseconds the 12V supply needs to drain the capacitor
@@ -115,7 +115,7 @@ private:
     static constexpr uint32_t DevicePowerUpDelayMs = 1000;
 
     //!< Sentinel value representing an invalid battery voltage
-    static constexpr uint32_t BatteryVoltageInvalid = static_cast<uint32_t>(-1);
+    static constexpr int32_t BatteryVoltageInvalid = -1;
 
     //!< set low to enable smoke detector's serial communication feature
     static constexpr DeviceIOPin<PIO3_5, false, 0> CommunicationEnable {};

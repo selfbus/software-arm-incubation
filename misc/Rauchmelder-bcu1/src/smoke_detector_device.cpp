@@ -118,7 +118,7 @@ void SmokeDetectorDevice::loopCheckState()
 /**
  * For description see declaration in file @ref smoke_detector_com.h
  */
-void SmokeDetectorDevice::receivedMessage(uint8_t *bytes, int8_t len)
+void SmokeDetectorDevice::receivedMessage(uint8_t *bytes, uint8_t len)
 {
     uint8_t msgType;
 
@@ -196,6 +196,8 @@ void SmokeDetectorDevice::timedOut(std::optional<RmCommandByte> command)
         return;
     }
 
+    const uint32_t MinusOne = static_cast<uint32_t>(-1);
+
     switch (command.value())
     {
         case RmCommandByte::serialNumber:
@@ -207,9 +209,9 @@ void SmokeDetectorDevice::timedOut(std::optional<RmCommandByte> command)
             break;
 
         case RmCommandByte::smokeboxData:
-            groupObjects->setValue(GroupObject::smokeboxValue, -1);
-            groupObjects->setValue(GroupObject::countSmokeAlarm, -1);
-            groupObjects->setValue(GroupObject::smokeboxPollution, -1);
+            groupObjects->setValue(GroupObject::smokeboxValue, MinusOne);
+            groupObjects->setValue(GroupObject::countSmokeAlarm, MinusOne);
+            groupObjects->setValue(GroupObject::smokeboxPollution, MinusOne);
             break;
 
         case RmCommandByte::batteryTemperatureData:
@@ -218,15 +220,15 @@ void SmokeDetectorDevice::timedOut(std::optional<RmCommandByte> command)
             break;
 
         case RmCommandByte::numberAlarms_1:
-            groupObjects->setValue(GroupObject::countTemperatureAlarm, -1);
-            groupObjects->setValue(GroupObject::countTestAlarm, -1);
-            groupObjects->setValue(GroupObject::countAlarmWire, -1);
-            groupObjects->setValue(GroupObject::countAlarmBus, -1);
+            groupObjects->setValue(GroupObject::countTemperatureAlarm, MinusOne);
+            groupObjects->setValue(GroupObject::countTestAlarm, MinusOne);
+            groupObjects->setValue(GroupObject::countAlarmWire, MinusOne);
+            groupObjects->setValue(GroupObject::countAlarmBus, MinusOne);
             break;
 
         case RmCommandByte::numberAlarms_2:
-            groupObjects->setValue(GroupObject::countTestAlarmWire, -1);
-            groupObjects->setValue(GroupObject::countTestAlarmBus, -1);
+            groupObjects->setValue(GroupObject::countTestAlarmWire, MinusOne);
+            groupObjects->setValue(GroupObject::countTestAlarmBus, MinusOne);
             break;
 
         default:
@@ -377,31 +379,31 @@ uint32_t SmokeDetectorDevice::readOperatingTime(const uint8_t *bytes) const
     return time;
 }
 
-uint32_t SmokeDetectorDevice::readSmokeBoxValue(const uint8_t *bytes) const
+int32_t SmokeDetectorDevice::readSmokeBoxValue(const uint8_t *bytes) const
 {
-    auto rawValue = static_cast<uint32_t>(readUInt16(bytes));
+    auto rawValue = static_cast<int32_t>(readUInt16(bytes));
     // Conversion: rawValue * 3.3V / 1024 * 100 [for DPT9]
     auto smokeBoxValue = (rawValue * 330) >> 10;
     return smokeBoxValue;
 }
 
-uint32_t SmokeDetectorDevice::readVoltage(const uint8_t *bytes) const
+int32_t SmokeDetectorDevice::readVoltage(const uint8_t *bytes) const
 {
     if ((bytes[0] == 0) && (bytes[1] == 1))
     {
         return BatteryVoltageInvalid;
     }
 
-    auto rawVoltage = static_cast<uint32_t>(readUInt16(bytes));
+    auto rawVoltage = static_cast<int32_t>(readUInt16(bytes));
     // Conversion: rawVoltage * 5.7 * 3.3V / 1024 * 1000mV/V * 100 [for DPT9]
     auto voltage = (rawVoltage * 9184) / 5;
     return voltage;
 }
 
-uint32_t SmokeDetectorDevice::readTemperature(const uint8_t *bytes) const
+int32_t SmokeDetectorDevice::readTemperature(const uint8_t *bytes) const
 {
     // Conversion per temp sensor: (answer[x] * 0.5°C - 20°C) * 100 [for DPT9]
-    auto temperature = static_cast<uint32_t>(bytes[0]) + bytes[1];
+    auto temperature = static_cast<int32_t>(bytes[0]) + bytes[1];
     temperature *= 25; // Added two temperatures, so only half the multiplier
     temperature -= 2000;
     temperature += config->temperatureOffsetInTenthDegrees() * 10;  // Temperature offset
@@ -454,7 +456,7 @@ RmCommandByte SmokeDetectorDevice::deviceCommandToRmCommandByte(DeviceCommand co
  */
 uint32_t SmokeDetectorDevice::readUInt32(const uint8_t *bytes)
 {
-    return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+    return static_cast<uint32_t>((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]);
 }
 
 /**
@@ -465,5 +467,5 @@ uint32_t SmokeDetectorDevice::readUInt32(const uint8_t *bytes)
  */
 uint16_t SmokeDetectorDevice::readUInt16(const uint8_t *bytes)
 {
-    return (bytes[0] << 8) | bytes[1];
+    return static_cast<uint16_t>((bytes[0] << 8) | bytes[1]);
 }

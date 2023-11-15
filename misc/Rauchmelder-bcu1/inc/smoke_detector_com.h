@@ -47,7 +47,7 @@ public:
      * @param bytes - received message without STX, ETX, checksum
      * @param len - number of received bytes
      */
-    virtual void receivedMessage(uint8_t *bytes, int8_t len) = 0;
+    virtual void receivedMessage(uint8_t *bytes, uint8_t len) = 0;
 
     /**
      * Communication with smoke detector timed out.

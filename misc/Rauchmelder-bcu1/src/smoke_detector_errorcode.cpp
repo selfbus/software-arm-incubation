@@ -85,7 +85,7 @@ void SmokeDetectorErrorCode::set(SdErrorCode error, bool newValue)
     }
     else
     {
-        errorCode &= ~errorCodeToUint8(error);
+        errorCode &= static_cast<uint8_t>(~errorCodeToUint8(error));
     }
 
     groupObjects->writeIfChanged(GroupObject::errorCode, errorCode);

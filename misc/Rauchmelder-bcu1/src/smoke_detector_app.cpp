@@ -33,6 +33,7 @@
 #include "smoke_detector_shared_enums.h"
 
 extern SmokeDetectorApp *app;
+extern "C" void TIMER32_0_IRQHandler();
 
 SmokeDetectorApp::SmokeDetectorApp()
     : bcu(BCU1()),
