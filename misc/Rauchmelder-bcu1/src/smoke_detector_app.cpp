@@ -92,7 +92,7 @@ void SmokeDetectorApp::setupPeriodicTimer(uint32_t milliseconds)
     timer32_0.matchMode(MAT1, RESET | INTERRUPT);
 
     // Match MAT1 when the timer reaches this value (in milliseconds)
-    timer32_0.match(MAT1, milliseconds - 1); // -1 because counting starts from 0, e.g. 0-499=500ms
+    timer32_0.match(MAT1, milliseconds - 1); // -1 because counting starts from 0, e.g. 0-999=1000ms
 
     timer32_0.start();
 }
@@ -131,7 +131,7 @@ void SmokeDetectorApp::handleUpdatedGroupObjects()
 
 /**
  * Timer Event.
- * Is called every 500ms
+ * Is called every 1000ms
  */
 extern "C" void TIMER32_0_IRQHandler()
 {

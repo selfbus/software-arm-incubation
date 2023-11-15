@@ -72,7 +72,7 @@ private:
     uint8_t infoCounter;               //!< Countdown to next periodic sending of informational group objects
     InfoGroupObjects infoGroupObject;  //!< Group object iterator to be checked/sent next on periodic sending
     AllDeviceCommands deviceCommand;   //!< Command to send to the smoke detector next
-    uint8_t eventTime;                 //!< Half-second counter 0..119
+    uint8_t eventTime;                 //!< Second counter 0..59
 };
 
 #endif /*SMOKE_DETECTOR_APP_H_*/
