@@ -56,6 +56,7 @@ public:
     bool sendCommand(DeviceCommand cmd);
     void receiveBytes();
     void loopCheckState();
+    bool isReady() const;
 
 private:
     void receivedMessage(uint8_t *bytes, uint8_t len);
@@ -89,7 +90,7 @@ private:
         attachToBasePlate,
         powerUpDevice,
         fillCapacitor,
-        running
+        ready
     };
 
     template < volatile int32_t templatePin, bool templateOn, volatile int32_t templatePinLed >

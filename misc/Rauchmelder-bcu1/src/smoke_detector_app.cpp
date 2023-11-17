@@ -43,6 +43,7 @@ SmokeDetectorApp::SmokeDetectorApp()
       errorCode(new SmokeDetectorErrorCode(groupObjects)),
       device(new SmokeDetectorDevice(config, groupObjects, alarm, errorCode))
 {
+    isTimerInitialized = false;
     startSendingInfoGroupObjects();
     deviceCommand = AllDeviceCommands().begin();
     eventTime = DefaultEventTime;
@@ -52,7 +53,6 @@ BcuBase* SmokeDetectorApp::initialize()
 {
     // Manufacturer code 0x004C = Robert Bosch, Device type 1010 (0x03F2), Version 2.4
     bcu.begin(0x004C, 0x03F2, 0x24);
-    setupPeriodicTimer(TimerIntervalMs);
     return (&bcu);
 }
 
@@ -62,6 +62,12 @@ void SmokeDetectorApp::loop()
     device->receiveBytes();
     updateAlarmState();
     handleUpdatedGroupObjects();
+
+    if (!isTimerInitialized)
+    {
+        if (device->isReady())
+            setupPeriodicTimer(TimerIntervalMs);
+    }
 
     // Sleep up to 1 millisecond if there is nothing to do
     if (bcu.bus->idle())
@@ -94,6 +100,8 @@ void SmokeDetectorApp::setupPeriodicTimer(uint32_t milliseconds)
     timer32_0.match(MAT1, milliseconds - 1); // -1 because counting starts from 0, e.g. 0-999=1000ms
 
     timer32_0.start();
+
+    isTimerInitialized = true;
 }
 
 /**

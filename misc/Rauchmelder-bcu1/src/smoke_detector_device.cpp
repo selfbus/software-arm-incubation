@@ -101,11 +101,11 @@ void SmokeDetectorDevice::loopCheckState()
         case DeviceState::fillCapacitor:
             if (timeout.expired())
             {
-                state = DeviceState::running;
+                state = DeviceState::ready;
             }
             break;
 
-        case DeviceState::running:
+        case DeviceState::ready:
             com->loopCheckTimeouts();
             break;
 
@@ -113,6 +113,11 @@ void SmokeDetectorDevice::loopCheckState()
             failHardInDebug();
             break;
     }
+}
+
+bool SmokeDetectorDevice::isReady() const
+{
+    return state == DeviceState::ready;
 }
 
 /**
