@@ -31,38 +31,8 @@ def convert_to_readable_format(s):
             result += "<ACK>"
         elif x == 0x15:
             result += "<NAK>"
-        elif x == 0x30:
-            result += "0"
-        elif x == 0x31:
-            result += "1"
-        elif x == 0x32:
-            result += "2"
-        elif x == 0x33:
-            result += "3"
-        elif x == 0x34:
-            result += "4"
-        elif x == 0x35:
-            result += "5"
-        elif x == 0x36:
-            result += "6"
-        elif x == 0x37:
-            result += "7"
-        elif x == 0x38:
-            result += "8"
-        elif x == 0x39:
-            result += "9"
-        elif x == 0x41:
-            result += "A"
-        elif x == 0x42:
-            result += "B"
-        elif x == 0x43:
-            result += "C"
-        elif x == 0x44:
-            result += "D"
-        elif x == 0x45:
-            result += "E"
-        elif x == 0x46:
-            result += "F"
+        elif x >= 0x20:
+            result += chr(x)
         else:
             result += ' 0x{0:02x}'.format(x)
     return result
