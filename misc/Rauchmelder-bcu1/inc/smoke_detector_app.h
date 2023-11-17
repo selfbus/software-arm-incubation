@@ -48,6 +48,7 @@ private:
     void setupPeriodicTimer(uint32_t milliseconds);
     void updateAlarmState();
     void handleUpdatedGroupObjects();
+    void startSendingInfoGroupObjects();
 
 private:
     static constexpr uint32_t TimerIntervalMs = 1000; //!< Periodic timer interval in milliseconds (handles all periodic tasks)

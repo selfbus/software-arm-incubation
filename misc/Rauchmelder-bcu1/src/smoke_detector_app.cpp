@@ -43,8 +43,7 @@ SmokeDetectorApp::SmokeDetectorApp()
       errorCode(new SmokeDetectorErrorCode(groupObjects)),
       device(new SmokeDetectorDevice(config, groupObjects, alarm, errorCode))
 {
-    infoCounter = config->infoIntervalMinutes();
-    infoGroupObject = InfoGroupObjects().end();
+    startSendingInfoGroupObjects();
     deviceCommand = AllDeviceCommands().begin();
     eventTime = DefaultEventTime;
 }
@@ -130,6 +129,15 @@ void SmokeDetectorApp::handleUpdatedGroupObjects()
 }
 
 /**
+ * Send informational group objects in this newly started minute.
+ */
+void SmokeDetectorApp::startSendingInfoGroupObjects()
+{
+    infoCounter = config->infoIntervalMinutes();
+    infoGroupObject = InfoGroupObjects().begin();
+}
+
+/**
  * Timer Event.
  * Is called every 1000ms
  */
@@ -188,8 +196,7 @@ void SmokeDetectorApp::timer()
             --infoCounter;
             if (!infoCounter)
             {
-                infoCounter = config->infoIntervalMinutes();
-                infoGroupObject = InfoGroupObjects().begin();
+                startSendingInfoGroupObjects();
             }
         }
     }
