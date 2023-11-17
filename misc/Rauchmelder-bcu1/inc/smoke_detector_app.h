@@ -45,6 +45,7 @@ public:
     void timer();
 
 private:
+    uint8_t getRandomUInt8();
     void setupPeriodicTimer(uint32_t milliseconds);
     void updateAlarmState();
     void handleUpdatedGroupObjects();
@@ -71,6 +72,7 @@ private:
     SmokeDetectorErrorCode *errorCode; //!< Smoke detector error code handling
     SmokeDetectorDevice *device;
     bool isTimerInitialized;           //!< Whether the timer has been initialized already or not
+    Timeout burstPreventionDelay;      //!< Additional delay before the timer starts to prevent bursts after bus reset with many devices
     uint8_t infoCounter;               //!< Countdown to next periodic sending of informational group objects
     InfoGroupObjects infoGroupObject;  //!< Group object iterator to be checked/sent next on periodic sending
     AllDeviceCommands deviceCommand;   //!< Command to send to the smoke detector next

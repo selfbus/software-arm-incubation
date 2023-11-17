@@ -22,7 +22,7 @@
  */
 
 #include <stdint.h>
-#include <type_traits>
+#include <sblib/bits.h>
 
 #include "smoke_detector_app.h"
 #include "smoke_detector_alarm.h"
@@ -44,6 +44,7 @@ SmokeDetectorApp::SmokeDetectorApp()
       device(new SmokeDetectorDevice(config, groupObjects, alarm, errorCode))
 {
     isTimerInitialized = false;
+    burstPreventionDelay.stop();
     startSendingInfoGroupObjects();
     deviceCommand = AllDeviceCommands().begin();
     eventTime = DefaultEventTime;
@@ -65,8 +66,34 @@ void SmokeDetectorApp::loop()
 
     if (!isTimerInitialized)
     {
-        if (device->isReady())
+        // Prevent message bursts caused by cyclic sending of info group objects. If there are 10 devices
+        // on the bus and bus power gets reset for whatever reason, all of these devices would try to send
+        // their info group objects at the same time (provided they all have the same configuration, but
+        // that seems likely).
+        // Prevent this by artificially delaying startup by a pseudo-random delay (actually specific to
+        // the individual address).
+        if (device->isReady() && !burstPreventionDelay.started())
+        {
+            auto randomByte = getRandomUInt8();
+
+            // A value of 0 would cause the delay to not even start, which means it cannot expire, which
+            // would cause the expired() condition to always be false and the timer to never get started.
+            randomByte++;
+
+            // Delay for randomByte * 8ms. Maximum delay is then 251 * 8ms = 2008ms. That's great because
+            // we're sending info group objects every 2 seconds, so the sending of different communication
+            // objects does almost certainly not overlap.
+            // Also, a 4-byte group write message takes ~21.4ms on TP1 (if I got the math right), so all
+            // devices where randomByte differs by at least 3 should not interfere with each other. They
+            // even leave a time window of a few milliseconds for other unrelated devices to sneak in their
+            // frames, causing very little delay for them.
+            burstPreventionDelay.start(randomByte << 3);
+        }
+
+        if (burstPreventionDelay.expired())
+        {
             setupPeriodicTimer(TimerIntervalMs);
+        }
     }
 
     // Sleep up to 1 millisecond if there is nothing to do
@@ -77,6 +104,34 @@ void SmokeDetectorApp::loop()
 void SmokeDetectorApp::loopNoApp()
 {
     device->receiveBytes(); // timer32_0 is still running, so we should read the received bytes
+}
+
+/**
+ * Returns a pseudo-random number in the range 0 to 250, inclusive.
+ */
+uint8_t SmokeDetectorApp::getRandomUInt8()
+{
+    // For example, 1.2.15 is 0x120F. It's highly likely that multiple smoke detectors are in
+    // the same area and line, and even have consecutive device numbers. Thus, reverse the bytes
+    // before multiplying with some prime and calculating modulo the biggest prime below 256,
+    // to spread the results more evenly.
+    //
+    // This algorithm yields the following results with primes 29 and 251:
+    //     1.1.1 -> 136
+    //     1.1.2 -> 30
+    //     1.1.3 -> 175
+    //     1.1.4 -> 69
+    //     1.1.5 -> 214
+    //     1.1.6 -> 108
+    //     1.1.7 -> 2
+    //     1.1.8 -> 147
+    //     1.1.9 -> 41
+    //     1.1.10 -> 186
+    // Clustering starts with the 46th device with value 135.
+
+    auto ownAddress = bcu.ownAddress();
+    auto randomNumber = (reverseByteOrder(ownAddress) * 29) % 251;
+    return static_cast<uint8_t>(randomNumber);
 }
 
 void SmokeDetectorApp::setupPeriodicTimer(uint32_t milliseconds)
