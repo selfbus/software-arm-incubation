@@ -18,7 +18,7 @@
  *  published by the Free Software Foundation.
  */
 
-#include "smoke_detector_app.h"
+#include "sd_app.h"
 
 APP_VERSION("S_RM_H6 ", "3", "00")
 

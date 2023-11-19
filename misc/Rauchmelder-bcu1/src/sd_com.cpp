@@ -21,8 +21,8 @@
 #include <sblib/io_pin_names.h>
 #include <sblib/timer.h>
 
-#include "smoke_detector_com.h"
-#include "smoke_detector_shared_enums.h"
+#include "sd_com.h"
+#include "sd_shared_enums.h"
 
 
 SmokeDetectorCom::SmokeDetectorCom(SmokeDetectorComCallback *callback)

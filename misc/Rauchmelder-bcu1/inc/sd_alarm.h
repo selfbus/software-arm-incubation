@@ -20,7 +20,7 @@
 
 #include <stdint.h>
 
-#include "smoke_detector_shared_enums.h"
+#include "sd_shared_enums.h"
 
 class SmokeDetectorConfig;
 class SmokeDetectorGroupObjects;

@@ -18,7 +18,7 @@
 #include <type_traits>
 #include <sblib/eib/com_objects.h>
 
-#include "smoke_detector_group_objects.h"
+#include "sd_group_objects.h"
 
 SmokeDetectorGroupObjects::SmokeDetectorGroupObjects(ComObjects *comObjects)
     : comObjects(comObjects)

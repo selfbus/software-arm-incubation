@@ -24,13 +24,13 @@
 #include <stdint.h>
 #include <sblib/bits.h>
 
-#include "smoke_detector_app.h"
-#include "smoke_detector_alarm.h"
-#include "smoke_detector_config.h"
-#include "smoke_detector_device.h"
-#include "smoke_detector_errorcode.h"
-#include "smoke_detector_group_objects.h"
-#include "smoke_detector_shared_enums.h"
+#include "sd_app.h"
+#include "sd_alarm.h"
+#include "sd_config.h"
+#include "sd_device.h"
+#include "sd_errorcode.h"
+#include "sd_group_objects.h"
+#include "sd_shared_enums.h"
 
 extern SmokeDetectorApp *app;
 extern "C" void TIMER32_0_IRQHandler();

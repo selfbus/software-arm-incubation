@@ -20,13 +20,13 @@
 #include <sblib/digital_pin.h>
 #include <sblib/utils.h>
 
-#include "smoke_detector_com.h"
-#include "smoke_detector_alarm.h"
-#include "smoke_detector_config.h"
-#include "smoke_detector_device.h"
-#include "smoke_detector_errorcode.h"
-#include "smoke_detector_group_objects.h"
-#include "smoke_detector_shared_enums.h"
+#include "sd_com.h"
+#include "sd_alarm.h"
+#include "sd_config.h"
+#include "sd_device.h"
+#include "sd_errorcode.h"
+#include "sd_group_objects.h"
+#include "sd_shared_enums.h"
 
 SmokeDetectorDevice::SmokeDetectorDevice(const SmokeDetectorConfig *config, const SmokeDetectorGroupObjects *groupObjects, SmokeDetectorAlarm *alarm, SmokeDetectorErrorCode *errorCode)
     : config(config),

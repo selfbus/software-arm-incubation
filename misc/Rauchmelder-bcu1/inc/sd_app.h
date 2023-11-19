@@ -27,7 +27,7 @@
 
 #include <sblib/eibBCU1.h>
 
-#include "smoke_detector_device.h"
+#include "sd_device.h"
 
 class SmokeDetectorConfig;
 class SmokeDetectorGroupObjects;

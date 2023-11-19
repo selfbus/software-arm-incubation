@@ -17,7 +17,7 @@
 
 #include <sblib/eib/memory.h>
 
-#include "smoke_detector_config.h"
+#include "sd_config.h"
 
 enum ConfigAddress : uint32_t
 {
