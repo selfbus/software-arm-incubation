@@ -36,10 +36,9 @@ SmokeDetectorGroupObjects::SmokeDetectorGroupObjects(ComObjects *comObjects)
  */
 void SmokeDetectorGroupObjects::send(GroupObject groupObject) const
 {
-    // The communication objects already have the correct value, but there is no method to
-    // just mark them for sending. So, just write the same value again.
+    // The communication objects already have the correct value.
     auto objno = groupObjectToObjNo(groupObject);
-    comObjects->objectWrite(objno, comObjects->objectRead(objno));
+    comObjects->objectWritten(objno);
 }
 
 /**
