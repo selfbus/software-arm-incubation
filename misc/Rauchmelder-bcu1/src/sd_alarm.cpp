@@ -75,9 +75,7 @@ void SmokeDetectorAlarm::groupObjectUpdated(GroupObject groupObject)
     }
     else if (groupObject == GroupObject::resetAlarm) // Alarm Reset
     {
-        requestedAlarmBus = false;
-        requestedTestAlarmBus = false;
-        ignoreBusAlarm = true;
+        resetBusAlarm();
     }
 }
 
@@ -124,30 +122,19 @@ void SmokeDetectorAlarm::deviceStatusUpdate(bool newAlarmLocal, bool newTestAlar
 
 void SmokeDetectorAlarm::deviceButtonPressed()
 {
-    ///\todo see below
-    /*
-     * In der folgenden Passage ist für mich die Versendung der Objekte nicht nachvollziehbar:
-     * Es wird kontrolliert, ob die Taste am Rauchmelder gedrückt wurde, anschließend wir überprüft, ob ein Alarm oder TestAlarm vom Bus vorliegt
-     * Dann wird der jeweilige Status versendet.
-     * für welchen Anwendungfall ist dieses sinnvoll?
-     * zur Zeit wird vom lokalen Rauchmelder der requestedAlarmBus ausgelöst (quasi local loopback) und die Tastenerkennung löst aus
-     * Somit wird die Status Nachricht EIN 2x versendet (1x aus deviceStatusUpdate) und einmal hier.
-     * AUS wird hier allerdings nicht versendet, da requestedAlarmBus bzw. requestedTestAlarmBus dann false sind
-     *
-     * Daher habe ich mich entschieden, diese Versendung vorerst zu deaktivieren
-     */
+    // Button pressed on the smoke alarm device for at least 500ms.
 
-    if (requestedAlarmBus) //wenn Alarm auf Bus anliegt
+    if (requestedAlarmBus || requestedTestAlarmBus)
     {
-        requestedAlarmBus = false;
-        setDelayedAlarmCounter(0); // verzögerten Alarm abbrechen
-        //sendAlarmStatus();
-    }
+        // Someone acknowledged the alarm. The device is now already silenced, but the internal
+        // state needs to be updated accordingly, otherwise we'd trigger another alarm in
+        // the next call of loopCheckAlarmState().
+        // As this should behave similarly to the case where we receive an Alarm Reset via bus,
+        // it's best to use the same code for both use cases.
+        resetBusAlarm();
 
-    if (requestedTestAlarmBus) //wenn Testalarm auf Bus anliegt
-    {
-        requestedTestAlarmBus = false;
-        //sendTestAlarmStatus();
+        // Also publish the acknowledgment of the bus alarm onto the bus itself.
+        sendAlarmReset();
     }
 }
 
@@ -262,6 +249,25 @@ void SmokeDetectorAlarm::timerEveryMinute()
     }
 }
 
+void SmokeDetectorAlarm::resetBusAlarm()
+{
+    // Disable any bus alarm we currently have.
+    requestedAlarmBus = false;
+    requestedTestAlarmBus = false;
+
+    // Ignore bus alarms we might receive next. It might be the case that multiple
+    // smoke detectors have local alarm and so one of them sends AlarmNetwork=true
+    // again as a response. However, someone asked for all devices that have *only*
+    // bus alarm to be silenced, and these should not restart their bus alarm in
+    // such a case. It's still the same alarm event, after all.
+    ignoreBusAlarm = true;
+
+    // If this device has or had local alarm and we're still counting down the
+    // delayed alarm counter, we can cancel it now as we've been asked to silence
+    // the bus alarm.
+    setDelayedAlarmCounter(0);
+}
+
 void SmokeDetectorAlarm::sendAlarmNetwork()
 {
     // Restart the timer for the next periodic sending interval.
@@ -276,7 +282,13 @@ void SmokeDetectorAlarm::sendAlarmStatus()
     groupObjects->write(GroupObject::statusAlarm, deviceHasAlarmLocal);
 }
 
-void SmokeDetectorAlarm::sendTestAlarmNetwork()
+void SmokeDetectorAlarm::sendAlarmReset() const
+{
+    // No dedicated timer for ResetAlarm.
+    groupObjects->write(GroupObject::resetAlarm, true);
+}
+
+void SmokeDetectorAlarm::sendTestAlarmNetwork() const
 {
     // No dedicated timer for TestAlarmNetwork.
     groupObjects->write(GroupObject::testAlarmBus, deviceHasTestAlarmLocal);

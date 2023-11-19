@@ -40,9 +40,11 @@ public:
     void timerEveryMinute();
 
 private:
+    void resetBusAlarm();
     void sendAlarmNetwork();
     void sendAlarmStatus();
-    void sendTestAlarmNetwork();
+    void sendAlarmReset() const;
+    void sendTestAlarmNetwork() const;
     void sendTestAlarmStatus();
     void setDelayedAlarmCounter(uint8_t newValue);
 
