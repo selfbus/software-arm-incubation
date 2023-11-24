@@ -60,7 +60,7 @@ bool SmokeDetectorDevice::sendCommand(DeviceCommand cmd)
     return com->sendCommand(deviceCommandToRmCommandByte(cmd));
 }
 
-void SmokeDetectorDevice::receiveBytes()
+void SmokeDetectorDevice::loopReceiveBytes()
 {
     com->receiveBytes();
 }

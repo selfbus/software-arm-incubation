@@ -54,7 +54,7 @@ public:
 
     void setAlarmState(RmAlarmState newState);
     bool sendCommand(DeviceCommand cmd);
-    void receiveBytes();
+    void loopReceiveBytes();
     void loopCheckState();
     bool isReady() const;
 

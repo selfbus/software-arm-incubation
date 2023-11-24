@@ -83,7 +83,7 @@ void SmokeDetectorApp::loop()
     if (burstPreventionDelay.stopped() || burstPreventionDelay.expired())
     {
         device->loopCheckState();
-        device->receiveBytes();
+        device->loopReceiveBytes();
         updateAlarmState();
         handleUpdatedGroupObjects();
 
@@ -104,7 +104,7 @@ void SmokeDetectorApp::loop()
 
 void SmokeDetectorApp::loopNoApp()
 {
-    device->receiveBytes(); // timer32_0 is still running, so we should read the received bytes
+    device->loopReceiveBytes(); // timer32_0 is still running, so we should read the received bytes
 }
 
 /**
