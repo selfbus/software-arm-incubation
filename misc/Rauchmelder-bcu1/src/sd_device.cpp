@@ -39,10 +39,8 @@ SmokeDetectorDevice::SmokeDetectorDevice(const SmokeDetectorConfig *config, cons
     digitalWrite(AttachedToBasePlate.pinLed(), false);
     pinMode(AttachedToBasePlate.pin(), INPUT | PULL_DOWN); // smoke detector base plate state, pulldown configured, Pin is connected to 3.3V VCC of the RM
 
-    // make sure to discharge the 12V capacitor for at least 500ms
-    setSupplyVoltage(false);
-    state = DeviceState::drainCapacitor;
-    timeout.start(SupplyVoltageOffDelayMs);
+    state = DeviceState::initialized;
+    timeout.stop();
 }
 
 void SmokeDetectorDevice::setAlarmState(RmAlarmState newState)
@@ -71,6 +69,13 @@ void SmokeDetectorDevice::loopCheckState()
 {
     switch (state)
     {
+        case DeviceState::initialized:
+            // make sure to discharge the 12V capacitor for at least 500ms
+            setSupplyVoltage(false);
+            state = DeviceState::drainCapacitor;
+            timeout.start(SupplyVoltageOffDelayMs);
+            break;
+
         case DeviceState::drainCapacitor:
             if (timeout.expired())
             {

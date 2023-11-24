@@ -54,45 +54,46 @@ BcuBase* SmokeDetectorApp::initialize()
 {
     // Manufacturer code 0x004C = Robert Bosch, Device type 1010 (0x03F2), Version 2.4
     bcu.begin(0x004C, 0x03F2, 0x24);
+
+    // Prevent message bursts caused by periodic sending of info group objects. If there are 10 devices
+    // on the bus and bus power gets reset for whatever reason, all of these devices would try to send
+    // their info group objects at the same time (provided they all have the same configuration, but
+    // that seems likely).
+    // Prevent this by artificially delaying startup by a pseudo-random delay (actually specific to
+    // the individual address).
+    auto randomByte = getRandomUInt8();
+
+    // Delay for randomByte * 8ms. Maximum delay is then 250 * 8ms = 2000ms. That's great because
+    // we're sending info group objects every 2 seconds, so the sending of different communication
+    // objects does almost certainly not overlap.
+    // Also, a 4-byte group write message takes ~21.4ms on TP1 (if I got the math right), so all
+    // devices where randomByte differs by at least 3 should not interfere with each other. They
+    // even leave a time window of a few milliseconds for other unrelated devices to sneak in their
+    // frames, causing very little delay for them.
+    burstPreventionDelay.start(randomByte << 3);
+
     return (&bcu);
 }
 
 void SmokeDetectorApp::loop()
 {
-    device->loopCheckState();
-    device->receiveBytes();
-    updateAlarmState();
-    handleUpdatedGroupObjects();
-
-    if (!isTimerInitialized)
+    // Do nothing while waiting for the burstPreventionDelay to expire. Need to call both
+    // stopped() and expired(), because expired() is the only method that actually checks
+    // whether the timeout expired or not, then stops it.
+    if (burstPreventionDelay.stopped() || burstPreventionDelay.expired())
     {
-        // Prevent message bursts caused by cyclic sending of info group objects. If there are 10 devices
-        // on the bus and bus power gets reset for whatever reason, all of these devices would try to send
-        // their info group objects at the same time (provided they all have the same configuration, but
-        // that seems likely).
-        // Prevent this by artificially delaying startup by a pseudo-random delay (actually specific to
-        // the individual address).
-        if (device->isReady() && !burstPreventionDelay.started())
-        {
-            auto randomByte = getRandomUInt8();
+        device->loopCheckState();
+        device->receiveBytes();
+        updateAlarmState();
+        handleUpdatedGroupObjects();
 
-            // A value of 0 would cause the delay to not even start, which means it cannot expire, which
-            // would cause the expired() condition to always be false and the timer to never get started.
-            randomByte++;
-
-            // Delay for randomByte * 8ms. Maximum delay is then 251 * 8ms = 2008ms. That's great because
-            // we're sending info group objects every 2 seconds, so the sending of different communication
-            // objects does almost certainly not overlap.
-            // Also, a 4-byte group write message takes ~21.4ms on TP1 (if I got the math right), so all
-            // devices where randomByte differs by at least 3 should not interfere with each other. They
-            // even leave a time window of a few milliseconds for other unrelated devices to sneak in their
-            // frames, causing very little delay for them.
-            burstPreventionDelay.start(randomByte << 3);
-        }
-
-        if (burstPreventionDelay.expired())
+        // Only after establishing a connection to the device, we're able to read data from
+        // it periodically and then also send out the informational group objects. Thus, only
+        // start the timer after the device becomes ready.
+        if (!isTimerInitialized && device->isReady())
         {
             setupPeriodicTimer(TimerIntervalMs);
+            isTimerInitialized = true;
         }
     }
 
@@ -155,8 +156,6 @@ void SmokeDetectorApp::setupPeriodicTimer(uint32_t milliseconds)
     timer32_0.match(MAT1, milliseconds - 1); // -1 because counting starts from 0, e.g. 0-999=1000ms
 
     timer32_0.start();
-
-    isTimerInitialized = true;
 }
 
 /**

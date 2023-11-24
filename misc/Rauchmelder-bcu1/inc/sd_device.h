@@ -86,6 +86,7 @@ private:
 private:
     enum class DeviceState
     {
+        initialized,
         drainCapacitor,
         attachToBasePlate,
         powerUpDevice,
