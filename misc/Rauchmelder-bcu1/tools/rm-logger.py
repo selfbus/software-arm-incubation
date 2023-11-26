@@ -14,6 +14,7 @@ SERIAL_PORT_SMOKE = "COM7"
 
 PAUSE_LONG = 2.0
 PAUSE = 0.1
+RX_TIMEOUT = 0.1
 
 def convert_to_readable_format(s):
     result = ''
@@ -39,10 +40,10 @@ class RMLogger(object):
     def __init__(self):
         self.ser_arm = serial.Serial(SERIAL_PORT_ARM, baudrate=9600, parity=serial.PARITY_NONE,
                                      stopbits=serial.STOPBITS_ONE,
-                                     bytesize=serial.EIGHTBITS, timeout=1)
+                                     bytesize=serial.EIGHTBITS, timeout=RX_TIMEOUT)
         self.ser_smoke = serial.Serial(SERIAL_PORT_SMOKE, baudrate=9600, parity=serial.PARITY_NONE,
                                        stopbits=serial.STOPBITS_ONE,
-                                       bytesize=serial.EIGHTBITS, timeout=1)
+                                       bytesize=serial.EIGHTBITS, timeout=RX_TIMEOUT)
 
         print("Selfbus RM (smoke detector) logger using")
         print(" ARM COM-Port  : {0:s}".format(self.ser_arm.name))
