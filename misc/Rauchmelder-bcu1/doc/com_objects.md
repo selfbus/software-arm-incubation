@@ -1,103 +1,27 @@
-Aufstellung der Com-Objekte
----------------------------
+# List of Com objects
 
-TODO:  Veraltert, bitte updaten
-
-
-OBJ_SET_ALARM
-  1 Bit
-  Schreiben: Bus Alarm ein/aus
-
-OBJ_SET_TALARM
-  1 Bit
-  Schreiben: Bus Testalarm ein/aus
-
-OBJ_SERIAL
-  4 Byte Long
-  Lesen: Seriennummer des Rauchmelders
-
-OBJ_OPERATING_TIME
-  4 Byte Long
-  Lesen: Betriebsdauer des Rauchmelders
-
-OBJ_SMOKEBOX_VALUE
-  2 Byte Integer
-  Lesen: Wert des Rauchkammer Sensors (?)
-
-OBJ_POLLUTION
-  1 Byte
-  Lesen: Verschmutzungsgrad des Rauchkammer Sensors (?)
-
-OBJ_BAT_VOLTAGE
-  2 Byte Float (DPT 9.001)
-  Lesen: Spannung der Batterie
-
-OBJ_TEMP
-  2 Byte Float (DPT 9.001)
-  Lesen: Temperatur an den Temperatur Sensoren (höchster Wert)
-
-OBJ_CNT_SMOKEALARM
-  1 Byte
-  Lesen: Anzahl der lokalen Rauch-Alarme
-
-OBJ_CNT_TEMPALARM
-  1 Byte
-  Lesen: Anzahl der lokalen Temperatur-Alarme
-
-OBJ_CNT_TESTALARM
-  1 Byte
-  Lesen: Anzahl der lokalen Testalarme
-
-OBJ_CNT_ALARM_WIRE
-  1 Byte
-  Lesen: Anzahl der Alarme über Kabel (grüne Klemme / Rauchmelder-Bus)
-
-OBJ_CNT_ALARM_WIRELESS
-  1 Byte
-  Lesen: Anzahl der Alarme über KNX Bus
-
-OBJ_CNT_TALARM_WIRE
-  1 Byte
-  Lesen: Anzahl der Testalarme über Kabel (grüne Klemme / Rauchmelder-Bus)
-
-OBJ_CNT_TALARM_WIRELESS
-  1 Byte
-  Lesen: Anzahl der Testalarme über KNX Bus
-
-OBJ_STAT_ALARM
-  1 Bit
-  Lesen: Alarm Status
-  Wird bei Zustandsänderung (ausgenommen Bus-Alarm) gesendet
-  Zyklisch senden bei Alarm möglich
-
-OBJ_STAT_ALARM_CENTRAL
-  1 Bit
-  Lesen: Zentral-Alarm Status
-  Schreiben: Zentral-Alarm Status setzen (?)
-
-OBJ_STAT_ALARM_DELAYED
-  1 Bit
-  Lesen: Status verzögerter Alarm
-
-OBJ_STAT_TALARM
-  1 Bit
-  Lesen: Testalarm Status
-  Wird bei Zustandsänderung (ausgenommen Bus-Alarm) gesendet
-  Zyklisch senden bei Alarm möglich
-
-OBJ_STAT_TALARM_CENTRAL
-  1 Bit
-  Lesen: Zentral-Testalarm Status
-  Schreiben: Zentral-Testalarm Status setzen (?)
-
-OBJ_STAT_BAT_LOW
-  1 Bit
-  Lesen: Batterie soll ersetzt werden
-  Wird bei Zustandsänderung gesendet
-  Zyklisch senden (wenn gesetzt) möglich
-
-OBJ_STAT_MALFUNCTION
-  1 Bit oder 1 Byte mit Typ
-  Lesen: Funktionsstörung am Rauchmelder
-  Wird bei Zustandsänderung gesendet
-  Zyklisch senden (wenn gesetzt) möglich
+| #  | Name                     | Function   | Description                                                      | Length  | Flags<br>(crtwui) | DPT    |
+|----|--------------------------|------------|------------------------------------------------------------------|---------|-------------------|--------|
+| 0  | Alarm                    | Vernetzung | Bus Alarm ein/aus                                                | 1 bit   | cwt               | 1.005  |
+| 1  | Testalarm                | Vernetzung | Bus Testalarm ein/aus                                            | 1 bit   | cwt               | 1.001  |
+| 2  | Alarm                    | Rücksetzen |                                                                  | 1 bit   | cwt               | 1.001  |
+| 3  | Alarm                    | Status     | Wird bei Zustandsänderung gesendet<br>(ausgenommen Bus-Alarm)    | 1 bit   | crt               | 1.005  |
+| 4  | Verzögerter Alarm        | Status     | Status verzögerter Alarm                                         | 1 bit   | crt               | 1.011  |
+| 5  | Testalarm                | Status     | Wird bei Zustandsänderung gesendet<br>(ausgenommen Bus-Alarm)    | 1 bit   | crt               | 1.011  |
+| 6  | Seriennummer             | Status     | Seriennummer des Rauchmelders                                    | 4 bytes | crt               | 12.xxx |
+| 7  | Betriebszeit Sekunden    | Status     | Betriebsdauer des Rauchmelders in Sekunden                       | 4 bytes | crt               | 12.100 |
+| 7  | Betriebsstunden          | Status     | Betriebsdauer des Rauchmelders in Stunden                        | 2 bytes | crt               | 7.007  |
+| 8  | Rauchkammerwert          | Status     | Wert des Rauchkammer Sensors                                     | 2 bytes | crt               | 9.020  |
+| 9  | Verschmutzungsgrad       | Status     | Verschmutzungsgrad des Rauchkammer Sensors                       | 1 byte  | crt               | 5.010  |
+| 10 | Batterie Spannung        | Status     | Spannung der Batterie                                            | 2 bytes | crt               | 9.020  |
+| 11 | Temperatur               | Status     | Temperatur (Mittelwert)                                          | 2 bytes | crt               | 9.001  |
+| 12 | Fehlercode               | Status     | interner Modul Fehlercode                                        | 1 byte  | crt               | 5.010  |
+| 13 | Batterie leer            | Status     | Batterie soll ersetzt werden                                     | 1 bit   | crt               | 1.011  |
+| 14 | Rauchmelder Fehlfunktion | Status     | Funktionsstörung am Rauchmelder                                  | 1 bit   | crt               | 1.011  |
+| 15 | Anzahl Rauchalarme       | Status     | Anzahl der lokalen Rauch-Alarme                                  | 1 byte  | crt               | 5.010  |
+| 16 | Anzahl Temperaturalarme  | Status     | Anzahl der lokalen Temperatur-Alarme                             | 1 byte  | crt               | 5.010  |
+| 17 | Anzahl Testalarme        | Status     | Anzahl der lokalen Testalarme                                    | 1 byte  | crt               | 5.010  |
+| 18 | Anzahl Draht Alarme      | Status     | Anzahl der Alarme über Kabel<br>(grüne Klemme / Rauchmelder-Bus) | 1 byte  | crt               | 5.010  |
+| 19 | Anzahl Bus Alarme        | Status     |                                                                  | 1 byte  | crt               | 5.010  |
+| 20 | Anzahl Draht Testalarme  | Status     |                                                                  | 1 byte  | crt               | 5.010  |
+| 21 | Anzahl Bus Testalarme    | Status     |                                                                  | 1 byte  | crt               | 5.010  |
