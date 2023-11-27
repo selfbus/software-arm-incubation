@@ -24,6 +24,7 @@ Ported to python:
  Copyright (c) 2023 Darthyson <darth@maptrack.de>
 """
 
+import datetime
 import sys
 import time
 
