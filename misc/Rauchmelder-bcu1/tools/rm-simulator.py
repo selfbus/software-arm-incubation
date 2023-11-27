@@ -109,6 +109,34 @@ class RMSimulator(object):
 
         self.debug = False
 
+    def reset(self):
+        self.log_msg("Resetting simulator")
+        self.num_temp_alarms = 0
+        self.num_smoke_alarms = 0
+        self.num_test_alarms = 0
+        self.num_wired_alarms = 0
+        self.num_wireless_alarms = 0
+        self.num_wired_test_alarms = 0
+        self.num_wireless_test_alarms = 0
+
+        self.status_battery_low = False
+        self.status_mounting_fault = False
+        self.status_temp_alarm = False
+        self.status_smoke_alarm = False
+        self.status_test_alarm = False
+        self.status_wired_alarm = False
+        self.status_wireless_alarm = False
+        self.status_wired_test_alarm = False
+        self.status_wireless_test_alarm = False
+
+        self.start_time = time.time()
+        self.bat_volt = 8.47
+        self.pollution = 7
+        self.temp1 = 22.5
+        self.temp2 = 32.5
+        self.smokebox_value_hex = "005C"
+        self.serial_hex = "BADCAB1E"
+
     def execute(self):
         print_help()
         keyboard.on_press(self.on_key_press, True)
@@ -201,9 +229,10 @@ class RMSimulator(object):
         if not self.validate_checksum(msg):
             return
 
-        if msg[:-2] == "00TEST": # todo implement test command
-            self.log_msg("Received test message (00TEST) -> NOT IMPLEMENTED")
+        if msg[:-2] == "00TEST":
+            self.log_msg("Received test/reset message (00TEST)")
             self.send_ack()
+            self.reset()
             return
 
         bytes_list = decode_hex_string(msg[:-2])
