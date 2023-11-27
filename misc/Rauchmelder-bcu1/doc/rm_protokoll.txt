@@ -47,31 +47,35 @@ RECV: <ACK>
 RECV: <STX>C228000000FF<ETX>
 SEND: <ACK>
 
-Daten:  1 Byte       : Bit 0: Unbekannt, verwendet beim Q-Melder (0x01)
-                       Bit 1: Defekt Meldung in Byte #4 (0x02)
-                       Bit 2: (0x04)
-                       Bit 3: Taste gedrückt (0x08)
-                       Bit 4: Rauchalarm - Bit5 ist dann auch gesetzt (0x10)
-                       Bit 5: 1=Batterie Betrieb, 0=Stützspannung über grüne Klemme (0x20)
-                       Bit 6: (0x40)
-                       Bit 7: (0x80)
-        1 Byte Status: Bit 0: Batterie schwach (0x01)
-                       Bit 1: Unbekannt (0x02)
-                       Bit 2: Rauchalarm (0x04)
-                       Bit 3: Wired Alarm (0x08)
-                       Bit 4: Wireless Alarm (0x10)
-                       Bit 5: Lokaler Testalarm (0x20)
-                       Bit 6: Wired Testalarm (0x40)
-                       Bit 7: Wireless Testalarm (0x80)
+Daten:  1 Byte       : Bit 0: Unbekannt, verwendet beim Q-Melder (0x01) grpobj 16 - Fault smoke chamber
+                       Bit 1: Defekt Meldung in Byte #4 (0x02)          grpobj 12 - Fault
+                                                                        grpobj 17 - Fault temperature sensor
+                       Bit 2: (0x04)                                    no KNX response
+                       Bit 3: Taste gedrückt (0x08)                     no KNX response
+                       Bit 4: Hitzealarm (0x10)                         grpobj  3 - Status heat alarm
+                       Bit 5: 0=Stützspannung über grüne Klemme (0x20)  grpobj 15 - Fault 230V
+                              1=Batterie Betrieb
+                       Bit 6: (0x40)                                    no KNX response
+                       Bit 7: (0x80)                                    no KNX response
+        1 Byte Status: Bit 0: Batterie schwach (0x01)                   grpobj 14 - Fault battery
+                       Bit 1: Störung Montage Melder (0x02)             grpobj 18 - Fault detector mounting
+                       Bit 2: Rauchalarm (0x04)                         grpobj  0 - Local alarm
+                                                                        grpobj  2 - Status smoke alarm
+                       Bit 3: Wired Alarm (0x08)                        grpobj  1 - Wired alarm
+                                                                        grpobj  4 - Status alarm by wire
+                       Bit 4: Wireless Alarm (0x10)                     grpobj  6 - Status alarm by knx
+                       Bit 5: Lokaler Testalarm (0x20)                  grpobj  8 - Status test alarm
+                       Bit 6: Wired Testalarm (0x40)                    grpobj  8 - Status test alarm
+                       Bit 7: Wireless Testalarm (0x80)                 grpobj  8 - Status test alarm
         1 Byte       : Unbekannt, gemessene Werte: 0x00, 0x80
-        1 Byte Defekt: Bit 0: (0x01)
-                       Bit 1: (0x02)
-                       Bit 2: Temp Sensor 1 defekt (0x04)
-                       Bit 3: (0x08)
-                       Bit 4: Temp Sensor 2 defekt (0x10)
-                       Bit 5: (0x20)
-                       Bit 6: (0x40)
-                       Bit 7: (0x80)
+        1 Byte Defekt: Bit 0: (0x01)                                    no KNX response
+                       Bit 1: (0x02)                                    grpobj 12 - Fault
+                       Bit 2: Temp Sensor 1 defekt (0x04)               grpobj 12 - Fault
+                       Bit 3: (0x08)                                    grpobj 12 - Fault
+                       Bit 4: Temp Sensor 2 defekt (0x10)               grpobj 12 - Fault
+                       Bit 5: (0x20)                                    no KNX response
+                       Bit 6: (0x40)                                    no KNX response
+                       Bit 7: (0x80)                                    no KNX response
 
 Die Beispiele hier kommen zum Teil (großteils?) nur bei der selbstständigen 82er Meldung
 vor - also nicht wundern ;-)
@@ -98,14 +102,36 @@ C2 22 00 00 04 F2 - Temp Sensor 1 überbrückt (dh defekt)
 C2 22 00 00 10 EF - Temp Sensor 2 überbrückt (dh defekt)
 C2 20 01 00 00 ED - Batterie schwach
 C2 21 01 00 00 EE - Batterie schwach, Q-Melder
+                        grpobj 14 - Fault battery
+                        grpobj 15 - Fault 230V
+                        grpobj 16 - Fault smoke chamber
 C2 28 01 00 00 F5 - Batterie schwach, Taste gedrückt
 C2 21 00 00 00 ED - Eventuell Meldung dass die Rauchkammer nicht mehr defekt ist.
+                        grpobj 15 - Fault 230V
+                        grpobj 16 - Fault smoke chamber
 C2 21 00 08 00 F5 - Unbekannt.
+                        grpobj 15 - Fault 230V
+                        grpobj 16 - Fault smoke chamber
 C2 21 00 80 00 F5 - Könnte Rauchkammer Fehler sein. Aufgetreten bei: Rauchmelder gestartet,
                     Rauchkammer war halb zerlegt.
+                        grpobj  0 - Local alarm
+                        grpobj  1 - Wired alarm
+                        grpobj  2 - Status smoke alarm
+                        grpobj  3 - Status heat alarm
+                        grpobj  4 - Status alarm by wire
+                        grpobj  6 - Status alarm by KNX
+                        grpobj  8 - Status test alarm
+                        grpobj 14 - Fault battery
+                        grpobj 15 - Fault 230V
+                        grpobj 16 - Fault smoke chamber
+                        grpobj 17 - Fault temperature sensor
+                        grpobj 18 - Fault detector mounting
 C2 21 01 08 00 F6 - kam als ich darauf wartete dass "Batterie schwach" nach Erhöhung
                     der Spannung wieder irgendwie beendet würde. Wurde mit ~4 Piepsern
                     begleitet.
+                        grpobj 14 - Fault battery
+                        grpobj 15 - Fault 230V
+                        grpobj 16 - Fault smoke chamber
 
 
 03 - Steuerbefehle
@@ -277,7 +303,7 @@ REPLY: 1 Byte Anzahl der Test Alarme über Kabel: 02
 SEND: <STX>0F76<ETX>
 RECV: <ACK>
 RECV: <NUL>
-RECV: <STX>CF0077007725<ETX>
+RECV: <STX>CF 00 77 00 77 25<ETX>
 SEND: <ACK>
 
 Leicht unterschiedliche Antworten wurden erhalten:
