@@ -268,16 +268,18 @@ class RMSimulator(object):
         if self.status_wireless_test_alarm:
             status_byte_2 |= 0x80
 
-        if self.status_battery_low:
-            status_byte_1 = 0x02
-            status_byte_2 = 0x00
-            status_byte_3 = 0x00
-            status_byte_4 = 0x04
-        else:
-            status_byte_1 = 0x00
-            status_byte_2 = 0x00
-            status_byte_3 = 0x00
-            status_byte_4 = 0x00
+        # TODO remove on release
+        # Just for testing special status values
+        #if self.status_battery_low:
+        #    status_byte_1 = 0x02
+        #    status_byte_2 = 0x00
+        #    status_byte_3 = 0x00
+        #    status_byte_4 = 0x04
+        #else:
+        #    status_byte_1 = 0x00
+        #    status_byte_2 = 0x00
+        #    status_byte_3 = 0x00
+        #    status_byte_4 = 0x00
 
         self.send_hex_string("{:02X}{:02X}{:02X}{:02X}{:02X}".format(response_byte, status_byte_1, status_byte_2, status_byte_3, status_byte_4))
 
