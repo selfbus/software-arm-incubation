@@ -6,7 +6,15 @@ This program simulates a smoke alarm detector.
 
 Start with "python rm-simulator.py /dev/ttyUSB0"
 
-WARNING: most functionality is not yet implemented
+USAGE: The original KNX module most likely has a floating Tx pin.
+       You should therefore pull this pin up to 3.3V with a pull-up resistor (e.g. 39KOhm),
+       otherwise you will only receive garbage data.
+       This can be achieved with a USB<->RS232 3.3V TTL level converter by connecting
+       the pull-up resistor between the Rx and RTS pin of the level converter.
+       To make this possible, the script sets the RTS pin to high (3.3V).
+
+WARNINGS: - Script currently uses a global keyboard hook, which intercepts a LOT of keys!
+          - Most functionality is not yet implemented
 
 Original written in perl:
  Copyright (c) 2013-2014 Stefan Haller
