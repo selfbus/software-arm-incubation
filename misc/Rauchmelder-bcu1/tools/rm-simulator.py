@@ -136,6 +136,7 @@ class RMSimulator(object):
         self.temp2 = 32.5
         self.smokebox_value_hex = "005C"
         self.serial_hex = "BADCAB1E"
+        self.show_status()
 
     def execute(self):
         print_help()
