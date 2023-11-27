@@ -1,0 +1,77 @@
+Tests mit Rauchmelder, Funkmodul, Fernbedienung.
+
+RM: Rauchmelder
+FU: Funkmodul
+
+-----
+
+Remote Alarm auslösen über grüne Klemme
+
+RM: 82 20 08 00 00 F4
+FU: 06
+FU: 03 02 00 25
+RM: 06
+...
+RM: 82 20 00 00 00 EC
+FU: 06
+FU: 03 00 00 23
+RM: 06
+
+-----
+
+Hitzealarm mit Haarfön
+
+RM: 82 30 00 00 00 FD
+FU: 06
+FU: 03 02 00 25
+RM: 06
+
+Mit Funksender den Alarm abgedreht:
+
+FU: 07 00 08 2F
+RM: 06
+RM: 82 20 00 00 00 FC
+FU: 06
+nach 3 sek
+FU: 03 00 00 23
+RM: 06
+
+-----
+
+Knopf am RM drücken
+
+RM: 82 28 00 00
+FU: 06
+Nach einer Sekunde kurzer Piep am RM
+RM: 82 20 00 00
+FU: 06
+
+-----
+
+Knopf am RM drücken und halten
+
+RM: 82 28 00 00 00 F4
+FU: 06
+Nach 3,26 sek
+RM: 82 28 20 00 00 F6
+FU: 06
+Nach 0,36 sek
+FU: 03 02 00 25
+RM: 06
+Nach 1,5 sek
+RM: 82 20 20 00 00 EE
+FU: 06
+
+Später abgeschaltet
+
+RM: 82 28 20 00 00 F6
+FU: 06
+Nach 0,2 sek
+RM: 82 28 00 00 00 F4
+FU: 06
+Nach 3,6 sek
+FU: 03 00 00 23
+RM: 06
+
+-----
+

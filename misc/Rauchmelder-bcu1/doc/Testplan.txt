@@ -1,0 +1,65 @@
+TESTPLAN
+========
+
+Folgende Tests sollen ausgeführt werden:
+
+#1 Lokaler Testalarm
+
+Lokalen Testalarm über Taste auslösen (4sek halten).
+Erwartet: Telegramm Testalarm-Status = 1
+
+Lokalen Testalarm über Taste beenden.
+Erwartet: Telegramm Testalarm-Status = 0
+
+
+#2 Wired Testalarm
+
+Testalarm über grüne Klemme auslösen.
+Erwartet: Telegramm Testalarm-Status = 1
+
+Testalarm über grüne Klemme beenden.
+Erwartet: Telegramm Testalarm-Status = 0
+
+
+#3 Bus Testalarm
+
+Testalarm über Bus auslösen, z.B. über ETS auf das Com-Objekt
+"Testalarm Fernauslösung" = 1 senden.
+
+Erwartet: Rauchmelder gibt Testalarm
+Nicht erwaret: Rauchmelder sendet Telegramm Testalarm-Status = 1
+
+Testalarm über Bus beenden, z.B. über ETS auf das Com-Objekt
+"Testalarm Fernauslösung" = 0 senden.
+
+Erwartet: Rauchmelder beendet Testalarm
+Nicht erwaret: Rauchmelder sendet Telegramm Testalarm-Status = 0
+
+
+#4 Mehrfacher Bus Testalarm
+
+Dazu werden 2 Rauchmelder am Bus benötigt.
+
+Testalarm an Rauchmelder RM1 über Taste auslösen  (4sek halten).
+Erwartet: Telegramm Testalarm-Status = 1
+Erwartet: Rauchmelder RM2 gibt Testalarm
+
+Testalarm über ETS auslösen (Com-Objekt "Testalarm Fernauslösung" = 1 senden).
+Erwartet: Telegramm Testalarm-Status = 1
+Erwartet: Rauchmelder RM1 und RM2 geben weiterhin Testalarm
+
+Testalarm über ETS beenden (Com-Objekt "Testalarm Fernauslösung" = 0 senden).
+Erwartet: Telegramm Testalarm-Status = 0
+Erwartet: Rauchmelder RM1 sendet Testalarm-Status = 1
+
+
+#5 Kein zyklisches Senden von Info Objekten bei Alarm
+
+Zyklisches Senden von Info Objekten für ein oder mehrere Com-Objekte in der ETS
+konfigurieren. Testalarm an Rauchmelder über Taste auslösen  (4sek halten).
+
+Erwartet: während des Testalarms werden keine Info Telegramme gesendet.
+
+Testalarm beenden.
+
+Erwartet: es werden wieder Info Telegramme gesendet.

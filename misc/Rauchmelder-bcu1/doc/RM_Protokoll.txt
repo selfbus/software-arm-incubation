@@ -1,0 +1,356 @@
+Protokoll für die Kommunikation mit dem Rauchmelder
+===================================================
+
+Korrekturen
+-----------
+
+2013-04-25 Korrektur 82 Status-Meldung, Byte 1 Bit 5
+
+
+
+Allgemeines
+-----------
+
+Die Kommunikation mit dem Rauchmelder ist Seriell 9600 Baud, 8N1
+
+Die Kommunikation mit dem Rauchmelder bestehen aus Strings die Hex Bytes enthalten,
+sprich jeweils zwei Zeichen ergeben ein Byte.
+
+Die Nachrichten beginnen mit einem Start Byte 0x02 (STX) und enden mit einem
+Stopp Byte 0x03 (ETX). Das letzte Byte vor dem ETX ist eine Prüfsumme.
+
+Jede Nachricht muss nach Erhalt mit einem ACK Byte 0x06 bestätigt werden.
+Kommt keine Bestätigung, so wird die Nachricht 3 mal wiederholt.
+
+STX 0x02 - Start
+ETX 0x03 - Stopp
+ACK 0x06 - Acknowledge
+NAK 0x15 - Not Acknowledged
+
+Die Prüfsumme wird berechnet in dem die Bytes des Hex Strings addiert werden und
+das Ergebnis mit 255 UND verknüpft wird. Die Prüfsumme selbst wird dann wieder
+als Hex String gesendet. Beispiel:
+  <STX>0464<ETX> ist "04" also 0x30 0x34, das ergibt Checksumme 0x64, also "64".
+  <STX>822080F4<ETX> ist "822080" ... Summe 0x1F4, also Checksumme 0xF4, also "F4".
+
+
+02 - Status abfragen
+--------------------
+
+Die Abfrage 02 liefert die gleichen Werte wie die Status Meldung 82 die vom RM
+selbstständig gesendet wird. Es unterscheidet sich nur das erste Byte der Antwort.
+Bei der 02 Status Abfrage ist das erste Byte der Antwort C2. Wenn der RM den Status
+selbstständig sendet dann ist das erste Byte 82.
+
+SEND: <STX>0262<ETX>
+RECV: <ACK>
+RECV: <STX>C228000000FF<ETX>
+SEND: <ACK>
+
+Daten:  1 Byte       : Bit 0: Unbekannt, verwendet beim Q-Melder (0x01)
+                       Bit 1: Defekt Meldung in Byte #4 (0x02)
+                       Bit 2: (0x04)
+                       Bit 3: Taste gedrückt (0x08)
+                       Bit 4: Rauchalarm - Bit5 ist dann auch gesetzt (0x10)
+                       Bit 5: 1=Batterie Betrieb, 0=Stützspannung über grüne Klemme (0x20)
+                       Bit 6: (0x40)
+                       Bit 7: (0x80)
+        1 Byte Status: Bit 0: Batterie schwach (0x01)
+                       Bit 1: Unbekannt (0x02)
+                       Bit 2: Rauchalarm (0x04)
+                       Bit 3: Wired Alarm (0x08)
+                       Bit 4: Wireless Alarm (0x10)
+                       Bit 5: Lokaler Testalarm (0x20)
+                       Bit 6: Wired Testalarm (0x40)
+                       Bit 7: Wireless Testalarm (0x80)
+        1 Byte       : Unbekannt, gemessene Werte: 0x00, 0x80
+        1 Byte Defekt: Bit 0: (0x01)
+                       Bit 1: (0x02)
+                       Bit 2: Temp Sensor 1 defekt (0x04)
+                       Bit 3: (0x08)
+                       Bit 4: Temp Sensor 2 defekt (0x10)
+                       Bit 5: (0x20)
+                       Bit 6: (0x40)
+                       Bit 7: (0x80)
+
+Die Beispiele hier kommen zum Teil (großteils?) nur bei der selbstständigen 82er Meldung
+vor - also nicht wundern ;-)
+
+C2 00 00 00 00 EA - Stützspannung wurde an der grünen Klemme angelegt.
+                    Wird auch gemeldet wenn nur 3,3V angelegt werden.
+                    82 20 00 00 00 EC wenn die externe Spannung wieder entfernt wird.
+C2 00 01 00 00 EB - Stützspannung wurde an der grünen Klemme angelegt, Batterie ist schwach.
+C2 08 01 00 00 F3 - Stützspannung, Batterie schwach, Taste gedrückt.
+C2 20 00 00 00 EC - Alarm beendet
+                    nachdem am Funk Handsender der Alarm deaktiviert wurde
+                    nachdem Wired Alarm über grüne Klemme beendet
+C2 20 08 00 00 F4 - Wired Alarm über grüne Klemme ausgelöst
+C2 20 40 00 00 F0 - Wired Testalarm über grüne Klemme ausgelöst. Ende: 82 20 00 00 00 EC
+C2 30 00 00 00 FD - Lokaler Alarm mit Harfön erzeugt
+C2 20 20 00 00 EE - Lokaler Testalarm, Taste nicht gedrückt
+C2 00 20 00 00 EC - Lokaler Testalarm, Taste nicht gedrückt, Stützspannung an grüner Klemme
+C2 28 20 00 00 F6 - Lokaler Testalarm, Taste gedrückt
+C2 20 04 00 00 F0 - Lokaler Rauchalarm, Taste nicht gedrückt
+C2 20 10 00 00 ED - Wireless Alarm (Remote über Funkmodul)
+C2 20 80 00 00 F4 - Wireless Testalarm (Remote über Funkmodul)
+C2 28 00 00 00 F4 - Taste gedrückt ohne Alarm
+C2 22 00 00 04 F2 - Temp Sensor 1 überbrückt (dh defekt)
+C2 22 00 00 10 EF - Temp Sensor 2 überbrückt (dh defekt)
+C2 20 01 00 00 ED - Batterie schwach
+C2 21 01 00 00 EE - Batterie schwach, Q-Melder
+C2 28 01 00 00 F5 - Batterie schwach, Taste gedrückt
+C2 21 00 00 00 ED - Eventuell Meldung dass die Rauchkammer nicht mehr defekt ist.
+C2 21 00 08 00 F5 - Unbekannt.
+C2 21 00 80 00 F5 - Könnte Rauchkammer Fehler sein. Aufgetreten bei: Rauchmelder gestartet,
+                    Rauchkammer war halb zerlegt.
+C2 21 01 08 00 F6 - kam als ich darauf wartete dass "Batterie schwach" nach Erhöhung
+                    der Spannung wieder irgendwie beendet würde. Wurde mit ~4 Piepsern
+                    begleitet.
+
+
+03 - Steuerbefehle
+------------------
+
+Diese Befehle wurden bei der Kommunikation Funkmodul mit Rauchmelder geloggt.
+
+03 00 00 23 - Alarm deaktivieren, RM sendet dann 82 20 00 00 00 EC
+              Deaktiviert keinen Wired Alarm (Lokaler Alarm nicht getestet)
+03 00 01 24 - Batterie schwach, über Funk gemeldet. Alle 60sek wird mit zwei kurzen Piep
+              signalisiert dass irgendwo eine Batterie schwach ist. Kein LED Signal.
+              Mit 03 00 00 23 wird die Batterie-schwach Meldung wieder deaktiviert.
+03 00 80 2B	- Wireless Testalarm über Funkmodul (Q), RM sendet dann 82 20 80 00 00 F4
+03 00 02 25 - Pairing vom eigenen Funkmodul (Q) mit einem anderen Funkmodul (Dual)
+03 01 00 24 - ?Unbekannt: Bei Pairingversuch Funkmodul (Q) aufgetreten, mindestens ein RM war schon angelernt?
+03 02 01 26 - Zwei kurze Piep, wiederholen bewirkt nichts, erst nach Alarm Abschaltung, Testalarm möglich.
+03 02 02 27 - Pairing vom eigenen Funkmodul mit einem anderen Funkmodul
+03 02 10 26 - Wireless Alarm (über Funk), RM sendet dann 82 20 10 00 00 ED
+03 02 80 2D - Wireless Testalarm (über Funk), RM sendet dann 82 20 80 00 00 F4
+03 02 00 25 - Wireless Alarm / Testalarm beendet
+03 02 08 2D - Von Diagnose Software initial u.A. gesendet
+
+
+04 - Seriennummer
+-----------------
+
+SEND: <STX>0464<ETX>
+RECV: <ACK>
+RECV: <NUL>
+RECV: <STX>C4111633CA2A<ETX>
+SEND: <ACK>
+
+SEND: 0x02, 0x30, 0x34, 0x36, 0x34, 0x03
+      (START "0464" STOPP)
+
+REPLY: 4 Byte Seriennummer: 111633CA
+
+
+07 - Steuerbefehle
+------------------
+
+Diese Befehle wurden zum Teil vom Funkmodul an den Rauchmelder gesendet, empfangen
+vom Diagnose Tool.
+
+07 00 08 2F - Alarm über den Funk Handsender deaktiviert
+              Stoppt lokalen und Wired Alarm (über grüne Klemme)
+              Die LED am RM blinkt langsam (15min Alarmunterdrückung?)
+07 00 20 29 - RM beginnt mit 2Hz zu piepen und blinken, RM sendet nichts.
+              Piepen ist aber anders als bei Testalarm.
+              Deaktivieren dieses Piepens über RM Taste (1sek halten).
+              Deaktivieren über 0700082F nicht möglich.
+07 00 01 28 - Dump von irgendwelchen Registern
+07 00 02 29 - Erweiterter Dump
+07 00 03 2A - Erweiterter Dump
+07 00 04 2B - Erweiterter Dump
+
+
+08 - Unbekannt
+--------------
+
+SEND: <STX>0868<ETX>
+RECV: <ACK>
+RECV: <NUL>
+RECV: <STX>C8014401420B<ETX>
+SEND: <ACK>
+
+Empfangene Werte:
+C8 01 44 01 42 0B
+C8 01 54 01 52 0D
+C8 01 53 01 51 0B
+
+C8 01 72 01 45 0F (Q-Melder)
+C8 01 72 01 44 0E Q-Melder beim Erhöhen der Batterie Spannung nach Batterie leer.
+C8 01 72 01 44 0E Vor neustart 4-6V Bereich (Q-Melder)
+C8 01 46 01 44 0F Nach neustart bei 6V (Q-Melder):
+
+
+09 - Betriebszeit
+-----------------
+
+SEND: <STX>0969<ETX>
+RECV: <ACK>
+RECV: <NUL>
+RECV: <STX>C900059A211E<ETX>
+SEND: <ACK>
+
+SEND: 0x02, 0x30, 0x39, 0x36, 0x39, 0x03
+      (START "0969" STOPP)
+
+REPLY: 4 Byte Betriebszeit in 1/4 Sekunden: 00059A21
+
+
+0B - Rauchkammerrelevante Daten
+-------------------------------
+
+SEND: <STX>0B72<ETX>
+RECV: <ACK>
+RECV: <NUL>
+RECV: <STX>CB005C00001D<ETX>
+SEND: <ACK>
+
+SEND: 0x02, 0x30, 0x42, 0x37, 0x32, 0x03
+      (START "0B72" STOPP)
+
+REPLY: 2 Byte Rauchkammer Wert: 005C
+       1 Byte Anzahl der Rauchalarme: 00 
+       1 Byte Rauchkammer Verschmutzungsgrad: 00
+
+
+0C - Batteriespannung und Temperaturen
+--------------------------------------
+
+SEND: <STX>0C73<ETX>
+RECV: <ACK>
+RECV: <NUL>
+RECV: <STX>CC01DB52533B<ETX>
+SEND: <ACK>
+
+SEND: 0x02, 0x30, 0x43, 0x37, 0x33, 0x03
+      (START "0C73" STOPP)
+
+REPLY: 2 Byte Batteriespannung: 01DB  ... beim Q-Melder immer 0001
+       1 Byte Temperatur #1: 52
+       1 Byte Temperatur #2: 53
+
+Bat.Spannung = x * 9184 / 5000;
+Temperatur = x * 50 - 2000
+
+CC 01 E5 5C 5A 4F
+
+
+0D - Anzahl der Alarme
+----------------------
+
+SEND: <STX>0D74<ETX>
+RECV: <ACK>
+RECV: <NUL>
+RECV: <STX>CD0000000007<ETX>
+SEND: <ACK>
+
+SEND: 0x02, 0x30, 0x44, 0x37, 0x34, 0x03
+      (START "0D74" STOPP)
+
+REPLY: 1 Byte Anzahl der lokalen Temperatur Alarme: 00
+       1 Byte Anzahl der lokalen Test Alarme: 00
+       1 Byte Anzahl der Alarme über Kabel: 00
+       1 Byte Anzahl der Alarme über Funk: 00
+
+
+0E - Anzahl der Remote Test Alarme
+----------------------------------
+
+SEND: <STX>0E75<ETX>
+RECV: <ACK>
+RECV: <NUL>
+RECV: <STX>CE020448<ETX>
+SEND: <ACK>
+
+SEND: 0x02, 0x30, 0x45, 0x37, 0x35, 0x03
+      (START "0E75" STOPP)
+
+REPLY: 1 Byte Anzahl der Test Alarme über Kabel: 02
+       1 Byte Anzahl der Test Alarme über Funk: 04
+
+
+0F - Unbekannt
+--------------
+
+SEND: <STX>0F76<ETX>
+RECV: <ACK>
+RECV: <NUL>
+RECV: <STX>CF0077007725<ETX>
+SEND: <ACK>
+
+Leicht unterschiedliche Antworten wurden erhalten:
+
+CF0077007725
+CF0078007726
+CF0079007727
+CF007A00772F
+CF0078007827
+CF00EF00F04A
+CF00FB00E64C
+
+Q-Melder, Test mit variabler Batteriespannung:
+Bei 8V:
+CF 00 7A 00 76 2E
+
+Bei 8.5V
+CF 00 7D 00 76 31
+CF 00 86 00 76 24
+CF 00 87 00 76 25
+
+Bei 8.2V
+CF 00 88 00 77 27
+
+Bei 8V:
+CF 00 8A 00 77 30
+CF 00 86 00 77 25
+
+Bei 9V:
+CF 00 84 00 77 23
+
+
+Testen ob Q-Melder auf andere Befehle reagiert:
+gesendeter Befehle mit Antwort vom Q-Melder
+
+gesendet 12 63
+C2 20 00 00 00 F7
+
+gesendet 14 65
+C4 15 08 70 97 1C
+
+gesendet 18 69
+C8 01 45 01 43 0D
+
+gesendet 1B 73
+CB 00 7B 00 00 1E
+
+gesendet 1C 74
+CC 01 E5 56 57 38
+
+gesendet 1D 75
+CD 00 00 00 00 07
+
+gesendet 1E 76
+CE 00 00 48
+
+gesendet 22 64
+C2 20 00 00 00 F7
+
+
+
+82 - Status Meldungen
+---------------------
+
+Wird vom Rauchmelder selbstständig gesendet.
+Das ist die gleiche Meldung wie die 02 Abfrage, nur mit 82 als erstes Byte statt 02.
+
+
+86 - Unbekannt
+--------------
+
+86 00 01 2F -       Unbekannt.
+                    Kommt derzeit bei Taste am Rauchmelder 1sek gedrückt nachdem bei Stützspannung
+                    die schwache Batterie durch eine neue Batterie ersetzt wurde. Entfernen
+                    der Stützspannung und der Batterie entfernt diese Meldung wieder.
+
