@@ -45,6 +45,16 @@ void SmokeDetectorErrorCode::temperature_2_fault(bool faulty)
     set(SdErrorCode::temperatureSensor_2_fault, faulty);
 }
 
+void SmokeDetectorErrorCode::smokeBoxFault(bool faulty)
+{
+    set(SdErrorCode::smokeBoxFault, faulty);
+}
+
+void SmokeDetectorErrorCode::otherDeviceFault(bool faulty)
+{
+    set(SdErrorCode::otherDeviceFault, faulty);
+}
+
 void SmokeDetectorErrorCode::coverPlateAttached(bool coverPlateAttached)
 {
     set(SdErrorCode::coverplateNotAttached, !coverPlateAttached);

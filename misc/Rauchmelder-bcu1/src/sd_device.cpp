@@ -349,7 +349,7 @@ void SmokeDetectorDevice::readStatusMessage(const uint8_t *bytes) const
     auto subType = bytes[0];
     auto status = bytes[1];
 
-    // Local Alarm: Smoke alarm | temperature alarm | wired alarm
+    // Local Alarm: Temperature alarm | smoke alarm | wired alarm
     auto hasAlarmLocal = static_cast<bool>((subType & 0x10) | (status & (0x04 | 0x08)));
 
     // Local test alarm: Button test alarm | wired test alarm
@@ -372,20 +372,25 @@ void SmokeDetectorDevice::readStatusMessage(const uint8_t *bytes) const
 
     auto temperatureSensor_1_fault = false;
     auto temperatureSensor_2_fault = false;
+    auto otherDeviceFault = false;
 
     // General smoke detector fault is indicated in 1. byte bit 1
     if (subType & 0x02)
     {
         // Details are in 4. byte
-        temperatureSensor_1_fault = static_cast<bool>(bytes[3] & 0x04); // sensor 1 state in 4. byte bit 2
-        temperatureSensor_2_fault = static_cast<bool>(bytes[3] & 0x10); // sensor 2 state in 4. byte bit 4
+        auto faultByte = bytes[3];
+        temperatureSensor_1_fault = static_cast<bool>(faultByte & 0x04); // sensor 1 state in bit 2
+        temperatureSensor_2_fault = static_cast<bool>(faultByte & 0x10); // sensor 2 state in bit 4
+        otherDeviceFault = static_cast<bool>(faultByte & (0x02 | 0x08)); // unknown fault states in bits 1 and 3
     }
 
     errorCode->temperature_1_fault(temperatureSensor_1_fault);
     errorCode->temperature_2_fault(temperatureSensor_2_fault);
+    errorCode->otherDeviceFault(otherDeviceFault);
 
-    ///\todo handle smoke box fault
-    ///
+    // Smoke box fault
+    auto smokeBoxFault = static_cast<bool>(subType & 0x01);
+    errorCode->smokeBoxFault(smokeBoxFault);
 }
 
 uint32_t SmokeDetectorDevice::readOperatingTime(const uint8_t *bytes) const

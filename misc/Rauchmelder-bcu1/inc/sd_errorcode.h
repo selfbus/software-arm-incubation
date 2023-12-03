@@ -32,8 +32,10 @@ enum class SdErrorCode : uint8_t
     communicationTimeout      = 0x02, //!< Smoke detector does not respond
     temperatureSensor_1_fault = 0x04, //!< Temperature sensor 1 faulty
     temperatureSensor_2_fault = 0x08, //!< Temperature sensor 2 faulty
-    supplyVoltageDisabled     = 0x10, //!< The 12V supply voltage is disabled
-    coverplateNotAttached     = 0x20, //!< Smoke detector is not attached to cover plate
+    smokeBoxFault             = 0x10, //!< Smoke box faulty
+    otherDeviceFault          = 0x20, //!< Other device fault, specifics unknown
+    supplyVoltageDisabled     = 0x40, //!< The 12V supply voltage is disabled
+    coverplateNotAttached     = 0x80, //!< Smoke detector is not attached to cover plate
 };
 
 class SmokeDetectorErrorCode
@@ -45,6 +47,8 @@ public:
     void batteryLow(bool battLow);
     void temperature_1_fault(bool faulty);
     void temperature_2_fault(bool faulty);
+    void smokeBoxFault(bool faulty);
+    void otherDeviceFault(bool faulty);
     void coverPlateAttached(bool attached);
     void supplyVoltageDisabled(bool disabled);
     void communicationTimeout(bool timedout);
