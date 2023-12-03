@@ -92,12 +92,6 @@ void SmokeDetectorDevice::loopCheckState()
             if (timeout.expired())
             {
                 setSupplyVoltage(true);
-
-                // Enable communication on the smoke detector
-                pinMode(CommunicationEnable.pin(), OUTPUT);
-                digitalWrite(CommunicationEnable.pin(), CommunicationEnable.on());
-
-                com->initSerialCom();
                 state = DeviceState::fillCapacitor;
                 timeout.start(SupplyVoltageOnDelayMs);
             }
@@ -106,6 +100,10 @@ void SmokeDetectorDevice::loopCheckState()
         case DeviceState::fillCapacitor:
             if (timeout.expired())
             {
+                // Enable communication on the smoke detector
+                pinMode(CommunicationEnable.pin(), OUTPUT);
+                digitalWrite(CommunicationEnable.pin(), CommunicationEnable.on());
+                com->initSerialCom();
                 state = DeviceState::ready;
             }
             break;
