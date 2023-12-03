@@ -252,9 +252,8 @@ bool SmokeDetectorCom::isValidMessage(uint8_t length)
     if (length < 2)
         return false;
 
-    // There are a few invalid messages captured in RM_Protokoll.txt:
+    // There are a few invalid messages captured in rm_protokoll.txt:
     //
-    //      <STX>822080F4<ETX>
     //      C2 30 00 00 00 FD
     //      <STX>CC01DB52533B<ETX>
     //      <STX>CE020448<ETX>

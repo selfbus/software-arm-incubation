@@ -5,7 +5,10 @@ Korrekturen
 -----------
 
 2013-04-25 Korrektur 82 Status-Meldung, Byte 1 Bit 5
-
+2023-11-27 Ergänzung 82 Status-Meldung, Kommunikationsobjekte Gira 234300
+2023-12-03 Korrektur Allgemeines, Beispiel Prüfsummenberechnung
+           Ergänzung Allgemeines, Verhalten bei NAK
+           Ergänzung Markierung von ungültigen aufgezeichneten Nachrichten
 
 
 Allgemeines
@@ -20,7 +23,14 @@ Die Nachrichten beginnen mit einem Start Byte 0x02 (STX) und enden mit einem
 Stopp Byte 0x03 (ETX). Das letzte Byte vor dem ETX ist eine Prüfsumme.
 
 Jede Nachricht muss nach Erhalt mit einem ACK Byte 0x06 bestätigt werden.
-Kommt keine Bestätigung, so wird die Nachricht 3 mal wiederholt.
+Kommt keine Bestätigung, so wird die Nachricht 3 mal wiederholt in den Abständen
+~5470ms / ~5700ms / ~5700ms.
+
+Quittiert man eine Nachricht mit einem NAK Byte 0x15, so sendet der Rauchmelder
+die erste Wiederholung sofort. Egal ob man eine Wiederholung mit ACK oder NAK
+beantwortet, es erfolgen in diesem Fall keine weiteren Wiederholungen. Antwortet
+man gar nicht, werden die zweite und dritte Wiederholung wie oben nach jeweils
+ca. 5700ms gesendet.
 
 STX 0x02 - Start
 ETX 0x03 - Stopp
@@ -31,7 +41,7 @@ Die Prüfsumme wird berechnet in dem die Bytes des Hex Strings addiert werden un
 das Ergebnis mit 255 UND verknüpft wird. Die Prüfsumme selbst wird dann wieder
 als Hex String gesendet. Beispiel:
   <STX>0464<ETX> ist "04" also 0x30 0x34, das ergibt Checksumme 0x64, also "64".
-  <STX>822080F4<ETX> ist "822080" ... Summe 0x1F4, also Checksumme 0xF4, also "F4".
+  <STX>8220800000F4<ETX> ist "8220800000", Summe 0x1F4, Checksumme 0xF4, also "F4".
 
 
 02 - Status abfragen
@@ -90,7 +100,7 @@ C2 20 00 00 00 EC - Alarm beendet
                     nachdem Wired Alarm über grüne Klemme beendet
 C2 20 08 00 00 F4 - Wired Alarm über grüne Klemme ausgelöst
 C2 20 40 00 00 F0 - Wired Testalarm über grüne Klemme ausgelöst. Ende: 82 20 00 00 00 EC
-C2 30 00 00 00 FD - Lokaler Alarm mit Harfön erzeugt
+C2 30 00 00 00 FD - Lokaler Alarm mit Haarfön erzeugt (!! Prüfsumme ungültig !!)
 C2 20 20 00 00 EE - Lokaler Testalarm, Taste nicht gedrückt
 C2 00 20 00 00 EC - Lokaler Testalarm, Taste nicht gedrückt, Stützspannung an grüner Klemme
 C2 28 20 00 00 F6 - Lokaler Testalarm, Taste gedrückt
@@ -247,7 +257,7 @@ REPLY: 2 Byte Rauchkammer Wert: 005C
 SEND: <STX>0C73<ETX>
 RECV: <ACK>
 RECV: <NUL>
-RECV: <STX>CC01DB52533B<ETX>
+RECV: <STX>CC01DB52533B<ETX> (!! Prüfsumme ungültig !!)
 SEND: <ACK>
 
 SEND: 0x02, 0x30, 0x43, 0x37, 0x33, 0x03
@@ -287,7 +297,7 @@ REPLY: 1 Byte Anzahl der lokalen Temperatur Alarme: 00
 SEND: <STX>0E75<ETX>
 RECV: <ACK>
 RECV: <NUL>
-RECV: <STX>CE020448<ETX>
+RECV: <STX>CE020448<ETX> (!! Prüfsumme ungültig !!)
 SEND: <ACK>
 
 SEND: 0x02, 0x30, 0x45, 0x37, 0x35, 0x03
