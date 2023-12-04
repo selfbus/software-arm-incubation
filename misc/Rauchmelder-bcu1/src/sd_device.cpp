@@ -35,9 +35,9 @@ SmokeDetectorDevice::SmokeDetectorDevice(const SmokeDetectorConfig *config, cons
       errorCode(errorCode),
       com(new SmokeDetectorCom(this))
 {
-    pinMode(AttachedToBasePlate.pinLed(), OUTPUT);
-    digitalWrite(AttachedToBasePlate.pinLed(), false);
-    pinMode(AttachedToBasePlate.pin(), INPUT | PULL_DOWN); // smoke detector base plate state, pulldown configured, Pin is connected to 3.3V VCC of the RM
+    pinMode(DevicePowered.pinLed(), OUTPUT);
+    digitalWrite(DevicePowered.pinLed(), false);
+    pinMode(DevicePowered.pin(), INPUT | PULL_DOWN); // smoke detector base plate state, pulldown configured, Pin is connected to 3.3V VCC of the RM
 
     state = DeviceState::initialized;
     timeout.stop();
@@ -79,15 +79,15 @@ void SmokeDetectorDevice::loopCheckState()
         case DeviceState::drainCapacitor:
             if (timeout.expired())
             {
-                state = DeviceState::attachToBasePlate;
+                state = DeviceState::devicePowered;
             }
             break;
 
-        case DeviceState::attachToBasePlate:
-            checkAttachedToBasePlate();
+        case DeviceState::devicePowered:
+            checkDevicePowered();
             break;
 
-        case DeviceState::powerUpDevice:
+        case DeviceState::powerUpDelay:
             if (timeout.expired())
             {
                 setSupplyVoltage(true);
@@ -272,17 +272,17 @@ void SmokeDetectorDevice::setSupplyVoltage(bool enable)
 /**
  * Checks if the smoke detector is on the base plate and switches the supply voltage on
  */
-void SmokeDetectorDevice::checkAttachedToBasePlate()
+void SmokeDetectorDevice::checkDevicePowered()
 {
-    auto isAttached = (digitalRead(AttachedToBasePlate.pin()) == AttachedToBasePlate.on());
-    digitalWrite(AttachedToBasePlate.pinLed(), isAttached);
+    auto isAttached = (digitalRead(DevicePowered.pin()) == DevicePowered.on());
+    digitalWrite(DevicePowered.pinLed(), isAttached);
 
     errorCode->coverPlateAttached(isAttached);
 
     // After it has been attached to the base plate, allot some time for power-up
     if (isAttached)
     {
-        state = DeviceState::powerUpDevice;
+        state = DeviceState::powerUpDelay;
         timeout.start(DevicePowerUpDelayMs);
     }
 }

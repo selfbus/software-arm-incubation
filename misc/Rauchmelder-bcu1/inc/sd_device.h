@@ -64,7 +64,7 @@ private:
 
 private:
     void setSupplyVoltage(bool enable);
-    void checkAttachedToBasePlate();
+    void checkDevicePowered();
 
     void readSerialNumberMessage(const uint8_t *bytes) const;
     void readOperatingTimeMessage(const uint8_t *bytes) const;
@@ -88,8 +88,8 @@ private:
     {
         initialized,
         drainCapacitor,
-        attachToBasePlate,
-        powerUpDevice,
+        devicePowered,
+        powerUpDelay,
         fillCapacitor,
         ready
     };
@@ -122,8 +122,8 @@ private:
     //!< 12V support voltage for the smoke detector, NPN transistor pulls down the voltage, LED is on while supply voltage is "disconnected"
     static constexpr DeviceIOPin<PIO2_1, false, PIO3_3> SupportVoltage {};
 
-    //!< IO pin where the internal smoke detector voltage is connected, LED is on while base plate is not attached
-    static constexpr DeviceIOPin<PIO0_11, true, PIO2_6> AttachedToBasePlate {};
+    //!< IO pin where the internal smoke detector voltage is connected, LED is on while Gira MCU is not powered
+    static constexpr DeviceIOPin<PIO0_11, true, PIO2_6> DevicePowered {};
 
 private:
     const SmokeDetectorConfig *config;
