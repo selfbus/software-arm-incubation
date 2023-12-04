@@ -110,9 +110,6 @@ private:
     //!< Time in milliseconds the 12V supply needs to fill the capacitor
     static constexpr uint32_t SupplyVoltageOnDelayMs = 5000;
 
-    //!< Maximum waiting time in milliseconds to enable 12V supply
-    static constexpr uint32_t SupplyVoltageTimeoutMs = 120000;
-
     //!< Time in milliseconds we give the smoke detector to startup and measure the battery voltage
     static constexpr uint32_t DevicePowerUpDelayMs = 1000;
 

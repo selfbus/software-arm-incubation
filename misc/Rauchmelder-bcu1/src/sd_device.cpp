@@ -80,7 +80,6 @@ void SmokeDetectorDevice::loopCheckState()
             if (timeout.expired())
             {
                 state = DeviceState::attachToBasePlate;
-                timeout.start(SupplyVoltageTimeoutMs);
             }
             break;
 
@@ -279,18 +278,6 @@ void SmokeDetectorDevice::checkAttachedToBasePlate()
     digitalWrite(AttachedToBasePlate.pinLed(), isAttached);
 
     errorCode->coverPlateAttached(isAttached);
-
-    // This timeout can make the smoke detector show up as a working device on the bus as
-    // we might be the ones to supply all the power for regular operation, e.g. when the
-    // battery is disconnected in a Dual VdS or the battery is dead. That fact can be seen
-    // as dangerous, because we cannot supply enough power in an alarm event. Effectively,
-    // the detector would stay silent in case of a fire.
-    // However, the same situation can occur later on, when the battery dies long after we
-    // have enabled our supply voltage -- The only way to reliably detect this situation is
-    // for the user to follow the instruction manual and perform a yearly test alarm of
-    // each smoke alarm device. That step then ensures the battery is still OK and can
-    // handle an alarm.
-    isAttached |= timeout.expired();
 
     // After it has been attached to the base plate, allot some time for power-up
     if (isAttached)
