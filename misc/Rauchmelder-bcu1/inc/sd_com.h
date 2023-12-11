@@ -148,6 +148,11 @@ private:
     void repeatMessageOrReportTimeout();
 
     /**
+     * Notifies @ref callback that a timeout occurred.
+     */
+    void encounteredTimeout();
+
+    /**
      * Send a byte to the smoke detector.
      *
      * @param b - the byte to send.
@@ -177,14 +182,14 @@ private:
     // Two characters take equate to one byte in @ref recvBuf.
     static constexpr int RecvMaxCharacters = 12;
 
-    // Timeout of serial port communication.
+    // Time we give the smoke detector for transmitting a full message, from STX to ETX.
     static constexpr int ReceiveTimeoutMs = 250;
 
     // Maximum number of characters of a message to send to the smoke detector, excluding STX and ETX and checksum.
     static constexpr int SendMaxCharacters = 6;
 
-    // Time we give the smoke detector to respond with ACK/NAK before we repeat or report a timeout
-    static constexpr int SendTimeoutMs = 250;
+    // Time we give the smoke detector to respond with ACK/NAK before we repeat or report a timeout.
+    static constexpr int ConfirmationTimeoutMs = 250;
 
     // Time we reserve for the capacitor to charge before we send the next request to the device
     static constexpr int CapacitorChargeTimeoutMs = 1500;
@@ -210,14 +215,16 @@ private:
     // Number of received characters from smoke detector
     int recvCount;
 
-    // Timeout for receiving a message
+    // Timeout for receiving a full message before we reject an incomplete one with NAK
+    // Guards against transmission errors of received ETX bytes
     Timeout receiveTimeout;
 
     // Buffer for storing the message to be sent to the smoke detector
     uint8_t sendBuf[SendMaxCharacters + 1];
 
-    // Timeout after sending before we repeat the message or report a timeout
-    Timeout sendTimeout;
+    // Timeout for receiving ACK/NAK before we repeat the message or report a timeout
+    // Guards against transmission errors of sent STX/ETX or received ACK/NAK bytes
+    Timeout confirmationTimeout;
 
     // Last command sent to the smoke detector
     std::optional<RmCommandByte> lastSentCommand;

@@ -32,7 +32,7 @@ SmokeDetectorCom::SmokeDetectorCom(SmokeDetectorComCallback *callback)
     recvCount = -1;
     receiveTimeout.stop();
     clearSendBuffer();
-    sendTimeout.stop();
+    confirmationTimeout.stop();
     lastSentCommand = {};
     capacitorChargeTimeout.stop();
 }
@@ -54,7 +54,7 @@ void SmokeDetectorCom::initSerialCom()
  */
 void SmokeDetectorCom::loopCheckTimeouts()
 {
-    if (sendTimeout.expired())
+    if (confirmationTimeout.expired())
     {
         repeatMessageOrReportTimeout();
     }
@@ -62,7 +62,7 @@ void SmokeDetectorCom::loopCheckTimeouts()
     if (receiveTimeout.expired())
     {
         receivedMessageWithFailure();
-        callback->timedOut(lastSentCommand);
+        encounteredTimeout();
     }
 }
 
@@ -93,11 +93,12 @@ void SmokeDetectorCom::receiveBytes()
         switch (ch)
         {
             case ACK:
+                confirmationTimeout.stop();
                 clearSendBuffer();
-                sendTimeout.stop();
                 continue;
 
             case NAK:
+                confirmationTimeout.stop();
                 repeatMessageOrReportTimeout();
                 continue;
 
@@ -121,6 +122,7 @@ void SmokeDetectorCom::receiveBytes()
                 }
                 else
                 {
+                    // Guard against transmission errors of received STX bytes.
                     receivedMessageWithFailure();
                 }
                 receiveTimeout.stop();
@@ -322,8 +324,17 @@ void SmokeDetectorCom::repeatMessageOrReportTimeout()
     }
     else
     {
-        callback->timedOut(lastSentCommand);
+        encounteredTimeout();
     }
+}
+
+/**
+ * Notifies @ref callback that a timeout occurred.
+ */
+void SmokeDetectorCom::encounteredTimeout()
+{
+    callback->timedOut(lastSentCommand);
+    lastSentCommand = {};
 }
 
 /**
@@ -343,7 +354,10 @@ void SmokeDetectorCom::receivedMessageSuccessfully(uint8_t length)
 {
     sendByte(ACK);
     finalizeReceive();
-    lastSentCommand = {};
+    if (lastSentCommand.has_value() && lastSentCommand.value() == static_cast<RmCommandByte>(recvBuf[0] & 0x0f))
+    {
+        lastSentCommand = {};
+    }
     callback->receivedMessage(recvBuf, length);
 }
 
@@ -383,5 +397,5 @@ void SmokeDetectorCom::sendMessage()
 
     sendByte(ETX);
 
-    sendTimeout.start(SendTimeoutMs);
+    confirmationTimeout.start(ConfirmationTimeoutMs);
 }
