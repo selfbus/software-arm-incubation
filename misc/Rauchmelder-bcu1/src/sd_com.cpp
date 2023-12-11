@@ -15,11 +15,9 @@
  */
 
 #include <stdint.h>
-#include <type_traits>
 #include <sblib/serial.h>
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
-#include <sblib/timer.h>
 
 #include "sd_com.h"
 #include "sd_shared_enums.h"
@@ -34,6 +32,7 @@ SmokeDetectorCom::SmokeDetectorCom(SmokeDetectorComCallback *callback)
     clearSendBuffer();
     confirmationTimeout.stop();
     lastSentCommand = {};
+    ackTimeout.stop();
     capacitorChargeTimeout.stop();
 }
 
@@ -63,6 +62,11 @@ void SmokeDetectorCom::loopCheckTimeouts()
     {
         receivedMessageWithFailure();
         encounteredTimeout();
+    }
+
+    if (ackTimeout.expired())
+    {
+        finalizeSuccessfulMessageReception();
     }
 }
 
@@ -348,17 +352,25 @@ void SmokeDetectorCom::sendByte(uint8_t b)
 }
 
 /**
- * Send an ACK to the smoke detector.
+ * Forward message to @ref callback for processing and start the timeout for sending ACK.
  */
 void SmokeDetectorCom::receivedMessageSuccessfully(uint8_t length)
 {
-    sendByte(ACK);
-    finalizeReceive();
     if (lastSentCommand.has_value() && lastSentCommand.value() == static_cast<RmCommandByte>(recvBuf[0] & 0x0f))
     {
         lastSentCommand = {};
     }
     callback->receivedMessage(recvBuf, length);
+    ackTimeout.start(AckTimeoutMs);
+}
+
+/**
+ * Send ACK to the smoke detector and prepare for next message.
+ */
+void SmokeDetectorCom::finalizeSuccessfulMessageReception()
+{
+    sendByte(ACK);
+    finalizeReceive();
 }
 
 /**

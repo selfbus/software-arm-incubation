@@ -160,9 +160,14 @@ private:
     void sendByte(uint8_t b);
 
     /**
-     * Send an ACK to the smoke detector.
+     * Forward message to @ref callback for processing and start the timeout for sending ACK.
      */
     void receivedMessageSuccessfully(uint8_t length);
+
+    /**
+     * Send ACK to the smoke detector and prepare for next message.
+     */
+    void finalizeSuccessfulMessageReception();
 
     /**
      * Send a NAK to the smoke detector.
@@ -190,6 +195,9 @@ private:
 
     // Time we give the smoke detector to respond with ACK/NAK before we repeat or report a timeout.
     static constexpr int ConfirmationTimeoutMs = 500;
+
+    // Time we wait before we send an ACK to the device
+    static constexpr int AckTimeoutMs = 250;
 
     // Time we reserve for the capacitor to charge before we send the next request to the device
     static constexpr int CapacitorChargeTimeoutMs = 1500;
@@ -228,6 +236,10 @@ private:
 
     // Last command sent to the smoke detector
     std::optional<RmCommandByte> lastSentCommand;
+
+    // After receiving a message from the smoke detector, wait for some time before
+    // sending ACK
+    Timeout ackTimeout;
 
     // After receiving a message from the smoke detector, allot some time
     // for the battery support capacitor to charge
