@@ -189,7 +189,7 @@ private:
     static constexpr int SendMaxCharacters = 6;
 
     // Time we give the smoke detector to respond with ACK/NAK before we repeat or report a timeout.
-    static constexpr int ConfirmationTimeoutMs = 250;
+    static constexpr int ConfirmationTimeoutMs = 500;
 
     // Time we reserve for the capacitor to charge before we send the next request to the device
     static constexpr int CapacitorChargeTimeoutMs = 1500;
