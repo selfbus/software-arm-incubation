@@ -9,6 +9,8 @@ Korrekturen
 2023-12-03 Korrektur Allgemeines, Beispiel Prüfsummenberechnung
            Ergänzung Allgemeines, Verhalten bei NAK
            Ergänzung Markierung von ungültigen aufgezeichneten Nachrichten
+2023-12-12 Ergänzung Allgemeines, Abstände Wiederholungen bei Dual Q
+           Ergänzung Allgemeines, Details zum Zeitverhalten
 
 
 Allgemeines
@@ -24,13 +26,13 @@ Stopp Byte 0x03 (ETX). Das letzte Byte vor dem ETX ist eine Prüfsumme.
 
 Jede Nachricht muss nach Erhalt mit einem ACK Byte 0x06 bestätigt werden.
 Kommt keine Bestätigung, so wird die Nachricht 3 mal wiederholt in den Abständen
-~5470ms / ~5700ms / ~5700ms.
+~5470ms / ~5700ms / ~5700ms (Dual VdS) bzw. ~6000ms / ~6240ms / ~6240ms (Dual Q).
 
 Quittiert man eine Nachricht mit einem NAK Byte 0x15, so sendet der Rauchmelder
 die erste Wiederholung sofort. Egal ob man eine Wiederholung mit ACK oder NAK
 beantwortet, es erfolgen in diesem Fall keine weiteren Wiederholungen. Antwortet
 man gar nicht, werden die zweite und dritte Wiederholung wie oben nach jeweils
-ca. 5700ms gesendet.
+ca. 5700ms/6240ms gesendet.
 
 STX 0x02 - Start
 ETX 0x03 - Stopp
@@ -42,6 +44,17 @@ das Ergebnis mit 255 UND verknüpft wird. Die Prüfsumme selbst wird dann wieder
 als Hex String gesendet. Beispiel:
   <STX>0464<ETX> ist "04" also 0x30 0x34, das ergibt Checksumme 0x64, also "64".
   <STX>8220800000F4<ETX> ist "8220800000", Summe 0x1F4, Checksumme 0xF4, also "F4".
+
+Der Rauchmelder benötigt teilweise mehr als 250ms, bis er eine Nachricht mit ACK
+oder NAK quittiert. Die Gesamtzeit von Versand ETX bis Empfang ETX plus Validierung
+der Prüfsumme betrug während der Tests zwischen 20ms und 290ms pro Nachricht,
+unabhängig von der Abfrage (siehe auch Dateien rm_command_processing_time*).
+
+Sendet man nach Empfang einer Nachricht das ACK zu schnell zum Rauchmelder, dann
+wiederholt er teilweise die Nachricht ein- oder sogar mehrfach. Beobachtet wurden
+bis zu vier solcher Wiederholungen am Stück. Selbst mit einer Verzögerung von
+100ms hat sich dieses Verhalten nur marginal verbessert. Mit 250ms zwischen dem
+Empfang von ETX und dem Versand von ACK traten keine Wiederholungen mehr auf.
 
 
 02 - Status abfragen
