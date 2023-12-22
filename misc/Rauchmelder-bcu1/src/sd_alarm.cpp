@@ -170,6 +170,16 @@ void SmokeDetectorAlarm::timerEverySecond()
     // Alarm: Delayed and periodic sending
     if (deviceHasAlarmLocal)
     {
+        if (config->alarmSendStatusPeriodically())
+        {
+            --alarmStatusCounter;
+            if (!alarmStatusCounter)
+            {
+                // Send out AlarmStatus and restart the timer.
+                sendAlarmStatus();
+            }
+        }
+
         // Delayed Alarm
         if (delayedAlarmCounter)
         {
@@ -187,23 +197,13 @@ void SmokeDetectorAlarm::timerEverySecond()
         {
             // Periodic sending. This is in the else branch as it only starts after the delayed
             // alarm (if any) has expired.
-            if (config->alarmSendStatusPeriodically())
+            if (config->alarmSendNetworkPeriodically())
             {
-                --alarmStatusCounter;
-                if (!alarmStatusCounter)
+                --alarmNetworkCounter;
+                if (!alarmNetworkCounter)
                 {
-                    // Send out AlarmStatus and restart the timer.
-                    sendAlarmStatus();
-                }
-
-                if (config->alarmSendNetworkPeriodically())
-                {
-                    --alarmNetworkCounter;
-                    if (!alarmNetworkCounter)
-                    {
-                        // Send out AlarmNetwork and restart the timer.
-                        sendAlarmNetwork();
-                    }
+                    // Send out AlarmNetwork and restart the timer.
+                    sendAlarmNetwork();
                 }
             }
         }
