@@ -310,10 +310,21 @@ class RMSimulator(object):
         # TODO remove on release
         # Just for testing special status values
         #if self.status_battery_low:
-        #    status_byte_1 = 0x02
+        #    status_byte_1 = 0x00 # 0x02 to set fault bit
         #    status_byte_2 = 0x00
         #    status_byte_3 = 0x00
-        #    status_byte_4 = 0x04
+        #    status_byte_4 = 0x00
+                                 # 0x01 nothing
+                                 # 0x02 grpobj 12 - Fault = true
+                                 # 0x04 grpobj 12 - Fault = true
+                                 # 0x08 grpobj 12 - Fault = true
+                                 # 0x10 grpobj 12 - Fault = true
+                                 # 0x20 nothing
+                                 # 0x40 nothing
+                                 # 0x80 nothing
+                                 # 0xe0 nothing
+                                 # 0xe1 nothing
+                                 # 0x1e grpobj 12 - Fault = true
         #else:
         #    status_byte_1 = 0x00
         #    status_byte_2 = 0x00
