@@ -112,7 +112,7 @@ void handlePeriodic(void)
     for (channel = 0; channel < NUM_CHANNELS; ++channel)
     {
         if (bcu.comObjects->objectRead(COMOBJ_LOCK1 + channel)) // check if channel is currently locked
-            return;
+            continue;
 
         params = channelParams + (channel << 2);
         const int type = channelType(channel);
