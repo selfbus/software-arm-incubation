@@ -14,17 +14,19 @@
 APP_VERSION("SBin8_12", "1", "10")
 
 //	WICHTIG!!!
-//Hier muss EINE! Hardware ausgewählt werden (IN8_230V_4TE und IN8_24V_4TE werden identisch behandelt)
+//Hier muss EINE! Hardware ausgewählt werden (in8 4TE 230V und 24V werden identisch behandelt)
+/**
+ * - Platine: fb_in_8_230V_42  -  8x230V Eingang im 4TE Gehäuse
+ * - Platine: fb_in8_24VDC_3.2  -  8x24V Eingang im 4TE Gehäuse
+ */
+#define IN8_4TE
 
-#define IN8_230V_4TE   // Platine: fb_in_8_230V_42  -  8x230V Eingang im 4TE Gehäuse
-//#define IN8_24V_4TE    // Platine: fb_in8_24VDC_3.2  -  8x24V Eingang im 4TE Gehäuse
-//#define IN8_24V_2TE    // Platine: 2te8x24V_DC_In_4_v02  -  8x24V Eingang im 2TE Gehäuse mit 2te8LED_v03 Platine
-
+#define IN8_24V_2TE //!< Platine: 2te8x24V_DC_In_4_v02  -  8x24V Eingang im 2TE Gehäuse mit 2te8LED_v03 Platine
 
 // Digital pin for LED
 #define PIO_LED PIO2_0
 
-#if defined(IN8_230V_4TE) || defined(IN8_24V_4TE)
+#if defined(IN8_4TE)
 	#define DIRECT_IO
 #endif
 
