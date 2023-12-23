@@ -16,12 +16,18 @@ APP_VERSION("SBin8_12", "1", "10")
 //	WICHTIG!!!
 //Hier muss EINE! Hardware ausgewählt werden (in8 4TE 230V und 24V werden identisch behandelt)
 /**
+ * @def IN8_4TE
  * - Platine: fb_in_8_230V_42  -  8x230V Eingang im 4TE Gehäuse
  * - Platine: fb_in8_24VDC_3.2  -  8x24V Eingang im 4TE Gehäuse
  */
-#define IN8_4TE
+//#define IN8_4TE
 
-#define IN8_24V_2TE //!< Platine: 2te8x24V_DC_In_4_v02  -  8x24V Eingang im 2TE Gehäuse mit 2te8LED_v03 Platine
+/**
+ * @def IN8_24V_2TE
+ * Platine: 2te8x24V_DC_In_4_v02  -  8x24V Eingang im 2TE Gehäuse mit 2te8LED_v03 Platine
+ * @warning Works only with LPC1115 2MU controller PCB version >= v1.04, because MISO0 is not on JP1 and SSEL is on PIO2_11
+ */
+#define IN8_24V_2TE
 
 // Digital pin for LED
 #define PIO_LED PIO2_0
@@ -32,6 +38,8 @@ APP_VERSION("SBin8_12", "1", "10")
 
 #if defined(IN8_4TE)
 	#define DIRECT_IO
+#else
+#   warning "Works only with LPC1115 2MU controller PCB version >= v1.04, because MISO0 is not on JP1 and SSEL is on PIO2_11"
 #endif
 
 // Debouncers for inputs
