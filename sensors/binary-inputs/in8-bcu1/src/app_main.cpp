@@ -26,6 +26,10 @@ APP_VERSION("SBin8_12", "1", "10")
 // Digital pin for LED
 #define PIO_LED PIO2_0
 
+#if defined(IN8_4TE) and defined(IN8_24V_2TE)
+#   error "IN8_4TE and IN8_24V_2TE can't be defined at the same time."
+#endif
+
 #if defined(IN8_4TE)
 	#define DIRECT_IO
 #endif
