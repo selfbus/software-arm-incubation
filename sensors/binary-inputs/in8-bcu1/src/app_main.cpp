@@ -11,7 +11,7 @@
 #include "params.h"
 #include <sblib/timeout.h>
 
-APP_VERSION("SBin8_12", "1", "10")
+APP_VERSION("SBin8_12", "1", "11")
 
 //	WICHTIG!!!
 //Hier muss EINE! Hardware ausgewählt werden (in8 4TE 230V und 24V werden identisch behandelt)
@@ -50,8 +50,8 @@ const byte* channelParams;
 #ifdef DIRECT_IO
 // Input pins
 const int inputPins[] =
-//    { PIO2_2, PIO0_7, PIO2_10, PIO2_9, PIO0_2, PIO0_8, PIO0_9, PIO2_11 };  // 4TE controller
-    { PIO2_2, PIO0_9, PIO2_11, PIO1_1, PIO3_0, PIO3_1, PIO3_2, PIO2_9 };   // TS-ARM
+    { PIO2_2, PIO0_7, PIO2_10, PIO2_9, PIO0_2, PIO0_8, PIO0_9, PIO2_11 };  // 4TE controller
+//    { PIO2_2, PIO0_9, PIO2_11, PIO1_1, PIO3_0, PIO3_1, PIO3_2, PIO2_9 };   // TS-ARM
 
 void setupIO(void)
 {
