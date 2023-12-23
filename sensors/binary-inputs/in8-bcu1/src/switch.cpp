@@ -45,9 +45,9 @@
 #define CMD_CURRENT       3
 
 #define EE_SWITCH_BUS_RETURN_NO_ACTION     0
-#define EE_SWITCH_BUS_RETURN_CURRENT_STATE 1
-#define EE_SWITCH_BUS_RETURN_SEND_ON       2
-#define EE_SWITCH_BUS_RETURN_SEND_OFF      3
+#define EE_SWITCH_BUS_RETURN_CURRENT_STATE 3
+#define EE_SWITCH_BUS_RETURN_SEND_ON       1
+#define EE_SWITCH_BUS_RETURN_SEND_OFF      2
 
 /*
  * Get the channel value for a switch command.
