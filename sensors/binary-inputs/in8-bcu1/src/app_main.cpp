@@ -11,21 +11,35 @@
 #include "params.h"
 #include <sblib/timeout.h>
 
-APP_VERSION("SBin8_12", "1", "10")
+APP_VERSION("SBin8_12", "1", "11")
 
 //	WICHTIG!!!
-//Hier muss EINE! Hardware ausgewählt werden (IN8_230V_4TE und IN8_24V_4TE werden identisch behandelt)
+//Hier muss EINE! Hardware ausgewählt werden (in8 4TE 230V und 24V werden identisch behandelt)
+/**
+ * @def IN8_4TE
+ * - Platine: fb_in_8_230V_42  -  8x230V Eingang im 4TE Gehäuse
+ * - Platine: fb_in8_24VDC_3.2  -  8x24V Eingang im 4TE Gehäuse
+ */
+//#define IN8_4TE
 
-#define IN8_230V_4TE   // Platine: fb_in_8_230V_42  -  8x230V Eingang im 4TE Gehäuse
-//#define IN8_24V_4TE    // Platine: fb_in8_24VDC_3.2  -  8x24V Eingang im 4TE Gehäuse
-//#define IN8_24V_2TE    // Platine: 2te8x24V_DC_In_4_v02  -  8x24V Eingang im 2TE Gehäuse mit 2te8LED_v03 Platine
-
+/**
+ * @def IN8_24V_2TE
+ * Platine: 2te8x24V_DC_In_4_v02  -  8x24V Eingang im 2TE Gehäuse mit 2te8LED_v03 Platine
+ * @warning Works only with LPC1115 2MU controller PCB version >= v1.04, because MISO0 is not on JP1 and SSEL is on PIO2_11
+ */
+#define IN8_24V_2TE
 
 // Digital pin for LED
 #define PIO_LED PIO2_0
 
-#if defined(IN8_230V_4TE) || defined(IN8_24V_4TE)
+#if defined(IN8_4TE) and defined(IN8_24V_2TE)
+#   error "IN8_4TE and IN8_24V_2TE can't be defined at the same time."
+#endif
+
+#if defined(IN8_4TE)
 	#define DIRECT_IO
+#else
+#   warning "Works only with LPC1115 2MU controller PCB version >= v1.04, because MISO0 is not on JP1 and SSEL is on PIO2_11"
 #endif
 
 // Debouncers for inputs
@@ -36,8 +50,8 @@ const byte* channelParams;
 #ifdef DIRECT_IO
 // Input pins
 const int inputPins[] =
-//    { PIO2_2, PIO0_7, PIO2_10, PIO2_9, PIO0_2, PIO0_8, PIO0_9, PIO2_11 };  // 4TE controller
-    { PIO2_2, PIO0_9, PIO2_11, PIO1_1, PIO3_0, PIO3_1, PIO3_2, PIO2_9 };   // TS-ARM
+    { PIO2_2, PIO0_7, PIO2_10, PIO2_9, PIO0_2, PIO0_8, PIO0_9, PIO2_11 };  // 4TE controller
+//    { PIO2_2, PIO0_9, PIO2_11, PIO1_1, PIO3_0, PIO3_1, PIO3_2, PIO2_9 };   // TS-ARM
 
 void setupIO(void)
 {
