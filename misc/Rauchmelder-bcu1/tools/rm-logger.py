@@ -5,18 +5,16 @@
 
 # Selfbus RM (smoke detector) logger
 
-from time import sleep
-from datetime import datetime
-
-import keyboard
+import datetime
+import sys
 import serial
 
-SERIAL_PORT_ARM = "COM4"
-SERIAL_PORT_SMOKE = "COM6"
+SERIAL_PORT_ARM = "COM6"
+SERIAL_PORT_SMOKE = "COM7"
 
 PAUSE_LONG = 2.0
 PAUSE = 0.1
-
+RX_TIMEOUT = 0.1
 
 def convert_to_readable_format(s):
     result = ''
@@ -31,38 +29,8 @@ def convert_to_readable_format(s):
             result += "<ACK>"
         elif x == 0x15:
             result += "<NAK>"
-        elif x == 0x30:
-            result += "0"
-        elif x == 0x31:
-            result += "1"
-        elif x == 0x32:
-            result += "2"
-        elif x == 0x33:
-            result += "3"
-        elif x == 0x34:
-            result += "4"
-        elif x == 0x35:
-            result += "5"
-        elif x == 0x36:
-            result += "6"
-        elif x == 0x37:
-            result += "7"
-        elif x == 0x38:
-            result += "8"
-        elif x == 0x39:
-            result += "9"
-        elif x == 0x41:
-            result += "A"
-        elif x == 0x42:
-            result += "B"
-        elif x == 0x43:
-            result += "C"
-        elif x == 0x44:
-            result += "D"
-        elif x == 0x45:
-            result += "E"
-        elif x == 0x46:
-            result += "F"
+        elif x >= 0x20:
+            result += chr(x)
         else:
             result += ' 0x{0:02x}'.format(x)
     return result
@@ -72,41 +40,42 @@ class RMLogger(object):
     def __init__(self):
         self.ser_arm = serial.Serial(SERIAL_PORT_ARM, baudrate=9600, parity=serial.PARITY_NONE,
                                      stopbits=serial.STOPBITS_ONE,
-                                     bytesize=serial.EIGHTBITS, timeout=1)
+                                     bytesize=serial.EIGHTBITS, timeout=RX_TIMEOUT)
         self.ser_smoke = serial.Serial(SERIAL_PORT_SMOKE, baudrate=9600, parity=serial.PARITY_NONE,
                                        stopbits=serial.STOPBITS_ONE,
-                                       bytesize=serial.EIGHTBITS, timeout=1)
+                                       bytesize=serial.EIGHTBITS, timeout=RX_TIMEOUT)
 
         print("Selfbus RM (smoke detector) logger using")
         print(" ARM COM-Port  : {0:s}".format(self.ser_arm.name))
         print(" Detector COM-Port: {0:s}".format(self.ser_smoke.name))
         print("")
         print("Keys:")
-        print("q = quit")
+        print("[STRG+C] = quit")
         print("")
 
     def execute(self):
-        while self.ser_arm.is_open and self.ser_smoke.is_open:
-            bytes_to_read = self.ser_arm.inWaiting()
-            if bytes_to_read > 0:
-                msg_arm = bytearray(self.ser_arm.read(bytes_to_read))
-                time = datetime.now().strftime('%H:%M:%S.%f')
-                print("{0:s} ARM {1:s}".format(time, convert_to_readable_format(msg_arm)))
+        try:
+            while self.ser_arm.is_open or self.ser_smoke.is_open:
+                if self.ser_arm.is_open:
+                    bytes_to_read = self.ser_arm.inWaiting()
+                    if bytes_to_read > 0:
+                        msg_arm = bytearray(self.ser_arm.read(bytes_to_read))
+                        time = datetime.datetime.now().strftime('%H:%M:%S.%f')
+                        print("{0:s} ARM   {1:s}".format(time, convert_to_readable_format(msg_arm)))
 
-            bytes_to_read = self.ser_smoke.inWaiting()
-            if bytes_to_read > 0:
+                if self.ser_smoke.is_open:
+                    bytes_to_read = self.ser_smoke.inWaiting()
+                    if bytes_to_read > 0:
 
-                msg_smoke = bytearray(self.ser_smoke.read(bytes_to_read))
-                time = datetime.now().strftime('%H:%M:%S.%f')
-                print("{0:s} Smoke {1:s}".format(time, convert_to_readable_format(msg_smoke)))
+                        msg_smoke = bytearray(self.ser_smoke.read(bytes_to_read))
+                        time = datetime.datetime.now().strftime('%H:%M:%S.%f')
+                        print("{0:s} Smoke {1:s}".format(time, convert_to_readable_format(msg_smoke)))
 
-            # Check if a key was pressed
-            if keyboard.is_pressed('q'):
-                print('q Key was pressed, exiting...')
-                exit()
-            else:
-                sleep(0.01)
-
+        except KeyboardInterrupt:
+            self.ser_arm.close()
+            self.ser_smoke.close()
+            print("Graceful exit requested.")
+            sys.exit(0)
 
 if __name__ == '__main__':
     test = RMLogger()

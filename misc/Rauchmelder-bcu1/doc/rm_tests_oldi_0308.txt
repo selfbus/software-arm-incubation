@@ -1,0 +1,134 @@
+Tests mit 2 x Rauchmelder, 2 x Funkmodul, Fernbedienung.
+
+RM: Rauchmelder
+FU: Funkmodul
+
+-----
+
+Pairing von zwei Funkmodulen
+
+FU: 03 02 02 27
+RM: 06
+
+-----
+
+Über grüne Klemme am Remote RM einen Alarm ausgelöst
+
+FU: 03 02 10 26
+RM: 06
+RM: 82 20 10 00 00 ED
+FU: 06
+....
+Alarm Ende
+
+FU: 03 00 00 23
+RM: 06
+RM: 82 20 00 00 00 EC
+FU: 06
+
+-----
+
+Remote Testalarm (über Funk)
+
+FU: 03 02 80 2D
+RM: 06
+RM: 82 20 80 00 00 F4
+FU: 06
+RM: 82 20 80 00 00 F4
+FU: 06
+RM: 82 20 80 00 00 F4
+FU: 06
+RM: 82 20 80 00 00 F4
+FU: 06
+
+Alarm Ende
+
+FU: 03 00 00 23
+RM: 06
+RM: 82 20 00 00 00 EC
+FU: 06
+
+-----
+
+Remote Temperatur Alarm
+
+FU: 03 02 10 26
+RM: 06
+RM: 82 20 10 00 00 ED
+FU: 06
+....
+Alarm Ende
+
+FU: 03 00 00 23
+RM: 06
+RM: 82 20 00 00 00 EC
+FU: 06
+
+-----
+
+Alarm über grüne Klemme am lokalen RM
+
+RM: 82 20 08 00 00 F4
+FU: 06
+0,4 Sekunden später
+FU: 03 02 00 25
+RM: 06
+10 Sekunden später
+RM: 82 20 00 00 00 EC
+FU: 06
+
+-----
+
+Testalarm über Knopf am lokalen RM
+
+RM: 82 28 00 00 00 F4
+FU: 06
+3,5 Sek später (da beginnt vermutlich der Testalarm)
+RM: 82 28 20 00 00 F6
+FU: 06
+FU: 03 02 00 25
+RM: 06
+1,2 Sek später
+RM: 82 20 20 00 00 EE
+FU: 06
+30 Sek später abstellen
+RM: 82 28 20 00 00 F6
+FU: 06
+FU: 06
+RM: 82 28 00 00 00 F4
+FU: 06
+RM: 82 28 00 00 00 F4
+FU: 06
+RM: 82 28 00 00 00 F4
+FU: 06
+...
+RM: 82 20 00 00 00 EC
+FU: 06
+RM: 82 20 00 00 00 EC
+FU: 06
+
+-----
+
+Knopf am lokalen RM halten bis zum ersten Piep.
+(15min Alarmabschaltung ?)
+
+RM: 82 28 00 00 00 F4
+FU: 06
+0,7 Sek später
+RM: 82 20 00 00 00 EC
+FU: 06
+
+-----
+
+Knopf am lokalen RM länger halten
+
+RM: 82 28 00 00 00 F4
+FU: 06
+RM: 82 28 00 00 00 F4
+FU: 06
+RM: 82 28 00 00 00 F4
+FU: 06
+3 Sek später
+RM: 82 20 00 00 00 EC
+FU: 06
+
