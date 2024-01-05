@@ -17,9 +17,6 @@
 
 Relay relay;
 
-// System time in milliseconds (from timer.cpp)
-extern volatile unsigned int systemTime;
-
 #ifdef RELAYUSEISR
 extern "C" void TIMER32_0_IRQHandler (void)
 {
@@ -480,7 +477,7 @@ int Relay::CalcAvailRelEnergy(void)
 }
 
 /*
- * Parameter time: Aktuelle Zeit, kann systemTime sein
+ * Parameter time: Aktuelle Zeit, kann millis() sein
  *                 Es bietet sich an eine Zeit im ms Raster zu benutzen, dies muss jedoch nicht sein.
  *                 So könnte die Zeit genauso das Timerraster widerspiegeln, in dem die Routine aufgerufen
  *                 wird. Dann müssen die Konstanten für die Wartezeiten natürlich ebenfalls nach dieser Einheit

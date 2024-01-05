@@ -11,6 +11,7 @@
  */
 
 #include <sblib/platform.h>
+#include <sblib/timer.h>
 #include <sblib/eib/mask0701.h>
 #include <config.h>
 #include <com_objs.h>
@@ -20,9 +21,6 @@
 #include <app_main.h>
 #include <AdcIsr.h>
 #include <crc8.h>
-
-// System time in milliseconds (from timer.cpp)
-extern volatile unsigned int systemTime;
 
 Appl appl;
 
@@ -511,7 +509,7 @@ void Appl::RecallChannelState(int chno, byte* ptr, unsigned referenceTime)
 void Appl::RecallAppData(UsrCallbackType callbackType)
 {
  byte* StoragePtr;
- unsigned referenceTime = systemTime;
+ unsigned referenceTime = millis();
  StoragePtr = memMapper.memoryPtr(0, false);
  byte StorageReason = *StoragePtr++;
  if ((StorageReason != 0) && (StorageReason != 255)) // Ansonsten würde da etwas gar nicht stimmen (Sektor leer zB)
@@ -561,7 +559,7 @@ void Appl::RecallAppData(UsrCallbackType callbackType)
 void Appl::StoreApplData(UsrCallbackType callbackType)
 {
  byte* StoragePtr;
- unsigned referenceTime = systemTime;
+ unsigned referenceTime = millis();
  // Kann der Mapper überhaupt die Seite 0 mappen? Checken!
  memMapper.writeMem(0, 0); // writeMem() aktiviert die passende Speicherseite, entgegen zu memoryPtr()
  StoragePtr = memMapper.memoryPtr(0, false);
