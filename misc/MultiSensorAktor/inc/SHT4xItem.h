@@ -4,31 +4,30 @@
  *  published by the Free Software Foundation.
  */
 
-#ifndef DHTITEM_H_
-#define DHTITEM_H_
+#ifndef SHT4XITEM_H_
+#define SHT4XITEM_H_
 
 #include <sblib/eib/bcu_base.h>
-#include <sblib/sensors/dht.h>
-#include <GenericPin.h>
+#include <GenericItem.h>
 #include <TempHumSensorConfig.h>
+#include <sblib/i2c/SHT4x.h>
 
-class DHTPin : public GenericPin
+class SHT4xItem : public GenericItem
 {
 public:
-	DHTPin(int port, byte firstComIndex, TempHumSensorConfig* config, bool dht11, uint16_t& objRamPointer);
-	~DHTPin() = default;
+	SHT4xItem(byte firstComIndex, TempHumSensorConfig* config, GenericItem* nextItem, uint16_t& objRamPtr);
+	~SHT4xItem() = default;
 
-	byte GetState(uint32_t now, byte updatedObjectNo);
-
+	void Loop(uint32_t now, int updatedObjectNo);
 	int ConfigLength() { return sizeof(TempHumSensorConfig); }
 	int ComObjCount() { return 4; }
 
 protected:
+	TempHumSensorConfig *config;
+    SHT4xClass sht4x;
 	uint32_t nextAction = 0;
 	byte state = 0;
-	DHT dht;
-	TempHumSensorConfig* config;
+	float offset;
 };
 
-
-#endif /* DHTITEM_H_ */
+#endif /* SHT4XITEM_H_ */

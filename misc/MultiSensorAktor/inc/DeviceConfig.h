@@ -7,17 +7,34 @@
 #ifndef DEVICECONFIG_H_
 #define DEVICECONFIG_H_
 
-enum BusSwitch
+enum class BusSwitch : byte
 {
-	BusSwitchSPI0 = 0x01,
-	BusSwitchSPI1 = 0x02,
-	BusSwitchI2C = 0x04
+	SPI0 = 0x01,
+	SPI1 = 0x02,
+	I2C = 0x04
 };
+
+inline bool operator&(BusSwitch a, BusSwitch b)
+{
+	return static_cast<bool>(static_cast<int>(a) & static_cast<int>(b));
+}
+
+enum class SHTSwitch : byte
+{
+	SHT2x = 0x80,
+	SHT4x = 0x40,
+	SGP4x = 0x20,
+};
+
+inline bool operator&(SHTSwitch a, SHTSwitch b)
+{
+	return static_cast<bool>(static_cast<int>(a) & static_cast<int>(b));
+}
 
 #pragma pack(1)
 struct DeviceConfig
 {
-	byte BusSwitches;
+	BusSwitch BusSwitches;
 	byte SCK0;
 	byte SCK1;
 	byte MISO1;
@@ -25,7 +42,7 @@ struct DeviceConfig
 	byte CCS811Count;
 	byte DS3231Count;
 	byte iAQCoreCount;
-	byte SHT2xCount;
+	SHTSwitch SHTOption;
 	byte PCA9555DCount;
 	uint8_t PortAssignment[32];
 };

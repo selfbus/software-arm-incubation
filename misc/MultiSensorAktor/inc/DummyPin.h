@@ -12,7 +12,7 @@
 class DummyPin : public GenericPin
 {
 public:
-	DummyPin() : GenericPin(NULL, 0) {};
+	DummyPin() : GenericPin(0) {};
 	virtual int ConfigLength() { return 0; };
 	virtual int ComObjCount() { return 0; };
 };

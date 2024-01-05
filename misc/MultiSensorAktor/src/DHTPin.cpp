@@ -7,15 +7,14 @@
 #include <DHTPin.h>
 #include <HelperFunctions.h>
 
-DHTPin::DHTPin(BcuBase* bcu, int port, byte firstComIndex, DHTPinConfig *config, bool dht11, uint16_t& objRamPointer) : GenericPin(bcu, firstComIndex), dht(DHT()), config(config), port(port), dht11(dht11)
+DHTPin::DHTPin(int port, byte firstComIndex, TempHumSensorConfig *config, bool dht11, uint16_t& objRamPointer) : GenericPin(firstComIndex), dht(DHT()), config(config)
 {
 	dht.DHTInit(port, dht11 ? DHT11 : DHT22);
-	offset = config->Offset * 0.01f;
 
-	HelperFunctions::setComObjPtr(bcu, firstComIndex, BIT_1, objRamPointer);
-	HelperFunctions::setComObjPtr(bcu, firstComIndex + 1, BYTE_2, objRamPointer);
-	HelperFunctions::setComObjPtr(bcu, firstComIndex + 2, BYTE_4, objRamPointer);
-	HelperFunctions::setComObjPtr(bcu, firstComIndex + 3, BYTE_2, objRamPointer);
+	HelperFunctions::setComObjPtr(BCU, firstComIndex, BIT_1, objRamPointer);
+	HelperFunctions::setComObjPtr(BCU, firstComIndex + 1, BYTE_2, objRamPointer);
+	HelperFunctions::setComObjPtr(BCU, firstComIndex + 2, BYTE_4, objRamPointer);
+	HelperFunctions::setComObjPtr(BCU, firstComIndex + 3, BYTE_2, objRamPointer);
 };
 
 byte DHTPin::GetState(uint32_t now, byte updatedOjectNo)
@@ -27,7 +26,7 @@ byte DHTPin::GetState(uint32_t now, byte updatedOjectNo)
 		case 0:
 			if (config->PreFan > 0)
 			{
-				bcu->comObjects->objectWrite(firstComIndex, 1);
+				BCU->comObjects->objectWrite(firstComIndex, 1);
 				nextAction = now + (config->PreFan * 1000);
 			}
 			else
@@ -39,7 +38,7 @@ byte DHTPin::GetState(uint32_t now, byte updatedOjectNo)
 		case 1:
 			if (config->PreFan > 0)
 			{
-				bcu->comObjects->objectWrite(firstComIndex, (int)0);
+				BCU->comObjects->objectWrite(firstComIndex, (int)0);
 				nextAction = now + (config->PreMeasure * 1000);
 			}
 			else
@@ -51,12 +50,12 @@ byte DHTPin::GetState(uint32_t now, byte updatedOjectNo)
 		default:
 			if (dht.readData(true))
 			{
-				float ftemp = dht.ConvertTemperature(CELCIUS) + offset;
+				float ftemp = dht.ConvertTemperature(CELCIUS) + config->Offset * 0.01f;
 				int16_t temp = (int16_t)(ftemp * 100);
 				uint16_t hum = (uint16_t)(dht._lastHumidity * 100);
-				bcu->comObjects->objectWriteFloat(firstComIndex + 1, temp);
-				bcu->comObjects->objectWrite(firstComIndex + 2, (byte*)&ftemp);
-				bcu->comObjects->objectWriteFloat(firstComIndex + 3, hum);
+				BCU->comObjects->objectWriteFloat(firstComIndex + 1, temp);
+				BCU->comObjects->objectWrite(firstComIndex + 2, (byte*)&ftemp);
+				BCU->comObjects->objectWriteFloat(firstComIndex + 3, hum);
 			}
 
 			nextAction = now + (config->Delay * 1000);

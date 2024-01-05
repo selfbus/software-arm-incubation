@@ -14,7 +14,7 @@
 class CounterPin : public GenericPin
 {
 public:
-	CounterPin(BcuBase* bcu, byte firstComIndex, CounterPinConfig *config);
+	CounterPin(byte firstComIndex, CounterPinConfig *config);
 	~CounterPin() = default;
 
 	void PutValue(uint32_t now, int val);

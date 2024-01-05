@@ -7,21 +7,21 @@
 #ifndef PORTCONFIG_H_
 #define PORTCONFIG_H_
 
-#include <DHTPinConfig.h>
+#include <TempHumSensorConfig.h>
 #include <InputPinConfig.h>
 #include <OutputPinConfig.h>
 #include <PWMPinConfig.h>
 #include <CounterPinConfig.h>
 
-enum ARMPinType : byte
+enum class ARMPinType : byte
 {
-	ARMPinTypeInputFloating,
-	ARMPinTypeInputPullup,
-	ARMPinTypeInputPulldown,
-	ARMPinTypeOutput,
-	ARMPinTypeDHT11,
-	ARMPinTypeDHT22,
-	ARMPinTypePWM
+	InputFloating,
+	InputPullup,
+	InputPulldown,
+	Output,
+	DHT11,
+	DHT22,
+	PWM
 };
 
 #pragma pack(1)
@@ -33,7 +33,7 @@ struct ARMPinConfig
 	} BaseConfig;
 
 	union {
-		DHTPinConfig DHT;
+		TempHumSensorConfig DHT;
 		InputPinConfig Input;
 		OutputPinConfig Output;
 		PWMPinConfig PWM;

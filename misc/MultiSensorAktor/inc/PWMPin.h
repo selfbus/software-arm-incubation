@@ -12,24 +12,24 @@
 #include <GenericPin.h>
 #include <GenericItem.h>
 
-class IRQItem
+/*class IRQItem
 {
 public:
 	virtual void Irq(uint32_t now, uint16_t timerVal) = 0;
 	IRQItem *nextPin;
-};
+};*/
 
-class PWMPin : public GenericPin, public IRQItem
+class PWMPin : public GenericPin //, public IRQItem
 {
 public:
-	PWMPin(BcuBase* bcu, byte firstComObj, PWMPinConfig *config, GenericItem* parent, uint16_t& objRamPtr);
+	PWMPin(byte firstComObj, PWMPinConfig *config, GenericItem* parent, uint16_t& objRamPtr);
 	~PWMPin() = default;
 
 	byte GetState(uint32_t now, byte updatedObjectNo);
 
 	int ConfigLength() { return sizeof(PWMPinConfig); }
 	int ComObjCount() { return 3; }
-	void Irq(uint32_t now, uint16_t timerVal);
+//	void Irq(uint32_t now, uint16_t timerVal);
 
 
 protected:

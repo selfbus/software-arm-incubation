@@ -10,7 +10,7 @@
 #include <HelperFunctions.h>
 #include <ARMPinItem.h>
 
-CCS811Item::CCS811Item(BcuBase* bcu, byte firstComIndex, CCS811Config *config, GenericItem* nextItem, uint16_t& objRamPointer) : GenericItem(bcu, firstComIndex, nextItem), config(config), ccs811(CCS811Class()), nextAction(0)
+CCS811Item::CCS811Item(byte firstComIndex, CCS811Config *config, GenericItem* nextItem, uint16_t& objRamPointer) : GenericItem(firstComIndex, nextItem), config(config), ccs811(CCS811Class()), nextAction(0)
 {
 	for (int i = 0; i < 10 && !configured; i++)
 	{
@@ -24,22 +24,22 @@ CCS811Item::CCS811Item(BcuBase* bcu, byte firstComIndex, CCS811Config *config, G
 			configured = false;
 		}
 	}
-	bcu->comObjects->requestObjectRead(firstComIndex + 3);
-	bcu->comObjects->requestObjectRead(firstComIndex + 4);
+	BCU->comObjects->requestObjectRead(firstComIndex + 3);
+	BCU->comObjects->requestObjectRead(firstComIndex + 4);
 
-	HelperFunctions::setComObjPtr(bcu, firstComIndex, BIT_1, objRamPointer);
-	HelperFunctions::setComObjPtr(bcu, firstComIndex + 1, BYTE_2, objRamPointer);
-	HelperFunctions::setComObjPtr(bcu, firstComIndex + 2, BYTE_2, objRamPointer);
-	HelperFunctions::setComObjPtr(bcu, firstComIndex + 3, BYTE_2, objRamPointer);
-	HelperFunctions::setComObjPtr(bcu, firstComIndex + 4, BYTE_2, objRamPointer);
+	HelperFunctions::setComObjPtr(BCU, firstComIndex, BIT_1, objRamPointer);
+	HelperFunctions::setComObjPtr(BCU, firstComIndex + 1, BYTE_2, objRamPointer);
+	HelperFunctions::setComObjPtr(BCU, firstComIndex + 2, BYTE_2, objRamPointer);
+	HelperFunctions::setComObjPtr(BCU, firstComIndex + 3, BYTE_2, objRamPointer);
+	HelperFunctions::setComObjPtr(BCU, firstComIndex + 4, BYTE_2, objRamPointer);
 }
 
 void CCS811Item::Loop(uint32_t now, int updatedObjectNo)
 {
 	if (updatedObjectNo == firstComIndex + 3 || updatedObjectNo == firstComIndex + 4)
 	{
-		float t = bcu->comObjects->objectReadFloat(firstComIndex + 3) * 0.01f;
-		float rh = bcu->comObjects->objectReadFloat(firstComIndex + 4) * 0.01f;
+		float t = BCU->comObjects->objectReadFloat(firstComIndex + 3) * 0.01f;
+		float rh = BCU->comObjects->objectReadFloat(firstComIndex + 4) * 0.01f;
 
 		ccs811.compensate(t, rh);
 	}
@@ -51,7 +51,7 @@ void CCS811Item::Loop(uint32_t now, int updatedObjectNo)
 		case 0:
 			if (config->PreFan > 0)
 			{
-				bcu->comObjects->objectWrite(firstComIndex, 1);
+				BCU->comObjects->objectWrite(firstComIndex, 1);
 				nextAction = now + (config->PreFan * 1000);
 			}
 			else
@@ -63,7 +63,7 @@ void CCS811Item::Loop(uint32_t now, int updatedObjectNo)
 		case 1:
 			if (config->PreFan > 0)
 			{
-				bcu->comObjects->objectWrite(firstComIndex, (int)0);
+				BCU->comObjects->objectWrite(firstComIndex, (int)0);
 				nextAction = now + (config->PreMeasure * 1000);
 			}
 			else
@@ -91,8 +91,8 @@ void CCS811Item::Loop(uint32_t now, int updatedObjectNo)
 				if (configured)
 				{
 					baseline = ccs811.getBaseline();
-					bcu->comObjects->objectWrite(firstComIndex + 1, ccs811.CO2);
-					bcu->comObjects->objectWrite(firstComIndex + 2, ccs811.TVOC);
+					BCU->comObjects->objectWrite(firstComIndex + 1, ccs811.CO2);
+					BCU->comObjects->objectWrite(firstComIndex + 2, ccs811.TVOC);
 				}
 			}
 

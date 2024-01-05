@@ -7,21 +7,24 @@
 #ifndef GENERICITEM_H_
 #define GENERICITEM_H_
 
+#include <sblib/eib/bcu_base.h>
+
 class GenericItem
 {
 public:
-	GenericItem(BcuBase* bcu, byte firstComIndex, GenericItem* nextItem) : nextItem(nextItem), bcu(bcu), firstComIndex(firstComIndex) {}
+	GenericItem(byte firstComIndex, GenericItem* nextItem) : nextItem(nextItem), firstComIndex(firstComIndex) {}
 
 	virtual void Loop(uint32_t now, int updatedObjNo) = 0;
-	virtual void Irq(void* item, byte newValue) {}
+//	virtual void Irq(void* item, byte newValue) {}
 	GenericItem* GetNextItem() { return nextItem; };
 
 	virtual int ConfigLength() = 0;
 	virtual int ComObjCount() = 0;
 
+	static BcuBase* BCU;
 protected:
 	GenericItem* nextItem;
-	BcuBase* bcu;
+//	BcuBase* bcu;
 	byte firstComIndex;
 };
 

@@ -12,7 +12,7 @@
 class GenericPin
 {
 public:
-	GenericPin(BcuBase* bcu, byte firstComIndex) : bcu(bcu), firstComIndex(firstComIndex) {};
+	GenericPin(byte firstComIndex) : firstComIndex(firstComIndex) {};
 	~GenericPin() = default;
 
 	virtual byte GetState(uint32_t now, byte updatedObjectNo) { return 0; };
@@ -21,8 +21,9 @@ public:
 	virtual int ConfigLength() = 0;
 	virtual int ComObjCount() = 0;
 
+	static BcuBase* BCU;
+
 protected:
-	BcuBase* bcu;
 	byte firstComIndex;
 };
 

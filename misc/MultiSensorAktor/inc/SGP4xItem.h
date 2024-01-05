@@ -4,19 +4,19 @@
  *  published by the Free Software Foundation.
  */
 
-#ifndef SHT2XITEM_H_
-#define SHT2XITEM_H_
+#ifndef SGP4XITEM_H_
+#define SGP4XITEM_H_
 
 #include <sblib/eib/bcu_base.h>
 #include <GenericItem.h>
 #include <TempHumSensorConfig.h>
-#include <sblib/i2c/SHT2x.h>
+#include <sblib/i2c/SGP4x.h>
 
-class SHT2xItem : public GenericItem
+class SGP4xItem : public GenericItem
 {
 public:
-	SHT2xItem(byte firstComIndex, TempHumSensorConfig* config, GenericItem* nextItem, uint16_t& objRamPtr);
-	~SHT2xItem() = default;
+	SGP4xItem(byte firstComIndex, TempHumSensorConfig* config, GenericItem* nextItem, uint16_t& objRamPtr);
+	~SGP4xItem() = default;
 
 	void Loop(uint32_t now, int updatedObjectNo);
 	int ConfigLength() { return sizeof(TempHumSensorConfig); }
@@ -24,10 +24,11 @@ public:
 
 protected:
 	TempHumSensorConfig *config;
-    SHT2xClass sht2x;
+	SGP4xClass sgp4x;
 	uint32_t nextAction = 0;
 	byte state = 0;
-	float offset;
+	bool configured = false;
+	uint16_t baseline = 0;
 };
 
-#endif /* SHT2XITEM_H_ */
+#endif /* SGP4XITEM_H_ */
