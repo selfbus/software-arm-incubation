@@ -131,7 +131,8 @@ uint8_t SmokeDetectorApp::getRandomUInt8()
     // Clustering starts with the 46th device with value 135.
 
     auto ownAddress = bcu.ownAddress();
-    auto randomNumber = (reverseByteOrder(ownAddress) * 29) % 251;
+    auto reversedBytes = makeWord(lowByte(ownAddress), highByte(ownAddress));
+    auto randomNumber = (reversedBytes * 29) % 251;
     return static_cast<uint8_t>(randomNumber);
 }
 

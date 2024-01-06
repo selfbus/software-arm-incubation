@@ -11,6 +11,7 @@
  */
 
 #include <sblib/platform.h>
+#include <sblib/timer.h>
 #include <config.h>
 #include <com_objs.h>
 #include <AdcIsr.h>
@@ -23,9 +24,6 @@
 #include <app_main.h>
 #include <DebugFunc.h>
 
-
-// System time in milliseconds (from timer.cpp)
-extern volatile unsigned int systemTime;
 
 unsigned LastRelTime;
 unsigned LastManCtrlTime;
@@ -102,7 +100,7 @@ BcuBase* setup()
 #endif
  pwmSetup();
  IsrSetup();
- LastTimeFctTime = LastRelTime = LastManCtrlTime = systemTime;
+ LastTimeFctTime = LastRelTime = LastManCtrlTime = millis();
  AppOperatingState = AppOperatingStates::Startup;
  // //RelTestEnqueue();
  bcu.setProgPin(PIOPROGBTN);
@@ -256,7 +254,7 @@ bool AppOrNoAppProcessingEnabled(void)
 
 void RelayAndSpiProcessing(void)
 {
- unsigned referenceTime = systemTime;
+ unsigned referenceTime = millis();
  unsigned SpiRelData;
  // TODO Passt diese Rasterung bei den Relais? Die Pulsdauer verlängert sich, wenn mal der exakte Zeitpunkt verpasst wurde.
  if ((referenceTime - LastRelTime) >= 5)
@@ -306,7 +304,7 @@ void LedProcessing(void)
 
 void MainProcessingRoutine(bool AppValid)
 {
- unsigned referenceTime = systemTime; // In verschiedenen Bereichen der Routine ist es wichtig, dass von einer konsistenten Zeit ausgegangen wird
+ unsigned referenceTime = millis(); // In verschiedenen Bereichen der Routine ist es wichtig, dass von einer konsistenten Zeit ausgegangen wird
 
  // Die Verwaltung der Operating States der Applikation
  // ====================================================

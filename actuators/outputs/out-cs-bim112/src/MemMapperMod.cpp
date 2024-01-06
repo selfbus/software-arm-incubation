@@ -10,7 +10,6 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/eib.h>
 #include <MemMapperMod.h>
 
 int MemMapperMod::writeMemPtr(int virtAddress, byte *data, int length)
