@@ -44,13 +44,24 @@ Setup per finished [Tests B.1](tests_B_1.md), i.e. fully configured module mount
 
 ## B.5.c
 
-**Step:** Trigger test alarm via button on the smoke alarm device
+**Steps:**
+* In ETS, set parameters on Status Informations page as follows
+  - Send status informations periodically: **Yes**
+  - Interval [min]: **1**
+  - \<all switches>: **Yes**
+  - Send operating time as: **seconds (DPT 13.100)**
+* Download the changes to the device
+* Trigger test alarm via button on the smoke alarm device
 
-**Verify:** Sends messages on the bus to set both `Testalarm Network` (communication object 1) and `Test-alarm Status` (communication object 5) to value `1` every 5 seconds
+**Verify:**
+* Sends messages on the bus to set both `Testalarm Network` (communication object 1) and `Test-alarm Status` (communication object 5) to value `1` every 5 seconds
+* Does not send any Status Informations communication objects while alarm is on
 
 **Step:** Silence test alarm via button on the smoke alarm device
 
-**Verify:** Sends messages on the bus to set both `Testalarm Network` (communication object 1) and `Test-alarm Status` (communication object 5) to value `0`
+**Verify:**
+* Sends messages on the bus to set both `Testalarm Network` (communication object 1) and `Test-alarm Status` (communication object 5) to value `0`
+* Continues sending Status Informations communication objects
 
 ## B.5.d
 

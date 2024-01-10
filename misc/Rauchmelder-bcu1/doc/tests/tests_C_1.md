@@ -18,6 +18,7 @@ Both connected KNX modules are configured to have test alarm networking enabled:
 * In ETS, set parameters on Testalarm page as follows
   - Send test-alarm status periodically: **No**
 * In ETS, ensure `Testalarm Network` (communication object 1) is linked to the same group address
+* In ETS, ensure `Testalarm Status` (communication object 5) is linked to dedicated group addresses
 * Download the changes to the devices
 * Start Group Monitor
 
@@ -27,7 +28,19 @@ Both connected KNX modules are configured to have test alarm networking enabled:
 
 **Step:** Trigger test alarm via button on Device 1
 
-**Verify:** Device 2 sends messages on the bus to set both `Testalarm Network` (communication object 1) and `Test-alarm Status` (communication object 5) to value `1`
+**Verify:**
+* Device 2 sends messages on the bus to set both `Testalarm Network` (communication object 1) and `Test-alarm Status` (communication object 5) to value `1`
+* All three devices signal test alarm
+
+**Step:** Send telegram to set `Testalarm Network` (communication object 1) to value `1` via ETS (makes Device 2 have both local and bus test alarm)
+
+**Verify:** All devices still signal test alarm
+
+**Step:** Send telegram to set `Testalarm Network` (communication object 1) to value `0` via ETS
+
+**Verify:**
+* Device 2 sends message on the bus to set `Testalarm Network` (communication object 1) to value `1`
+* All devices still signal test alarm
 
 **Step:** Silence test alarm via button on Device 1
 
