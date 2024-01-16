@@ -140,6 +140,9 @@
  *  output pins configuration
  */
 
+// If the application hardware is app_out_8x_16A_bistab_seperated_4MU comment this define out
+//#define APP_OUT_8X_16A_BISTAB_SEPERATED_4MU
+
 #ifdef OUT8
 #    ifdef BI_STABLE
         // 4TE-ARM Controller + out8_16A (bi-stable relays)
@@ -152,7 +155,7 @@
              * see LPC user manual page 79 chapter 7.4.12 IOCON_PIO0_5.
              * better solution would be to use IO7 instead.
              */
-
+#			ifndef APP_OUT_8X_16A_BISTAB_SEPERATED_4MU
             // K1 -> K4
             PIN_IO2,  PIN_IO3,  //  1,  2 => K1 reset/set
             PIN_IO5,  PIO_SDA,  //  3,  4 => K2 reset/set // PIO_SDA-> pull-up resistor!
@@ -164,40 +167,26 @@
             PIN_IO10, PIN_RX,   // 13, 14 => K7 reset/set
             PIN_IO14, PIN_IO15, // 11, 12 => K6 reset/set
             PIN_IO9,  PIN_IO13  //  9, 10 => K5 reset/set
+
+#			else
+        	/*
+        	* PIN configuration for application hardware "out_8x_16A_bistab_seperated_4MU"
+        	* (this hardware was named before as "out8_16A_V2.3")
+        	*/
+
+         // RESET Pin,SET Pin
+            PIN_IO5,  PIN_IO7,  // Kanal 1
+            PIN_IO4,  PIN_IO3,  // Kanal 2
+            PIN_PWM,  PIN_APRG, // Kanal 3
+            PIN_IO2,  PIN_IO1,  // Kanal 4
+
+			PIN_IO10, PIN_RX,   // Kanal 5
+            PIN_TX,   PIN_IO11, // Kanal 6
+            PIN_IO14, PIN_IO15, // Kanal 7
+            PIN_IO9,  PIN_IO13  // Kanal 8
+
+#       endif
         };
-
-#       if 0
-            // moved from app_main.cpp to resolve merge conflict from oltarion commit "added Hardware Pin descriptions, old pin assignments were not deleted 5787a7b3ed10097856df5ba29c415c7f039d5a85"
-            // Pinbelegung für out8_16A-V2.3 (bistabile Relais, separate Kanäle ohne Zusammenlegung von Kontakten)
-            const int outputPins[NO_OF_OUTPUTS] =
-            {// RESET Pin,SET Pin
-                PIN_IO5,  PIN_IO7,  // Kanal 1
-                PIN_IO4,  PIN_IO3,  // Kanal 2
-                PIN_PWM,  PIN_APRG, // Kanal 3
-                PIN_IO2,  PIN_IO1,  // Kanal 4
-
-                PIN_IO10, PIN_RX,   // Kanal 5
-                PIN_TX,   PIN_IO11, // Kanal 6
-                PIN_IO14, PIN_IO15, // Kanal 7
-                PIN_IO9,  PIN_IO13  // Kanal 8
-            };
-#       endif
-
-#       if 0
-            // moved from app_main.cpp to resolve merge conflict from oltarion commit "added Hardware Pin descriptions, old pin assignments were not deleted 5787a7b3ed10097856df5ba29c415c7f039d5a85"
-            // Pinbelegung für out8_16A-V2.2 (bistabile Relais, Eingänge von jeweils 2 Kanälen zusammen)
-            const int outputPins[NO_OF_OUTPUTS] =
-            {// RESET Pin,SET Pin
-                PIN_IO1,  PIN_IO4,  // Kanal 1
-                PIN_PWM,  PIN_APRG, // Kanal 2
-                PIN_IO5,  PIN_IO7,  // Kanal 3
-                PIN_IO2,  PIN_IO3,  // Kanal 4
-                PIN_TX,   PIN_IO11, // Kanal 5
-                PIN_IO10, PIN_RX,   // Kanal 6
-                PIN_IO14, PIN_IO15, // Kanal 7
-                PIN_IO9,  PIN_IO13  // Kanal 8
-            };
-#       endif
 
         /*
          * DONE check which bi-stable configuration this should be?
