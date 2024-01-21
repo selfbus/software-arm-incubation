@@ -257,11 +257,8 @@ void loop(void)
     checkTimeouts();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bcu.bus->idle())
-    {
-        waitForInterrupt();
-        printSerialBusVoltage(500);
-    }
+    waitForInterrupt();
+    printSerialBusVoltage(500);
 }
 
 /**

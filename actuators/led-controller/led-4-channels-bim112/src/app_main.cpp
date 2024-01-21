@@ -68,8 +68,7 @@ void loop()
     checkPeriodicFuntions();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bcu.bus->idle())
-        waitForInterrupt();
+    waitForInterrupt();
 }
 
 void initApplication(void)
