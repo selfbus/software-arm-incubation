@@ -378,8 +378,8 @@ void MainProcessingRoutine(bool AppValid)
  //============
  LedProcessing();
 
- //if (bus.idle()) // alle 10µs kommt ein INT, also ist das Sleep hier eher theoretischer Natur.
-   waitForInterrupt();
+ // alle 10µs kommt ein INT, also ist das Sleep hier eher theoretischer Natur.
+ waitForInterrupt();
 }
 
 /*
