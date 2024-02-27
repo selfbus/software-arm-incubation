@@ -17,13 +17,15 @@ class Blind: public Channel
 {
 public:
     Blind() = delete;
-    Blind(unsigned int nummber, unsigned int address);
+    Blind(unsigned int nummber, unsigned int address, short position, short slatPosition);
     virtual unsigned int channelType(void);
     //virtual void periodic(void);
     virtual void moveTo(short position);
 
     void moveSlatTo(short position);
     void moveSlatFor(unsigned int time, unsigned int direction);
+
+    virtual unsigned short currentSlatPosition();
 
 protected:
     virtual void _savePosition(bool currentPosition);
@@ -70,5 +72,10 @@ inline bool Blind::_isInPosition(unsigned char pos)
 inline bool Blind::_stillInAutoPosition(void)
 {
     return (position == autoPosition) && (slatPosition == slatAutoPosition);
+}
+
+inline unsigned short Blind::currentSlatPosition(void)
+{
+    return (unsigned short) slatPosition;
 }
 #endif /* ROL_JAL_BIM112_SRC_BLIND_H_ */

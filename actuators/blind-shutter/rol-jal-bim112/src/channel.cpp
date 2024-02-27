@@ -58,7 +58,7 @@ void Channel::setPWMtoMaxDuty()
     TIMER_PWM.match(MAT2, PWM_DUTY_MAX);  // match MAT2 when the timer reaches this value
 }
 
-Channel::Channel(unsigned int number, unsigned int address)
+Channel::Channel(unsigned int number, unsigned int address, short position)
   : shortTime(0)
   , number(number)
   , firstObjNo(13 + number * 20)
@@ -71,7 +71,7 @@ Channel::Channel(unsigned int number, unsigned int address)
   , direction(STOP)
   , moveForTime(0)
   , startTime(0)
-  , position(0)
+  , position(position)
   , startPosition(-1)
   , targetPosition(-1)
   , savedPosition(-1)
@@ -160,7 +160,12 @@ Channel::Channel(unsigned int number, unsigned int address)
     }
     _enableFeature(baseAddr + 0x18 + number, FEATURE_CENTRAL);
     timeout.start (pauseChangeDir);
+#ifdef BUSFAIL
+    bcu.comObjects->objectSetValue(firstObjNo + COM_OBJ_POSITION, position);
+    bcu.comObjects->objectSetValue(firstObjNo + COM_OBJ_POS_VALID, 1);
+#else
     bcu.comObjects->objectSetValue(firstObjNo + COM_OBJ_POS_VALID, 0);
+#endif
 }
 
 void Channel::objectUpdateCh(unsigned int objno)

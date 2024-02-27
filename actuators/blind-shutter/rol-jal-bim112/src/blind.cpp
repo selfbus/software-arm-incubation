@@ -11,10 +11,10 @@
 #include <sblib/timer.h>
 #include "config.h"
 
-Blind::Blind(unsigned int number, unsigned int address)
-  : Channel(number, address)
+Blind::Blind(unsigned int number, unsigned int address, short position, short slatPosition)
+  : Channel(number, address, position)
   , slatMoveForTime(0)
-  , slatPosition(0)
+  , slatPosition(slatPosition)
   , slatStartPosition(-1)
   , slatTargetPosition(-1)
   , slatSavedPosition(-1)
@@ -31,6 +31,9 @@ Blind::Blind(unsigned int number, unsigned int address)
         automaticSlatPos[i] = bcu.userEeprom->getUInt8(address + 44 + i);
     }
     oneBitSlatPosition = bcu.userEeprom->getUInt8(address + 68);
+#ifdef BUSFAIL
+    bcu.comObjects->objectSetValue(firstObjNo + COM_OBJ_SLAT_POSITION, slatPosition);
+#endif
 }
 
 void Blind::moveTo(short position)
