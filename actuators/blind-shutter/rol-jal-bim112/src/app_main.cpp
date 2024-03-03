@@ -15,7 +15,7 @@
 #include "app-rol-jal.h"
 
 #ifdef BUSFAIL
-#   include <sblib/math.h>
+#    include <sblib/math.h>
 #    include "bus_voltage.h"
 #    include "app_nov_settings.h"
 #endif
@@ -46,7 +46,7 @@ void initSerial()
     serial.setRxPin(PIO2_7);
     serial.setTxPin(PIO2_8);
     serial.begin(115200);
-    serial.println("out8 serial debug started");
+    serial.println("rol-jal-bim112 serial debug started");
 #endif
 }
 
