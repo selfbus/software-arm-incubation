@@ -166,13 +166,24 @@ void initApplication(short channelPositions[], short channelSlatPositions[])
 
     for (unsigned int i = 0; i < NO_OF_CHANNELS; i++, address += EE_CHANNEL_CFG_SIZE)
     {
-        short position = 0;
-        short slatPosition = 0;
-        if(channelPositions != nullptr){
+        short position;
+        short slatPosition;
+        if (channelPositions != nullptr)
+        {
             position = channelPositions[i];
         }
-        if(channelSlatPositions != nullptr){
+        else
+        {
+            position = 0;
+        }
+
+        if (channelSlatPositions != nullptr)
+        {
             slatPosition = channelSlatPositions[i];
+        }
+        else
+        {
+            slatPosition = 0;
         }
 
         switch (bcu.userEeprom->getUInt8(address))
