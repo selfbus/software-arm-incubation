@@ -141,7 +141,6 @@ BcuBase* setup()
 
 #ifdef BUSFAIL
     initApplication(AppData.channelPositions, AppData.channelSlatPositions);
-    startBusVoltageMonitoring(); // needs to be called again, because Release version is using analog_pin.h functions from sblib which break our ADC Interrupts
 #else
     initApplication();
 #endif
