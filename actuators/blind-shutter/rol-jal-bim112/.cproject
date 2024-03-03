@@ -129,7 +129,6 @@
 		<cconfiguration id="com.crt.advproject.config.exe.release.914587829.1896956369">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.release.914587829.1896956369" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release">
 				<macros>
-					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
@@ -382,7 +381,6 @@
 		<cconfiguration id="com.crt.advproject.config.exe.release.914587829.1562185654">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.release.914587829.1562185654" moduleId="org.eclipse.cdt.core.settings" name="Release 4t bf ha">
 				<macros>
-					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
@@ -414,7 +412,6 @@
 									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
-									<listOptionValue builtIn="false" value="${controller_type}"/>
 									<listOptionValue builtIn="false" value="${bus_fail}"/>
 									<listOptionValue builtIn="false" value="${hand_actuation}"/>
 								</option>
@@ -519,7 +516,6 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.462531644.944556552">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.462531644.944556552" moduleId="org.eclipse.cdt.core.settings" name="Debug 4t bf ha">
 				<macros>
-					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
@@ -551,7 +547,6 @@
 									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
-									<listOptionValue builtIn="false" value="${controller_type}"/>
 									<listOptionValue builtIn="false" value="${bus_fail}"/>
 									<listOptionValue builtIn="false" value="${hand_actuation}"/>
 								</option>
@@ -649,7 +644,6 @@
 		<cconfiguration id="com.crt.advproject.config.exe.release.914587829.1562185654.1421299482">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.release.914587829.1562185654.1421299482" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release 4t bf ha">
 				<macros>
-					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
@@ -681,7 +675,6 @@
 									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
-									<listOptionValue builtIn="false" value="${controller_type}"/>
 									<listOptionValue builtIn="false" value="${bus_fail}"/>
 									<listOptionValue builtIn="false" value="${hand_actuation}"/>
 								</option>
@@ -786,7 +779,6 @@
 		<cconfiguration id="com.crt.advproject.config.exe.release.914587829.1562185654.1421299482.188398702">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.release.914587829.1562185654.1421299482.188398702" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release 4t ha">
 				<macros>
-					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
@@ -817,7 +809,6 @@
 									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
-									<listOptionValue builtIn="false" value="${controller_type}"/>
 									<listOptionValue builtIn="false" value="${bus_fail}"/>
 									<listOptionValue builtIn="false" value="${hand_actuation}"/>
 								</option>
@@ -922,7 +913,6 @@
 		<cconfiguration id="com.crt.advproject.config.exe.release.914587829.1562185654.1615365366">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.release.914587829.1562185654.1615365366" moduleId="org.eclipse.cdt.core.settings" name="Release 4t ha">
 				<macros>
-					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
@@ -953,7 +943,6 @@
 									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
-									<listOptionValue builtIn="false" value="${controller_type}"/>
 									<listOptionValue builtIn="false" value="${bus_fail}"/>
 									<listOptionValue builtIn="false" value="${hand_actuation}"/>
 								</option>
