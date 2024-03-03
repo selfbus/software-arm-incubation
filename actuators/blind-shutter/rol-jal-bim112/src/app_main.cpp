@@ -176,12 +176,11 @@ void loop_noapp()
     // no application is loaded, make sure that all relays are off
     pinMode(PIN_PWM, OUTPUT);  // configure PWM Pin as output when application is not loaded
     digitalWrite(PIN_PWM, 1);  // set PWM Pin to high so all relays will be off
-#ifdef HAND_ACTUATION
-    if (!bcu.programmingMode())
+
+    if ((handAct != nullptr) && (!bcu.programmingMode()))
     {
         HandActuation::testIO(&handPins[0], NO_OF_HAND_PINS, BLINK_TIME);
     }
-#endif
 }
 
 

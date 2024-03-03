@@ -305,13 +305,13 @@ void Channel::stop(void)
     {
         switchOutputPin(outputPins[number * 2 + 0], OUTPUT_LOW);
         switchOutputPin(outputPins[number * 2 + 1], OUTPUT_LOW);
-#ifdef HAND_ACTUATION
-       if (handAct_ != nullptr)
-       {
+
+        if (handAct_ != nullptr)
+        {
             handAct_->setLedState(number * 2 + 0, 0);
             handAct_->setLedState(number * 2 + 1, 0);
-       }
-#endif
+        }
+
         state     = PROTECT;
         timeout.start(pauseChangeDir);
         _sendPosition();
@@ -441,10 +441,9 @@ void Channel::_handleState(void)
             Channel::setPWMtoMaxDuty();     // set PWM to maximum pulse width so relays can switch
             PWMDisabled.start(PWM_TIMEOUT); // start timer to reset PWM back to normal pulse width
 
-#ifdef HAND_ACTUATION
             if (handAct_ != nullptr)
                 handAct_->setLedState(outNo, 1);
-#endif
+
             timeout.start(motorOnDelay);
             state = DELAY;
         }

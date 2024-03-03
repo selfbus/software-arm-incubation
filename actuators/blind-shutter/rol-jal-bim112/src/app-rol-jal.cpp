@@ -85,6 +85,11 @@ void objectUpdated(int objno)
 
 void checkHandActuation(void)
 {
+    if (handAct == nullptr)
+    {
+        return;
+    }
+
     int btnNumber;
     HandActuation::ButtonState btnState;
     bool processHandActuation = (handAct->getButtonAndState(btnNumber, btnState)); // changed a button its state?
@@ -130,10 +135,8 @@ void checkPeriodicFuntions(void)
     {
         Channel::startPWM();  // re-enable the PWM
     }
-    if (handAct != nullptr)
-    {
-        checkHandActuation();
-    }
+
+    checkHandActuation();
 }
 
 void getChannelPositions(short channelPositions[], short channelSlatPositions[]){
@@ -189,13 +192,12 @@ void initApplication(short channelPositions[], short channelSlatPositions[])
 
 void stopApplication()
 {
-
     // ToDo: alles nötige veranlassen für den Shutdown
-
-#ifdef HAND_ACTUATION
-    // switch all hand actuation LEDs off, to save some power
-    handAct->setallLedState(false);
-#endif
+    if (handAct != nullptr)
+    {
+       // switch all hand actuation LEDs off, to save some power
+       handAct->setallLedState(false);
+    }
 
     // finally stop the bcu
     bcu.end();
