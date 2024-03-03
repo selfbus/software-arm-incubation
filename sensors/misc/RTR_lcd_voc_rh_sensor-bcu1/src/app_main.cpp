@@ -57,7 +57,7 @@ APP_VERSION("SBrtrLcd", "1", "10")
  * Initialize the application.
  */
 BcuBase* setup() {
-
+    bcu.setProgPin(PIO2_11); // UP16/GNAX controller progPin
 #if EINHEIZKREIS
 	bcu.begin(76, 0x474, 2);  // we are a MDT temperature controller, version 1.2
 #else
