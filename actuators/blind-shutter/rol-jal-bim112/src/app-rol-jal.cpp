@@ -165,10 +165,10 @@ void initApplication(short channelPositions[], short channelSlatPositions[])
     {
     	short position = 0;
     	short slatPosition = 0;
-    	if(channelPositions != NULL){
+    	if(channelPositions != nullptr){
     		position = channelPositions[i];
     	}
-    	if(channelSlatPositions != NULL){
+    	if(channelSlatPositions != nullptr){
     		slatPosition = channelSlatPositions[i];
     	}
 

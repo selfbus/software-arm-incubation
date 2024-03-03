@@ -29,7 +29,7 @@ void checkPeriodicFuntions(void);
 /**
  * Called during the initialization of the application
  */
-void initApplication(short channelPositions[] = NULL, short channelSlatPositions[] = NULL);
+void initApplication(short channelPositions[] = nullptr, short channelSlatPositions[] = nullptr);
 
 /**
  * Called if there was a Bus voltage failure
