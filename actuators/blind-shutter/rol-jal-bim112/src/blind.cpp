@@ -31,9 +31,8 @@ Blind::Blind(unsigned int number, unsigned int address, short position, short sl
         automaticSlatPos[i] = bcu.userEeprom->getUInt8(address + 44 + i);
     }
     oneBitSlatPosition = bcu.userEeprom->getUInt8(address + 68);
-#ifdef BUSFAIL
+
     bcu.comObjects->objectSetValue(firstObjNo + COM_OBJ_SLAT_POSITION, slatPosition);
-#endif
 }
 
 void Blind::moveTo(short position)

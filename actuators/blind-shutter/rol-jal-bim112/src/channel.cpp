@@ -160,8 +160,8 @@ Channel::Channel(unsigned int number, unsigned int address, short position)
     }
     _enableFeature(baseAddr + 0x18 + number, FEATURE_CENTRAL);
     timeout.start (pauseChangeDir);
-#ifdef BUSFAIL
     bcu.comObjects->objectSetValue(firstObjNo + COM_OBJ_POSITION, position);
+#ifdef BUSFAIL
     bcu.comObjects->objectSetValue(firstObjNo + COM_OBJ_POS_VALID, 1);
 #else
     bcu.comObjects->objectSetValue(firstObjNo + COM_OBJ_POS_VALID, 0);
