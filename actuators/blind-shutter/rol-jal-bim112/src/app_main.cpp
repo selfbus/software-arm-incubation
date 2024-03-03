@@ -123,21 +123,21 @@ BcuBase* setup()
     bcu.begin(MANUFACTURER, currentVersion->hardwareVersion[5], APPVERSION);  // we are a MDT shutter/blind actuator, version 2.8
     bcu.setHardwareType(currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
 
-    pinMode(PIN_INFO, OUTPUT);	// Info LED
-    pinMode(PIN_RUN,  OUTPUT);	// Run LED
+    pinMode(PIN_INFO, OUTPUT); // Info LED
+    pinMode(PIN_RUN,  OUTPUT); // Run LED
 
     // Running the controller in a closed housing makes these LEDs useless - they just consume power
     // additionally at the moment the rol-jal application does not make use of these LEDs
     // check config file to toggle the use
 #ifndef USE_DEV_LEDS
-	digitalWrite(PIN_INFO, 0);
-	digitalWrite(PIN_RUN, 0);
+    digitalWrite(PIN_INFO, 0);
+    digitalWrite(PIN_RUN, 0);
 #endif
 
     // enable bus voltage monitoring
     startBusVoltageMonitoring();
 
-	recallAppData();
+    recallAppData();
 
 #ifdef BUSFAIL
     initApplication(AppData.channelPositions, AppData.channelSlatPositions);
@@ -146,8 +146,8 @@ BcuBase* setup()
     initApplication();
 #endif
 
-	timeout.start(1);
-	return (&bcu);
+    timeout.start(1);
+    return (&bcu);
 }
 
 /**
@@ -188,10 +188,10 @@ void loop_noapp()
 void ResetDefaultApplicationData()
 {
 #ifdef BUSFAIL
-	for(int i = 0; i < NO_OF_CHANNELS; i++){
-		AppData.channelPositions[i] = 0;
-		AppData.channelSlatPositions[i] = 0;
-	}
+    for(int i = 0; i < NO_OF_CHANNELS; i++){
+        AppData.channelPositions[i] = 0;
+        AppData.channelSlatPositions[i] = 0;
+    }
 #endif
 }
 
@@ -204,9 +204,9 @@ void AppCallback::BusVoltageFail()
      getChannelPositions(AppData.channelPositions, AppData.channelSlatPositions);
     // write application settings to flash
     if (AppNovSetting.StoreApplData((unsigned char*)&AppData, sizeof(ApplicationData)))
-    	digitalWrite(PIN_INFO, 0);
+        digitalWrite(PIN_INFO, 0);
     else
-    	digitalWrite(PIN_INFO, 1);
+        digitalWrite(PIN_INFO, 1);
     stopApplication();
 
 #ifdef DEBUG

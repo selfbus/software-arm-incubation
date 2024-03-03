@@ -141,10 +141,10 @@ void getChannelPositions(short channelPositions[], short channelSlatPositions[])
     {
         if (channels[i] != nullptr)
         {
-        	channelPositions[i] = channels[i]->currentPosition();
-        	if(channels[i]->channelType() == Channel::BLIND){
-        		channelSlatPositions[i] = ((Blind *) channels[i])->currentSlatPosition();
-        	}
+            channelPositions[i] = channels[i]->currentPosition();
+            if(channels[i]->channelType() == Channel::BLIND){
+                channelSlatPositions[i] = ((Blind *) channels[i])->currentSlatPosition();
+            }
         }
     }
 }
@@ -163,14 +163,14 @@ void initApplication(short channelPositions[], short channelSlatPositions[])
 
     for (unsigned int i = 0; i < NO_OF_CHANNELS; i++, address += EE_CHANNEL_CFG_SIZE)
     {
-    	short position = 0;
-    	short slatPosition = 0;
-    	if(channelPositions != nullptr){
-    		position = channelPositions[i];
-    	}
-    	if(channelSlatPositions != nullptr){
-    		slatPosition = channelSlatPositions[i];
-    	}
+        short position = 0;
+        short slatPosition = 0;
+        if(channelPositions != nullptr){
+            position = channelPositions[i];
+        }
+        if(channelSlatPositions != nullptr){
+            slatPosition = channelSlatPositions[i];
+        }
 
         switch (bcu.userEeprom->getUInt8(address))
         {
@@ -190,7 +190,7 @@ void initApplication(short channelPositions[], short channelSlatPositions[])
 void stopApplication()
 {
 
-	// ToDo: alles nötige veranlassen für den Shutdown
+    // ToDo: alles nötige veranlassen für den Shutdown
 
 #ifdef HAND_ACTUATION
     // switch all hand actuation LEDs off, to save some power
