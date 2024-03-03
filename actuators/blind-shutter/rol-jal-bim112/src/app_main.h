@@ -1,7 +1,7 @@
 /*
  *  app_main.h - The application's main header file.
  *
- *  Copyright (c) 2021 Darthyson <darth@maptrack.de>
+ *  Copyright (c) 2024 Oliver Stefan <o.stefan252@googlemail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
