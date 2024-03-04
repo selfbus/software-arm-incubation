@@ -19,13 +19,6 @@ const HardwareVersion * currentVersion;
  */
 BcuBase* setup()
 {
-    //bcu.setProgPin(PIN_PROG);
-#ifndef __LPC11UXX__
-    //bcu.setProgPinInverted(false);
-    //bcu.setRxPin(PIO1_8);
-    //bcu.setTxPin(PIO1_9);
-#endif
-
     //debug_init();
 	currentVersion = &hardwareVersion[HARDWARE_ID];
 	bcu.setHardwareType(currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));

@@ -39,10 +39,13 @@ MemMapper memMapper(0xb000, 0x3f00, false);
 BcuBase* setup()
 {
 #if defined (__LPC11XX__)
+#   if defined(__LPC11XX_GNAXBOARD__)
+    serial.setRxPin(PIO3_1); // GNAX and TS_ARM
+    serial.setTxPin(PIO3_0); // GNAX and TS_ARM
+#   else
     serial.setRxPin(PIO2_7); // 4TE ID-SEL
     serial.setTxPin(PIO2_8); // 4TE ID-SEL
-    // serial.setRxPin(PIO3_1); // GNAX and TS_ARM
-    // serial.setTxPin(PIO3_0); // GNAX and TS_ARM
+#   endif
     serial.begin(115200);
     serial.println("out8-dimmer-bim112 online");
 #elif defined (__LPC11UXX__)
@@ -65,13 +68,11 @@ BcuBase* setup()
 
 
 #if defined (__LPC11XX__)
-#   if defined(__LPC11XX_IO16__)
+#   if defined(__LPC11XX_GNAXBOARD__)
         // GNAX2 board
         bcu.setProgPin(PIO2_11); // XIO23
         bcu.setProgPinInverted(false);
-        bcu.setRxPin(PIO1_8);
-        bcu.setTxPin(PIO1_9);
-#   endif // __LPC11XX_IO16__
+#   endif // __LPC11XX_GNAXBOARD__
 #elif defined (__LPC11UXX__)
 #   error "set correct bcu-pins for LPCUxxx" // TODO set correct bcu-pins for LPCUxxx
 #else
