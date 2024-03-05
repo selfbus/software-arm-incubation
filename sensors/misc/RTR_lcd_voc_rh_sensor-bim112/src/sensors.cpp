@@ -29,9 +29,13 @@ bool TempSensAvailable;
 bool SollTempFlagMem = memMapper.getUInt32(UF_TEMP_SOLL_TEMP_FLAG);
 
 void initSensors(){
+#if TEMP_SENSOR_INSTALLED
 	SHT21.Init();
+#endif
 
+#if VOC_SENSOR_INSTALLED
 	CCS811.begin(CCS_811_ADDR, PIO2_8); //Address and Wake Pin of CCS811
+#endif
 
 #if EXTERNAL_TEMP_SENS
 	extDS18B20.DS18x20Init(PIO2_5, false); //Data Pin, no parasite mode
