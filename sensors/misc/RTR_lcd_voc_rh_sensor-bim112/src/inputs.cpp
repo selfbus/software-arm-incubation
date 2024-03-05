@@ -8,7 +8,6 @@
 
 
 #include <sblib/core.h>
-#include <sblib/internal/variables.h>
 #include <sblib/timeout.h>
 #include "app_rtr.h"
 #include "inputs.h"
@@ -50,11 +49,11 @@ extern "C" void PIOINT1_IRQHandler(void)
 	if(source == (1<<7)){ //PIO1_7
 		bool inputLevel = digitalRead(inputPins[1]);
 		if(inputLevel == 0){	//Taste gedrückt
-			TasterPressTime[0] = systemTime;
+			TasterPressTime[0] = millis();
 			timeout[0].start(LONGPRESSTIME);
 		}else{		//Taste losgelassen
 			timeout[0].stop();
-			unsigned int timeDiff = systemTime - TasterPressTime[0];
+			unsigned int timeDiff = millis() - TasterPressTime[0];
 			if(timeDiff > LONGPRESSTIME){
 //				inputChangedMem[1] = LONG_PRESS;
 			}else if(timeDiff > debounceTime && timeDiff < LONGPRESSTIME){
@@ -72,11 +71,11 @@ extern "C" void PIOINT2_IRQHandler(void)
 	if(source == (1<<10)){ //PIO2_10
 		bool inputLevel = digitalRead(inputPins[0]);
 		if(inputLevel == 0){	//Taste gedrückt
-			TasterPressTime[1] = systemTime;
+			TasterPressTime[1] = millis();
 			timeout[1].start(LONGPRESSTIME);
 		}else{		//Taste losgelassen
 			timeout[1].stop();
-			unsigned int timeDiff = systemTime - TasterPressTime[1];
+			unsigned int timeDiff = millis() - TasterPressTime[1];
 			if(timeDiff > LONGPRESSTIME){
 //				inputChangedMem[1] = LONG_PRESS;
 			}else if(timeDiff > debounceTime && timeDiff < LONGPRESSTIME){
