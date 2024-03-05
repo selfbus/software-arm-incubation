@@ -7,7 +7,7 @@
  */
 
 #include <sblib/core.h>
-#include <sblib/eib/bcu1.h>
+#include <sblib/eib/mask0701.h>
 #include <sblib/timeout.h>
 #include <sblib/eib/com_objects.h>
 #include "app_rtr.h"
@@ -16,7 +16,7 @@
 #include "lcd.h"
 #include "config.h"
 
-extern BCU1 bcu;
+extern MASK0701 bcu;
 
 const byte* functionsParams;
 //const byte* TimingParams;
