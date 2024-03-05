@@ -7,6 +7,7 @@
 #include <sblib/ioports.h>
 
 #include "app_rtr.h"
+#include "config.h"
 
 SHT2xClass SHT21;
 
