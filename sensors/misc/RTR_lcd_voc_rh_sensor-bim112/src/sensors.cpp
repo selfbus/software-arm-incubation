@@ -81,7 +81,10 @@ void handleTargetTempSourcePeriodic(void) {
 }
 
 void checkAirQuality(void) {
-	CCS811.getData();
+	char status = CCS811.readStatus();
+	if(status & 0x08){ // -> 4. Bit = Data_ready => neue Daten können geholt werden
+		CCS811.getData();
+	}
 	air_quality.AirCO2 = CCS811.readCO2();
 	evalIAQ();
 }
