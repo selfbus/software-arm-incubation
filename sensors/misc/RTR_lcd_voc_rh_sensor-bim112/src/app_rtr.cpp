@@ -59,13 +59,13 @@ void initApplication(void) {
     functionsParams = bcu.userMemoryPtr(EE_FUNCTIONS_PARAMS_BASE);
     //TimingParams = bcu.userMemoryPtr(EE_TIMING_PARAMS_BASE);
 
-#if TEMP_SENS_INSTALLED
+#if TEMP_SENSOR_INSTALLED
 	if((*(bcu.userEeprom))[EE_FUNCTIONS_PARAMS_BASE] & SEND_INTERNAL_TEMPERATURE_CYCLIC){
 		temp.sendInterval = factortime_to_ms(EE_INTERNAL_TEMP_SENDING_PARAM);
 		timeout[TEMPERATURES_KO].start(temp.sendInterval);
 	}
 	timeout[TEMPERATURES_LCD].start(1000);
-#endif // TEMP_SENS_INSTALLED
+#endif // TEMP_SENSOR_INSTALLED
 
 	if((*(bcu.userEeprom))[EE_TARGET_TEMP_FUNCTIONS_BASE] & SEND_TARGET_TEMPERATURE_CYCLIC){
 		temp.sendIntervalTargetTemp = factortime_to_ms(EE_TARGET_TEMP_SENDING_PARAM);

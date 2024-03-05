@@ -17,8 +17,8 @@
 
 // Hardwarekonfiguration der Sensoren festlegen
 // hierdurch werden die Schriftgrößen und Anordnungen auf dem LCD verändert
-#define TEMP_SENS_INSTALLED			true
-#define VOC_SENSOR_INSTALLED		true
+#define TEMP_SENSOR_INSTALLED		true //!< Set to false to debug without attached i2c temperature sensor
+#define VOC_SENSOR_INSTALLED		true //!< Set to false to debug without attached i2c VOC sensor
 #define HUMIDITY_SENSOR_INSTALLED	true
 #define EXTERNAL_TEMP_SENS 			false
 

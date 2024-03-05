@@ -110,7 +110,7 @@ void draw_home_screen(void) {
 
 #if VOC_SENSOR_INSTALLED
 	//draw temperatures and air quality
-#if TEMP_SENS_INSTALLED
+#if TEMP_SENSOR_INSTALLED
 	uint8_t x_next;
 #if not EXTERNAL_TEMP_SENS
 	u8g_SetFont(&u8g, u8g_font_fub20);
@@ -135,12 +135,12 @@ void draw_home_screen(void) {
 		u8g_DrawStr(&u8g, x_next, 27, string);
 	}
 #endif // EXTERNAL_TEMP_SENS
-#endif // TEMP_SENS_INSTALLED
+#endif // TEMP_SENSOR_INSTALLED
 
 #else // device without VOC sensor
 
 	//draw temperatures and air quality
-#if TEMP_SENS_INSTALLED
+#if TEMP_SENSOR_INSTALLED
 	uint8_t x_next;
 #if not EXTERNAL_TEMP_SENS
 	u8g_SetFont(&u8g, u8g_font_fub20);
@@ -164,7 +164,7 @@ void draw_home_screen(void) {
 		x_next = draw_float(strwidth, 27, temp.tempExtern);
 		u8g_DrawStr(&u8g, x_next, 27, string);
 	}
-#endif // TEMP_SENS_INSTALLED
+#endif // TEMP_SENSOR_INSTALLED
 #endif // EXTERNAL_TEMP_SENS
 #endif // VOC_SENSOR_INSTALLED
 
