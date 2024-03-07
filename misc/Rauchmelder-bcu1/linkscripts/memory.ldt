@@ -2,8 +2,8 @@
 This linker script will, depending on the MCUxpresso build configuration name
 move the memory position of the application start in flash, reduce the flash size accordingly,
 change the RAM location and RAM size so that the resulting *.hex file
-can be used with the Selfbus PC_updater_tool.
-(https://github.com/selfbus/software-arm-lib/tree/main/Bus-Updater/PC_updater_tool)
+can be used with the Selfbus-Updater.
+(https://github.com/selfbus/software-arm-lib/tree/main/firmware_updater/updater)
 
 If the build configuration name starts with "Flashstart 0xWXYZ"
 it changes flash start to 0xWXYZ (WXYZ application start address in hexadecimal),
