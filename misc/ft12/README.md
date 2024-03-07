@@ -2,7 +2,7 @@
 
 This is an application that uses the [SBLib](https://selfbus.org) to emulate a KNX ft1.2 device with a Raspberry Pi.
 
-## [PCB RPi-HAT_BUS-Controller](https://github.com/selfbus/hardware-incubation/tree/master/module/rpi_bus_controller)
+## [PCB RPi-HAT_BUS-Controller](https://github.com/selfbus/hardware-merged/tree/main/modules/rpi_ft12_interface_hat/rpi_ft12_interface_hat_v0.1-v0.9)
 
 ## [Wiki entry](https://selfbus.org/wiki/devices/schnittstellen/37-ft1-2-adapter-fuer-raspberry-pi)
 
