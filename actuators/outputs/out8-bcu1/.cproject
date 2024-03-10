@@ -3280,9 +3280,6 @@
 		<configuration configurationName="Release o8 4t bf ha">
 			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
 		</configuration>
-		<configuration configurationName="Debug_LPC11UXX">
-			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
-		</configuration>
 		<configuration configurationName="Debug OUT8 4TE HAND BI-STABLE">
 			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
 		</configuration>

@@ -85,32 +85,7 @@ const HardwareVersion hardwareVersion[7] =
 // Input pins
 const int inputPins[] =
 {
-#ifdef __LPC11UXX__
-  PIN_PWM
-, PIN_APRG
-#   if (NUM_INPUTS > 2)
-        , PIN_IO1
-        , PIN_IO2
-#   endif
-#   if (NUM_INPUTS > 4)
-        , PIN_IO3
-        , PIN_IO4
-#   endif
-#   if (NUM_INPUTS > 6)
-        , PIO_SDA
-        , PIN_IO5
-#   endif
-#   if (NUM_INPUTS > 8)
-        , PIN_IO14
-        , PIN_IO15
-        , PIN_IO13
-        , PIN_IO11
-        , PIN_IO9
-        , PIN_IO10
-        , PIN_TX
-        , PIN_RX
-#   endif
-#elif defined TS_ARM
+#if defined TS_ARM
     PIO2_2,  //  A ; IO2
 	PIO0_9,  //  B ; IO3
 #   if (NUM_INPUTS > 2)

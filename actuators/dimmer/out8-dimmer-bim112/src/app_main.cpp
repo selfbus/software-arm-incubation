@@ -48,8 +48,6 @@ BcuBase* setup()
 #   endif
     serial.begin(115200);
     serial.println("out8-dimmer-bim112 online");
-#elif defined (__LPC11UXX__)
-#   error "set correct serial pins for LPCUxxx" // TODO set correct serial pins for LPCUxxx
 #else
 #   error "unknown cpu"
 #endif
@@ -72,8 +70,6 @@ BcuBase* setup()
         // GNAX2 board
         bcu.setProgPin(PIO2_11); // XIO23
 #   endif // __LPC11XX_GNAXBOARD__
-#elif defined (__LPC11UXX__)
-#   error "set correct bcu-pins for LPCUxxx" // TODO set correct bcu-pins for LPCUxxx
 #else
 #   error "unknown cpu"
 #endif // __LPC11XX__
