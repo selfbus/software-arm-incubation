@@ -96,7 +96,7 @@ extern MemMapper memMapper;
 
 // User Flash (=UF) Settings for extern EEPROM
 // defined is the start address of the memory space
-#define UF_BASE_ADDRESS             0xee00
+#define UF_BASE_ADDRESS             0xfd00
 #define UF_SIZE                     0x100
 #define UF_TEMP_AUTO_RESET_TIME     (UF_BASE_ADDRESS + 0)  // unsigned int
 #define UF_TEMP_SOLL_INTERN         (UF_BASE_ADDRESS + 4)  // unsigned int
