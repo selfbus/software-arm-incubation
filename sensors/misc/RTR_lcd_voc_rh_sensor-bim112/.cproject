@@ -442,7 +442,9 @@
 &lt;/TargetConfig&gt;</projectStorage>
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Flashstart 0x3000 Release"/>
+		<configuration configurationName="Flashstart 0x3000 Release">
+			<resource resourceType="PROJECT" workspacePath="/RTR_lcd_voc_rh_sensor-bim112"/>
+		</configuration>
 		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/RTR_lcd_voc_rh_sensor-bim112"/>
 		</configuration>
