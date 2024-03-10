@@ -9,14 +9,7 @@
 #ifndef SENSORS_H
 #define SENSORS_H
 
-#include <sblib/i2c/SHT2x.h>
 #include <sblib/i2c/CCS811.h>
-
-
-
-extern SHT2xClass SHT21;
-
-extern CCS811Class CCS811;
 
 struct air_quality_values{
 

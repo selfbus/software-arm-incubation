@@ -3,6 +3,7 @@
 
 #include <sblib/timeout.h>
 #include <sblib/sensors/ds18x20.h>
+#include <sblib/i2c/SHT2x.h>
 #include <sblib/eib/datapoint_types.h>
 #include <sblib/ioports.h>
 
