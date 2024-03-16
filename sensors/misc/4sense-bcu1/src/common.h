@@ -20,7 +20,10 @@
     #define LOG(...) // nada!
 #endif
 
-
+/**
+ * @def TS_ARM
+ * Define for the TS_ARM controller
+ */
 // #define TS_ARM
 
 // number of seconds before we reset

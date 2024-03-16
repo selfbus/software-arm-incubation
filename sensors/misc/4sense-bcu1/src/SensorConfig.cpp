@@ -10,9 +10,10 @@
 
 // where the sensors are hanging .... "on" a TS_ARM
 #ifdef TS_ARM
-//                      IO16    IO14    IO12     IO10
+    //                  IO16    IO14    IO12     IO10
     int sensorPins[] = {PIO1_5, PIO1_2, PIO0_11, PIO0_8};
-#else //default 4TE-Controller
+#else
+    // default 4TE-Controller
     //                  PIO2_2   PIO0_7   PIO2_10  PIO2_9
     int sensorPins[] = {PIN_IO1, PIN_IO2, PIN_IO3, PIN_IO4};
 #endif
