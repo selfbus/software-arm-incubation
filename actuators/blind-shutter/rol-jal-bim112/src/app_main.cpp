@@ -21,7 +21,7 @@
 #endif
 
 #ifdef BUSFAIL
-    NonVolatileSetting AppNovSetting(0xEA00, 0x100);  // flash-storage for application relevant parameters
+    NonVolatileSetting AppNovSetting(0xEE00, 0x100);  // flash-storage for application relevant parameters
     ApplicationData AppData;
     AppCallback callback;
 #endif
