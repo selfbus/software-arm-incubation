@@ -24,6 +24,7 @@
     NonVolatileSetting AppNovSetting(0xEE00, 0x100);  // flash-storage for application relevant parameters
     ApplicationData AppData;
     AppCallback callback;
+    AppUsrCallback usrCallback;
 #endif
 
 APP_VERSION("SBrol   ", "1", "11")
@@ -121,6 +122,7 @@ BcuBase* setup()
 
     currentVersion = & hardwareVersion[0];
     bcu.begin(MANUFACTURER, currentVersion->hardwareVersion[5], APPVERSION);  // we are a MDT shutter/blind actuator, version 2.8
+    bcu.setUsrCallback((UsrCallback *)&usrCallback);
     bcu.setHardwareType(currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT); // Info LED
@@ -196,17 +198,19 @@ void ResetDefaultApplicationData()
 }
 
 #ifdef BUSFAIL
+
+bool saveChannelPositions()
+{
+    getChannelPositions(AppData.channelPositions, AppData.channelSlatPositions);
+    return AppNovSetting.StoreApplData((unsigned char*)&AppData, sizeof(ApplicationData));
+}
+
 void AppCallback::BusVoltageFail()
 {
     pinMode(PIN_INFO, OUTPUT); // even in non DEBUG flash Info LED to display app data storing
     digitalWrite(PIN_INFO, 1);
-
-     getChannelPositions(AppData.channelPositions, AppData.channelSlatPositions);
     // write application settings to flash
-    if (AppNovSetting.StoreApplData((unsigned char*)&AppData, sizeof(ApplicationData)))
-        digitalWrite(PIN_INFO, 0);
-    else
-        digitalWrite(PIN_INFO, 1);
+    digitalWrite(PIN_INFO, !saveChannelPositions());
     stopApplication();
 
 #ifdef DEBUG
@@ -321,5 +325,19 @@ int AppCallback::convertmVAD(int valuemV)
      *
     */
 }
+
+void AppUsrCallback::Notify(UsrCallbackType type)
+{
+    switch (type)
+    {
+        case UsrCallbackType::reset : // Reset after an ETS-application download or simple @ref APCI_BASIC_RESTART_PDU
+            saveChannelPositions();
+            break;
+
+        default :
+            break;
+    }
+}
+
 #endif /* BUSFAIL */
 
