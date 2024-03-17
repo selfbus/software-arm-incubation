@@ -23,6 +23,8 @@
 /**
  * @def TS_ARM
  * Define for the TS_ARM controller
+ *
+ * @note Replaced with build-variable ${controller_type} in mcuexpresso/eclipse menu "Project properties->C/C++ Build->Build Variables"
  */
 // #define TS_ARM
 
