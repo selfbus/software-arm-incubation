@@ -85,6 +85,11 @@ void objectUpdated(int objno)
 
 void checkHandActuation(void)
 {
+    if (handAct == nullptr)
+    {
+        return;
+    }
+
     int btnNumber;
     HandActuation::ButtonState btnState;
     bool processHandActuation = (handAct->getButtonAndState(btnNumber, btnState)); // changed a button its state?
@@ -130,13 +135,24 @@ void checkPeriodicFuntions(void)
     {
         Channel::startPWM();  // re-enable the PWM
     }
-    if (handAct != nullptr)
+
+    checkHandActuation();
+}
+
+void getChannelPositions(short channelPositions[], short channelSlatPositions[]){
+    for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
     {
-        checkHandActuation();
+        if (channels[i] != nullptr)
+        {
+            channelPositions[i] = channels[i]->currentPosition();
+            if(channels[i]->channelType() == Channel::BLIND){
+                channelSlatPositions[i] = ((Blind *) channels[i])->currentSlatPosition();
+            }
+        }
     }
 }
 
-void initApplication(void)
+void initApplication(short channelPositions[], short channelSlatPositions[])
 {
     Channel::initPWM(PIN_PWM);  // configure digital pin PIO3_2 (PIN_PWM) and timer16_0 for PWM
 
@@ -150,10 +166,30 @@ void initApplication(void)
 
     for (unsigned int i = 0; i < NO_OF_CHANNELS; i++, address += EE_CHANNEL_CFG_SIZE)
     {
+        short position;
+        short slatPosition;
+        if (channelPositions != nullptr)
+        {
+            position = channelPositions[i];
+        }
+        else
+        {
+            position = 0;
+        }
+
+        if (channelSlatPositions != nullptr)
+        {
+            slatPosition = channelSlatPositions[i];
+        }
+        else
+        {
+            slatPosition = 0;
+        }
+
         switch (bcu.userEeprom->getUInt8(address))
         {
-        case 0: channels [i] = new Blind(i, address); break;
-        case 1: channels [i] = new Shutter(i, address); break;
+        case 0: channels [i] = new Blind(i, address, position, slatPosition); break;
+        case 1: channels [i] = new Shutter(i, address, position); break;
         default :
             channels [i] = 0;
         }
@@ -163,4 +199,17 @@ void initApplication(void)
             channels[i]->setHandActuation(handAct);
         }
     }
+}
+
+void stopApplication()
+{
+    // ToDo: alles nötige veranlassen für den Shutdown
+    if (handAct != nullptr)
+    {
+       // switch all hand actuation LEDs off, to save some power
+       handAct->setallLedState(false);
+    }
+
+    // finally stop the bcu
+    bcu.end();
 }
