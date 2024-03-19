@@ -19,14 +19,21 @@ add_definitions(-DBIM112 -DCPP_USE_HEAP)
 
 include_directories(src)
 include_directories(${CMAKE_SOURCE_DIR}/../../../common/hand-actuation)
+include_directories(${CMAKE_SOURCE_DIR}/../../../common/bus_voltage)
 include_directories(${SBLPC_DIR}/inc)
 include_directories(${SBLIB_DIR}/inc)
 
 add_executable(rol_jal_bim112.axf
         ../../../common/hand-actuation/hand_actuation.cpp
+        ../../../common/hand-actuation/hand_actuation.h
+        ../../../common/bus_voltage/app_nov_settings.cpp
+        ../../../common/bus_voltage/app_nov_settings.h
+        ../../../common/bus_voltage/bus_voltage.cpp
+        ../../../common/bus_voltage/bus_voltage.h
         src/app-rol-jal.cpp
         src/app-rol-jal.h
         src/app_main.cpp
+        src/app_main.h
         src/blind.cpp
         src/blind.h
         src/channel.cpp
@@ -34,7 +41,6 @@ add_executable(rol_jal_bim112.axf
         src/config.h
         src/cr_cpp_config.cpp
         src/cr_startup_lpc11xx.cpp
-        src/crp.c
         src/shutter.cpp
         src/shutter.h)
 

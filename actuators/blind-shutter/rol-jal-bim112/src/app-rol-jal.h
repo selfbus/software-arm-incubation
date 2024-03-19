@@ -29,7 +29,17 @@ void checkPeriodicFuntions(void);
 /**
  * Called during the initialization of the application
  */
-void initApplication(void);
+void initApplication(short channelPositions[] = nullptr, short channelSlatPositions[] = nullptr);
+
+/**
+ * Called if there was a Bus voltage failure
+ */
+void stopApplication();
+
+/**
+ * Get the actual State of each channel
+ */
+void getChannelPositions(short channelPositions[], short channelSlatPositions[]);
 
 
 #endif /* ROL_JAL_BIM112_SRC_APP_ROL_JAL_H_ */

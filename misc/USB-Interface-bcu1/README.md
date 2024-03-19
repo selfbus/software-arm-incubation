@@ -47,8 +47,8 @@ Virtual serial port settings: 115200 baud, 8 data bits, no parity, 1 stop bit
 
 | MCU         | Github                                                                                                          |
 |-------------|-----------------------------------------------------------------------------------------------------------------|
-| P4 (TS_ARM) | [USB-IF_Knx](https://github.com/selfbus/software-arm-incubation/tree/master/misc/USB-Interface-bcu1/USB-IF_Knx) |
-| U1 (11uxx)  | [USB-IF_Usb](https://github.com/selfbus/software-arm-incubation/tree/master/misc/USB-Interface-bcu1/USB-IF_Usb) |
+| P4 (TS_ARM) | [USB-IF_Knx](https://github.com/selfbus/software-arm-incubation/tree/main/misc/USB-Interface-bcu1/USB-IF_Knx) |
+| U1 (11uxx)  | [USB-IF_Usb](https://github.com/selfbus/software-arm-incubation/tree/main/misc/USB-Interface-bcu1/USB-IF_Usb) |
 
 ### Hardware / PCB
-[USB-Interface ARM](https://github.com/selfbus/hardware-incubation/tree/master/misc/USB-Interface%20ARM)
+[USB-Interface ARM](https://github.com/selfbus/hardware-merged/tree/main/misc/usb_knx_interface_lpc1115)

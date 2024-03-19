@@ -146,8 +146,8 @@
 #ifdef OUT8
 #    ifdef BI_STABLE
         // 4TE-ARM Controller + out8_16A (bi-stable relays)
-        // PCB: https://github.com/selfbus/hardware/tree/master/Apps/out8_16A_1.0
-        // Wiki: https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/8fach%20Bin%C3%A4rausgang%20230V%2016A%20f%C3%BCr%20LPC1115%20Controller
+        // PCB: https://github.com/selfbus/hardware-merged/tree/main/applications_din/out_8x_16A_bistab_4MU
+        // Wiki: https://selfbus.org/wiki/devices/outputs/25-switching-actuator-8x-230v-16a-4module-units
         const int outputPins[NO_OF_OUTPUTS] =
         {
             /*
@@ -210,8 +210,8 @@
 #       endif // INVERT
 #   else
         // 4TE-ARM Controller + out8_16A (non-stable relays)
-        // PCB: https://github.com/selfbus/hardware/tree/master/Apps/relais8_4te
-        // Wiki: https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_4TE
+        // PCB: https://github.com/selfbus/hardware-merged/tree/main/applications_din/out_8x_10A_4MU
+        // Wiki: https://selfbus.org/wiki/devices/outputs/23-switching-actuator-8x-230v-10a-4mount-units
         const int outputPins[NO_OF_OUTPUTS] =
         {
             PIN_IO1, // REL1
