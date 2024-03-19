@@ -112,6 +112,12 @@ const int inputPins[] =
         PIO2_3,  //  O ; IO15
         PIO1_5,  //  P ; IO16
 #   endif
+#elif defined TE2_V103
+        PIO2_11, //  A ; 2MU controller version <= v1.03
+        PIO2_9,  //  B ; 2MU controller version <= v1.03
+#elif defined TE2_V104
+        PIO0_2,  //  A ; 2MU controller version >= v1.04
+        PIO0_9,  //  B ; 2MU controller version >= v1.04
 #else
 	PIN_IO1,  //  A ; IO1
 	PIN_IO2,  //  B ; IO2
