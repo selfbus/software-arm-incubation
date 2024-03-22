@@ -13,20 +13,20 @@
 #include "app_in.h"
 
 //Input logic level (moved to project build variable "inverted")
-//#define INVERT 			    //  ifndef: 0-->1 steigende Flanke ; pull_down
-							    //  ifdef:  0-->1 fallende Flanke ; pull_up
+//#define INVERT                //  ifndef: 0-->1 steigende Flanke ; pull_down
+                                //  ifdef:  0-->1 fallende Flanke ; pull_up
 
-#define MANUFACTURER 0x83		// MDT
-//#define DEVICETYPE   0x0030	// Binäreingang
-//#define APPVERSION   0x20		// Version 2.0
-//#define DEVICETYPE   0x002E	// Tasterschnittstelle
-//#define APPVERSION   0x16		// Version 1.6
+#define MANUFACTURER 0x83       // MDT
+//#define DEVICETYPE   0x0030   // Binäreingang
+//#define APPVERSION   0x20     // Version 2.0
+//#define DEVICETYPE   0x002E   // Tasterschnittstelle
+//#define APPVERSION   0x16     // Version 1.6
 
 
 typedef struct
 {
     unsigned int noOfChannels;  //!> how many channels are supported with this hardware
-    bool ledOutputFunction;		//!> LED output for device "Tasterschnittstelle"
+    bool ledOutputFunction;     //!> LED output for device "Tasterschnittstelle"
     unsigned short deviceType;  //!> bcu.begin devicetype
     unsigned short appVersion;  //!> application version
     unsigned short baseAddress; //!> Base address of the config parameters (0x4400 + Offset first param.(debounce-Time))
@@ -112,7 +112,7 @@ const int inputPins[] =
 #   endif
 #elif defined TS_ARM
     PIO2_2,  //  A ; IO2
-	PIO0_9,  //  B ; IO3
+    PIO0_9,  //  B ; IO3
 #   if (NUM_INPUTS > 2)
         PIO2_11, //  C ; IO4
         PIO1_1,  //  D ; IO5
@@ -161,11 +161,11 @@ const int inputPins[] =
         PIN_IO13, //  M ; IO13
         PIN_IO14, //  N ; IO14
         PIN_IO15, //  O ; IO15
-        PIO_SDA,  //  P ; SDA
+        PIN_IO16, //  P ; IO16
 #   endif
 #else
-	PIN_IO1,  //  A ; IO1
-	PIN_IO2,  //  B ; IO2
+    PIN_IO1,  //  A ; IO1
+    PIN_IO2,  //  B ; IO2
 #   if (NUM_INPUTS > 2)
         PIN_IO3,  //  C ; IO3
         PIN_IO4,  //  D ; IO4
