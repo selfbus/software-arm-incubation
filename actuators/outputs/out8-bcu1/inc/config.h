@@ -52,6 +52,12 @@
                        // https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_16A_4TE
                        // PIO_SDA is used for zero-detect
 
+ * @def APP_OUT_8X_16A_BISTAB_SEPERATED_4MU
+ * If the application hardware is app_out_8x_16A_bistab_seperated_4MU comment this define out
+ * @note PCB:<br>
+ *       https://github.com/selfbus/hardware-merged/tree/main/applications_din/out_8x_16A_bistab_seperated_4MU
+ */
+//#define APP_OUT_8X_16A_BISTAB_SEPERATED_4MU
 /*
  *  hand actuation pin configuration
  */
@@ -139,10 +145,6 @@
 /*
  *  output pins configuration
  */
-
-// If the application hardware is app_out_8x_16A_bistab_seperated_4MU comment this define out
-//#define APP_OUT_8X_16A_BISTAB_SEPERATED_4MU
-
 #ifdef OUT8
 #    ifdef BI_STABLE
         // 4TE-ARM Controller + out8_16A (bi-stable relays)
