@@ -1,6 +1,7 @@
 #include "ext_eeprom.h"
 #include <sblib/core.h>
 #include <sblib/spi.h>
+#include <sblib/io_pin_names.h>
 
 SPI eeprom_spi(SPI_PORT_1);
 
@@ -12,10 +13,10 @@ ExtEeprom::ExtEeprom(){
 
 void ExtEeprom::init_eeprom(void){
 
-    pinMode(SSEL1, OUTPUT); //wird manuell bedient
-    pinMode(MOSI1, OUTPUT | SPI_MOSI);
-    pinMode(MISO1, INPUT  | SPI_MISO);
-    pinMode(SCK1,  OUTPUT | SPI_CLOCK);
+    pinMode(PIN_SSEL1, OUTPUT); //wird manuell bedient
+    pinMode(PIN_MOSI1, OUTPUT | SPI_MOSI);
+    pinMode(PIN_MISO1, INPUT  | SPI_MISO);
+    pinMode(PIN_SCK1,  OUTPUT | SPI_CLOCK);
 
     eeprom_spi.setClockDivider(128);
     eeprom_spi.begin();
@@ -49,13 +50,13 @@ bool ExtEeprom::read(unsigned int address, char *data, unsigned int num_bytes){
 }
 
 bool ExtEeprom::read_from_chip(unsigned int address, char *data, unsigned int num_bytes){
-	digitalWrite(SSEL1, 0);
+	digitalWrite(PIN_SSEL1, 0);
 	eeprom_spi.transfer(READ);
 	eeprom_spi.transfer(address);
 	for(unsigned int i=0; i<num_bytes; i++){
 		data[i]=eeprom_spi.transfer(0x00);
 	}
-	digitalWrite(SSEL1, 1);
+	digitalWrite(PIN_SSEL1, 1);
 	return 0;
 }
 
@@ -71,9 +72,9 @@ bool ExtEeprom::write_to_chip(){
 		//loop for more than 16 bytes to write
 		for(unsigned int j=0; j<num_pages; j++){ //j=page counter
 
-			digitalWrite(SSEL1, 0);
+			digitalWrite(PIN_SSEL1, 0);
 			eeprom_spi.transfer(WREN); //enable writing
-			digitalWrite(SSEL1, 1);
+			digitalWrite(PIN_SSEL1, 1);
 			delay(1);
 
 			num_bytes_per_page = numBytes - j*16;
@@ -83,17 +84,17 @@ bool ExtEeprom::write_to_chip(){
 			startAddress = minAddress + j*16;
 			endAddress = startAddress+num_bytes_per_page-1;
 
-			digitalWrite(SSEL1, 0);
+			digitalWrite(PIN_SSEL1, 0);
 			eeprom_spi.transfer(WRITE);
 			eeprom_spi.transfer(startAddress);
 			for(unsigned int i=startAddress; i<=endAddress; i++){ // i= byte counter
 				eeprom_spi.transfer(eepromWriteBuf[i]);
 			}
-			digitalWrite(SSEL1, 1);
+			digitalWrite(PIN_SSEL1, 1);
 			delay(10);
-			digitalWrite(SSEL1, 0);
+			digitalWrite(PIN_SSEL1, 0);
 			eeprom_spi.transfer(WRDI); //disable writing
-			digitalWrite(SSEL1, 1);
+			digitalWrite(PIN_SSEL1, 1);
 
 		}
 	}

@@ -1,16 +1,6 @@
 #ifndef EXT_EEPROM
 #define EXT_EEPROM
 
-/*
- * GNAX board uses SPI port 1 for the EEPROM.
- *
- * Pinout:
- */
-#define SSEL1 PIO2_0
-#define MOSI1 PIO2_3
-#define MISO1 PIO2_2
-#define SCK1  PIO2_1
-
 #define EEPROM_SIZE 256 //EEPROM size in bytes
 
 //opcodes
