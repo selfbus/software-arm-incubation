@@ -52,12 +52,32 @@
                        // https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_16A_4TE
                        // PIO_SDA is used for zero-detect
 
+/**
  * @def APP_OUT_8X_16A_BISTAB_SEPERATED_4MU
  * If the application hardware is app_out_8x_16A_bistab_seperated_4MU comment this define out
  * @note PCB:<br>
  *       https://github.com/selfbus/hardware-merged/tree/main/applications_din/out_8x_16A_bistab_seperated_4MU
  */
 //#define APP_OUT_8X_16A_BISTAB_SEPERATED_4MU
+
+/**
+ * @def MU2_V103
+ * For the 2 non-stable relays of an 2in2out PCB + 2MU controller version <= v1.03
+ * @note PCBs:<br>
+ *       https://github.com/selfbus/hardware-merged/tree/main/applications_din/in-out_2x-2x_2MU<br>
+ *       https://github.com/selfbus/hardware-merged/tree/main/controller_lpc1115/lpc1115_2MU_MID
+ */
+//#define MU2_V103
+
+/**
+ * @def MU_V1XX
+ * For the 2 non-stable relays of an 2in2out PCB + 2MU controller version >= v1.04
+ * @note PCBs:<br>
+ *       https://github.com/selfbus/hardware-merged/tree/main/applications_din/in-out_2x-2x_2MU<br>
+ *       https://github.com/selfbus/hardware-merged/tree/main/controller_lpc1115/lpc1115_2MU_MID
+ */
+//#define MU_V1XX
+
 /*
  *  hand actuation pin configuration
  */
@@ -142,6 +162,10 @@
 #   define BETWEEN_CHANNEL_DELAY_MS 100 // pause in ms between to channels relais switching, to avoid bus drainage
 #endif
 
+#if (defined(ZERO_DETECT) || defined(BI_STABLE)) && (defined(MU2_V103) || defined(MU_V1XX))
+#   error "ZERO_DETECT or BI_STABLE with MU2_V103 or MU_V1XX is not possible!"
+#endif
+
 /*
  *  output pins configuration
  */
@@ -210,6 +234,23 @@
                 PIN_IO11, PIN_TX    // 15, 16 K8 inverted
             };
 #       endif // INVERT
+#   elif defined(MU2_V103) || defined(MU_V1XX)
+        // 2MU Controller + 2in2out10A (non-stable relays)
+        const int outputPins[NO_OF_OUTPUTS] =
+        {
+            PIO0_6, // REL1
+#       ifdef MU2_V103
+            PIO0_9, // REL2
+#       else
+            PIO0_8, // REL2
+#       endif
+            PIO2_6, // REL3 not available, set to not connected mcu pin
+            PIO2_6, // REL4 not available, set to not connected mcu pin
+            PIO2_6, // REL5 not available, set to not connected mcu pin
+            PIO2_6, // REL6 not available, set to not connected mcu pin
+            PIO2_6, // REL7 not available, set to not connected mcu pin
+            PIO2_6  // REL8 not available, set to not connected mcu pin
+        };
 #   else
         // 4TE-ARM Controller + out8_16A (non-stable relays)
         // PCB: https://github.com/selfbus/hardware-merged/tree/main/applications_din/out_8x_10A_4MU
