@@ -144,7 +144,6 @@ const int inputPins[] =
         PIN_IO15, //  O ; IO15
         PIN_IO16, //  P ; IO16
 #   endif
->>>>>>> dev/new-pinconfig
 #else
     PIN_IO1,  //  A ; IO1
     PIN_IO2,  //  B ; IO2
