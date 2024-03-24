@@ -175,28 +175,28 @@ ALWAYS_INLINE void Outputs::checkPWM(void)
 #ifdef ZERO_DETECT
 ALWAYS_INLINE void Outputs::zeroDetectHandler(void)
 {
-	if (_state == 1)
-	{
-	    //digitalWrite(PIN_INFO, ! digitalRead(PIN_INFO));	// Info LED
-		timer32_0.start();
-		_state = 0;
-	}
+    if (_state == 1)
+    {
+        //digitalWrite(PIN_INFO, ! digitalRead(PIN_INFO)); // Info LED
+        timer32_0.start();
+        _state = 0;
+    }
 }
 #endif /* define ZERO_DETECT */
 
 ALWAYS_INLINE void Outputs::setOutputs(void)
 {
-	if (_port_0_set || _port_2_set)
-	{   // at least one port will be switched on
+    if (_port_0_set || _port_2_set)
+    {   // at least one port will be switched on
         timer16_0.match(MAT2, PWM_PERIOD);// disable the PWM
         _pwm_timeout.start(PWM_TIMEOUT);
-	}
+    }
 #ifdef __LPC11XX__
-   	gpioPorts[0]->MASKED_ACCESS[_port_0_set] = 0xFFFF;
-   	gpioPorts[2]->MASKED_ACCESS[_port_2_set] = 0xFFFF;
+    gpioPorts[0]->MASKED_ACCESS[_port_0_set] = 0xFFFF;
+    gpioPorts[2]->MASKED_ACCESS[_port_2_set] = 0xFFFF;
 #else
-   	LPC_GPIO->SET[0] = _port_0_set;
-   	LPC_GPIO->SET[1] = _port_2_set;
+    LPC_GPIO->SET[0] = _port_0_set;
+    LPC_GPIO->SET[1] = _port_2_set;
 #endif
     _port_0_set = _port_2_set = 0;
 }
@@ -204,11 +204,11 @@ ALWAYS_INLINE void Outputs::setOutputs(void)
 ALWAYS_INLINE void Outputs::clrOutputs(void)
 {
 #ifdef __LPC11XX__
-   	gpioPorts[0]->MASKED_ACCESS[_port_0_clr] = 0x0000;
-   	gpioPorts[2]->MASKED_ACCESS[_port_2_clr] = 0x0000;
+    gpioPorts[0]->MASKED_ACCESS[_port_0_clr] = 0x0000;
+    gpioPorts[2]->MASKED_ACCESS[_port_2_clr] = 0x0000;
 #else
-   	LPC_GPIO->CLR[0] = _port_0_clr;
-   	LPC_GPIO->CLR[1] = _port_2_clr;
+    LPC_GPIO->CLR[0] = _port_0_clr;
+    LPC_GPIO->CLR[1] = _port_2_clr;
 #endif
     _port_0_clr = _port_2_clr = 0;
 }

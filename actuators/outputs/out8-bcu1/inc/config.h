@@ -181,7 +181,7 @@
              * see LPC user manual page 79 chapter 7.4.12 IOCON_PIO0_5.
              * better solution would be to use IO7 instead.
              */
-#			ifndef APP_OUT_8X_16A_BISTAB_SEPERATED_4MU
+#            ifndef APP_OUT_8X_16A_BISTAB_SEPERATED_4MU
             // K1 -> K4
             PIN_IO2,  PIN_IO3,  //  1,  2 => K1 reset/set
             PIN_IO5,  PIO_SDA,  //  3,  4 => K2 reset/set // PIO_SDA-> pull-up resistor!
@@ -194,11 +194,11 @@
             PIN_IO14, PIN_IO15, // 11, 12 => K6 reset/set
             PIN_IO9,  PIN_IO13  //  9, 10 => K5 reset/set
 
-#			else
-        	/*
-        	* PIN configuration for application hardware "out_8x_16A_bistab_seperated_4MU"
-        	* (this hardware was named before as "out8_16A_V2.3")
-        	*/
+#            else
+            /*
+            * PIN configuration for application hardware "out_8x_16A_bistab_seperated_4MU"
+            * (this hardware was named before as "out8_16A_V2.3")
+            */
 
          // RESET Pin,SET Pin
             PIN_IO5,  PIN_IO7,  // Kanal 1
@@ -206,7 +206,7 @@
             PIN_PWM,  PIN_APRG, // Kanal 3
             PIN_IO2,  PIN_IO1,  // Kanal 4
 
-			PIN_IO10, PIN_RX,   // Kanal 5
+            PIN_IO10, PIN_RX,   // Kanal 5
             PIN_TX,   PIN_IO11, // Kanal 6
             PIN_IO14, PIN_IO15, // Kanal 7
             PIN_IO9,  PIN_IO13  // Kanal 8

@@ -482,10 +482,10 @@ static void _sendFeedbackObjects(bool forcesendFeedbackObjects)
         {
             if ((changed & mask) || forcesendFeedbackObjects)
             {   // update feedback object
-            	unsigned int value = relays.channel(i);
-            	if (invert & mask)
-            		value ^= 0x01;
-            	bcu.comObjects->objectWrite(COMOBJ_FEEDBACK1 + i, value);
+                unsigned int value = relays.channel(i);
+                if (invert & mask)
+                    value ^= 0x01;
+                bcu.comObjects->objectWrite(COMOBJ_FEEDBACK1 + i, value);
             }
             mask <<= 1;
         }
