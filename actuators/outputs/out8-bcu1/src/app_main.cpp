@@ -43,7 +43,7 @@
 APP_VERSION("O08.10  ", "5", "10");
 
 /**
- * simple IO test
+ * Simple IO test
  */
 void ioTest()
 {
@@ -184,7 +184,7 @@ bool recallAppData()
     return result;
 }
 
-/*
+/**
  * Initialize the application.
  */
 BcuBase* setup()
@@ -246,7 +246,7 @@ BcuBase* setup()
 }
 
 /**
- * @brief The main processing loop. Will be called by the Selfbus sblib main().
+ * The main processing loop. Will be called by the Selfbus sblib main().
  */
 void loop(void)
 {
@@ -265,8 +265,8 @@ void loop(void)
 }
 
 /**
- * @brief Will be called by the Selfbus sblib main(), while no application is loaded
- *        In case we have a HAND_ACTUATION all LED's will blink at 2*BLINK_TIME (~1Hz) to indicate this state
+ * Will be called by the Selfbus sblib main(), while no application is loaded.
+ * In case we have a HAND_ACTUATION all LED's will blink at 2*BLINK_TIME (~1Hz) to indicate this state
  */
 void loop_noapp(void)
 {
