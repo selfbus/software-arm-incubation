@@ -37,6 +37,7 @@
     NonVolatileSetting AppNovSetting(0xEA00, 0x100);  // flash-storage for application relevant parameters
     ApplicationData AppData;
     AppCallback callback;
+    AppUsrCallback usrCallback; ///\todo two callbacks? Optimize with busfail integration into the sblib.
 #endif
 
 APP_VERSION("O08.10  ", "5", "10");
@@ -206,7 +207,9 @@ BcuBase* setup()
     startBusVoltageMonitoring();
 
     ioTest();
-
+#ifdef BUSFAIL
+    bcu.setUsrCallback((UsrCallback *)&usrCallback);
+#endif
     bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
 #ifdef DEBUG_SERIAL
     int physicalAddress = bus.ownAddress();
@@ -285,18 +288,19 @@ void ResetDefaultApplicationData()
 }
 
 #ifdef BUSFAIL
+bool saveRelayState()
+{
+    AppData.relaisstate = getRelaysState();
+    return AppNovSetting.StoreApplData((unsigned char*)&AppData, sizeof(ApplicationData));
+}
+
 void AppCallback::BusVoltageFail()
 {
     pinMode(PIN_INFO, OUTPUT); // even in non DEBUG flash Info LED to display app data storing
     digitalWrite(PIN_INFO, 1);
 
-    AppData.relaisstate = getRelaysState();
     // write application settings to flash
-    if (AppNovSetting.StoreApplData((unsigned char*)&AppData, sizeof(ApplicationData)))
-        digitalWrite(PIN_INFO, 0);
-    else
-        digitalWrite(PIN_INFO, 1);
-
+    digitalWrite(PIN_INFO, !saveRelayState());
     stopApplication();
 
 #ifdef DEBUG
@@ -411,4 +415,18 @@ int AppCallback::convertmVAD(int valuemV)
      *
     */
 }
+
+void AppUsrCallback::Notify(UsrCallbackType type)
+{
+    switch (type)
+    {
+        case UsrCallbackType::reset : // Reset after an ETS-application download or simple @ref APCI_BASIC_RESTART_PDU
+            saveRelayState();
+            break;
+
+        default :
+            break;
+    }
+}
+
 #endif /* BUSFAIL */
