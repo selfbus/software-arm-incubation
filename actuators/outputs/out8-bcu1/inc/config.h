@@ -156,10 +156,10 @@
 
 #ifdef BI_STABLE
 #   define NO_OF_OUTPUTS (NO_OF_CHANNELS * 2)
-#   define BETWEEN_CHANNEL_DELAY_MS 100 // pause in ms between to channels relais switching, to avoid bus drainage
+#   define BETWEEN_CHANNEL_DELAY_MS 100 // pause in ms between to channels relay switching, to avoid bus drainage
 #else
 #   define NO_OF_OUTPUTS (NO_OF_CHANNELS)
-#   define BETWEEN_CHANNEL_DELAY_MS 100 // pause in ms between to channels relais switching, to avoid bus drainage
+#   define BETWEEN_CHANNEL_DELAY_MS 100 // pause in ms between to channels relay switching, to avoid bus drainage
 #endif
 
 #if (defined(ZERO_DETECT) || defined(BI_STABLE)) && (defined(MU2_V103) || defined(MU_V1XX))

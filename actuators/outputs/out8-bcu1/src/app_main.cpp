@@ -229,7 +229,7 @@ BcuBase* setup()
 #endif
 
 #ifdef BUSFAIL
-    initApplication(AppData.relaisstate);
+    initApplication(AppData.relaysstate);
     startBusVoltageMonitoring(); // needs to be called again, because Release version is using analog_pin.h functions from sblib which break our ADC Interrupts
 #else
     initApplication();
@@ -275,14 +275,14 @@ void loop_noapp(void)
 void ResetDefaultApplicationData()
 {
 #ifdef BUSFAIL
-    AppData.relaisstate = 0x00;
+    AppData.relaysstate = 0x00;
 #endif
 }
 
 #ifdef BUSFAIL
 bool saveRelayState()
 {
-    AppData.relaisstate = getRelaysState();
+    AppData.relaysstate = getRelaysState();
     return AppNovSetting.StoreApplData((unsigned char*)&AppData, sizeof(ApplicationData));
 }
 
@@ -312,7 +312,7 @@ void AppCallback::BusVoltageReturn()
         ResetDefaultApplicationData();
     }
     bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
-    initApplication(AppData.relaisstate);
+    initApplication(AppData.relaysstate);
 }
 
 int AppCallback::convertADmV(int valueAD)

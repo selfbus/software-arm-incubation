@@ -21,7 +21,7 @@
 
 #ifdef BUSFAIL
 typedef struct ApplicationData {
-    unsigned char relaisstate;         // current relays state
+    unsigned char relaysstate;         // current relays state
 } ApplicationData;
 
 class AppCallback: public BusVoltageCallback {
