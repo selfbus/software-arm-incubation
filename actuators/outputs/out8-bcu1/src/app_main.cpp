@@ -203,14 +203,13 @@ BcuBase* setup()
 
     initSerial();
 
-    // enable bus voltage monitoring
-    startBusVoltageMonitoring();
-
     ioTest();
+    bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
 #ifdef BUSFAIL
     bcu.setUsrCallback((UsrCallback *)&usrCallback);
+    startBusVoltageMonitoring(); // enable bus voltage monitoring
 #endif
-    bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
+
 #ifdef DEBUG_SERIAL
     int physicalAddress = bus.ownAddress();
     serial.print("physical address: ", (physicalAddress >> 12) & 0x0F, DEC);
