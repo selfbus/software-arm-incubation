@@ -217,14 +217,8 @@ BcuBase* setup()
     serial.print(".", (physicalAddress >> 8) & 0x0F, DEC);
     serial.println(".", physicalAddress & 0xFF, DEC);
 #endif
-    // _bcu.setGroupTelRateLimit(20); // not rly sure, maybe this leads sometimes to repeated telegrams?
 
     recallAppData();
-
-#ifndef BI_STABLE
-    //pinMode(PIN_IO11, OUTPUT);
-    //digitalWrite(PIN_IO11, 1);
-#endif
 
 #ifndef BI_STABLE
 #   ifdef ZERO_DETECT
@@ -239,8 +233,6 @@ BcuBase* setup()
     startBusVoltageMonitoring(); // needs to be called again, because Release version is using analog_pin.h functions from sblib which break our ADC Interrupts
 #else
     initApplication();
-
-    // TODO check maybe use _bcu.enableGroupTelSend(false);
 #endif
     return (&bcu);
 }
