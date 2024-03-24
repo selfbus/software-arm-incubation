@@ -34,7 +34,7 @@
 
 
 #ifdef BUSFAIL
-    NonVolatileSetting AppNovSetting(0xEA00, 0x100);  // flash-storage for application relevant parameters
+    NonVolatileSetting AppNovSetting(0xEE00, 0x100);  // flash-storage for application relevant parameters
     ApplicationData AppData;
     AppCallback callback;
     AppUsrCallback usrCallback; ///\todo two callbacks? Optimize with busfail integration into the sblib.
