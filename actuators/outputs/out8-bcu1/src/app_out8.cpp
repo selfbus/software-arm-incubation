@@ -309,25 +309,27 @@ void handleForcedPositioning(const SpecialFunctionConfig cfg, const int16_t objn
 
 static void _handle_logic_function(int objno, unsigned int value)
 {
-    // FIXME debug the logic handling! untested right now
     SpecialFunctionConfig sfcfg = getSpecialFunctionConfig(objno);
 
+    ///\todo Logic handling is mostly untested
     switch (sfcfg.Mode)
     {
-    case sftUnknown :
-         break; // sftUnknown
+        case sftLogic: // OR/AND/AND with recirculation
+            handleBooleanLogic(sfcfg, objno, value);
+            break;
 
-    case sftLogic: // OR/AND/AND with recirculation
-        handleBooleanLogic(sfcfg, objno, value);
-        break;
+        case sftBlocking:
+            handleBlockingLogic(sfcfg);
+            break;
 
-    case sftBlocking:
-        handleBlockingLogic(sfcfg);
-        break;
+        case sftForcedPositioning: // Zwangsstellung
+                handleForcedPositioning(sfcfg, objno, value);
+                break;
+        case sftUnknown:
+            break;
 
-    case sftForcedPositioning: // Zwangsstellung
-        handleForcedPositioning(sfcfg, objno, value);
-        break;
+        default:
+            break;
     }
 }
 
