@@ -185,12 +185,10 @@ static TimerConfig getTimerCfg(const int objno)
     return timercfg;
 }
 
-void handleBooleanLogic(const SpecialFunctionConfig cfg, int objno, unsigned int value)
+void handleBooleanLogic(const SpecialFunctionConfig cfg)
 {
     unsigned int logicState;    // state of logic function
-
-    if ((objno >= COMOBJ_SPECIAL1) && (objno <= COMOBJ_SPECIAL4))// need the value of the actual input 0-7
-        value = bcu.comObjects->objectRead(cfg.specialFuncOutput);
+    bool value = bcu.comObjects->objectRead(cfg.specialFuncOutput);
 
     // get the logic state for the special function object
     logicState = bcu.comObjects->objectRead(COMOBJ_SPECIAL1 + cfg.specialFuncNumber);
@@ -317,7 +315,7 @@ static void _handle_logic_function(int16_t objno, uint8_t value)
     switch (config.Mode)
     {
         case sftLogic: // OR/AND/AND with recirculation
-            handleBooleanLogic(config, objno, value);
+            handleBooleanLogic(config);
             break;
 
         case sftBlocking:
