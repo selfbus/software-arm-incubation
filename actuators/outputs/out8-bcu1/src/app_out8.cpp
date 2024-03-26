@@ -187,53 +187,49 @@ static TimerConfig getTimerCfg(const int objno)
 
 void handleBooleanLogic(const SpecialFunctionConfig cfg)
 {
-    unsigned int logicState;    // state of logic function
-    bool value = bcu.comObjects->objectRead(cfg.specialFuncOutput);
+    bool logicState = bcu.comObjects->objectRead(COMOBJ_SPECIAL1 + cfg.specialFuncNumber); // state of logic function
+    uint8_t affectedOutput = cfg.specialFuncOutput;
+    bool value = bcu.comObjects->objectRead(affectedOutput); // read the value of the affected output 0-7
 
-    // get the logic state for the special function object
-    logicState = bcu.comObjects->objectRead(COMOBJ_SPECIAL1 + cfg.specialFuncNumber);
     switch (cfg.logicFuncTyp)
     {
-    case ltOR : // or
-        value |= logicState;
-        break;
-    case ltAND : // and
-        value &= logicState;
-        break;
-    case ltAND_RECIRC : // and with recirculation
-         // UND mit Rückführung:
-         // Verknüpfungs-Objekt = "0" Ausgang ist immer "0" (logisch UND).
-         // In diesem Fall wird durch die Rückführung des Ausgangs auf das Schalten-Objekt dieses beim Setzen wieder zurückgesetzt.
-         // Erst, wenn das Verknüpfungs-Objekt = "1" ist, kann durch eine neu empfangene "1" am Schalten-Objekt der
-         // Ausgang den logischen Zustand "1" annehmen.
-        if (!logicState)
-        {
-            // if the logic part of the and connection has been
-            // cleared -> clear also the real object value
-            bcu.comObjects->objectSetValue(cfg.specialFuncOutput, false);
-            value = false;
-            channel_timeout[cfg.specialFuncOutput].On.stop();
-            channel_timeout[cfg.specialFuncOutput].Off.stop();
-        }
-        else
+        case ltOR:
+            value |= logicState;
+            break;
+        case ltAND: // and
             value &= logicState;
-        break;
-    default:
-        break;
+            break;
+        case ltAND_RECIRC: // AND with recirculation
+             // UND mit Rückführung:
+             // Verknüpfungs-Objekt = "0" Ausgang ist immer "0" (logisch UND).
+             // In diesem Fall wird durch die Rückführung des Ausgangs auf das Schalten-Objekt dieses beim Setzen wieder zurückgesetzt.
+             // Erst, wenn das Verknüpfungs-Objekt = "1" ist, kann durch eine neu empfangene "1" am Schalten-Objekt der
+             // Ausgang den logischen Zustand "1" annehmen.
+            if (!logicState)
+            {
+                // if the logic part of the AND connection has been
+                // cleared -> clear also the affected output state
+                bcu.comObjects->objectSetValue(affectedOutput, false);
+                value = false;
+                channel_timeout[affectedOutput].On.stop();
+                channel_timeout[affectedOutput].Off.stop();
+            }
+            else
+                value &= logicState;
+            break;
+        default:
+            break;
     }
 
-
-    // FIXME this doesnt work for a OR
-    if ((value) && (channel_timeout[cfg.specialFuncOutput].On.expired()))
+    if (value)
     {
         channel_timeout[cfg.specialFuncOutput].Off.stop();
-        relays.updateChannel(cfg.specialFuncOutput, value);
     }
-    else if ((!value) && (channel_timeout[cfg.specialFuncOutput].Off.expired()))
+    else
     {
         channel_timeout[cfg.specialFuncOutput].On.stop();
-        relays.updateChannel(cfg.specialFuncOutput, value);
     }
+    relays.updateChannel(cfg.specialFuncOutput, value);
 }
 
 void handleBlockingLogic(const SpecialFunctionConfig cfg)
@@ -303,7 +299,7 @@ void handleForcedPositioning(const SpecialFunctionConfig cfg, const int16_t objn
     {   // priority was just deactivated
         // restore the output based on the object state
         if ((objno >= COMOBJ_SPECIAL1) && ((objno <= COMOBJ_SPECIAL4)))
-            relays.updateChannel(cfg.specialFuncOutput, bcu.comObjects->objectRead (cfg.specialFuncOutput));
+            relays.updateChannel(cfg.specialFuncOutput, bcu.comObjects->objectRead(cfg.specialFuncOutput));
     }
 }
 
@@ -324,7 +320,7 @@ static void _handle_logic_function(int16_t objno, uint8_t value)
 
         case sftForcedPositioning: // Zwangsstellung
                 handleForcedPositioning(config, objno);
-                break;
+            break;
 
         case sftUnknown:
             break;
