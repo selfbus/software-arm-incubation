@@ -287,6 +287,26 @@ void handleBlockingLogic(const SpecialFunctionConfig cfg)
 
 }
 
+void handleForcedPositioning(const SpecialFunctionConfig cfg, const int16_t objno, unsigned int value)
+{
+    // 0x00 no priority, off
+    // 0x01 no priority, on
+    // 0x02 priority, off
+    // 0x03 priority, on
+    value = bcu.comObjects->objectRead (COMOBJ_SPECIAL1 + cfg.specialFuncNumber);
+    if (value & 0b10)
+    {   // priority is active for this channel
+        // set the value of the special com object as output state
+        relays.updateChannel(cfg.specialFuncOutput, value & 0b01);
+    }
+    else
+    {   // priority was just deactivated
+        // restore the output based on the object state
+        if ((objno >= COMOBJ_SPECIAL1) && ((objno >= COMOBJ_SPECIAL4)))
+            relays.updateChannel(cfg.specialFuncOutput, bcu.comObjects->objectRead (cfg.specialFuncOutput));
+    }
+}
+
 static void _handle_logic_function(int objno, unsigned int value)
 {
     // FIXME debug the logic handling! untested right now
@@ -306,23 +326,8 @@ static void _handle_logic_function(int objno, unsigned int value)
         break;
 
     case sftForcedPositioning: // Zwangsstellung
-                               // 0x00 no priority, off
-                               // 0x01 no priority, on
-                               // 0x02 priority, off
-                               // 0x03 priority, on
-        value = bcu.comObjects->objectRead (COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber);
-        if (value & 0b10)
-        {   // priority is active for this channel
-            // set the value of the special com object as output state
-            relays.updateChannel(sfcfg.specialFuncOutput, value & 0b01);
-        }
-        else
-        {   // priority was just deactivated
-            // restore the output based on the object state
-            if ((objno >= COMOBJ_SPECIAL1) && ((objno >= COMOBJ_SPECIAL4)))
-                relays.updateChannel(sfcfg.specialFuncOutput, bcu.comObjects->objectRead (sfcfg.specialFuncOutput));
-        }
-        break; // case sftForcedPositioning
+        handleForcedPositioning(sfcfg, objno, value);
+        break;
     }
 }
 
