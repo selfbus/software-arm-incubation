@@ -302,7 +302,7 @@ void handleForcedPositioning(const SpecialFunctionConfig cfg, const int16_t objn
     else
     {   // priority was just deactivated
         // restore the output based on the object state
-        if ((objno >= COMOBJ_SPECIAL1) && ((objno >= COMOBJ_SPECIAL4)))
+        if ((objno >= COMOBJ_SPECIAL1) && ((objno <= COMOBJ_SPECIAL4)))
             relays.updateChannel(cfg.specialFuncOutput, bcu.comObjects->objectRead (cfg.specialFuncOutput));
     }
 }
