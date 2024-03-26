@@ -240,9 +240,10 @@ void handleBooleanLogic(const SpecialFunctionConfig cfg, int objno, unsigned int
 
 void handleBlockingLogic(const SpecialFunctionConfig cfg)
 {
-    bool startBlocking;         // true if a blocking is started
-    bool endBlocking;           // true if a blocking was ended
-    blockType blockTyp;         // holds the type of blocking
+    uint8_t affectedOutput = cfg.specialFuncOutput;
+    bool startBlocking; // true if a blocking is started
+    bool endBlocking;   // true if a blocking was ended
+    blockType blockTyp; // holds the blocking type
 
     startBlocking = (bcu.comObjects->objectRead(COMOBJ_SPECIAL1 + cfg.specialFuncNumber) ^ (cfg.lockPolarity)) & 0x01;
     endBlocking = false;
@@ -256,9 +257,9 @@ void handleBlockingLogic(const SpecialFunctionConfig cfg)
         // action at end of blocking
         blockTyp = cfg.blockTypeEnd;
         // end blocking, we have to unblock relays
-        if (relays.blocked(cfg.specialFuncOutput))
+        if (relays.blocked(affectedOutput))
         {
-            relays.clearBlocked(cfg.specialFuncOutput);
+            relays.clearBlocked(affectedOutput);
             endBlocking = true;
         }
     }
@@ -271,10 +272,10 @@ void handleBlockingLogic(const SpecialFunctionConfig cfg)
         case blNoAction : // no action
             break;
         case blDisable : // disable the output
-            relays.updateChannel(cfg.specialFuncOutput, false);
+            relays.updateChannel(affectedOutput, false);
             break;
         case blEnable : // enable the output
-            relays.updateChannel(cfg.specialFuncOutput, true);
+            relays.updateChannel(affectedOutput, true);
             break;
         default:
             break;
@@ -283,8 +284,9 @@ void handleBlockingLogic(const SpecialFunctionConfig cfg)
 
     // finally set relays blocked in case of blocking start
     if (startBlocking)
-        relays.setBlocked(cfg.specialFuncOutput);
-
+    {
+        relays.setBlocked(affectedOutput);
+    }
 }
 
 void handleForcedPositioning(const SpecialFunctionConfig cfg, const int16_t objno)
