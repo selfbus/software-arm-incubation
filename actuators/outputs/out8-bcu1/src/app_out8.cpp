@@ -402,7 +402,7 @@ static unsigned int _handle_timed_functions(const int objno, const unsigned int 
 
 void objectUpdated(int objno)
 {
-    unsigned int value = bcu.comObjects->objectRead(objno); // get value of object (0=off, 1=on)
+    unsigned int value = bcu.comObjects->objectRead(objno); // 0=off, 1=on or 2 bits for forced positioning (Zwangsstellung)
 
     // check if we have a delayed action for this object, only Outputs
     if (objno < COMOBJ_SPECIAL1) // logic objects must be checked here to
@@ -417,7 +417,7 @@ void objectUpdated(int objno)
     }
 
     // handle the logic functions for this channel
-    _handle_logic_function (objno, value);  //FIXME logic will override on/off delays
+    _handle_logic_function (objno, value);  ///\todo boolean logic will override on/off delays
 
     if (relays.pendingChanges())
         _switchObjects(BETWEEN_CHANNEL_DELAY_MS);
