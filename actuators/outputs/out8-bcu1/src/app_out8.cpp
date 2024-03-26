@@ -30,7 +30,7 @@ typedef struct ChannelTimeOutTimer {
     Timeout Off;
 } ChannelTimeOutTimer;
 
-enum specialFunctionType {sftUnknown = -1, sftLogic = 0, sftBlocking = 1, sftConstrainedLead = 2}; // Verknuepfungsobjekt, Sperrobjekt, Zwangsstellungsobjekt
+enum specialFunctionType {sftUnknown = -1, sftLogic = 0, sftBlocking = 1, sftForcedPositioning = 2}; // Verknuepfungsobjekt, Sperrobjekt, Zwangsstellungsobjekt
 enum logicType {ltUnknown = 0, ltOR = 1, ltAND = 2, ltAND_RECIRC = 3}; // logic OR, AND, AND with recirculation (UND mit Rueckfuehrung)
 enum blockType {blUnknown = -1, blNoAction = 0, blDisable = 1, blEnable = 2};
 enum timedFunctionState {tfsUnknown = 0x80, tfsDisabled = 0, tfsOnDelayed = 1, tfsOffDelayed = 2};
@@ -156,7 +156,7 @@ SpecialFunctionConfig getSpecialFunctionConfig(const int objno)
             sfcfg.blockTypeEnd = blockType (((*(bcu.userEeprom))[APP_SPECIAL_FUNCTION1 + (sfcfg.specialFuncNumber>>1)])>>((sfcfg.specialFuncNumber&1)*4+2)&0x03);
             sfcfg.lockPolarity = ((*(bcu.userEeprom))[APP_SPECIAL_POLARITY] >> sfcfg.specialFuncNumber) & 0x01; // polarity of the lock object
             break;
-        case sftConstrainedLead: // constrained lead
+        case sftForcedPositioning: // Zwangsstellung
             break;
         default:
             break;
@@ -294,24 +294,24 @@ static void _handle_logic_function(int objno, unsigned int value)
             relays.setBlocked(sfcfg.specialFuncOutput);
         break; // case sftBlocking
 
-    case sftConstrainedLead: // constrained lead
-                             // 0x00 no priority, off
-                             // 0x01 no priority, on
-                             // 0x02 priority, off
-                             // 0x03 priority, on
+    case sftForcedPositioning: // Zwangsstellung
+                               // 0x00 no priority, off
+                               // 0x01 no priority, on
+                               // 0x02 priority, off
+                               // 0x03 priority, on
         value = bcu.comObjects->objectRead (COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber);
         if (value & 0b10)
-        {   // constrained lead is active for this channel
+        {   // priority is active for this channel
             // set the value of the special com object as output state
             relays.updateChannel(sfcfg.specialFuncOutput, value & 0b01);
         }
         else
-        {   // the constrained lead was just deactivated
+        {   // priority was just deactivated
             // restore the output based on the object state
             if ((objno >= COMOBJ_SPECIAL1) && ((objno >= COMOBJ_SPECIAL4)))
                 relays.updateChannel(sfcfg.specialFuncOutput, bcu.comObjects->objectRead (sfcfg.specialFuncOutput));
         }
-        break; // case sftConstrainedLead
+        break; // case sftForcedPositioning
     }
 }
 
