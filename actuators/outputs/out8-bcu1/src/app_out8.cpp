@@ -185,13 +185,65 @@ static TimerConfig getTimerCfg(const int objno)
     return timercfg;
 }
 
+void handleBooleanLogic(const SpecialFunctionConfig cfg, int objno, unsigned int value)
+{
+    unsigned int logicState;    // state of logic function
+
+    if ((objno >= COMOBJ_SPECIAL1) && (objno <= COMOBJ_SPECIAL4))// need the value of the actual input 0-7
+        value = bcu.comObjects->objectRead(cfg.specialFuncOutput);
+
+    // get the logic state for the special function object
+    logicState = bcu.comObjects->objectRead(COMOBJ_SPECIAL1 + cfg.specialFuncNumber);
+    switch (cfg.logicFuncTyp)
+    {
+    case ltOR : // or
+        value |= logicState;
+        break;
+    case ltAND : // and
+        value &= logicState;
+        break;
+    case ltAND_RECIRC : // and with recirculation
+         // UND mit Rückführung:
+         // Verknüpfungs-Objekt = "0" Ausgang ist immer "0" (logisch UND).
+         // In diesem Fall wird durch die Rückführung des Ausgangs auf das Schalten-Objekt dieses beim Setzen wieder zurückgesetzt.
+         // Erst, wenn das Verknüpfungs-Objekt = "1" ist, kann durch eine neu empfangene "1" am Schalten-Objekt der
+         // Ausgang den logischen Zustand "1" annehmen.
+        if (!logicState)
+        {
+            // if the logic part of the and connection has been
+            // cleared -> clear also the real object value
+            bcu.comObjects->objectSetValue(cfg.specialFuncOutput, false);
+            value = false;
+            channel_timeout[cfg.specialFuncOutput].On.stop();
+            channel_timeout[cfg.specialFuncOutput].Off.stop();
+        }
+        else
+            value &= logicState;
+        break;
+    default:
+        break;
+    }
+
+
+    // FIXME this doesnt work for a OR
+    if ((value) && (channel_timeout[cfg.specialFuncOutput].On.expired()))
+    {
+        channel_timeout[cfg.specialFuncOutput].Off.stop();
+        relays.updateChannel(cfg.specialFuncOutput, value);
+    }
+    else if ((!value) && (channel_timeout[cfg.specialFuncOutput].Off.expired()))
+    {
+        channel_timeout[cfg.specialFuncOutput].On.stop();
+        relays.updateChannel(cfg.specialFuncOutput, value);
+    }
+}
+
 static void _handle_logic_function(int objno, unsigned int value)
 {
     // FIXME debug the logic handling! untested right now
     bool startBlocking;         // true if a blocking is started
     bool endBlocking;           // true if a blocking was ended
     blockType blockTyp;         // holds the type of blocking
-    unsigned int logicState;    // state of logic function
 
     SpecialFunctionConfig sfcfg = getSpecialFunctionConfig(objno);
 
@@ -200,56 +252,9 @@ static void _handle_logic_function(int objno, unsigned int value)
     case sftUnknown :
          break; // sftUnknown
 
-    case sftLogic : // logic function (OR/AND/AND with recirculation
-        if ((objno >= COMOBJ_SPECIAL1) && (objno <= COMOBJ_SPECIAL4))// need the value of the actual input 0-7
-            value = bcu.comObjects->objectRead(sfcfg.specialFuncOutput);
-
-        // get the logic state for the special function object
-        logicState = bcu.comObjects->objectRead(COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber);
-        switch (sfcfg.logicFuncTyp)
-        {
-        case ltOR : // or
-            value |= logicState;
-            break;
-        case ltAND : // and
-            value &= logicState;
-            break;
-        case ltAND_RECIRC : // and with recirculation
-             // UND mit Rückführung:
-             // Verknüpfungs-Objekt = "0" Ausgang ist immer "0" (logisch UND).
-             // In diesem Fall wird durch die Rückführung des Ausgangs auf das Schalten-Objekt dieses beim Setzen wieder zurückgesetzt.
-             // Erst, wenn das Verknüpfungs-Objekt = "1" ist, kann durch eine neu empfangene "1" am Schalten-Objekt der
-             // Ausgang den logischen Zustand "1" annehmen.
-            if (!logicState)
-            {
-                // if the logic part of the and connection has been
-                // cleared -> clear also the real object value
-                bcu.comObjects->objectSetValue(sfcfg.specialFuncOutput, false);
-                value = false;
-                channel_timeout[sfcfg.specialFuncOutput].On.stop();
-                channel_timeout[sfcfg.specialFuncOutput].Off.stop();
-            }
-            else
-                value &= logicState;
-            break;
-        default:
-            break;
-        }
-
-
-        // FIXME this doesnt work for a OR
-        if ((value) && (channel_timeout[sfcfg.specialFuncOutput].On.expired()))
-        {
-            channel_timeout[sfcfg.specialFuncOutput].Off.stop();
-            relays.updateChannel(sfcfg.specialFuncOutput, value);
-        }
-        else if ((!value) && (channel_timeout[sfcfg.specialFuncOutput].Off.expired()))
-        {
-            channel_timeout[sfcfg.specialFuncOutput].On.stop();
-            relays.updateChannel(sfcfg.specialFuncOutput, value);
-        }
-
-        break; // case sftLogic
+    case sftLogic: // OR/AND/AND with recirculation
+        handleBooleanLogic(sfcfg, objno, value);
+        break;
 
     case sftBlocking: // blocking function
         startBlocking = (bcu.comObjects->objectRead(COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber) ^ (sfcfg.lockPolarity)) & 0x01;
