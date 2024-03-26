@@ -238,13 +238,58 @@ void handleBooleanLogic(const SpecialFunctionConfig cfg, int objno, unsigned int
     }
 }
 
-static void _handle_logic_function(int objno, unsigned int value)
+void handleBlockingLogic(const SpecialFunctionConfig cfg)
 {
-    // FIXME debug the logic handling! untested right now
     bool startBlocking;         // true if a blocking is started
     bool endBlocking;           // true if a blocking was ended
     blockType blockTyp;         // holds the type of blocking
 
+    startBlocking = (bcu.comObjects->objectRead(COMOBJ_SPECIAL1 + cfg.specialFuncNumber) ^ (cfg.lockPolarity)) & 0x01;
+    endBlocking = false;
+    if (startBlocking)
+    {
+        // action at start of blocking
+        blockTyp = cfg.blockTypeStart;
+    }
+    else
+    {
+        // action at end of blocking
+        blockTyp = cfg.blockTypeEnd;
+        // end blocking, we have to unblock relays
+        if (relays.blocked(cfg.specialFuncOutput))
+        {
+            relays.clearBlocked(cfg.specialFuncOutput);
+            endBlocking = true;
+        }
+    }
+
+    // change output only on start or end of blocking
+    if (startBlocking || endBlocking)
+    {
+        switch (blockTyp)
+        {
+        case blNoAction : // no action
+            break;
+        case blDisable : // disable the output
+            relays.updateChannel(cfg.specialFuncOutput, false);
+            break;
+        case blEnable : // enable the output
+            relays.updateChannel(cfg.specialFuncOutput, true);
+            break;
+        default:
+            break;
+        }
+    }
+
+    // finally set relays blocked in case of blocking start
+    if (startBlocking)
+        relays.setBlocked(cfg.specialFuncOutput);
+
+}
+
+static void _handle_logic_function(int objno, unsigned int value)
+{
+    // FIXME debug the logic handling! untested right now
     SpecialFunctionConfig sfcfg = getSpecialFunctionConfig(objno);
 
     switch (sfcfg.Mode)
@@ -256,48 +301,9 @@ static void _handle_logic_function(int objno, unsigned int value)
         handleBooleanLogic(sfcfg, objno, value);
         break;
 
-    case sftBlocking: // blocking function
-        startBlocking = (bcu.comObjects->objectRead(COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber) ^ (sfcfg.lockPolarity)) & 0x01;
-        endBlocking = false;
-        if (startBlocking)
-        {
-            // action at start of blocking
-            blockTyp = sfcfg.blockTypeStart;
-        }
-        else
-        {
-            // action at end of blocking
-            blockTyp = sfcfg.blockTypeEnd;
-            // end blocking, we have to unblock relays
-            if (relays.blocked(sfcfg.specialFuncOutput))
-            {
-                relays.clearBlocked(sfcfg.specialFuncOutput);
-                endBlocking = true;
-            }
-        }
-
-        // change output only on start or end of blocking
-        if (startBlocking || endBlocking)
-        {
-            switch (blockTyp)
-            {
-            case blNoAction : // no action
-                break;
-            case blDisable : // disable the output
-                relays.updateChannel(sfcfg.specialFuncOutput, false);
-                break;
-            case blEnable : // enable the output
-                relays.updateChannel(sfcfg.specialFuncOutput, true);
-                break;
-            default:
-                break;
-            }
-        }
-
-        // finally set relays blocked in case of blocking start
-        if (startBlocking)
-            relays.setBlocked(sfcfg.specialFuncOutput);
-        break; // case sftBlocking
+    case sftBlocking:
+        handleBlockingLogic(sfcfg);
+        break;
 
     case sftForcedPositioning: // Zwangsstellung
                                // 0x00 no priority, off
