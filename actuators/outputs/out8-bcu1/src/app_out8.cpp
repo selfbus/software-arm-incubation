@@ -44,13 +44,6 @@ static ChannelTimeOutTimer channel_timeout[NO_OF_CHANNELS];
     HandActuation handAct = HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
 #endif
 
-// internal functions
-static void          _switchObjects(unsigned int delayms = 0);
-static void          _sendFeedbackObjects(bool forceSendFeedback = false);
-static void          _handle_logic_function(int16_t objno, uint8_t value);
-static unsigned int  _handle_timed_functions(const int objno, const unsigned int value);
-
-
 #define MSBASE 130
 static const unsigned int  _delayBases[] =
 {     1 * MS2TICKS(MSBASE)
@@ -415,6 +408,36 @@ static unsigned int _handle_timed_functions(const int objno, const unsigned int 
     return state;
 }
 
+static void _sendFeedbackObjects(bool forcesendFeedbackObjects = false)
+{
+    unsigned int changed = relays.pendingChanges ();
+
+    if (changed || forcesendFeedbackObjects)
+    {   // at least one output has changed,
+        // -> update the corresponding feedback objects
+        unsigned int i;
+        unsigned int mask = 0x01;
+        unsigned int invert = (*(bcu.userEeprom))[APP_REPORT_BACK_INVERT];
+        for (i = 0; i < 8; i++)
+        {
+            if ((changed & mask) || forcesendFeedbackObjects)
+            {   // update feedback object
+                unsigned int value = relays.channel(i);
+                if (invert & mask)
+                    value ^= 0x01;
+                bcu.comObjects->objectWrite(COMOBJ_FEEDBACK1 + i, value);
+            }
+            mask <<= 1;
+        }
+   }
+}
+
+static void _switchObjects(unsigned int delayms = 0)
+{
+    _sendFeedbackObjects();
+    relays.updateOutputs(delayms);
+}
+
 void objectUpdated(int objno)
 {
     unsigned int value = bcu.comObjects->objectRead(objno); // 0=off, 1=on or 2 bits for forced positioning (Zwangsstellung)
@@ -478,36 +501,6 @@ void checkTimeouts(void)
 
     if (relays.pendingChanges())
         _switchObjects(BETWEEN_CHANNEL_DELAY_MS);
-}
-
-static void _sendFeedbackObjects(bool forcesendFeedbackObjects)
-{
-    unsigned int changed = relays.pendingChanges ();
-
-    if (changed || forcesendFeedbackObjects)
-    {   // at least one output has changed,
-        // -> update the corresponding feedback objects
-        unsigned int i;
-        unsigned int mask = 0x01;
-        unsigned int invert = (*(bcu.userEeprom))[APP_REPORT_BACK_INVERT];
-        for (i = 0; i < 8; i++)
-        {
-            if ((changed & mask) || forcesendFeedbackObjects)
-            {   // update feedback object
-                unsigned int value = relays.channel(i);
-                if (invert & mask)
-                    value ^= 0x01;
-                bcu.comObjects->objectWrite(COMOBJ_FEEDBACK1 + i, value);
-            }
-            mask <<= 1;
-        }
-   }
-}
-
-static void _switchObjects(unsigned int delayms)
-{
-    _sendFeedbackObjects();
-    relays.updateOutputs(delayms);
 }
 
 void delayAppStart()
