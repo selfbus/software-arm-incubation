@@ -47,7 +47,7 @@ static ChannelTimeOutTimer channel_timeout[NO_OF_CHANNELS];
 // internal functions
 static void          _switchObjects(unsigned int delayms = 0);
 static void          _sendFeedbackObjects(bool forceSendFeedback = false);
-static void          _handle_logic_function(int objno, unsigned int value);
+static void          _handle_logic_function(int16_t objno, uint8_t value);
 static unsigned int  _handle_timed_functions(const int objno, const unsigned int value);
 
 
@@ -309,7 +309,7 @@ void handleForcedPositioning(const SpecialFunctionConfig cfg, const int16_t objn
     }
 }
 
-static void _handle_logic_function(int objno, unsigned int value)
+static void _handle_logic_function(int16_t objno, uint8_t value)
 {
     SpecialFunctionConfig config = getSpecialFunctionConfig(objno);
 
