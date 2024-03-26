@@ -32,7 +32,6 @@ typedef struct ChannelTimeOutTimer {
 
 enum specialFunctionType {sftUnknown = -1, sftLogic = 0, sftBlocking = 1, sftConstrainedLead = 2}; // Verknuepfungsobjekt, Sperrobjekt, Zwangsstellungsobjekt
 enum logicType {ltUnknown = 0, ltOR = 1, ltAND = 2, ltAND_RECIRC = 3}; // logic OR, AND, AND with recirculation (UND mit Rueckfuehrung)
-enum logicResult {lrUnchanged = 0, lrSetOn = 1, lrSetOff = 2};
 enum blockType {blUnknown = -1, blNoAction = 0, blDisable = 1, blEnable = 2};
 enum timedFunctionState {tfsUnknown = 0x80, tfsDisabled = 0, tfsOnDelayed = 1, tfsOffDelayed = 2};
 
@@ -50,8 +49,6 @@ static void          _switchObjects(unsigned int delayms = 0);
 static void          _sendFeedbackObjects(bool forceSendFeedback = false);
 static void          _handle_logic_function(int objno, unsigned int value);
 static unsigned int  _handle_timed_functions(const int objno, const unsigned int value);
-// static logicResult   _init_logic_function(const int objno, unsigned int value);
-// static unsigned int  _init_timed_functions(const int objno, const unsigned int value);
 
 
 #define MSBASE 130
@@ -583,30 +580,7 @@ void initApplication(int lastRelayState)
         bcu.comObjects->objectSetValue(i, value);
     }
 
-    /*
-     * according to the jung manual, outputs will be switched on off, ignoring timed functions or logics
-     *
-    // only set output , if its not delayed on or in a timed configuration, or the logic prohibits it
-    for (i=COMOBJ_INPUT1; i < (sizeof(initialOutputState)/sizeof(initialOutputState[0])); i++)
-    {
-        unsigned int delayed = _init_timed_functions(i, objectRead(i));
-        if ((delayed & tfsOnDelayed) == tfsOnDelayed)  // check for timed functions for the channel
-            newRelaystate &= ~(1 << i);
-
-        logicResult logicRes = _init_logic_function(i, objectRead(i)); // initialize the logic functions for the channel
-        switch (logicRes)
-        {
-            case lrSetOn:
-                newRelaystate |= (1 << i);
-                break;
-            case lrSetOff:
-                newRelaystate &= ~(1 << i);
-                break;
-            default:
-                break;
-        }
-    }
-    */
+    // according to the jung manual, outputs are switched on/off on startup, ignoring timed functions or logics
     // check logic functions, maybe channels need to be blocked
     for (i=COMOBJ_INPUT1; i < (sizeof(initialOutputState)/sizeof(initialOutputState[0])); i++)
         _handle_logic_function(i, bcu.comObjects->objectRead(i)); // handle the logic functions for the channel
@@ -665,173 +639,3 @@ unsigned int getRelaysState()
     }
     return state;
 }
-/*
-static unsigned int _init_timed_functions(const int objno, const unsigned int value)
-{
-    unsigned int state = tfsUnknown;
-
-    // check that objno is in a valid range
-    if ((objno < COMOBJ_INPUT1) || (objno >= int(sizeof(channel_timeout)/sizeof(channel_timeout[0]))))
-        return tfsUnknown;
-
-    TimerConfig timercfg = getTimerCfg(objno);
-
-    // channel with no on/off delay or timed function mode
-    if (!timercfg.timerOffFactor && !timercfg.timerOnFactor)
-    {
-        channel_timeout[objno].On.stop();
-        channel_timeout[objno].Off.stop();
-        return tfsDisabled;
-    }
-
-    state = tfsDisabled;
-    if (!timercfg.timerMode)
-    {   // this is the on/off delay mode
-        if (!value && timercfg.timerOffFactor) // Check if a delay is configured for falling edge / Off
-        {
-            channel_timeout[objno].On.stop();
-            channel_timeout[objno].Off.start(timercfg.delayMs * timercfg.timerOffFactor);
-            state |= tfsOffDelayed;
-        }
-        else if (value && timercfg.timerOnFactor)  // Check if a delay is configured for raising edge / On
-        {
-            channel_timeout[objno].Off.stop();
-            channel_timeout[objno].On.start(timercfg.delayMs * timercfg.timerOnFactor);
-            state |= tfsOnDelayed;
-        }
-        else
-        {
-            channel_timeout[objno].On.stop();
-            channel_timeout[objno].Off.stop();
-            state = tfsDisabled;
-        }
-    }
-    else
-    {   // this is the timed function mode (stair way mode)
-        if (value)
-        {
-            if (timercfg.timerOffFactor ) // channel with off delay
-            {
-                channel_timeout[objno].Off.start(timercfg.delayMs * timercfg.timerOffFactor);
-                state |= tfsOffDelayed;
-            }
-
-            if (timercfg.timerOnFactor) // channel with on delay
-            {
-                channel_timeout[objno].On.start(timercfg.delayMs * timercfg.timerOnFactor);
-                state |= tfsOnDelayed;
-            }
-        }
-    }
-    return state;
-}
-
-logicResult _init_logic_function(const int objno, unsigned int value)
-{
-    SpecialFunctionConfig sfcfg = getSpecialFunctionConfig(objno);
-
-    bool startBlocking;                 // true if a blocking is started
-    unsigned int logicState;            // state of logic function
-    unsigned int valueConstrainedLead;  //
-
-    logicResult logicRes = lrUnchanged;
-
-    // output objects are from 0->7 & special functions are from 8->11, otherwise return
-    if ((objno < COMOBJ_INPUT1) || (objno > COMOBJ_SPECIAL4))
-        return lrUnchanged;
-
-    // special functions are from 8->11, need the value from the connected output
-    if ((objno >= COMOBJ_SPECIAL1) && (objno <= COMOBJ_SPECIAL4))
-    {
-        if ((sfcfg.specialFuncOutput > COMOBJ_INPUT1) && (sfcfg.specialFuncOutput < (COMOBJ_INPUT1+NO_OF_CHANNELS)))
-            value = objectRead(sfcfg.specialFuncOutput);
-    }
-
-    switch (sfcfg.Mode)
-    {
-    case sftUnknown :
-         break; // sftUnknown
-
-    case sftLogic : // logic function (OR/AND/AND with recirculation
-        // get the logic state for the special function object
-        logicState = objectRead(COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber);
-        switch (sfcfg.logicFuncTyp)
-        {
-        case ltOR : // or
-            value |= logicState;
-            break;
-        case ltAND : // and
-            value &= logicState;
-            break;
-        case ltAND_RECIRC : // and with recirculation
-            // UND mit Rückführung:
-            // Verknüpfungs-Objekt = "0" Ausgang ist immer "0" (logisch UND).
-            // In diesem Fall wird durch die Rückführung des Ausgangs auf das Schalten-Objekt dieses beim Setzen wieder zurückgesetzt.
-            // Erst, wenn das Verknüpfungs-Objekt = "1" ist, kann durch eine neu empfangene "1" am Schalten-Objekt der
-            // Ausgang den logischen Zustand "1" annehmen.
-            if (!logicState)
-            {
-                // if the logic part of the and connection has been
-                // cleared -> clear also the real object value
-                objectSetValue(sfcfg.specialFuncOutput, false);
-                value = false;
-            }
-            else
-                value &= logicState;
-            break;
-        default:
-            break;
-        }
-
-        if (sfcfg.logicFuncTyp != ltUnknown)
-        {
-            if (value)
-               logicRes = lrSetOn;
-            else
-               logicRes = lrSetOff;
-        }
-        break; // case sftLogic
-
-    case sftBlocking: // blocking function
-        startBlocking = (objectRead(COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber) ^ (sfcfg.lockPolarity)) & 0x01;
-        // change output only on start or end of blocking
-        if (startBlocking)
-        {
-            switch (sfcfg.blockTypeStart)
-            {
-            case blNoAction : // no action
-                break;
-            case blDisable : // disable the output
-                value = false;
-                logicRes = lrSetOff;
-                break;
-            case blEnable : // enable the output
-                value = true;
-                logicRes = lrSetOn;
-                break;
-            default:
-                break;
-            }
-        }
-        break; // case sftBlocking
-
-    case sftConstrainedLead: // constrained lead
-                             // 0x00 no priority, off
-                             // 0x01 no priority, on
-                             // 0x02 priority, off
-                             // 0x03 priority, on
-        valueConstrainedLead = objectRead (COMOBJ_SPECIAL1 + sfcfg.specialFuncNumber);
-        if (valueConstrainedLead & 0b10)
-        {   // constrained lead is active for this channel
-            if (valueConstrainedLead & 0b01)
-                logicRes = lrSetOn;
-            else
-                logicRes = lrSetOff;
-        }
-        break; // case sftConstrainedLead
-    default:
-        break; //default
-    }
-    return logicRes;
-}
-*/
