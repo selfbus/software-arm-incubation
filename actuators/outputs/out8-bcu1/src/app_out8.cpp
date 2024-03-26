@@ -577,15 +577,17 @@ void initApplication(int lastRelayState)
             newRelaystate |= 1 << i;
     }
 
-    // set all logic objects to false
-    for (i=COMOBJ_SPECIAL1; i <= COMOBJ_SPECIAL4; i++)
-        bcu.comObjects->objectSetValue(i, (unsigned int) 0);
-
     // set all output objects according to configured initial output state
     for (i=COMOBJ_INPUT1; i < (sizeof(initialOutputState)/sizeof(initialOutputState[0])); i++)
     {
         unsigned int value = (initialOutputState[i] == Outputs::CLOSED);
         bcu.comObjects->objectSetValue(i, value);
+    }
+
+    for (i=COMOBJ_SPECIAL1; i <= COMOBJ_SPECIAL4; i++)
+    {
+        bcu.comObjects->objectSetValue(i, (unsigned int) 0); // set all logic objects to false
+        bcu.comObjects->requestObjectRead(i); // read values of logic objects (8-11) from the KNX bus
     }
 
     // according to the jung manual, outputs are switched on/off on startup, ignoring timed functions or logics
