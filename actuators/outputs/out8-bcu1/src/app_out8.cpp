@@ -287,13 +287,13 @@ void handleBlockingLogic(const SpecialFunctionConfig cfg)
 
 }
 
-void handleForcedPositioning(const SpecialFunctionConfig cfg, const int16_t objno, unsigned int value)
+void handleForcedPositioning(const SpecialFunctionConfig cfg, const int16_t objno)
 {
-    // 0x00 no priority, off
-    // 0x01 no priority, on
-    // 0x02 priority, off
-    // 0x03 priority, on
-    value = bcu.comObjects->objectRead (COMOBJ_SPECIAL1 + cfg.specialFuncNumber);
+    // 0b00 no priority, off
+    // 0b01 no priority, on
+    // 0b10    priority, off
+    // 0b11    priority, on
+    uint8_t value = bcu.comObjects->objectRead (COMOBJ_SPECIAL1 + cfg.specialFuncNumber);
     if (value & 0b10)
     {   // priority is active for this channel
         // set the value of the special com object as output state
@@ -309,22 +309,23 @@ void handleForcedPositioning(const SpecialFunctionConfig cfg, const int16_t objn
 
 static void _handle_logic_function(int objno, unsigned int value)
 {
-    SpecialFunctionConfig sfcfg = getSpecialFunctionConfig(objno);
+    SpecialFunctionConfig config = getSpecialFunctionConfig(objno);
 
     ///\todo Logic handling is mostly untested
-    switch (sfcfg.Mode)
+    switch (config.Mode)
     {
         case sftLogic: // OR/AND/AND with recirculation
-            handleBooleanLogic(sfcfg, objno, value);
+            handleBooleanLogic(config, objno, value);
             break;
 
         case sftBlocking:
-            handleBlockingLogic(sfcfg);
+            handleBlockingLogic(config);
             break;
 
         case sftForcedPositioning: // Zwangsstellung
-                handleForcedPositioning(sfcfg, objno, value);
+                handleForcedPositioning(config, objno);
                 break;
+
         case sftUnknown:
             break;
 
