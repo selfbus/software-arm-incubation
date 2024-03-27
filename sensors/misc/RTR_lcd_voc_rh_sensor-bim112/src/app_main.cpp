@@ -40,8 +40,6 @@ Serial Serial(PIO2_7, PIO2_8);
 
 //SPI spi(SPI_PORT_0);
 
-int blinkPin = PIO0_7;
-
 // Timeout
 Timeout timeout[NUM_TIMED_VALUES];
 
@@ -64,11 +62,6 @@ BcuBase* setup() {
 	bcu.setProgPin(PIO2_11);
 
 	bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION); // see in knxprodHeader.h for Device information
-
-
-//	pinMode(blinkPin, OUTPUT);
-
-//	memcpy(userEeprom.order, hardwareVersion, sizeof(hardwareVersion));
 
 	// Enable the serial port with 19200 baud, no parity, 1 stop bit
 #ifdef _DEBUG__

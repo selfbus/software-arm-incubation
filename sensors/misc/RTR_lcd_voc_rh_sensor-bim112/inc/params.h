@@ -9,7 +9,6 @@
 #ifndef params_h
 #define params_h
 
-//#include <sblib/mem_mapper.h>
 #include <sblib/timeout.h>
 #include <sblib/mem_mapper.h>
 
