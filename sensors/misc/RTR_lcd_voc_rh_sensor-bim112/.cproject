@@ -29,12 +29,12 @@
 								<option id="com.crt.advproject.cpp.arch.1212447805" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.354499063" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="DEBUG"/>
-									<listOptionValue builtIn="false" value="__CODE_RED"/>
 									<listOptionValue builtIn="false" value="__NEWLIB__"/>
 									<listOptionValue builtIn="false" value="CORE_M0"/>
 									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
+									<listOptionValue builtIn="false" value="__LPC11XX_GNAXBOARD__"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.5020819" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.optimization.flags.1630816484" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-fno-common" valueType="string"/>
@@ -56,12 +56,12 @@
 								<option id="com.crt.advproject.gcc.arch.1671627466" name="Architecture" superClass="com.crt.advproject.gcc.arch" useByScannerDiscovery="true" value="com.crt.advproject.gcc.target.cm0" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.preprocessor.def.symbols.2105060459" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="DEBUG"/>
-									<listOptionValue builtIn="false" value="__CODE_RED"/>
 									<listOptionValue builtIn="false" value="__NEWLIB__"/>
 									<listOptionValue builtIn="false" value="CORE_M0"/>
 									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
+									<listOptionValue builtIn="false" value="__LPC11XX_GNAXBOARD__"/>
 								</option>
 								<option id="gnu.c.compiler.option.misc.other.689488160" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
 								<option id="gnu.c.compiler.option.optimization.flags.1453950594" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-fno-common" valueType="string"/>
@@ -169,6 +169,7 @@
 									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
+									<listOptionValue builtIn="false" value="__LPC11XX_GNAXBOARD__"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1902472766" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.optimization.flags.614377146" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-fno-common -Os" valueType="string"/>
@@ -197,6 +198,7 @@
 									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
+									<listOptionValue builtIn="false" value="__LPC11XX_GNAXBOARD__"/>
 								</option>
 								<option id="gnu.c.compiler.option.misc.other.18788348" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
 								<option id="gnu.c.compiler.option.optimization.flags.692327032" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-fno-common" valueType="string"/>
@@ -307,6 +309,7 @@
 									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
+									<listOptionValue builtIn="false" value="__LPC11XX_GNAXBOARD__"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1113526338" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.optimization.flags.1031171944" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-fno-common -Os" valueType="string"/>
@@ -334,6 +337,7 @@
 									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
+									<listOptionValue builtIn="false" value="__LPC11XX_GNAXBOARD__"/>
 								</option>
 								<option id="gnu.c.compiler.option.misc.other.1358110904" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
 								<option id="gnu.c.compiler.option.optimization.flags.1318691343" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-fno-common" valueType="string"/>
