@@ -35,7 +35,7 @@
 #define FT_MAX_SEND_RETRY           (0)      //!< Do not repeat sending
 #define FT_BAUDRATE                 (19200)  //!< Ft12 baudrate
 #define FT_OUTBUFFER_COUNT          (2)      //!< Number of outgoing FT12 frame buffers
-APP_VERSION("SBft12  ", "0", "01")
+APP_VERSION("SBft12  ", "0", "02")  // Don't forget to also change the build-variable sw_version
 
 BcuFt12 bcu = BcuFt12();  //!< Bus coupling unit Maskversion 0x0012 of the ft12 module
 
