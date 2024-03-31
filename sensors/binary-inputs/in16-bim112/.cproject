@@ -7,7 +7,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="16"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -143,7 +143,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="16"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -278,7 +278,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="16"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -425,7 +425,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value="INVERT"/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="16"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -560,7 +560,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value="INVERT"/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="16"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -707,7 +707,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value="INVERT"/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="8"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -822,6 +822,7 @@
 								<option id="com.crt.advproject.link.cpp.lto.202915779" name="Enable Link-time optimization (-flto)" superClass="com.crt.advproject.link.cpp.lto" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.strip.2096482605" name="Omit all symbol information (-s)" superClass="gnu.cpp.link.option.strip" useByScannerDiscovery="false" value="false" valueType="boolean"/>
 								<option id="com.crt.advproject.link.cpp.lto.optmization.level.595733180" name="Link-time optimization level" superClass="com.crt.advproject.link.cpp.lto.optmization.level" useByScannerDiscovery="false" value="link.cpp.optimization.level.size" valueType="enumerated"/>
+								<option id="com.crt.advproject.link.cpp.multicore.master.920041329" name="Multicore master" superClass="com.crt.advproject.link.cpp.multicore.master"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1839934260" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -853,7 +854,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="8"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1000,7 +1001,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value="INVERT"/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="4"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1147,7 +1148,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="4"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1293,7 +1294,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="16"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1430,7 +1431,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="8"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1567,7 +1568,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="8"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1714,7 +1715,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="16"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1860,7 +1861,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="8"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1996,7 +1997,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TS_ARM"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="8"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -2132,7 +2133,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value="INVERT"/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="8"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -2268,7 +2269,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value="INVERT"/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="16"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -2404,7 +2405,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value="INVERT"/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="16"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -2540,7 +2541,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="TE4"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="8"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -2677,7 +2678,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="FUSED_IO"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="16"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -2814,7 +2815,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="FUSED_IO"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="16"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -2962,7 +2963,7 @@
 					<stringMacro name="controller_type" type="VALUE_TEXT" value="FUSED_IO"/>
 					<stringMacro name="inverted" type="VALUE_TEXT" value=""/>
 					<stringMacro name="num_inputs" type="VALUE_TEXT" value="16"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>

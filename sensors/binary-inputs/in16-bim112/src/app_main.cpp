@@ -10,7 +10,7 @@
 #include "debug.h"
 #include "config.h"
 
-APP_VERSION("SBin16  ", "1", "11")
+APP_VERSION("SBin16  ", "1", "12") // Don't forget to also change the build-variable sw_version
 
 const HardwareVersion * currentVersion;
 
