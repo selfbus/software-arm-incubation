@@ -48,8 +48,10 @@
 // #define BI_STABLE // replaced by build-variable ${relay_type}
 // #define HAND_ACTUATION // replaced by build-variable ${hand_actuation}
 
-// #define ZERO_DETECT // no more supported? at least it's mentioned in a comment from 2014
-                       // https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_16A_4TE
+// #define ZERO_DETECT // only for mono-stable relays supported
+                       // comment from old xwiki 2014/09/09
+                       // "Zerodetect haben wir jetzt für den bistabilen Aktor wieder abgeschafft,es war eh nur ein versuch."
+                       // https://selfbus.myxwiki.org/xwiki/bin/view/Geräte/Ausgänge/Binärausgang_8x230_16A_4TE
                        // PIO_SDA is used for zero-detect
 
 /**
