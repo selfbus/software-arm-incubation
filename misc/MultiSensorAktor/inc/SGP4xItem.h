@@ -20,15 +20,17 @@ public:
 
 	void Loop(uint32_t now, int updatedObjectNo);
 	int ConfigLength() { return sizeof(TempHumSensorConfig); }
-	int ComObjCount() { return 4; }
+	int ComObjCount() { return 5; }
 
 protected:
 	TempHumSensorConfig *config;
-	SGP4xClass sgp4x;
+//	SGP4xClass sgp4x;
 	uint32_t nextAction = 0;
 	byte state = 0;
 	bool configured = false;
 	uint16_t baseline = 0;
+	float temp = -100;
+	float hum = -100;
 };
 
 #endif /* SGP4XITEM_H_ */

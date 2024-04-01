@@ -37,30 +37,73 @@ byte OutputPin::GetState(uint32_t now, byte updatedObjectNo)
 
 		setType();
 	}
+	else if (updatedObjectNo == firstComIndex + 2)
+	{
+		locked = BCU->comObjects->objectRead(firstComIndex + 2) == 0;
+		if (locked)
+		{
+			switch (config->lockFlags)
+			{
+				case PortOutLockAction::Nothing:
+					break;
+				case PortOutLockAction::Off:
+					sw = false;
+					break;
+				case PortOutLockAction::On:
+					sw = true;
+					break;
+				case PortOutLockAction::Toggle:
+					sw = !sw;
+					break;
+			}
+		}
+	}
 
 	if (blinkActionTime < now)
 	{
-		blinkState = !blinkState;
-		if (blinkState)
+		if (config->Blink == PortOutPulse)
 		{
-			blinkActionTime += config->BlinkOnTime;
+			if (sw && !locked)
+			{
+				blinkActionTime = 0xFFFFFFFF;
+				sw = false;
+				BCU->comObjects->objectWrite(firstComIndex, sw);
+			}
 		}
 		else
 		{
-			blinkActionTime += config->BlinkOffTime;
+			blinkState = !blinkState;
+			if (blinkState)
+			{
+				blinkActionTime += config->BlinkOnTime;
+			}
+			else
+			{
+				blinkActionTime += config->BlinkOffTime;
+			}
 		}
 	}
 
-	if (blink)
+	if (!locked)
 	{
-		lastState = blinkState;
-	}
-	else
-	{
-		lastState = sw;
+		if (blink)
+		{
+			lastState = blinkState;
+		}
+		else
+		{
+			lastState = sw;
+		}
 	}
 
-	return config->Invert ? !lastState : lastState;
+	bool outVal = config->Invert ? !lastState : lastState;
+
+	if (config->Blink != PortOutPulse && BCU->comObjects->objectRead(firstComIndex + 3) != outVal)
+	{
+		BCU->comObjects->objectWrite(firstComIndex + 3, sw);
+	}
+
+	return outVal;
 }
 
 void OutputPin::setType()
@@ -88,6 +131,12 @@ void OutputPin::setType()
 		break;
 	case PortOutBlinkAlways:
 		blink = true;
+		break;
+	case PortOutPulse:
+		if (sw)
+		{
+			blinkActionTime = millis() + config->BlinkOnTime;
+		}
 		break;
 	}
 }

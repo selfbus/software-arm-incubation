@@ -30,6 +30,7 @@ protected:
 	bool blinkState = false;
 	bool blink = false;
 	bool lastState = false;
+	bool locked = false;
 	uint32_t blinkActionTime = 0;
 
 	void setType();

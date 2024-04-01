@@ -10,8 +10,8 @@
 					</Product>
 				</Products>
 				<Hardware2Programs>
-					<Hardware2Program Id="M-013A_H-2-1_HP-0001-03-8861" MediumTypes="MT-0">
-						<ApplicationProgramRef RefId="M-013A_A-0001-03-8861" />
+					<Hardware2Program Id="M-013A_H-2-1_HP-0001-04-8861" MediumTypes="MT-0">
+						<ApplicationProgramRef RefId="M-013A_A-0001-04-8861" />
 						<RegistrationInfo RegistrationStatus="Registered" RegistrationNumber="0001/100101" />
 					</Hardware2Program>
 				</Hardware2Programs>

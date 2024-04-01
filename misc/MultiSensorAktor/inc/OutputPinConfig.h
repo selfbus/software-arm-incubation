@@ -7,6 +7,14 @@
 #ifndef OUTPUTPINCONFIG_H_
 #define OUTPUTPINCONFIG_H_
 
+enum class PortOutLockAction : byte
+{
+	Nothing,
+	Off,
+	On,
+	Toggle
+};
+
 enum PortOutBlink : byte
 {
 	PortOutBlinkNever,
@@ -15,7 +23,8 @@ enum PortOutBlink : byte
 	PortOutBlinkAlways,
 	PortOutBlinkObj,
 	PortOutBlinkObjAndOff,
-	PortOutBlinkObjAndOn
+	PortOutBlinkObjAndOn,
+	PortOutPulse,
 };
 
 #pragma pack(1)
@@ -25,7 +34,7 @@ struct OutputPinConfig
 	PortOutBlink Blink;
 	uint16_t BlinkOnTime;
 	uint16_t BlinkOffTime;
-	byte lockFlags;
+	PortOutLockAction lockFlags;
 };
 #pragma pack()
 
