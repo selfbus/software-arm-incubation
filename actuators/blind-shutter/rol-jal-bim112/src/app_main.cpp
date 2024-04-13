@@ -192,7 +192,7 @@ void loop_noapp()
 void ResetDefaultApplicationData()
 {
 #ifdef BUSFAIL
-    for(int i = 0; i < NO_OF_CHANNELS; i++){
+    for(uint8_t i = 0; i < sizeof(AppData.channelPositions)/sizeof(AppData.channelPositions[0]); i++){
         AppData.channelPositions[i] = 0;
         AppData.channelSlatPositions[i] = 0;
     }
