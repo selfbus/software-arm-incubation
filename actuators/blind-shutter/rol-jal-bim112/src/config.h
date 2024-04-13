@@ -19,7 +19,6 @@
 //#define HAND_ACTUATION
 #define NO_OF_CHANNELS 4
 
-//#define USE_DEV_LEDS
 //#define MEM_TEST
 
 typedef struct
