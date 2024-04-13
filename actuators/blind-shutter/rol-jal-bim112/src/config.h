@@ -16,7 +16,15 @@
 #define MANUFACTURER 131
 #define APPVERSION   0x28
 
-//#define HAND_ACTUATION
+/**
+ * @def HAND_ACTUATION
+ * Define to compile with hand actuation support.
+ *
+ * @note Currently set by build variable ${hand_actuation} in eclipse menu "Project properties->C/C++ Build->Build Variables"
+ * @warning Hand actuation is currently only supported for 4-channel builds.
+ */
+// #define HAND_ACTUATION
+
 #define NO_OF_CHANNELS 4
 
 //#define MEM_TEST
@@ -29,7 +37,8 @@ typedef struct
 } HardwareVersion;
 
 
-#define NO_OF_OUTPUTS  (NO_OF_CHANNELS * 2)
+#define NO_OF_OUTPUTS (NO_OF_CHANNELS * 2)
+
 #if NO_OF_CHANNELS == 4
     // JAL-0410.01 Shutter Actuator 4-fold, 4TE, 230VAC, 10A
     const HardwareVersion currentVersion = {4, 0x4578, { 0, 0, 0, 0, 0x0, 0x29 }};
