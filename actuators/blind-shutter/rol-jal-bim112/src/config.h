@@ -36,6 +36,7 @@ typedef struct
     const int outputPins[NO_OF_OUTPUTS] =
         { PIN_IO1, PIN_IO2, PIN_IO3, PIN_IO4, PIN_IO5, PIN_IO6, PIN_IO7, PIN_IO8 };
 #elif NO_OF_CHANNELS == 8
+#   warning "8 channel build is experimental!"
     // JAL-0810.01 Shutter Actuator 8-fold, 8TE, 230VAC,10A
     const HardwareVersion currentVersion = {8, 0x46B8, { 0, 0, 0, 0, 0x0, 0x28 }};
     const int outputPins[NO_OF_OUTPUTS] =
