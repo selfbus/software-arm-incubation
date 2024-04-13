@@ -113,7 +113,6 @@ BcuBase* setup()
     pinMode(PIN_RUN,  OUTPUT); // Run LED
 #endif
 
-    bcu.begin(MANUFACTURER, currentVersion.hardwareVersion[5], APPVERSION);  // we are a MDT shutter/blind actuator, version 2.8
 #ifdef BUSFAIL
     bcu.setUsrCallback((UsrCallback *)&usrCallback);
 #endif
@@ -130,6 +129,7 @@ BcuBase* setup()
     initApplication();
 #endif
 
+    bcu.begin(MANUFACTURER, currentVersion.hardwareVersion[5], APPVERSION);  // we are a MDT shutter/blind actuator, version 2.8
     return (&bcu);
 }
 
