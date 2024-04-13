@@ -14,10 +14,6 @@
 #include <blind.h> ///\todo Blind is a child class of Channel, something is here wrong
 
 MASK0701 bcu = MASK0701();
-
-const int outputPins[NO_OF_OUTPUTS] =
-    { PIN_IO1, PIN_IO2, PIN_IO3, PIN_IO4, PIN_IO5, PIN_IO6, PIN_IO7, PIN_IO8 };
-
 Timeout PWMDisabled;
 
 
@@ -131,8 +127,8 @@ Channel::Channel(unsigned int number, unsigned int address, short position)
         closeTimeExt   = 1;
     }
     unsigned int baseAddr =
-          currentVersion->baseAddress
-        + currentVersion->noOfChannels * EE_CHANNEL_CFG_SIZE
+          currentVersion.baseAddress
+        + currentVersion.noOfChannels * EE_CHANNEL_CFG_SIZE
         + (EE_ALARM_HEADER_SIZE + EE_ALARM_CFG_SIZE * NO_OF_ALARMS) * number;
 
     reactionLockRemove = bcu.userEeprom->getUInt8  (baseAddr +  8);
@@ -146,8 +142,8 @@ Channel::Channel(unsigned int number, unsigned int address, short position)
         if (bcu.userEeprom->getUInt8 (baseAddr + 4) == 255)
             alarms[i].priority  = 0;
     }
-    baseAddr = currentVersion->baseAddress
-             + currentVersion->noOfChannels
+    baseAddr = currentVersion.baseAddress
+             + currentVersion.noOfChannels
              * (EE_CHANNEL_CFG_SIZE + EE_ALARM_HEADER_SIZE + EE_ALARM_CFG_SIZE * NO_OF_ALARMS);
     busDownAction   = bcu.userEeprom->getUInt8 (baseAddr + 0x00 + 2 * number);
     busReturnAction = bcu.userEeprom->getUInt8 (baseAddr + 0x01 + 2 * number);
@@ -699,7 +695,7 @@ void Channel::_startTracking(void)
 
 bool Channel::_storeScene(unsigned int i)
 {
-    unsigned int address = currentVersion->baseAddress + EE_CHANNEL_CFG_SIZE * number;
+    unsigned int address = currentVersion.baseAddress + EE_CHANNEL_CFG_SIZE * number;
     scenePos [i] = position;
     if ((*(bcu.userEeprom))[address + 32 + i] != position)
     {

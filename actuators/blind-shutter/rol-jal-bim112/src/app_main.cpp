@@ -29,16 +29,6 @@
 
 APP_VERSION("SBrol   ", "1", "11") // Don't forget to also change the build-variable sw_version
 
-// Hardware version. Must match the product_serial_number in the VD's table hw_product
-const HardwareVersion hardwareVersion[] =
-{
-    ///\todo implement missing 1, 2, 8- fold versions
-    {4, 0x4578, { 0, 0, 0, 0, 0x0, 0x29 }} // JAL-0410.01 Shutter Actuator 4-fold, 4TE, 230VAC, 10A
-    // {8, 0x46B8, { 0, 0, 0, 0, 0x0, 0x28 }}  // JAL-0810.01 Shutter Actuator 8-fold, 8TE, 230VAC,10A
-};
-
-const HardwareVersion * currentVersion;
-
 Timeout timeout;
 
 void initSerial()
@@ -118,14 +108,12 @@ bool recallAppData()
  */
 BcuBase* setup()
 {
-    ///\todo read some ID pins to determine which version is attached
 
-    currentVersion = & hardwareVersion[0];
-    bcu.begin(MANUFACTURER, currentVersion->hardwareVersion[5], APPVERSION);  // we are a MDT shutter/blind actuator, version 2.8
+    bcu.begin(MANUFACTURER, currentVersion.hardwareVersion[5], APPVERSION);  // we are a MDT shutter/blind actuator, version 2.8
 #ifdef BUSFAIL
     bcu.setUsrCallback((UsrCallback *)&usrCallback);
 #endif
-    bcu.setHardwareType(currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
+    bcu.setHardwareType(currentVersion.hardwareVersion, sizeof(currentVersion.hardwareVersion));
 
     pinMode(PIN_INFO, OUTPUT); // Info LED
     pinMode(PIN_RUN,  OUTPUT); // Run LED
@@ -231,7 +219,7 @@ void AppCallback::BusVoltageReturn()
         // load default values
         ResetDefaultApplicationData();
     }
-    bcu.begin(MANUFACTURER, currentVersion->hardwareVersion[5], APPVERSION);
+    bcu.begin(MANUFACTURER, currentVersion.hardwareVersion[5], APPVERSION);
     initApplication(AppData.channelPositions, AppData.channelSlatPositions);
 }
 

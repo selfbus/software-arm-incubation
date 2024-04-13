@@ -17,6 +17,8 @@
 #define APPVERSION   0x28
 
 //#define HAND_ACTUATION
+#define NO_OF_CHANNELS 4
+
 //#define USE_DEV_LEDS
 //#define MEM_TEST
 
@@ -27,9 +29,24 @@ typedef struct
     byte hardwareVersion[6];    //!> The hardware identification number. Must match the product_serial_number in the VD's table hw_product
 } HardwareVersion;
 
-extern const HardwareVersion * currentVersion;
 
-
+#define NO_OF_OUTPUTS  (NO_OF_CHANNELS * 2)
+#if NO_OF_CHANNELS == 4
+    // JAL-0410.01 Shutter Actuator 4-fold, 4TE, 230VAC, 10A
+    const HardwareVersion currentVersion = {4, 0x4578, { 0, 0, 0, 0, 0x0, 0x29 }};
+    const int outputPins[NO_OF_OUTPUTS] =
+        { PIN_IO1, PIN_IO2, PIN_IO3, PIN_IO4, PIN_IO5, PIN_IO6, PIN_IO7, PIN_IO8 };
+#elif NO_OF_CHANNELS == 8
+    // JAL-0810.01 Shutter Actuator 8-fold, 8TE, 230VAC,10A
+    const HardwareVersion currentVersion = {8, 0x46B8, { 0, 0, 0, 0, 0x0, 0x28 }};
+    const int outputPins[NO_OF_OUTPUTS] =
+        {
+          PIN_IO1, PIN_IO2, PIN_IO3, PIN_IO4, PIN_IO5, PIN_IO6, PIN_IO7, PIN_IO8,
+          PIN_TX, PIN_RX, PIN_IO9, PIN_IO10, PIN_IO12, PIN_IO13, PIN_IO14, PIN_IO15
+        };
+#else
+#   error "NO_OF_CHANNELS must be defined"
+#endif
 
 /*
  *  bus power-failure configuration
@@ -52,6 +69,9 @@ extern const HardwareVersion * currentVersion;
  *  hand actuation pin configuration
  */
 #ifdef HAND_ACTUATION
+#   if NO_OF_CHANNELS != 4
+#       error "HAND_ACTUATION only supported for NO_OF_CHANNELS == 4"
+#   endif
 #   define NO_OF_HAND_PINS 8
 #   define READBACK_PIN PIN_LT9
 #   define BLINK_TIME 500
