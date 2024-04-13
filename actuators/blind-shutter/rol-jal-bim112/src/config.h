@@ -16,20 +16,20 @@
 #define MANUFACTURER 131
 #define APPVERSION   0x28
 
+//#define HAND_ACTUATION
+//#define USE_DEV_LEDS
+//#define MEM_TEST
+
 typedef struct
 {
     unsigned int noOfChannels;  //!> how many channels are supported with this hardware
     unsigned short baseAddress; //!> Base address of the config parameters
-    byte hardwareVersion[6];    //!> The hardware identification number
+    byte hardwareVersion[6];    //!> The hardware identification number. Must match the product_serial_number in the VD's table hw_product
 } HardwareVersion;
 
 extern const HardwareVersion * currentVersion;
 
 
-//#define HAND_ACTUATION
-
-//#define USE_DEV_LEDS
-//#define MEM_TEST
 
 /*
  *  bus power-failure configuration
