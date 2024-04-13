@@ -29,9 +29,10 @@
  * @def CHANNEL_COUNT
  * Define to set the number of blind/fold channels (1, 2, 4 or 8)
  *
+ * @note Set by build variable ${channel_count} in eclipse menu "Project properties->C/C++ Build->Build Variables"
  * @warning Currently only 4 or 8 channels are supported (8 Channels experimental).
  */
-#define CHANNEL_COUNT 4
+// #define CHANNEL_COUNT 4
 
 typedef struct
 {
