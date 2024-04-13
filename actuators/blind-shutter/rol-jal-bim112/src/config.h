@@ -25,7 +25,13 @@
  */
 // #define HAND_ACTUATION
 
-#define NO_OF_CHANNELS 4
+/**
+ * @def CHANNEL_COUNT
+ * Define to set the number of blind/fold channels (1, 2, 4 or 8)
+ *
+ * @warning Currently only 4 or 8 channels are supported (8 Channels experimental).
+ */
+#define CHANNEL_COUNT 4
 
 typedef struct
 {
@@ -35,14 +41,14 @@ typedef struct
 } HardwareVersion;
 
 
-#define NO_OF_OUTPUTS (NO_OF_CHANNELS * 2)
+#define NO_OF_OUTPUTS (CHANNEL_COUNT * 2)
 
-#if NO_OF_CHANNELS == 4
+#if CHANNEL_COUNT == 4
     // JAL-0410.01 Shutter Actuator 4-fold, 4TE, 230VAC, 10A
     const HardwareVersion currentVersion = {4, 0x4578, { 0, 0, 0, 0, 0x0, 0x29 }};
     const int outputPins[NO_OF_OUTPUTS] =
         { PIN_IO1, PIN_IO2, PIN_IO3, PIN_IO4, PIN_IO5, PIN_IO6, PIN_IO7, PIN_IO8 };
-#elif NO_OF_CHANNELS == 8
+#elif CHANNEL_COUNT == 8
 #   warning "8 channel build is experimental!"
     // JAL-0810.01 Shutter Actuator 8-fold, 8TE, 230VAC,10A
     const HardwareVersion currentVersion = {8, 0x46B8, { 0, 0, 0, 0, 0x0, 0x28 }};
@@ -52,7 +58,7 @@ typedef struct
           PIN_TX, PIN_RX, PIN_IO9, PIN_IO10, PIN_IO12, PIN_IO13, PIN_IO14, PIN_IO15
         };
 #else
-#   error "NO_OF_CHANNELS must be defined"
+#   error "CHANNEL_COUNT must be defined"
 #endif
 
 /*
@@ -76,8 +82,8 @@ typedef struct
  *  hand actuation pin configuration
  */
 #ifdef HAND_ACTUATION
-#   if NO_OF_CHANNELS != 4
-#       error "HAND_ACTUATION only supported for NO_OF_CHANNELS == 4"
+#   if CHANNEL_COUNT != 4
+#       error "HAND_ACTUATION only supported for CHANNEL_COUNT == 4"
 #   endif
 #   define NO_OF_HAND_PINS 8
 #   define READBACK_PIN PIN_LT9

@@ -24,7 +24,7 @@
     HandActuation* handAct = new HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
 #endif
 
-Channel * channels[NO_OF_CHANNELS];
+Channel * channels[CHANNEL_COUNT];
 
 uint8_t channelCount()
 {
