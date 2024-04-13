@@ -25,12 +25,6 @@
 #endif
 
 Channel * channels[NO_OF_CHANNELS];
-#ifdef MEM_TEST
-Blind b0 = Blind(0, 0);
-Blind b1 = Blind(1, 1);
-Blind b2 = Blind(2, 2);
-Shutter b3 = Shutter(3, 3);
-#endif
 
 uint8_t channelCount()
 {

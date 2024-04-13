@@ -27,8 +27,6 @@
 
 #define NO_OF_CHANNELS 4
 
-//#define MEM_TEST
-
 typedef struct
 {
     unsigned int noOfChannels;  //!> how many channels are supported with this hardware
