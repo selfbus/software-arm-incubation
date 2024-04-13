@@ -152,7 +152,7 @@ void Blind::_startTracking(void)
 bool Blind::_storeScene(unsigned int i)
 {
     bool result = Channel::_storeScene(i);
-    unsigned int address = currentVersion->baseAddress + EE_CHANNEL_CFG_SIZE * number;
+    unsigned int address = currentVersion.baseAddress + EE_CHANNEL_CFG_SIZE * number;
     sceneSlatPos [i] = slatPosition;
     if ((*(bcu.userEeprom))[address + 24 + i] != slatPosition)
     {

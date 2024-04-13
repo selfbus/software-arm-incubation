@@ -161,7 +161,7 @@ void initApplication(short channelPositions[], short channelSlatPositions[])
 {
     Channel::initPWM(PIN_PWM);  // configure digital pin PIO3_2 (PIN_PWM) and timer16_0 for PWM
 
-    unsigned int address = currentVersion->baseAddress;
+    unsigned int address = currentVersion.baseAddress;
 
     for (uint8_t i = 0; i < sizeof(outputPins)/sizeof(outputPins[0]); i++)
     {
