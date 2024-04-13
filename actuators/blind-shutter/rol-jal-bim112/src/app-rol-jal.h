@@ -13,8 +13,6 @@
 
 #include "channel.h"
 
-extern Channel * channels[NO_OF_CHANNELS];
-
 /**
  * Called from the main loop whenever a com object has been updated
  * via a group address write
