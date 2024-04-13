@@ -29,8 +29,6 @@
 
 APP_VERSION("SBrol   ", "1", "11") // Don't forget to also change the build-variable sw_version
 
-Timeout timeout;
-
 void initSerial()
 {
 #ifdef DEBUG_SERIAL
@@ -132,7 +130,6 @@ BcuBase* setup()
     initApplication();
 #endif
 
-    timeout.start(1);
     return (&bcu);
 }
 
