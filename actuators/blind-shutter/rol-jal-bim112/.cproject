@@ -4,6 +4,9 @@
 		<cconfiguration id="com.crt.advproject.config.exe.release.914587829.1896956369">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.release.914587829.1896956369" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release 4ch">
 				<macros>
+					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
+					<stringMacro name="hand_actuation" type="VALUE_TEXT" value=""/>
+					<stringMacro name="channel_number" type="VALUE_TEXT" value="4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
@@ -133,6 +136,9 @@
 		<cconfiguration id="com.crt.advproject.config.exe.debug.462531644.949451388">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.462531644.949451388" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Debug 4ch">
 				<macros>
+					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
+					<stringMacro name="hand_actuation" type="VALUE_TEXT" value=""/>
+					<stringMacro name="channel_number" type="VALUE_TEXT" value="4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
@@ -258,6 +264,7 @@
 				<macros>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
+					<stringMacro name="channel_number" type="VALUE_TEXT" value="4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
@@ -393,6 +400,7 @@
 				<macros>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
+					<stringMacro name="channel_number" type="VALUE_TEXT" value="4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
@@ -521,6 +529,7 @@
 				<macros>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
+					<stringMacro name="channel_number" type="VALUE_TEXT" value="4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
@@ -654,7 +663,9 @@
 		<cconfiguration id="com.crt.advproject.config.exe.release.914587829.1562185654.1421299482.188398702">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.release.914587829.1562185654.1421299482.188398702" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release 4ch ha">
 				<macros>
+					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
+					<stringMacro name="channel_number" type="VALUE_TEXT" value="4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
@@ -788,7 +799,9 @@
 		<cconfiguration id="com.crt.advproject.config.exe.release.914587829.1562185654.1615365366">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.release.914587829.1562185654.1615365366" moduleId="org.eclipse.cdt.core.settings" name="Release 4ch ha">
 				<macros>
+					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
+					<stringMacro name="channel_number" type="VALUE_TEXT" value="4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
