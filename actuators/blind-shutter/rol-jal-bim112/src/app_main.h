@@ -22,8 +22,8 @@
 
 #ifdef BUSFAIL
 typedef struct ApplicationData {
-    short channelPositions[NO_OF_CHANNELS];
-    short channelSlatPositions[NO_OF_CHANNELS];
+    short channelPositions[CHANNEL_COUNT];
+    short channelSlatPositions[CHANNEL_COUNT];
 } ApplicationData;
 
 class AppCallback: public BusVoltageCallback {
