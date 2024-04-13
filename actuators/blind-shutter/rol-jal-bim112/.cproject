@@ -6,7 +6,7 @@
 				<macros>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value=""/>
-					<stringMacro name="channel_number" type="VALUE_TEXT" value="4"/>
+					<stringMacro name="channel_count" type="VALUE_TEXT" value="4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
@@ -37,7 +37,7 @@
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 									<listOptionValue builtIn="false" value="${bus_fail}"/>
-									<listOptionValue builtIn="false" value="${channel_number}"/>
+									<listOptionValue builtIn="false" value="CHANNEL_COUNT=${channel_count}"/>
 									<listOptionValue builtIn="false" value="${hand_actuation}"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1488163135" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions" valueType="string"/>
@@ -136,7 +136,7 @@
 				<macros>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value=""/>
-					<stringMacro name="channel_number" type="VALUE_TEXT" value="4"/>
+					<stringMacro name="channel_count" type="VALUE_TEXT" value="4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
@@ -167,7 +167,7 @@
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 									<listOptionValue builtIn="false" value="${bus_fail}"/>
-									<listOptionValue builtIn="false" value="${channel_number}"/>
+									<listOptionValue builtIn="false" value="CHANNEL_COUNT=${channel_count}"/>
 									<listOptionValue builtIn="false" value="${hand_actuation}"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.334141329" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions" valueType="string"/>
@@ -260,7 +260,7 @@
 				<macros>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
-					<stringMacro name="channel_number" type="VALUE_TEXT" value="4"/>
+					<stringMacro name="channel_count" type="VALUE_TEXT" value="4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
@@ -291,7 +291,7 @@
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 									<listOptionValue builtIn="false" value="${bus_fail}"/>
-									<listOptionValue builtIn="false" value="${channel_number}"/>
+									<listOptionValue builtIn="false" value="CHANNEL_COUNT=${channel_count}"/>
 									<listOptionValue builtIn="false" value="${hand_actuation}"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1060283852" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions" valueType="string"/>
@@ -392,7 +392,7 @@
 				<macros>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
-					<stringMacro name="channel_number" type="VALUE_TEXT" value="4"/>
+					<stringMacro name="channel_count" type="VALUE_TEXT" value="4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
@@ -423,7 +423,7 @@
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 									<listOptionValue builtIn="false" value="${bus_fail}"/>
-									<listOptionValue builtIn="false" value="${channel_number}"/>
+									<listOptionValue builtIn="false" value="CHANNEL_COUNT=${channel_count}"/>
 									<listOptionValue builtIn="false" value="${hand_actuation}"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1149195404" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions" valueType="string"/>
@@ -517,7 +517,7 @@
 				<macros>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
-					<stringMacro name="channel_number" type="VALUE_TEXT" value="4"/>
+					<stringMacro name="channel_count" type="VALUE_TEXT" value="4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
@@ -548,7 +548,7 @@
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 									<listOptionValue builtIn="false" value="${bus_fail}"/>
-									<listOptionValue builtIn="false" value="${channel_number}"/>
+									<listOptionValue builtIn="false" value="CHANNEL_COUNT=${channel_count}"/>
 									<listOptionValue builtIn="false" value="${hand_actuation}"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1570334820" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions" valueType="string"/>
@@ -649,7 +649,7 @@
 				<macros>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
-					<stringMacro name="channel_number" type="VALUE_TEXT" value="4"/>
+					<stringMacro name="channel_count" type="VALUE_TEXT" value="4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
@@ -680,7 +680,7 @@
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 									<listOptionValue builtIn="false" value="${bus_fail}"/>
-									<listOptionValue builtIn="false" value="${channel_number}"/>
+									<listOptionValue builtIn="false" value="CHANNEL_COUNT=${channel_count}"/>
 									<listOptionValue builtIn="false" value="${hand_actuation}"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1262110196" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions" valueType="string"/>
@@ -781,7 +781,7 @@
 				<macros>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
-					<stringMacro name="channel_number" type="VALUE_TEXT" value="4"/>
+					<stringMacro name="channel_count" type="VALUE_TEXT" value="4"/>
 					<stringMacro name="sw_version" type="VALUE_TEXT" value="1.11"/>
 				</macros>
 				<externalSettings/>
@@ -812,7 +812,7 @@
 									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
 									<listOptionValue builtIn="false" value="__LPC11XX__"/>
 									<listOptionValue builtIn="false" value="${bus_fail}"/>
-									<listOptionValue builtIn="false" value="${channel_number}"/>
+									<listOptionValue builtIn="false" value="CHANNEL_COUNT=${channel_count}"/>
 									<listOptionValue builtIn="false" value="${hand_actuation}"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.340050550" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions" valueType="string"/>
