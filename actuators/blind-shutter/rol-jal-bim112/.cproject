@@ -1345,6 +1345,9 @@
 		<configuration configurationName="Flashstart 0x3000 Release 4ch ha">
 			<resource resourceType="PROJECT" workspacePath="/rol-jal-bim112"/>
 		</configuration>
+		<configuration configurationName="Release 8ch bf">
+			<resource resourceType="PROJECT" workspacePath="/rol-jal-bim112"/>
+		</configuration>
 		<configuration configurationName="Flashstart 0x3000 Release">
 			<resource resourceType="PROJECT" workspacePath="/rol-jal-bim112"/>
 		</configuration>
@@ -1367,6 +1370,9 @@
 			<resource resourceType="PROJECT" workspacePath="/rol-jal-bim112"/>
 		</configuration>
 		<configuration configurationName="Flashstart 0x3000 Release bf ha">
+			<resource resourceType="PROJECT" workspacePath="/rol-jal-bim112"/>
+		</configuration>
+		<configuration configurationName="Flashstart 0x3000 Release 8ch bf">
 			<resource resourceType="PROJECT" workspacePath="/rol-jal-bim112"/>
 		</configuration>
 		<configuration configurationName="Flashstart 0x3000 Release 4ch bf ha">
