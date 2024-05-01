@@ -1,7 +1,7 @@
 
 #include "common.h"
 
-APP_VERSION("SBlight ", "1", "10")
+APP_VERSION("SBlight ", "1", "10") // Don't forget to also change the build-variable sw_version
 
 void loop() {
     sc->readValues();

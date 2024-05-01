@@ -13,7 +13,7 @@
 #include <sblib/eibBCU1.h>
 #include <sblib/timeout.h>
 
-APP_VERSION("SBrgb_sw", "1", "11")
+APP_VERSION("SBrgb_sw", "1", "11") // Don't forget to also change the build-variable sw_version
 
 // Digital pin for LED
 #define PIO_LED PIO3_3

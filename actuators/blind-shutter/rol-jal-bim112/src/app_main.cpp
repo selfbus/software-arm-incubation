@@ -27,7 +27,7 @@
     AppUsrCallback usrCallback;
 #endif
 
-APP_VERSION("SBrol   ", "1", "11")
+APP_VERSION("SBrol   ", "1", "11") // Don't forget to also change the build-variable sw_version
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const HardwareVersion hardwareVersion[] =

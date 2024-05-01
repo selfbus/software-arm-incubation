@@ -45,7 +45,7 @@ Timeout timeout[NUM_TIMED_VALUES];
 
 MASK0701 bcu = MASK0701();
 
-APP_VERSION("SBrtrLcd", "1", "11")
+APP_VERSION("SBrtrLcd", "1", "11") // Don't forget to also change the build-variable sw_version
 
 /*
 * Der MemMapper bekommt einen 256 Byte großen Bereich ab 0xEE00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.

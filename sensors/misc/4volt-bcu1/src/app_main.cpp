@@ -1,7 +1,7 @@
 
 #include "common.h"
 
-APP_VERSION("SB4volt ", "1", "10")
+APP_VERSION("SB4volt ", "1", "10") // Don't forget to also change the build-variable sw_version
 
 void loop() {
     for (auto &sc : configs) {

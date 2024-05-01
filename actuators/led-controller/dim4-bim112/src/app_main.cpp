@@ -13,7 +13,7 @@
 #   include <sblib/serial.h>  //debugging only
 #endif
 
-APP_VERSION("SBdim4  ", "1", "00")
+APP_VERSION("SBdim4  ", "1", "00") // Don't forget to also change the build-variable sw_version
 
 const HardwareVersion * currentVersion;
 unsigned int pwmmax;		//  je nach Parametrierung PWM_MAX_600 oder PWM_MAX_1000

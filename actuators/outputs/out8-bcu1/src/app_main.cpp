@@ -40,7 +40,7 @@
     AppUsrCallback usrCallback; ///\todo two callbacks? Optimize with busfail integration into the sblib.
 #endif
 
-APP_VERSION("O08.10  ", "5", "12");
+APP_VERSION("O08.10  ", "5", "12"); // Don't forget to also change the build-variable sw_version
 
 /**
  * Simple IO test
