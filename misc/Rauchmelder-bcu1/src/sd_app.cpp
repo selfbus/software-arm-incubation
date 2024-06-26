@@ -43,6 +43,7 @@ SmokeDetectorApp::SmokeDetectorApp()
       errorCode(new SmokeDetectorErrorCode(groupObjects)),
       device(new SmokeDetectorDevice(config, groupObjects, alarm, errorCode))
 {
+    end();
     isTimerInitialized = false;
     burstPreventionDelay.stop();
     startSendingInfoGroupObjects();
@@ -266,4 +267,9 @@ void SmokeDetectorApp::timer()
             }
         }
     }
+}
+
+void SmokeDetectorApp::end()
+{
+    device->end();
 }

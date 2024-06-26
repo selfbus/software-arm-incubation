@@ -18,47 +18,16 @@
  *  published by the Free Software Foundation.
  */
 
-#include "app_main.h"
-#include "sd_app.h"
+#ifndef SMOKEDETECTOR_APP_MAIN_H_
+#define SMOKEDETECTOR_APP_MAIN_H_
 
-APP_VERSION("S_RM_H6 ", "3", "00") // Don't forget to also change the build-variable sw_version
+#include <sblib/usr_callback.h>
 
-SmokeDetectorApp *app = nullptr;
+class SmokeDetectorUsrCallback: public UsrCallback {
+public:
+    virtual void Notify(UsrCallbackType type);
+};
 
-/**
- * Application setup
- */
-BcuBase* setup()
-{
-    app = new SmokeDetectorApp();
-    return app->initialize();
-}
 
-/**
- * The application's main.
- */
-void loop()
-{
-    app->loop();
-}
-
-/**
- * The loop while no application is running.
- */
-void loop_noapp()
-{
-    app->loopNoApp();
-}
-
-void SmokeDetectorUsrCallback::Notify(UsrCallbackType type)
-{
-    switch (type)
-    {
-        case UsrCallbackType::reset : // Reset after an ETS-application download or simple @ref APCI_BASIC_RESTART_PDU
-            app->end();
-            break;
-
-        default :
-            break;
-    }
-}
+#endif /* SMOKEDETECTOR_APP_MAIN_H_ */
+/** @}*/
