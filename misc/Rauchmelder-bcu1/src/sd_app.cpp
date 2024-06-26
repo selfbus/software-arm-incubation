@@ -73,6 +73,10 @@ BcuBase* SmokeDetectorApp::initialize()
     // frames, causing very little delay for them.
     burstPreventionDelay.start(randomByte << 3);
 
+    // Set GPIO port 0 interrupt's priority lower then Bus timer interrupt and enable it
+    // DevicePowered pin (3.3V supply) of smoke detector is connected to port 0
+    NVIC_SetPriority(EINT0_IRQn, 1);
+    NVIC_EnableIRQ(EINT0_IRQn);
     return (&bcu);
 }
 
@@ -272,4 +276,27 @@ void SmokeDetectorApp::timer()
 void SmokeDetectorApp::end()
 {
     device->end();
+}
+
+/**
+ * GPIO port 0 Isr.
+ */
+extern "C" void PIOINT0_IRQHandler(void)
+{
+    if (app == nullptr)
+    {
+        return;
+    }
+    app->onGPIOStateChanged();
+}
+
+void SmokeDetectorApp::onGPIOStateChanged()
+{
+    if (device->isCoverPlateAttached())
+    {
+        return;
+    }
+
+    // smoke detector has no 3.3V supply, end the application
+    end();
 }

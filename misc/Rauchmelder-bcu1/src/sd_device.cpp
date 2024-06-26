@@ -38,6 +38,7 @@ SmokeDetectorDevice::SmokeDetectorDevice(const SmokeDetectorConfig *config, cons
     setSupplyVoltage(false);
     pinMode(DevicePowered.pinLed(), OUTPUT);
     digitalWrite(DevicePowered.pinLed(), false);
+    pinInterruptMode(DevicePowered.pin(), INTERRUPT_EDGE_BOTH | INTERRUPT_ENABLED);
     pinMode(DevicePowered.pin(), INPUT | PULL_DOWN | HYSTERESIS); // smoke detector base plate state, pulldown configured, Pin is connected to 3.3V VCC of the RM
 
     state = DeviceState::initialized;
@@ -275,17 +276,26 @@ void SmokeDetectorDevice::setSupplyVoltage(bool enable)
  */
 void SmokeDetectorDevice::checkDevicePowered()
 {
+    if (!isCoverPlateAttached())
+    {
+        return;
+    }
+    // After it has been attached to the cover plate, allow some time for power-up
+    state = DeviceState::powerUpDelay;
+    timeout.start(DevicePowerUpDelayMs);
+}
+
+bool SmokeDetectorDevice::isCoverPlateAttached()
+{
+    uint32_t pin = digitalPinToBitMask(DevicePowered.pin());
+    if (LPC_GPIO0->MIS & pin) // Check if the interrupt was caused by DevicePowered pin (PIO0_11)
+    {
+        LPC_GPIO0->IC = pin; // Clear the interrupt flag for DevicePowered pin
+    }
     auto isAttached = (digitalRead(DevicePowered.pin()) == DevicePowered.on());
     digitalWrite(DevicePowered.pinLed(), isAttached);
-
     errorCode->coverPlateAttached(isAttached);
-
-    // After it has been attached to the base plate, allot some time for power-up
-    if (isAttached)
-    {
-        state = DeviceState::powerUpDelay;
-        timeout.start(DevicePowerUpDelayMs);
-    }
+    return isAttached;
 }
 
 void SmokeDetectorDevice::readSerialNumberMessage(const uint8_t *bytes) const

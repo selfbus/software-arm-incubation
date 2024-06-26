@@ -43,6 +43,7 @@ public:
     void loop();
     void loopNoApp();
     void timer();
+    void onGPIOStateChanged();
     void end();
 
 private:
