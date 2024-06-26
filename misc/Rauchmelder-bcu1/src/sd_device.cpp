@@ -37,7 +37,7 @@ SmokeDetectorDevice::SmokeDetectorDevice(const SmokeDetectorConfig *config, cons
 {
     pinMode(DevicePowered.pinLed(), OUTPUT);
     digitalWrite(DevicePowered.pinLed(), false);
-    pinMode(DevicePowered.pin(), INPUT | PULL_DOWN); // smoke detector base plate state, pulldown configured, Pin is connected to 3.3V VCC of the RM
+    pinMode(DevicePowered.pin(), INPUT | PULL_DOWN | HYSTERESIS); // smoke detector base plate state, pulldown configured, Pin is connected to 3.3V VCC of the RM
 
     state = DeviceState::initialized;
     timeout.stop();
