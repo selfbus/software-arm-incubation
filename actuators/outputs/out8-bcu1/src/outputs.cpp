@@ -17,8 +17,8 @@
     Outputs relays;
 #endif
 
-const unsigned int zeroDetectSetDelay = 0x0200; //0x0200 Omron G5Q-1A EU 10A set
-const unsigned int zeroDetectClrDelay = 0x0240; //0x0220 Omron G5Q-1A EU 10A clear
+const unsigned int zeroDetectSetDelay = 512; // 5.12 milliseconds Omron G5Q-1A EU 10A set
+const unsigned int zeroDetectClrDelay = 576; // 5.76 milliseconds Omron G5Q-1A EU 10A clear
 
 #define ZD_RESET ((zeroDetectSetDelay > zeroDetectClrDelay ? zeroDetectSetDelay : zeroDetectClrDelay) + 1)
 
