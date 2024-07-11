@@ -10,6 +10,7 @@
 
 #include <GenFifo.h>
 #include <stdio.h>
+#include "config.h"
 #include "BufferMgr.h"
 #include "knxusb_const.h"
 #include "UartIf.h"
@@ -38,8 +39,8 @@ void UartIf::Init(int baudRate, bool rawMode)
 	discard = false;
 	rawmode = rawMode;
 	// Uart konfigurieren
-	pinMode(PIO1_6, SERIAL_RXD);
-	pinMode(PIO1_7, SERIAL_TXD);
+    pinMode(PinSerialRx, SERIAL_RXD);
+    pinMode(PinSerialTx, SERIAL_TXD);
 
 	LPC_SYSCON->SYSAHBCLKCTRL |= 1 << 12; // Enable UART clock
 	LPC_SYSCON->UARTCLKDIV = 1;           // divided by 1
