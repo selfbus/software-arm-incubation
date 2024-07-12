@@ -11,6 +11,7 @@
 #include <sblib/eibBCU1.h>
 #include <sblib/io_pin_names.h>
 #include <sblib/timeout.h>
+#include "config.h"
 #include "GenFifo.h"
 #include "BufferMgr.h"
 #include "UartIf.h"
@@ -32,7 +33,7 @@ BcuBase* setup()
     digitalWrite(PIN_PROG, true);
     digitalWrite(PIO1_5, true);
     bcu.begin(2, 1, 1); // ABB, dummy something device
-    uart.Init(115200, false);
+    uart.Init(115200, false, PinSerialTx, PinSerialRx);
     return (&bcu);
 }
 

@@ -10,7 +10,6 @@
 
 #include <GenFifo.h>
 #include <stdio.h>
-#include "config.h"
 #include "BufferMgr.h"
 #include "knxusb_const.h"
 #include "UartIf.h"
@@ -29,7 +28,7 @@ extern "C" void UART_IRQHandler(void)
 	uart.interruptHandler();
 }
 
-void UartIf::Init(int baudRate, bool rawMode)
+void UartIf::Init(int baudRate, bool rawMode, uint32_t pinTx, uint32_t pinRx)
 {
 	disableInterrupt(UART_IRQn);
 	txbuffno = -1;
@@ -39,8 +38,8 @@ void UartIf::Init(int baudRate, bool rawMode)
 	discard = false;
 	rawmode = rawMode;
 	// Uart konfigurieren
-    pinMode(PinSerialRx, SERIAL_RXD);
-    pinMode(PinSerialTx, SERIAL_TXD);
+    pinMode(pinRx, SERIAL_RXD);
+    pinMode(pinTx, SERIAL_TXD);
 
 	LPC_SYSCON->SYSAHBCLKCTRL |= 1 << 12; // Enable UART clock
 	LPC_SYSCON->UARTCLKDIV = 1;           // divided by 1
