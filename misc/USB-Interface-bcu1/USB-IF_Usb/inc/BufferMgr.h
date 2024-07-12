@@ -37,8 +37,8 @@ public:
 	int FreeBuffer(int no);
 	uint8_t* buffptr(int no);
 protected:
-	uint8_t data[BUFF_CNT][BUFF_SIZE];
-	bool alloctable[BUFF_CNT];
+	uint8_t data[BUFF_CNT][BUFF_SIZE] = {0};
+	bool alloctable[BUFF_CNT] = {false};
 };
 
 extern BufferMgr buffmgr;
