@@ -40,17 +40,17 @@ enum HRH_PacketType
 };
 
 // HID Report Header - HRH
-// Die Adressen sind ab Anfang HID Report Header
-#define A_HRH_Id      0
+// Die Array-Indexe (IDX_) sind ab Anfang HID Report Header
+#define IDX_HRH_Id      0
 #define C_HRH_IdHid   1
 #define C_HRH_IdCdc   2
 #define C_HRH_IdDev   3
-#define A_HRH_PkInfo  1
+#define IDX_HRH_PkInfo  1
 /**
  * Single Packet (value 0x13), mehr erst mal nicht unterstuetzen
  */
 #define C_HRH_PacketInfoSinglePacket (HRH_SequenceNumber | HRH_PacketType::startPacket | HRH_PacketType::endPacket)
-#define A_HRH_DataLen 2
+#define IDX_HRH_DataLen 2
 #define C_HRH_HeadLen 3
 
 /**
@@ -96,26 +96,26 @@ constexpr uint16_t TPH_ManufacturerCode_V0 = 0x0000;
 
 
 // Transfer Protocol Header - TPH
-// Die Adressen sind ab Anfang Transfer Protocol Header
-#define A_TPH_Version 0
-#define A_TPH_HeadLen 1
-#define A_TPH_BodyLen 2
-#define A_TPH_ProtId  4
-//#define A_TPH_EmiId      5
-#define A_TPH_SerId      5
+// Die Array-Indexe (IDX_) sind ab Anfang Transfer Protocol Header
+#define IDX_TPH_Version 0
+#define IDX_TPH_HeadLen 1
+#define IDX_TPH_BodyLen 2
+#define IDX_TPH_ProtId  4
+//#define IDX_TPH_EmiId      5
+#define IDX_TPH_SerId      5
 ////#define C_TPH_SerId 1
-#define A_TPH_ManuCode1 6
-#define A_TPH_ManuCode2 7
+#define IDX_TPH_ManuCode1 6
+#define IDX_TPH_ManuCode2 7
 
 // Transfer Protocol Body - TPB
-#define A_TPB_FeatureId   0
-//#define A_TPB_FeatureData 1
-#define A_TPB_MCode       0
-#define A_TPB_Data        1 //!< wenn KNX-Frame
-#define A_TPB_EMI_Len     1 //!< wenn EMI service
-#define A_TPB_EMI_Addr_h  2
-#define A_TPB_EMI_Addr_l  3
-#define A_TPB_EMI_Data    4
+#define IDX_TPB_FeatureId   0
+//#define IDX_TPB_FeatureData 1
+#define IDX_TPB_MCode       0
+#define IDX_TPB_Data        1 //!< wenn KNX-Frame
+#define IDX_TPB_EMI_Len     1 //!< wenn EMI service
+#define IDX_TPB_EMI_Addr_h  2
+#define IDX_TPB_EMI_Addr_l  3
+#define IDX_TPB_EMI_Data    4
 
 // Bus Access Server - BAS
 #define BAS_ServiceId_FeatureGet  1

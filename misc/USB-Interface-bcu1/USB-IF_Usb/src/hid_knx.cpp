@@ -108,7 +108,7 @@ void DumpReport2Cdc(bool DirSend, uint8_t* data)
 			snprintf(line, sizeof(line), "%04u OUT ", SeqNo++);
 		if (SeqNo >= 10000)
 			SeqNo = 0;
-		len = data[A_HRH_DataLen];
+		len = data[IDX_HRH_DataLen];
 		if ((len <= 8) || (len+3 > HID_REPORT_SIZE))
 		{
 			// Längenangabe unplausibel, jetzt wird die Länge bestimmt,
@@ -216,7 +216,7 @@ uint8_t* KnxHidIf::BuildUsbPacket(uint8_t *ptr, uint8_t ProtId, uint8_t PayloadL
 
 void KnxHidIf::ReceivedUsbBasPacket(unsigned ServiceId, unsigned BodyLen, uint8_t* Buffer)
 {
-  unsigned Feature = Buffer[A_TPB_FeatureId];
+  unsigned Feature = Buffer[IDX_TPB_FeatureId];
   uint8_t TxBuffer[HID_REPORT_SIZE];
   switch (Feature)
   {
@@ -290,24 +290,24 @@ void KnxHidIf::ReceivedUsbPacket(int buffno)
 {
   uint8_t* Buffer = buffmgr.buffptr(buffno)+2;
   // Check HID Report Header
-  unsigned ReportPacketLength = Buffer[A_HRH_DataLen];
-  if ((Buffer[A_HRH_Id] == C_HRH_IdHid) &&
-      (Buffer[A_HRH_PkInfo] == C_HRH_PacketInfoSinglePacket) &&
+  unsigned ReportPacketLength = Buffer[IDX_HRH_DataLen];
+  if ((Buffer[IDX_HRH_Id] == C_HRH_IdHid) &&
+      (Buffer[IDX_HRH_PkInfo] == C_HRH_PacketInfoSinglePacket) &&
       (ReportPacketLength > TPH_ProtocolLength_V0) &&
       ((ReportPacketLength+3) <= 64))
   {
     *(Buffer-2) = ReportPacketLength+C_HRH_HeadLen+2;
     Buffer+=C_HRH_HeadLen;
     // Buffer now points to the HID Report Body / Transfer Protocol Header
-    unsigned TransferBodyLength = (Buffer[A_TPH_BodyLen] << 8) + Buffer[A_TPH_BodyLen+1];
-    if ((Buffer[A_TPH_Version] == TPH_ProtocolVersion_V0) &&
-        (Buffer[A_TPH_HeadLen] == TPH_ProtocolLength_V0) &&
+    unsigned TransferBodyLength = (Buffer[IDX_TPH_BodyLen] << 8) + Buffer[IDX_TPH_BodyLen+1];
+    if ((Buffer[IDX_TPH_Version] == TPH_ProtocolVersion_V0) &&
+        (Buffer[IDX_TPH_HeadLen] == TPH_ProtocolLength_V0) &&
         (ReportPacketLength == (TransferBodyLength+TPH_ProtocolLength_V0)) &&
         (TransferBodyLength >= 1) &&
-        (Buffer[A_TPH_ManuCode1] == TPH_ManufacturerCode_V0) &&
-        (Buffer[A_TPH_ManuCode2] == TPH_ManufacturerCode_V0))
+        (Buffer[IDX_TPH_ManuCode1] == TPH_ManufacturerCode_V0) &&
+        (Buffer[IDX_TPH_ManuCode2] == TPH_ManufacturerCode_V0))
     {
-      switch (Buffer[A_TPH_ProtId])
+      switch (Buffer[IDX_TPH_ProtId])
       {
       case TPH_ProtocolID::knxTunnel:
         // diese Pakete werden alle weitergeleitet
@@ -321,7 +321,7 @@ void KnxHidIf::ReceivedUsbPacket(int buffno)
         }
         break;
       case TPH_ProtocolID::busAccessServer:
-        ReceivedUsbBasPacket(Buffer[A_TPH_SerId], TransferBodyLength, Buffer+TPH_ProtocolLength_V0);
+        ReceivedUsbBasPacket(Buffer[IDX_TPH_SerId], TransferBodyLength, Buffer+TPH_ProtocolLength_V0);
         break;
       default:
         ; // Irgendwas anderes, weg hier...
@@ -363,8 +363,8 @@ void KnxHidIf::KnxIf_Tasks(void)
 			int buffno;
 			hid_txfifo.Pop(buffno);
 			uint8_t *ptr = buffmgr.buffptr(buffno);
-			if (((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+A_TPB_MCode+2] & C_MCode_SpecMsk) == 0) ||
-					(ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+A_TPB_MCode+2] == 0xA0))
+			if (((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] & C_MCode_SpecMsk) == 0) ||
+					(ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] == 0xA0))
 			{ // Nur wenn kein "Spezial-MCode" (selber definierte Pakete)
 				// A0, die Antwort auf einen EMI Reset-Request, muss allerdings auch
 				// über USB weitergeschickt werden. Da die Monitorfunktion intern nie
@@ -377,12 +377,12 @@ void KnxHidIf::KnxIf_Tasks(void)
 			{ // Nur im Monitor-Mode Telegramme über CDC im Klartext ausgeben
 				bool mon = false;
 				bool send = false;
-				if ((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+A_TPB_MCode+2] & C_MCode_MonMask) == (C_MCode_TxEcho & C_MCode_MonMask))
+				if ((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] & C_MCode_MonMask) == (C_MCode_TxEcho & C_MCode_MonMask))
 				{
 					mon = true;
 					send = true;
 				}
-				if ((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+A_TPB_MCode+2] & C_MCode_MonMask) == (C_MCode_RxData & C_MCode_MonMask))
+				if ((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] & C_MCode_MonMask) == (C_MCode_RxData & C_MCode_MonMask))
 				{
 					mon = true;
 				}
@@ -391,7 +391,7 @@ void KnxHidIf::KnxIf_Tasks(void)
 					unsigned telLength = ptr[0];
 					if ((telLength > 2) && (telLength < 66))
 					{
-						teldump.Dump(systemTime, send, telLength-(2+C_HRH_HeadLen+TPH_ProtocolLength_V0+A_TPB_Data), ptr+2+C_HRH_HeadLen+TPH_ProtocolLength_V0+A_TPB_Data);
+						teldump.Dump(systemTime, send, telLength-(2+C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_Data), ptr+2+C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_Data);
 					}
 				}
 			}

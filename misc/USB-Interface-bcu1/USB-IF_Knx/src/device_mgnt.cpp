@@ -33,13 +33,13 @@ void DeviceManagement::DevMgnt_Tasks(void)
     dev_rxfifo.Pop(buffno);
     uint8_t *ptr = buffmgr.buffptr(buffno);
     unsigned DevPacketLength = ptr[0];
-    if ((ptr[2+A_HRH_Id] == C_HRH_IdDev) && (DevPacketLength == (2+3)))
+    if ((ptr[2+IDX_HRH_Id] == C_HRH_IdDev) && (DevPacketLength == (2+3)))
     {
       rxtimeout = millis() + C_RxTimeout; // Wird bei jedem Paket an dieses If gesetzt.
-      switch (ptr[2+A_HRH_Id+1])
+      switch (ptr[2+IDX_HRH_Id+1])
       {
       case C_Dev_Sys:
-        switch (ptr[2+A_HRH_Id+2])
+        switch (ptr[2+IDX_HRH_Id+2])
         {
         case C_DevSys_Normal:
           if (LastDevSys != C_DevSys_Normal)
@@ -92,7 +92,7 @@ void DeviceManagement::DevMgnt_Tasks(void)
         /* - Usb side schickt Isp-En, -Reset Daten für das Isp-If
         *   -> weiterleiten zum entsprechenden If
         */
-        proguart.SetIspLines(ptr[2+A_HRH_Id+2]);
+        proguart.SetIspLines(ptr[2+IDX_HRH_Id+2]);
         break;
       }
     }
