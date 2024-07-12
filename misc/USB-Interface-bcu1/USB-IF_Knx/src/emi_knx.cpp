@@ -277,10 +277,10 @@ void EmiKnxIf::setTPBodyLength(uint8_t *ptr, uint8_t len)
   ptr[2 + C_HRH_HeadLen + A_TPH_BodyLen + 1] = lowByte(len);     // ptr[8] = len
 
   // 1 byte HID report frame length
-  ptr[2 + A_HRH_DataLen] = len + C_TPH_HeadLen;                  // ptr[4] = len + 8
+  ptr[2 + A_HRH_DataLen] = len + TPH_ProtocolLength_V0;                  // ptr[4] = len + 8
 
   // 1 byte total length
-  ptr[0] = len + C_TPH_HeadLen + C_HRH_HeadLen + A_TPB_Data + 2; // ptr[0] = len + 23
+  ptr[0] = len + TPH_ProtocolLength_V0 + C_HRH_HeadLen + A_TPB_Data + 2; // ptr[0] = len + 23
 }
 
 void EmiKnxIf::receivedUsbEmiPacket(int buffno)
@@ -291,16 +291,16 @@ void EmiKnxIf::receivedUsbEmiPacket(int buffno)
   uint8_t *ptr = buffptr + 2 + C_HRH_HeadLen;
   // Jetzt zeigt der ptr auf den KNX HID Report Body
   unsigned TransferBodyLength = (ptr[A_TPH_BodyLen] << 8) + ptr[A_TPH_BodyLen+1];
-  unsigned EmiAddr = (ptr[C_TPH_HeadLen+A_TPB_EMI_Addr_h] << 8) + ptr[C_TPH_HeadLen+A_TPB_EMI_Addr_l];
-  uint8_t len = ptr[C_TPH_HeadLen+A_TPB_EMI_Len];
+  unsigned EmiAddr = (ptr[TPH_ProtocolLength_V0+A_TPB_EMI_Addr_h] << 8) + ptr[TPH_ProtocolLength_V0+A_TPB_EMI_Addr_l];
+  uint8_t len = ptr[TPH_ProtocolLength_V0+A_TPB_EMI_Len];
   bool reset = false;
-  switch (ptr[C_TPH_HeadLen]) // Switch auf den EMI M-Code
+  switch (ptr[TPH_ProtocolLength_V0]) // Switch auf den EMI M-Code
   {
   case C_MCode_GetValue: // Einen Emi-Wert abfragen
     // Das ankommende Telegramm wird sofort für die Antwort benutzt
     setTPBodyLength(buffptr, len+A_TPB_EMI_Data);
-    ptr[C_TPH_HeadLen] = C_MCode_ResponseValue;
-    ptr += C_TPH_HeadLen+A_TPB_EMI_Data;
+    ptr[TPH_ProtocolLength_V0] = C_MCode_ResponseValue;
+    ptr += TPH_ProtocolLength_V0+A_TPB_EMI_Data;
     while (len > 0)
     {
       *ptr++ = emiReadOneValue(EmiAddr++);
@@ -310,7 +310,7 @@ void EmiKnxIf::receivedUsbEmiPacket(int buffno)
       buffmgr.FreeBuffer(buffno);
     break;
   case C_MCode_SetValue: // Einen Emi-Wert setzen
-    ptr += C_TPH_HeadLen+A_TPB_EMI_Data;
+    ptr += TPH_ProtocolLength_V0+A_TPB_EMI_Data;
     while ((len > 0) && !reset)
     {
       emiWriteOneValue(EmiAddr++, *ptr++, reset);
@@ -319,7 +319,7 @@ void EmiKnxIf::receivedUsbEmiPacket(int buffno)
     if (reset)
     {
       setTPBodyLength(buffptr, 1);
-      ptr = buffptr + 2 + C_HRH_HeadLen + C_TPH_HeadLen;
+      ptr = buffptr + 2 + C_HRH_HeadLen + TPH_ProtocolLength_V0;
       *ptr++ = C_MCode_ResetResponse;
       *ptr++ = 0;
       *ptr++ = 0;
@@ -332,9 +332,9 @@ void EmiKnxIf::receivedUsbEmiPacket(int buffno)
     }
     break;
   case C_MCode_TxReq: // Ein Telegramm von USB auf den KNX-Bus übertragen
-    firsttxbyte = ptr[C_TPH_HeadLen+A_TPB_Data];
+    firsttxbyte = ptr[TPH_ProtocolLength_V0+A_TPB_Data];
     txbuffno = buffno;
-    bcu.bus->sendTelegram(ptr+C_TPH_HeadLen+A_TPB_Data, TransferBodyLength-1);
+    bcu.bus->sendTelegram(ptr+TPH_ProtocolLength_V0+A_TPB_Data, TransferBodyLength-1);
     // sendTelegram geht davon aus, dass nach den Telegrammdaten noch 1 Byte frei für die
     // Checksumme ist. Das ist gegeben, die Buffer sind 68 Byte lang für ein 64 Byte HID-Paket.
     // Der Buffer wird erst nach dem Versenden wieder freigegeben
@@ -493,10 +493,10 @@ void EmiKnxIf::EmiIf_Tasks(void)
     // vom Hinweg.
     uint8_t *ptr = buffmgr.buffptr(txbuffno);
     // Emi-Typ ändern
-    ptr[2+C_HRH_HeadLen+C_TPH_HeadLen] = C_MCode_TxEcho;
+    ptr[2+C_HRH_HeadLen+TPH_ProtocolLength_V0] = C_MCode_TxEcho;
     // SendTelegram hat die lokale Adresse bereits hinzugefügt
     // Jetzt muss noch das erste Byte des Telegramms rekonstruiert werden
-    ptr[2+C_HRH_HeadLen+C_TPH_HeadLen+A_TPB_Data] = firsttxbyte;
+    ptr[2+C_HRH_HeadLen+TPH_ProtocolLength_V0+A_TPB_Data] = firsttxbyte;
     // Zum Verschicken einreihen
     if (ser_txfifo.Push(txbuffno) != TFifoErr::Ok)
       buffmgr.FreeBuffer(txbuffno);

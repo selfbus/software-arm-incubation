@@ -100,7 +100,7 @@ constexpr uint16_t TPH_ManufacturerCode_V0 = 0x0000;
 //#define A_TPH_Version 0
 //#define C_TPH_Version 0
 //#define A_TPH_HeadLen 1
-#define C_TPH_HeadLen 8
+//#define C_TPH_HeadLen 8
 #define A_TPH_BodyLen 2
 //#define A_TPH_ProtId  4
 //#define C_TPH_PId_KnxTunnel 1
