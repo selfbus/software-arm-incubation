@@ -98,23 +98,14 @@ constexpr uint16_t TPH_ManufacturerCode_V0 = 0x0000;
 // Transfer Protocol Header - TPH
 // Die Adressen sind ab Anfang Transfer Protocol Header
 #define A_TPH_Version 0
-//#define C_TPH_Version 0
 #define A_TPH_HeadLen 1
-//#define C_TPH_HeadLen 8
 #define A_TPH_BodyLen 2
 #define A_TPH_ProtId  4
-//#define C_TPH_PId_KnxTunnel 1
-//#define C_TPH_PId_BAS    0x0f
 //#define A_TPH_EmiId      5
-//#define C_TPH_EmiId_Emi1 1
-//#define C_TPH_EmiId_Emi2 2
-//#define C_TPH_EmiId_cEmi 3
 #define A_TPH_SerId      5
 ////#define C_TPH_SerId 1
 #define A_TPH_ManuCode1 6
 #define A_TPH_ManuCode2 7
-//#define C_TPH_ManuCode1 0
-//#define C_TPH_ManuCode2 0
 
 // Transfer Protocol Body - TPB
 #define A_TPB_FeatureId   0
