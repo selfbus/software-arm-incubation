@@ -45,7 +45,7 @@ enum HRH_PacketType
 #define C_HRH_IdHid   1
 #define C_HRH_IdCdc   2
 #define C_HRH_IdDev   3
-//#define A_HRH_PkInfo  1
+#define A_HRH_PkInfo  1
 /**
  * Single Packet (value 0x13), mehr erst mal nicht unterstuetzen
  */
@@ -97,29 +97,29 @@ constexpr uint16_t TPH_ManufacturerCode_V0 = 0x0000;
 
 // Transfer Protocol Header - TPH
 // Die Adressen sind ab Anfang Transfer Protocol Header
-//#define A_TPH_Version 0
+#define A_TPH_Version 0
 //#define C_TPH_Version 0
-//#define A_TPH_HeadLen 1
+#define A_TPH_HeadLen 1
 //#define C_TPH_HeadLen 8
 #define A_TPH_BodyLen 2
-//#define A_TPH_ProtId  4
+#define A_TPH_ProtId  4
 //#define C_TPH_PId_KnxTunnel 1
 //#define C_TPH_PId_BAS    0x0f
 //#define A_TPH_EmiId      5
 //#define C_TPH_EmiId_Emi1 1
 //#define C_TPH_EmiId_Emi2 2
 //#define C_TPH_EmiId_cEmi 3
-//#define A_TPH_SerId      5
+#define A_TPH_SerId      5
 ////#define C_TPH_SerId 1
-//#define A_TPH_ManuCode1 6
-//#define A_TPH_ManuCode2 7
+#define A_TPH_ManuCode1 6
+#define A_TPH_ManuCode2 7
 //#define C_TPH_ManuCode1 0
 //#define C_TPH_ManuCode2 0
 
 // Transfer Protocol Body - TPB
-//#define A_TPB_FeatureId   0
+#define A_TPB_FeatureId   0
 //#define A_TPB_FeatureData 1
-//#define A_TPB_MCode       0
+#define A_TPB_MCode       0
 #define A_TPB_Data        1 //!< wenn KNX-Frame
 #define A_TPB_EMI_Len     1 //!< wenn EMI service
 #define A_TPB_EMI_Addr_h  2
@@ -127,18 +127,23 @@ constexpr uint16_t TPH_ManufacturerCode_V0 = 0x0000;
 #define A_TPB_EMI_Data    4
 
 // Bus Access Server - BAS
-//#define BAS_ServiceId_FeatureGet  1
-//#define BAS_ServiceId_FeatureResp 2
-//#define BAS_ServiceId_FeatureSet  3
+#define BAS_ServiceId_FeatureGet  1
+#define BAS_ServiceId_FeatureResp 2
+#define BAS_ServiceId_FeatureSet  3
 //#define BAS_ServiceId_FeatureInfo 4
-//#define BAS_FeatureId_SuppEmiType 1
-//#define BAS_FeatureId_DescrType0  2
-//#define BAS_FeatureId_BusConnStat 3
-//#define BAS_FeatureId_KnxManCode  4
-//#define BAS_FeatureId_ActiveEmi   5
+#define BAS_FeatureId_SuppEmiType 1
+#define BAS_FeatureId_DescrType0  2
+#define BAS_FeatureId_BusConnStat 3
+#define BAS_FeatureId_KnxManCode  4
+#define BAS_FeatureId_ActiveEmi   5
 
-//#define C_ManufacturerCodeHigh 0x08
-//#define C_ManufacturerCodeLow  0x15
+/**
+ * Shall contain the 2 octet KNX manufacturer code<br>
+ * We use non existent 0x0815 "manufacturer"
+ * @note (KNX Spec 2.1. 9/3 3.5.3.4.1)
+ */
+#define C_ManufacturerCodeHigh 0x08
+#define C_ManufacturerCodeLow  0x15
 
 /**
  * EMI1 message code field (C_MCode_...)
@@ -153,7 +158,7 @@ constexpr uint16_t TPH_ManufacturerCode_V0 = 0x0000;
 #define C_MCode_ResponseValue   0x4B //!< PC_Get_Value.con / Die Antwort auf eine Emi-Wert Abfrage
 #define C_MCode_SetValue        0x46 //!< PC_Set_Value.req / Einen Emi-Wert setzen
 #define C_MCode_ResetResponse   0xA0
-//#define C_MCode_MonMask        0x7f //!< Selfbus specific ?
+#define C_MCode_MonMask         0x7f //!< Selfbus specific ?
 #define C_MCode_SpecMsk         0x80 //!< Selfbus specific ?
 
 #endif /* _KNXUSB_CONST_H */
