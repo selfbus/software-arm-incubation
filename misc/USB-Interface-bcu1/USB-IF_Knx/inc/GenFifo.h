@@ -11,7 +11,7 @@
 #ifndef GENFIFO_H_
 #define GENFIFO_H_
 
-#define FIFO_DEPTH 4
+#define FIFO_DEPTH 5
 
 enum class TFifoErr
 {

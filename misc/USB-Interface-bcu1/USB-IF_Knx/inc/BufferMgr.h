@@ -13,7 +13,7 @@
 
 #include <stdint.h>
 
-#define BUFF_CNT 6
+#define BUFF_CNT 8
 #define BUFF_SIZE 68
 /*
  * Aufbau eines Pakets:
