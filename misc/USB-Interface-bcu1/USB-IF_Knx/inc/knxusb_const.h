@@ -11,6 +11,8 @@
 #ifndef _KNXUSB_CONST_H
 #define _KNXUSB_CONST_H
 
+#include <stdint.h>
+
 /**
  * HID Report header report id
  * @details report id is always 1
