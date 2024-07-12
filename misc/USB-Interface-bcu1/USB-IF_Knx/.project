@@ -26,4 +26,11 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>src/USB-IF_common</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/USB-IF_common</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
