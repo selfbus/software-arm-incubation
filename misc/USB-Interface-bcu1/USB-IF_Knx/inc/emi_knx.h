@@ -28,33 +28,59 @@
 // SYSST_APPLL ist auch der Default- und Reset-Zustand
 #define SYSST_RESET  0xC0
 
+constexpr uint16_t AddrSystemState         = 0x60; ///\todo replace with bcu.userRam->statusOffset() // system state
+constexpr uint16_t AddrMaskVersionHighByte = 0x4E; //!< MaskVersion high byte
+constexpr uint16_t AddrMaskVersionLowByte  = 0x4F; //!< MaskVersion low byte
+
+/**
+ * From tuwien.auto.calimero.link.BcuSwitcher:<br>
+ * Ext Busmon mode to obtain 2 byte domain address: switch at address 0x0101 bit 3 to 0<br>
+ * Domain address shall be in range [0x01 .. 0xFF], 0x0 is system broadcast
+ */
+constexpr uint16_t AddrBaseConfig = 0x101;
+constexpr uint16_t AddrExpectedPeiType = 0x109;            //!< PEI type that the application program requires
+constexpr uint16_t AddrStartAddressTable = 0x116;          //!< Start of address table
+constexpr uint16_t AddrIndividualAddressHighByte = 0x117;  //!< Individual address high byte
+constexpr uint16_t AddrIndividualAddressLowByte = 0x118;   //!< Individual address low byte
+
 class EmiKnxIf
 {
 public:
   EmiKnxIf(int aLedPin);
   void EmiIf_Tasks(void);
-  void RstSysState(void);
+  void resetSystemState(void);
   void SetCdcMonMode(bool setreset);
   void SetActivityLed(bool onoff);
   void BlinkActivityLed(void);
   void DoActivityLed(bool LedEnabled);
-protected:
+
+private:
   int txbuffno;
   uint8_t firsttxbyte; // muss bloederweise gesichert werden
   uint8_t EmiSystemState;
   bool CdcMonActive;
-  bool HidIfActive;
-  bool ProcTelWait;
-  int LedBlinkCnt;
-  int LedTimeCnt;
-  int LedPin;
-  unsigned LedLastDoTime;
-  bool LedEnabled;
-  void ReceivedUsbEmiPacket(int buffno);
-  uint8_t EmiReadOneVal(int addr);
-  void EmiWriteOneVal(int addr, uint8_t value, bool &reset);
-  void SetEmiLen(uint8_t *ptr, uint8_t len);
-  void SetTPBodyLen(uint8_t *ptr, uint8_t len);
+  bool hidIfActive;
+  bool procTelWait;
+  int ledBlinkCount;
+  int ledTimeCount;
+  int ledPin;
+  uint32_t ledLastDoTime;
+  bool ledEnabled;
+
+  void receivedUsbEmiPacket(int buffno);
+  uint8_t emiReadOneValue(int memoryAddress);
+  void emiWriteOneValue(int addr, uint8_t value, bool &reset);
+  void setTPBodyLength(uint8_t *ptr, uint8_t len);
+
+  /**
+   * Virtuellen EmiSystemState setzen
+   * @brief Wenn der BusMonitor-Modus aktiv ist, dann ist das If selbst immer im Monitor-Modus.
+   *        Gegenüber dem Hid-If muss das jedoch gefiltert werden.
+   *        Wenn das Hid-If den Monitor-Modus verlangt, muss das natürlich entsprechend umgesetzt werden.
+   * @param newValue new system state
+   * @param reset is set to to true on reset required.
+   */
+  void setEmiSystemState(uint8_t newValue, bool &reset);
 };
 
 extern EmiKnxIf emiknxif;

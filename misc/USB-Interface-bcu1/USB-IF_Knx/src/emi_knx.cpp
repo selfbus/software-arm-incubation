@@ -24,96 +24,141 @@ extern BCU1 bcu;
 
 #define ACTLED_HPRD 10
 
+void failHardInDebug()
+{
+#ifdef DEBUG
+    fatalError();
+#endif
+}
+
 EmiKnxIf::EmiKnxIf(int aLedPin)
 {
   txbuffno = -1;
   CdcMonActive = false;
-  HidIfActive = false;
-  ProcTelWait = false;
+  hidIfActive = false;
+  procTelWait = false;
   EmiSystemState = SYSST_APPLL;
-  LedEnabled = true; // Damit die LED beim Start AUSgeschaltet wird
-  LedPin = aLedPin;
-  pinMode(LedPin, OUTPUT);
+  ledEnabled = true; // Damit die LED beim Start AUSgeschaltet wird
+  ledPin = aLedPin;
+  pinMode(ledPin, OUTPUT);
   SetActivityLed(false);
-  LedLastDoTime = 0;
+  ledLastDoTime = 0;
 }
 
 void EmiKnxIf::SetActivityLed(bool onoff)
 {
-  digitalWrite(LedPin, !onoff);
+  digitalWrite(ledPin, !onoff);
 }
 
 void EmiKnxIf::BlinkActivityLed(void)
 {
-  if (LedEnabled)
+  if (ledEnabled)
   {
-    if (LedBlinkCnt < 2)
+    if (ledBlinkCount < 2)
     {
-      if (LedBlinkCnt == 0)
+      if (ledBlinkCount == 0)
       {
         SetActivityLed(false);
       }
-      LedBlinkCnt += 2;
-      LedTimeCnt = ACTLED_HPRD;
+      ledBlinkCount += 2;
+      ledTimeCount = ACTLED_HPRD;
     }
   }
 }
 
 void EmiKnxIf::DoActivityLed(bool Led_Enabled)
 {
-  if (LedEnabled != Led_Enabled)
+  if (ledEnabled != Led_Enabled)
   {
-    LedEnabled = Led_Enabled;
-    SetActivityLed(LedEnabled);
+    ledEnabled = Led_Enabled;
+    SetActivityLed(ledEnabled);
   }
-  if (LedEnabled)
+  if (ledEnabled)
   {
-    if (LedBlinkCnt != 0)
+    if (ledBlinkCount != 0)
     {
-      if (LedTimeCnt > 0)
-        LedTimeCnt--;
-      if (LedTimeCnt == 0)
+      if (ledTimeCount > 0)
+        ledTimeCount--;
+      if (ledTimeCount == 0)
       {
-        LedBlinkCnt--;
-        if (LedBlinkCnt > 0)
+        ledBlinkCount--;
+        if (ledBlinkCount > 0)
         {
-          LedTimeCnt = ACTLED_HPRD;
-          SetActivityLed((LedBlinkCnt & 1) != 0);
+          ledTimeCount = ACTLED_HPRD;
+          SetActivityLed((ledBlinkCount & 1) != 0);
         }
       }
     }
   } else {
-    LedBlinkCnt = 0;
-    LedTimeCnt = 0;
+    ledBlinkCount = 0;
+    ledTimeCount = 0;
   }
 }
 
-uint8_t EmiKnxIf::EmiReadOneVal(int addr)
+uint8_t EmiKnxIf::emiReadOneValue(int memoryAddress)
 {
-  if (addr < 0x100)
-  {
-    if (addr == 0x4E)
-      return 0; // Mask Type 00=TP-BCU
-    if (addr == 0x4F)
-      return (bcu.getMaskVersion()); ///\todo why only low byte returning?
-    if (addr == 0x60)
+    auto isUserRamAddress = bcu.userRam->inRange(memoryAddress);
+    auto isUserEepromAddress = bcu.userEeprom->inRange(memoryAddress);
+    if (!isUserRamAddress && !isUserEepromAddress)
     {
-      //if (userRam.status() & BCU_STATUS_PROGRAMMING_MODE)
-      //  return EmiSystemState ^ (BCU_STATUS_PROGRAMMING_MODE | BCU_STATUS_PARITY);
-      //else
-        return EmiSystemState;
+        failHardInDebug();
+        return 0;
     }
-    return 0;
-  }
-  if (addr < 0x200)
-  {
-//    if (addr == 0x117)
-//      return bus.ownAddress() & 0xff;
-//    if (addr == 0x118)
-//      return bus.ownAddress() >> 8;
-    return bcu.userEeprom->getUInt8(addr);
-  }
-  return 0;
+
+    if (isUserRamAddress)
+    {
+        switch (memoryAddress)
+        {
+            case AddrMaskVersionHighByte: // mask version high byte
+                return HIGH_BYTE(bcu.getMaskVersion());
+                break;
+
+            case AddrMaskVersionLowByte: // mask version low byte
+                return (lowByte(bcu.getMaskVersion()));
+                break;
+
+            case AddrSystemState:
+              //if (userRam.status() & BCU_STATUS_PROGRAMMING_MODE)
+              //  return EmiSystemState ^ (BCU_STATUS_PROGRAMMING_MODE | BCU_STATUS_PARITY);
+              //else
+              return EmiSystemState;
+              break;
+
+            default:
+              failHardInDebug();
+              return 0;
+        }
+    }
+
+    if (isUserEepromAddress)
+    {
+        switch (memoryAddress)
+        {
+            case AddrIndividualAddressLowByte:
+                return lowByte(bcu.ownAddress());
+                break;
+            case AddrIndividualAddressHighByte:
+                return HIGH_BYTE(bcu.ownAddress());
+                break;
+            case AddrExpectedPeiType:
+                return bcu.userEeprom->getUInt8(memoryAddress);
+                break;
+
+            case AddrStartAddressTable:
+                return bcu.userEeprom->getUInt8(memoryAddress);
+                break;
+
+            case AddrBaseConfig:
+                return bcu.userEeprom->getUInt8(memoryAddress);
+                break;
+
+            default:
+                failHardInDebug();
+                return bcu.userEeprom->getUInt8(memoryAddress);
+        }
+    }
+
+    return 0; // we should never land here
 }
 
 void EmiKnxIf::SetCdcMonMode(bool setreset)
@@ -121,71 +166,124 @@ void EmiKnxIf::SetCdcMonMode(bool setreset)
   CdcMonActive = setreset;
 }
 
-/*
- * Virtueller EmiSystemState
- * Wenn der BusMonitor-Modus aktiv ist, dann ist das If selbst immer im Monitor-Modus.
- * Gegenüber dem Hid-If muss das jedoch gefiltert werden.
- * Wenn das Hid-If den Monitor-Modus verlangt, muss das natürlich entsprechend umgesetzt werden.
- */
-
-void EmiKnxIf::EmiWriteOneVal(int addr, uint8_t value, bool &reset)
+void EmiKnxIf::setEmiSystemState(uint8_t newValue, bool &reset)
 {
-  reset = false;
-  if (addr == 0x60)
-  {
-    // EmiSystemState setzen
-    switch (value)
+    reset = false;
+    switch (newValue)
     {
-    case SYSST_BUSMON: // Busmonitor ETS sends this with bus monitor start
-      //userRam.status() = value; //
-      EmiSystemState = SYSST_BUSMON; ///\todo ETS busmonitor mode still doesnt work
-      HidIfActive = true;
-      break;
-    case SYSST_LINKL:  // LinkLayer, in diesem Modus kommuniziert die ETS mit dem Bus
-      //userRam.status() = value;
-      EmiSystemState = SYSST_LINKL;
-      HidIfActive = true;
-      break;
-    case SYSST_TRANSP:
-      //userRam.status() = value; // Bisher nie beobachtet
-      break;
-    case SYSST_APPLL: // Das ist der Reset-Default, keine Übertragung zum Hid-If
-      //userRam.status() = value;
-      EmiSystemState = SYSST_APPLL;
-      HidIfActive = false;
-      break;
-    case SYSST_RESET:
-      // Reset, und nu?
-      //userRam.status() = SYSST_APPLL;
-      EmiSystemState = SYSST_APPLL;
-      HidIfActive = false;
-      reset = true;
-    default: ;
+        case SYSST_BUSMON: // Busmonitor ETS sends this with bus monitor start
+            //userRam.status() = value; //
+            EmiSystemState = SYSST_BUSMON; ///\todo ETS busmonitor mode still doesnt work
+            hidIfActive = true;
+            break;
+
+        case SYSST_LINKL:  // LinkLayer, in diesem Modus kommuniziert die ETS mit dem Bus
+            //userRam.status() = value;
+            EmiSystemState = SYSST_LINKL;
+            hidIfActive = true;
+            break;
+
+        case SYSST_TRANSP:
+            //userRam.status() = value; // Bisher nie beobachtet
+            failHardInDebug();
+            break;
+
+        case SYSST_APPLL: // Das ist der Reset-Default, keine Übertragung zum Hid-If
+            //userRam.status() = value;
+            EmiSystemState = SYSST_APPLL;
+            hidIfActive = false;
+            break;
+
+        case SYSST_RESET:
+            // Reset, und nu?
+            //userRam.status() = SYSST_APPLL;
+            EmiSystemState = SYSST_APPLL;
+            hidIfActive = false;
+            reset = true;
+            break;
+
+        default:
+            failHardInDebug();
     }
+}
+
+void EmiKnxIf::emiWriteOneValue(int addr, uint8_t value, bool &reset)
+{
+  if (bcu.userRam->inRange(addr) && (!bcu.userRam->isStatusAddress(addr)))
+  {
+      failHardInDebug();
   }
-  // Vorerst werden die Schreibzugriffe ungefiltert weitergegeben.
-  if ((addr >= 0x100) && (addr < 0x200))
+
+  if (bcu.userRam->isStatusAddress(addr))
+  {
+    setEmiSystemState(value, reset);
+    return;
+  }
+
+  // Vorerst werden die eeprom Schreibzugriffe ungefiltert weitergegeben.
+  uint8_t * memoryPtr = bcu.userMemoryPtr(addr);
+  if (memoryPtr == nullptr)
+  {
+      failHardInDebug();
+      return;
+  }
+
+  if (value != bcu.userEeprom->getUInt8(addr))
   {
       *bcu.userMemoryPtr(addr) = value;
+      // bcu.userEeprom->setUInt8(addr, value);
+      bcu.userEeprom->modified(true);
+  }
+
+  if ((addr == AddrIndividualAddressLowByte) || (addr == AddrIndividualAddressHighByte))
+  {
+      uint16_t newAddress = makeWord(bcu.userEeprom->getUInt8(AddrIndividualAddressHighByte),
+                                     bcu.userEeprom->getUInt8(AddrIndividualAddressLowByte));
+      bcu.setOwnAddress(newAddress);
+  }
+  else
+  {
+      switch (addr)
+      {
+          case AddrExpectedPeiType:
+              break;
+
+          case AddrStartAddressTable:
+              break;
+
+          case AddrBaseConfig:
+              break;
+
+          default:
+              failHardInDebug();
+      }
   }
 }
 
-void EmiKnxIf::RstSysState(void)
+void EmiKnxIf::resetSystemState(void)
 {
   bool rst;
-  EmiWriteOneVal(0x60, SYSST_RESET, rst);
+  emiWriteOneValue(AddrSystemState, SYSST_RESET, rst);
 }
 
-void EmiKnxIf::SetTPBodyLen(uint8_t *ptr, uint8_t len)
+void EmiKnxIf::setTPBodyLength(uint8_t *ptr, uint8_t len)
 {
   // Setzt die Telegrammlänge an den verschiedenen Stellen auf die
   // passenden Werte, die Länge ist die des Transfer Protocol Body
-  ptr[2 + C_HRH_HeadLen + A_TPH_BodyLen+1] = len;
-  ptr[2 + A_HRH_DataLen] = len+C_TPH_HeadLen;
-  ptr[0] = len+C_TPH_HeadLen+C_HRH_HeadLen+A_TPB_Data+2;
+                                                                 // len = 9
+  // 2 bytes Transfer Protocol Body length
+  // KNX Spec 2.1 9/3 3.4.1.3.3
+  ptr[2 + C_HRH_HeadLen + A_TPH_BodyLen] = HIGH_BYTE(len);       // ptr[7] = 0
+  ptr[2 + C_HRH_HeadLen + A_TPH_BodyLen + 1] = lowByte(len);     // ptr[8] = len
+
+  // 1 byte HID report frame length
+  ptr[2 + A_HRH_DataLen] = len + C_TPH_HeadLen;                  // ptr[4] = len + 8
+
+  // 1 byte total length
+  ptr[0] = len + C_TPH_HeadLen + C_HRH_HeadLen + A_TPB_Data + 2; // ptr[0] = len + 23
 }
 
-void EmiKnxIf::ReceivedUsbEmiPacket(int buffno)
+void EmiKnxIf::receivedUsbEmiPacket(int buffno)
 {
   uint8_t *buffptr = buffmgr.buffptr(buffno);
   // Die ganze Auswertung geht vorerst von EMI1 aus
@@ -200,12 +298,12 @@ void EmiKnxIf::ReceivedUsbEmiPacket(int buffno)
   {
   case C_MCode_GetValue: // Einen Emi-Wert abfragen
     // Das ankommende Telegramm wird sofort für die Antwort benutzt
-    SetTPBodyLen(buffptr, len+A_TPB_EMI_Data);
-    ptr[C_TPH_HeadLen] = C_MCode_RespValue;
+    setTPBodyLength(buffptr, len+A_TPB_EMI_Data);
+    ptr[C_TPH_HeadLen] = C_MCode_ResponseValue;
     ptr += C_TPH_HeadLen+A_TPB_EMI_Data;
     while (len > 0)
     {
-      *ptr++ = EmiReadOneVal(EmiAddr++);
+      *ptr++ = emiReadOneValue(EmiAddr++);
       len--;
     }
     if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
@@ -215,14 +313,14 @@ void EmiKnxIf::ReceivedUsbEmiPacket(int buffno)
     ptr += C_TPH_HeadLen+A_TPB_EMI_Data;
     while ((len > 0) && !reset)
     {
-      EmiWriteOneVal(EmiAddr++, *ptr++, reset);
+      emiWriteOneValue(EmiAddr++, *ptr++, reset);
       len--;
     }
     if (reset)
     {
-      SetTPBodyLen(buffptr, 1);
+      setTPBodyLength(buffptr, 1);
       ptr = buffptr + 2 + C_HRH_HeadLen + C_TPH_HeadLen;
-      *ptr++ = C_MCode_RstResp;
+      *ptr++ = C_MCode_ResetResponse;
       *ptr++ = 0;
       *ptr++ = 0;
       *ptr++ = 0;
@@ -249,7 +347,7 @@ void EmiKnxIf::ReceivedUsbEmiPacket(int buffno)
 
 /*
  * Also: CdcMonActive ist wahr: Dann werden die Telegramme hier vorselektiert und der sblib übergeben
- * CdcActive wird deaktiviert (und HidIfActive ist false): Jetzt muss die Kontrolle wieder zurück
+ * CdcActive wird deaktiviert (und hidIfActive ist false): Jetzt muss die Kontrolle wieder zurück
  * rein an die sblib übertragen werden. Das letzt empfangene und noch im Buffer stehende Telegramm könnte
  * noch ein ungefiltertes sein, dass muss also dennoch hier vorsortiert und evtl an die Sblib übergeben
  * werden.
@@ -259,7 +357,7 @@ void EmiKnxIf::EmiIf_Tasks(void)
   bool KnxProcActive;
   bool lastinternal = false;
   // userRam.status() aktualisieren
-  if (CdcMonActive || HidIfActive)
+  if (CdcMonActive || hidIfActive)
   {
     if (bcu.userRam->status() & BCU_STATUS_TRANSPORT_LAYER)
         bcu.userRam->status() ^= BCU_STATUS_TRANSPORT_LAYER | BCU_STATUS_PARITY; // interne TL Verarbeitung deaktivieren
@@ -277,38 +375,60 @@ void EmiKnxIf::EmiIf_Tasks(void)
     }
 
   }
+
   if (CdcMonActive)
-    if (HidIfActive)
+    if (hidIfActive)
       KnxProcActive = false;
     else
       KnxProcActive = true; // Hier in EmiIf_Tasks muss die Tel.abarbeitung der sblib aufgerufen werden
   else
     KnxProcActive = false;
 
+  //KnxProcActive = CdcMonActive && !hidIfActive;
+  if (KnxProcActive != CdcMonActive && !hidIfActive) ///\todo should simplify above 2 ifs
+      failHardInDebug();
+
   if (bcu.bus->telegramReceived())
   {
-    if (!ProcTelWait && (CdcMonActive || HidIfActive))
+    if (!procTelWait && (CdcMonActive || hidIfActive))
     {
       int buffno = buffmgr.AllocBuffer();
       if (buffno >= 0)
       {
         uint8_t *buffptr = buffmgr.buffptr(buffno);
-        SetTPBodyLen(buffptr, bcu.bus->telegramLen);
-        buffptr += 2;
-        *buffptr++ = 0x01;
-        *buffptr++ = 0x13;
-        buffptr++;
-        *buffptr++ = 0;
-        *buffptr++ = 0x08;
-        *buffptr++ = 0;
-        buffptr++;
-        *buffptr++ = 0x01;
-        *buffptr++ = 0x01;
-        *buffptr++ = 0;
-        *buffptr++ = 0;
-        *buffptr++ = (HidIfActive) ? C_MCode_RxData:(C_MCode_RxData|C_MCode_SpecMsk);
-        for (int i = 0; i < bcu.bus->telegramLen; ++i)
+        uint8_t *buffStartPtr = buffptr;
+        setTPBodyLength(buffptr, bcu.bus->telegramLen); // [0], [4], [7,8] length positions
+        ///\todo missing position 1 ?
+        buffptr += 2; // skip [0] (total length) and [1] (unknown usage) (already set in setTPBodyLength(.))
+
+        // create HID report header (HRH)
+        *buffptr++ = HRH_ReportID; // [2] HRH report id
+        *buffptr++ = C_HRH_PacketInfoSinglePacket; // [3] HRH packet info
+        buffptr++; // skip [4] HID report frame length (already set in setTPBodyLength(.))
+
+        // create KNX USB Transfer Protocol Header of HID report body (HRB)
+        *buffptr++ = TPH_ProtocolVersion_V0; // [5]
+        *buffptr++ = TPH_ProtocolLength_V0;  // [6]
+        buffptr += 2; // skip [7] & [8] Transfer Protocol Body length (already set in setTPBodyLength(.))
+        *buffptr++ = TPH_ProtocolID::knxTunnel; // [9]
+        *buffptr++ = TPH_EMI_ID::EMI1; // [10]
+        *buffptr++ = HIGH_BYTE(TPH_ManufacturerCode_V0); // [11]
+        *buffptr++ = lowByte(TPH_ManufacturerCode_V0); //  [12]
+
+        // create KNX USB Transfer Protocol Body (TPB)
+        // set EMI message code
+        uint8_t emiMessageCode;
+        if (hidIfActive)
+            emiMessageCode = C_MCode_RxData;
+        else
+            emiMessageCode = (C_MCode_RxData | C_MCode_SpecMsk);
+        *buffptr++ = emiMessageCode; // [13]
+
+        // set EMI data (KNX frame)
+        for (int i = 0; i < bcu.bus->telegramLen; ++i) // [14 - x]
           *buffptr++ = bcu.bus->telegram[i];
+
+        // push buffer to serial
         if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
           buffmgr.FreeBuffer(buffno);
       }
@@ -318,7 +438,7 @@ void EmiKnxIf::EmiIf_Tasks(void)
     if (KnxProcActive || lastinternal)
     {
       bool processTel = false;
-      ProcTelWait = false;
+      procTelWait = false;
 
       // Nur weiter verarbeiten, wenn es an uns gerichtet ist
       int destAddr = (bcu.bus->telegram[3] << 8) | bcu.bus->telegram[4];
@@ -342,7 +462,7 @@ void EmiKnxIf::EmiIf_Tasks(void)
             if ((millis() - starttime) > 100)
             {
               lastinternal = false;
-              ProcTelWait = false;
+              procTelWait = false;
               bcu.bus->discardReceivedTelegram();
             }
           }
@@ -353,20 +473,20 @@ void EmiKnxIf::EmiIf_Tasks(void)
           {
             bcu.processTelegram(&bcu.bus->telegram[0], bcu.bus->telegramLen);
           } else {
-            ProcTelWait = true;
+            procTelWait = true;
           }
         }
       } else {
-        ProcTelWait = false;
+        procTelWait = false;
         bcu.bus->discardReceivedTelegram();
       }
     } else {
-      ProcTelWait = false;
+      procTelWait = false;
       bcu.bus->discardReceivedTelegram();
     }
   }
 
-  if ((txbuffno >= 0) && (!bcu.bus->sendingFrame()) && !ProcTelWait)
+  if ((txbuffno >= 0) && (!bcu.bus->sendingFrame()) && !procTelWait)
   {
     // Das Response-Telegramm Richtung USB schicken. Dafür kann der Buffer
     // wiederverwendet werden, denn in ihm steht das vollständige HID-Paket
@@ -393,14 +513,14 @@ void EmiKnxIf::EmiIf_Tasks(void)
     // Der Check ist eigentlich nicht notwendig, ist nur eine kurze Plausibilisierung.
     // Ausführlicher wurde schon auf der USB-Seite geprüft.
     if ((ptr[2+A_HRH_Id] == C_HRH_IdHid) && (UartPacketLength == (HidPacketLength+2)))
-      ReceivedUsbEmiPacket(buffno);
+      receivedUsbEmiPacket(buffno);
     else
       buffmgr.FreeBuffer(buffno);
   }
 
-  if ((millis() - LedLastDoTime) >= 10)
+  if (elapsed(ledLastDoTime) >= 10)
   {
-    LedLastDoTime = millis();
-    DoActivityLed(CdcMonActive || HidIfActive);
+    ledLastDoTime = millis();
+    DoActivityLed(CdcMonActive || hidIfActive);
   }
 }

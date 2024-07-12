@@ -51,12 +51,12 @@ void DeviceManagement::DevMgnt_Tasks(void)
           break;
         case C_DevSys_Disable:
           /* - Usb side meldet USB unconfigured
-          *   -> löscht CdcMonActive & HidIfActive
+          *   -> löscht CdcMonActive & hidIfActive
           *      löscht ProgUserChipModus
           */
           if (LastDevSys != C_DevSys_Disable)
           {
-            emiknxif.RstSysState();
+            emiknxif.resetSystemState();
             emiknxif.SetCdcMonMode(false);
             proguart.Disable();
             LastDevSys = C_DevSys_Disable;
@@ -102,10 +102,10 @@ void DeviceManagement::DevMgnt_Tasks(void)
   if (((int)(millis() - rxtimeout) > 0) && (LastDevSys != 0))
   {
     /* Timeout, anscheinen ist die USB-Seite nicht funktionsfähig
-    *   -> löscht CdcMonActive & HidIfActive
+    *   -> löscht CdcMonActive & hidIfActive
     *      löscht ProgUserChipModus
     */
-    emiknxif.RstSysState();
+    emiknxif.resetSystemState();
     emiknxif.SetCdcMonMode(false);
     proguart.Disable();
     LastDevSys = 0;
