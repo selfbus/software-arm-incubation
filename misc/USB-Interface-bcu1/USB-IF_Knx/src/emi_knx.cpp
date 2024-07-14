@@ -337,7 +337,7 @@ void EmiKnxIf::EmiIf_Tasks(void)
         if (lastinternal)
         { // Dann kann es nicht auf den nächsten Schleifendurchlauf verschoben werden
           unsigned int starttime = millis();
-          while (bcu.bus->sendingTelegram())
+          while (bcu.bus->sendingFrame())
           { // Warte max 100 ms
             if ((millis() - starttime) > 100)
             {
@@ -349,7 +349,7 @@ void EmiKnxIf::EmiIf_Tasks(void)
         }
         if (bcu.bus->telegramReceived())
         {
-          if (!bcu.bus->sendingTelegram())
+          if (!bcu.bus->sendingFrame())
           {
             bcu.processTelegram(&bcu.bus->telegram[0], bcu.bus->telegramLen);
           } else {
@@ -366,7 +366,7 @@ void EmiKnxIf::EmiIf_Tasks(void)
     }
   }
 
-  if ((txbuffno >= 0) && (!bcu.bus->sendingTelegram()) && !ProcTelWait)
+  if ((txbuffno >= 0) && (!bcu.bus->sendingFrame()) && !ProcTelWait)
   {
     // Das Response-Telegramm Richtung USB schicken. Dafür kann der Buffer
     // wiederverwendet werden, denn in ihm steht das vollständige HID-Paket

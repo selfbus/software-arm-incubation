@@ -34,15 +34,16 @@
 
 
 #ifdef BUSFAIL
-    NonVolatileSetting AppNovSetting(0xEA00, 0x100);  // flash-storage for application relevant parameters
+    NonVolatileSetting AppNovSetting(0xEE00, 0x100);  // flash-storage for application relevant parameters
     ApplicationData AppData;
     AppCallback callback;
+    AppUsrCallback usrCallback; ///\todo two callbacks? Optimize with busfail integration into the sblib.
 #endif
 
-APP_VERSION("O08.10  ", "5", "10");
+APP_VERSION("O08.10  ", "5", "12"); // Don't forget to also change the build-variable sw_version
 
 /**
- * simple IO test
+ * Simple IO test
  */
 void ioTest()
 {
@@ -183,7 +184,7 @@ bool recallAppData()
     return result;
 }
 
-/*
+/**
  * Initialize the application.
  */
 BcuBase* setup()
@@ -202,26 +203,21 @@ BcuBase* setup()
 
     initSerial();
 
-    // enable bus voltage monitoring
-    startBusVoltageMonitoring();
-
     ioTest();
-
     bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
+#ifdef BUSFAIL
+    bcu.setUsrCallback((UsrCallback *)&usrCallback);
+    startBusVoltageMonitoring(); // enable bus voltage monitoring
+#endif
+
 #ifdef DEBUG_SERIAL
     int physicalAddress = bus.ownAddress();
     serial.print("physical address: ", (physicalAddress >> 12) & 0x0F, DEC);
     serial.print(".", (physicalAddress >> 8) & 0x0F, DEC);
     serial.println(".", physicalAddress & 0xFF, DEC);
 #endif
-    // _bcu.setGroupTelRateLimit(20); // not rly sure, maybe this leads sometimes to repeated telegrams?
 
     recallAppData();
-
-#ifndef BI_STABLE
-    //pinMode(PIN_IO11, OUTPUT);
-    //digitalWrite(PIN_IO11, 1);
-#endif
 
 #ifndef BI_STABLE
 #   ifdef ZERO_DETECT
@@ -232,18 +228,16 @@ BcuBase* setup()
 #endif
 
 #ifdef BUSFAIL
-    initApplication(AppData.relaisstate);
+    initApplication(AppData.relaysstate);
     startBusVoltageMonitoring(); // needs to be called again, because Release version is using analog_pin.h functions from sblib which break our ADC Interrupts
 #else
     initApplication();
-
-    // TODO check maybe use _bcu.enableGroupTelSend(false);
 #endif
     return (&bcu);
 }
 
 /**
- * @brief The main processing loop. Will be called by the Selfbus sblib main().
+ * The main processing loop. Will be called by the Selfbus sblib main().
  */
 void loop(void)
 {
@@ -262,8 +256,8 @@ void loop(void)
 }
 
 /**
- * @brief Will be called by the Selfbus sblib main(), while no application is loaded
- *        In case we have a HAND_ACTUATION all LED's will blink at 2*BLINK_TIME (~1Hz) to indicate this state
+ * Will be called by the Selfbus sblib main(), while no application is loaded.
+ * In case we have a HAND_ACTUATION all LED's will blink at 2*BLINK_TIME (~1Hz) to indicate this state
  */
 void loop_noapp(void)
 {
@@ -280,23 +274,24 @@ void loop_noapp(void)
 void ResetDefaultApplicationData()
 {
 #ifdef BUSFAIL
-    AppData.relaisstate = 0x00;
+    AppData.relaysstate = 0x00;
 #endif
 }
 
 #ifdef BUSFAIL
+bool saveRelayState()
+{
+    AppData.relaysstate = getRelaysState();
+    return AppNovSetting.StoreApplData((unsigned char*)&AppData, sizeof(ApplicationData));
+}
+
 void AppCallback::BusVoltageFail()
 {
     pinMode(PIN_INFO, OUTPUT); // even in non DEBUG flash Info LED to display app data storing
     digitalWrite(PIN_INFO, 1);
 
-    AppData.relaisstate = getRelaysState();
     // write application settings to flash
-    if (AppNovSetting.StoreApplData((unsigned char*)&AppData, sizeof(ApplicationData)))
-        digitalWrite(PIN_INFO, 0);
-    else
-        digitalWrite(PIN_INFO, 1);
-
+    digitalWrite(PIN_INFO, !saveRelayState());
     stopApplication();
 
 #ifdef DEBUG
@@ -316,7 +311,7 @@ void AppCallback::BusVoltageReturn()
         ResetDefaultApplicationData();
     }
     bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION);
-    initApplication(AppData.relaisstate);
+    initApplication(AppData.relaysstate);
 }
 
 int AppCallback::convertADmV(int valueAD)
@@ -411,4 +406,18 @@ int AppCallback::convertmVAD(int valuemV)
      *
     */
 }
+
+void AppUsrCallback::Notify(UsrCallbackType type)
+{
+    switch (type)
+    {
+        case UsrCallbackType::reset : // Reset after an ETS-application download or simple @ref APCI_BASIC_RESTART_PDU
+            saveRelayState();
+            break;
+
+        default :
+            break;
+    }
+}
+
 #endif /* BUSFAIL */

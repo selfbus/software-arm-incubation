@@ -1,8 +1,17 @@
+/*
+ *  Copyright (c) 2016-2021 Oliver Stefan
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3 as
+ *  published by the Free Software Foundation.
+ */
+
+
 #include <sblib/core.h>
 #include <sblib/timeout.h>
+#include "app_rtr.h"
 #include "inputs.h"
 #include "params.h"
-#include "app_temp_control.h"
 
 unsigned int debounceTime;
 Debouncer inputDebouncer[NUM_CHANNELS];
@@ -77,7 +86,7 @@ extern "C" void PIOINT2_IRQHandler(void)
 }
 
 void handlePeriodicInputs(){
-	int channel, lastValue;
+	int channel, lastValue = 0;
 
 	for (channel = 0; channel < NUM_CHANNELS; ++channel)
 	{

@@ -1,4 +1,6 @@
-/**
+/*
+ *  Copyright (c) 2016-2021 Oliver Stefan
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
  *  published by the Free Software Foundation.
@@ -14,7 +16,7 @@
  * entfernen der aktivierung des externen temp sensors aus der VD -> 2 Versionen in VD
  */
 
-#include <sblib/eibBCU1.h>
+#include <sblib/eibMASK0701.h>
 #include <sblib/core.h>
 #include <sblib/ioports.h>
 #include <sblib/serial.h>
@@ -24,49 +26,42 @@
 #include "lcd.h"
 #include "params.h"
 #include "pwm.h"
-#include "app_temp_control.h"
 #include "sensors.h"
 #include "config.h"
 #include "inputs.h"
-#include "ext_eeprom.h"
+#include "knxprodHeader.h"
+#include "app_rtr.h"
 
-#define _DEBUG__
+//#define _DEBUG__
 
 #ifdef _DEBUG__
 Serial Serial(PIO2_7, PIO2_8);
 #endif
 
-int blinkPin = PIO0_7;
+//SPI spi(SPI_PORT_0);
 
 // Timeout
 Timeout timeout[NUM_TIMED_VALUES];
 
-ExtEeprom extEeprom;
-BCU1 bcu = BCU1();
+MASK0701 bcu = MASK0701();
 
-APP_VERSION("SBrtrLcd", "1", "10")
+APP_VERSION("SBrtrLcd", "1", "11") // Don't forget to also change the build-variable sw_version
 
 /*
-* Der MemMapper bekommt einen 1kB Bereich ab 0xEA00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.
-* Damit lassen sich 3 Pages (je 256Byte) (und die allocTable die MemMappers) unterbringen.
-* 0xEA00 = 59904 -> 59904/256=234 -> ab Page 234
+* Der MemMapper bekommt einen 256 Byte großen Bereich ab 0xEE00, knapp unterhalb des UserMemory-Speicherbereichs ab 0xF000.
+* Damit lassen sich 1 Page (256Byte) (und die allocTable die MemMappers (256 Byte)) unterbringen.
+* 0xEE00 = 60928 -> 60928/256=238 -> ab Page 238
 */
-//MemMapper memMapper(0xea00, 0x400, false);
+MemMapper memMapper(UF_BASE_ADDRESS, UF_SIZE, false);
 
-/**
+/*
  * Initialize the application.
  */
 BcuBase* setup() {
-    bcu.setProgPin(PIO2_11); // UP16/GNAX controller progPin
-#if EINHEIZKREIS
-	bcu.begin(76, 0x474, 2);  // we are a MDT temperature controller, version 1.2
-#else
-	bcu.begin(76, 0x47E, 2); // we are a Selfbus room temperature and air controller Version 0.2
-#endif
 
-//	pinMode(blinkPin, OUTPUT);
+	bcu.setProgPin(PIO2_11);
 
-//	bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
+	bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION); // see in knxprodHeader.h for Device information
 
 	// Enable the serial port with 19200 baud, no parity, 1 stop bit
 #ifdef _DEBUG__
@@ -74,33 +69,21 @@ BcuBase* setup() {
 	serial.println("UC1701x Display Taster TEST");
 #endif
 
-//	_bcu.setMemMapper(&memMapper);
-//	memMapper.addRange(0x0, 0x100); // Zum Abspeichern/Laden des Systemzustands
-//
-//
-//	if(memMapper.getUInt8(UF_INITIALIZED) != 1){
-//		memMapper.setUInt8(UF_INITIALIZED, 1);
-//		memMapper.setUInt32(UF_TEMP_AUTO_RESET_TIME, 500);
-//		memMapper.setUInt32(UF_TEMP_SOLL_INTERN, 2000);
-//		memMapper.setUInt32(UF_TEMP_SOLL_INTERN_LUFT, 2100);
-//		memMapper.setUInt32(UF_TEMP_SOLL_EXTERN, 2200);
-//		memMapper.setUInt32(UF_TEMP_SOLL_TEMP_FLAG, SollTempExtern);
-//		memMapper.setUInt32(UF_LCD_BRIGHTNESS, 500);
-//	}
+    bcu.setMemMapper(&memMapper);
+    if (memMapper.addRange(UF_BASE_ADDRESS, UF_SIZE) != MEM_MAPPER_SUCCESS) { // Zum Abspeichern/Laden des Systemzustands
+        fatalError();
+    }
 
-
-	extEeprom.init_eeprom();
-
-	if(extEeprom.eepromGetUInt8(UF_INITIALIZED) != 1){
-		extEeprom.eepromSetUInt8(UF_INITIALIZED, 1);
-		extEeprom.eepromSetUInt32(UF_TEMP_AUTO_RESET_TIME, 500);
-		extEeprom.eepromSetUInt32(UF_TEMP_SOLL_INTERN, 2000);
-		extEeprom.eepromSetUInt32(UF_TEMP_SOLL_INTERN_LUFT, 2100);
-		extEeprom.eepromSetUInt32(UF_TEMP_SOLL_EXTERN, 2200);
-		extEeprom.eepromSetUInt32(UF_TEMP_SOLL_TEMP_FLAG, SollTempExtern);
-		extEeprom.eepromSetUInt32(UF_LCD_BRIGHTNESS, 500);
-		extEeprom.write_to_chip();
-	}
+    if(memMapper.getUInt8(UF_INITIALIZED) != 1){
+        memMapper.setUInt8(UF_INITIALIZED, 1);
+        memMapper.setUInt32(UF_TEMP_AUTO_RESET_TIME, 500);
+        memMapper.setUInt32(UF_TEMP_SOLL_INTERN, 2000);
+        memMapper.setUInt32(UF_TEMP_SOLL_INTERN_LUFT, 2100);
+        memMapper.setUInt32(UF_TEMP_SOLL_EXTERN, 2200);
+        memMapper.setUInt32(UF_TEMP_SOLL_TEMP_FLAG, SollTempExtern);
+        memMapper.setUInt32(UF_LCD_BRIGHTNESS, 500);
+        memMapper.doFlash();
+    }
 
 	init_inputs();
 
@@ -109,13 +92,14 @@ BcuBase* setup() {
 	u8g_SetDefaultForegroundColor(&u8g);
 
 	initPWM();
-//	int lcd_brightness = memMapper.getUInt32(UF_LCD_BRIGHTNESS);
-	int lcd_brightness = extEeprom.eepromGetUInt32(UF_LCD_BRIGHTNESS);
+	int lcd_brightness = memMapper.getUInt32(UF_LCD_BRIGHTNESS);
 	setPWM(lcd_brightness/100);
 
 	initSensors();
 
 	initApplication();
+
+	init_lcd();
 
 	timeout[LCD_BACKLIGHT].start(LCDBACKLIGHTTIME);
 	BacklightOnFlag = true;
@@ -158,7 +142,6 @@ void loop() {
 	{
 		objectUpdated(objno);
 	}
-
 }
 
 /**
@@ -168,4 +151,3 @@ void loop_noapp()
 {
 
 }
-

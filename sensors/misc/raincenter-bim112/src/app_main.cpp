@@ -12,7 +12,7 @@
 #include "config.h"
 #include "app_raincenter.h"
 
-APP_VERSION("SBr_cent", "0", "41");
+APP_VERSION("SBr_cent", "0", "41"); // Don't forget to also change the build-variable sw_version
 
 /**
  * Application setup

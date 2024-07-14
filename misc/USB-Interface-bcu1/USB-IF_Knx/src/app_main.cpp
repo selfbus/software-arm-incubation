@@ -23,7 +23,7 @@ __attribute__ ((used,section(".crp"))) const unsigned int CRP_WORD = 0xFFFFFFFF;
 
 BCU1 bcu = BCU1();
 
-APP_VERSION("SBif_knx", "1", "10")
+APP_VERSION("SBif_knx", "1", "10") // Don't forget to also change the build-variable sw_version
 
 BcuBase* setup()
 {

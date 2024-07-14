@@ -16,7 +16,7 @@
 
 BCU1 bcu = BCU1();
 
-APP_VERSION("SBrol_12", "1", "10")
+APP_VERSION("SBrol_12", "1", "10") // Don't forget to also change the build-variable sw_version
 
 /**
  * Initialize the application.

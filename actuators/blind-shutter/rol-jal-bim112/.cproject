@@ -957,19 +957,10 @@
 		<configuration configurationName="Flashstart 0x3000 Release ha">
 			<resource resourceType="PROJECT" workspacePath="/rol-jal-bim112"/>
 		</configuration>
-		<configuration configurationName="Flashstart 0x3000 Debug_LPC11">
-			<resource resourceType="PROJECT" workspacePath="/rol-jal-bim112"/>
-		</configuration>
 		<configuration configurationName="Release ha">
 			<resource resourceType="PROJECT" workspacePath="/rol-jal-bim112"/>
 		</configuration>
-		<configuration configurationName="Debug_LPC11">
-			<resource resourceType="PROJECT" workspacePath="/rol-jal-bim112"/>
-		</configuration>
 		<configuration configurationName="Flashstart 0x3000 Release bf ha">
-			<resource resourceType="PROJECT" workspacePath="/rol-jal-bim112"/>
-		</configuration>
-		<configuration configurationName="Debug_LPC11U">
 			<resource resourceType="PROJECT" workspacePath="/rol-jal-bim112"/>
 		</configuration>
 		<configuration configurationName="Flashstart 0x3000 Release">
