@@ -10,7 +10,7 @@
 
 /*
  * This Software is used by a board with 2 or 4 DS2482 OneWire Controller
- * Theese Controllers are connected to the MCU over I2C
+ * These Controllers are connected to the MCU over I2C
  */
 #include <sblib/eibMASK0701.h>
 #include <sblib/ioports.h>
