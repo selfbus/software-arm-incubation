@@ -16,9 +16,10 @@
 #include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 
-extern "C" const char APP_VERSION[9] = "OWGW 0.1";
 #include "config.h"
 #include "app-OneWireGateway.h"
+
+APP_VERSION("OWGW    ", "0", "01"); // Don't forget to also change the build-variable sw_version
 
 MASK0701 bcu = MASK0701();
 
