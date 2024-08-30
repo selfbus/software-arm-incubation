@@ -11,7 +11,6 @@
 #ifndef __ONEWIRECHANNELS_H__
 #define __ONEWIRECHANNELS_H__
 
-#include <sblib/eib.h>
 #include "ds18x20_onewire_ds2482.h"
 #include "oneWireParameters.h"
 #include "config.h"

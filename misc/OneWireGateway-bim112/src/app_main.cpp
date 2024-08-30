@@ -13,14 +13,12 @@
  * Theese Controllers are connected to the MCU over I2C
  */
 #include <sblib/eibMASK0701.h>
-#include <sblib/core.h>
-#include <app-OneWireGateway.h>
-#include <config.h>
-#include <sblib/eib.h>
 #include <sblib/ioports.h>
 #include <sblib/io_pin_names.h>
 
 extern "C" const char APP_VERSION[9] = "OWGW 0.1";
+#include "config.h"
+#include "app-OneWireGateway.h"
 
 MASK0701 bcu = MASK0701();
 

@@ -8,16 +8,15 @@
  *  published by the Free Software Foundation.
  */
 
-#include <oneWireChannel.h>
-#include "app-OneWireGateway.h"
-#include "oneWireParameters.h"
-#include "config.h"
-#include <sblib/eib.h>
 #include <sblib/digital_pin.h>
 #include <sblib/io_pin_names.h>
-
-#include "ds18x20_onewire_ds2482.h"
 #include <sblib/eib/com_objects.h>
+
+#include "config.h"
+#include "oneWireChannel.h"
+#include "app-OneWireGateway.h"
+#include "oneWireParameters.h"
+#include "ds18x20_onewire_ds2482.h"
 
 bool readAllSensors = false;
 uint8_t minuteCounter = 0;
