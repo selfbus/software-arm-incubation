@@ -22,7 +22,7 @@
 #include <SGP4xItem.h>
 #include <HelperFunctions.h>
 
-APP_VERSION("MSA     ", "0", "12");
+APP_VERSION("MSA     ", "0", "12"); // Don't forget to also change the build-variable sw_version
 #define CONFIG_ADDRESS 0x4800
 
 MASK0701 bcu = MASK0701();
