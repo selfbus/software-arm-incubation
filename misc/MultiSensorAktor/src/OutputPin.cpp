@@ -40,19 +40,31 @@ byte OutputPin::GetState(uint32_t now, byte updatedObjectNo)
 	else if (updatedObjectNo == firstComIndex + 2)
 	{
 		locked = BCU->comObjects->objectRead(firstComIndex + 2) == 0;
+		if (config->lockFlags == PortOutLockAction::NegNothing ||
+				config->lockFlags == PortOutLockAction::NegOff ||
+				config->lockFlags == PortOutLockAction::NegOn ||
+				config->lockFlags == PortOutLockAction::NegToggle)
+		{
+			locked = !locked;
+		}
+
 		if (locked)
 		{
 			switch (config->lockFlags)
 			{
-				case PortOutLockAction::Nothing:
+				case PortOutLockAction::PosNothing:
+				case PortOutLockAction::NegNothing:
 					break;
-				case PortOutLockAction::Off:
+				case PortOutLockAction::PosOff:
+				case PortOutLockAction::NegOff:
 					sw = false;
 					break;
-				case PortOutLockAction::On:
+				case PortOutLockAction::PosOn:
+				case PortOutLockAction::NegOn:
 					sw = true;
 					break;
-				case PortOutLockAction::Toggle:
+				case PortOutLockAction::PosToggle:
+				case PortOutLockAction::NegToggle:
 					sw = !sw;
 					break;
 			}

@@ -28,6 +28,7 @@ protected:
 	byte state = 0;
 	DHT dht;
 	TempHumSensorConfig* config;
+	byte retries;
 };
 
 

@@ -22,7 +22,7 @@
 #include <SGP4xItem.h>
 #include <HelperFunctions.h>
 
-APP_VERSION("MSA     ", "0", "12"); // Don't forget to also change the build-variable sw_version
+APP_VERSION("MSA     ", "0", "13"); // Don't forget to also change the build-variable sw_version
 #define CONFIG_ADDRESS 0x4800
 
 MASK0701 bcu = MASK0701();
@@ -42,7 +42,7 @@ MemMapper memMapper = MemMapper(0xe000, 0x1000, false);
 BcuBase* setup()
 {
     bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
-    bcu.begin(0x13A, 0x01, 0x04); // Manufacturer name "Not assigned", app-id 0x01, version 0.4
+    bcu.begin(0x13A, 0x01, 0x05); // Manufacturer name "Not assigned", app-id 0x01, version 0.5
 
     GenericItem::BCU = &bcu;
     GenericPin::BCU = &bcu;
@@ -156,10 +156,7 @@ void loop()
     while ((objNo = bcu.comObjects->nextUpdatedObject()) >= 0);
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bcu.bus->idle())
-    {
-        waitForInterrupt();
-    }
+	waitForInterrupt();
 }
 
 /**

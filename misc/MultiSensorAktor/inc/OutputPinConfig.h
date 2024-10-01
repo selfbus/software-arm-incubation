@@ -9,10 +9,14 @@
 
 enum class PortOutLockAction : byte
 {
-	Nothing,
-	Off,
-	On,
-	Toggle
+	PosNothing = 0,
+	PosOff = 1,
+	PosOn = 2,
+	PosToggle = 3,
+	NegNothing = 128,
+	NegOff = 129,
+	NegOn = 130,
+	NegToggle = 131,
 };
 
 enum PortOutBlink : byte
