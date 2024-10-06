@@ -16,7 +16,7 @@
  * entfernen der aktivierung des externen temp sensors aus der VD -> 2 Versionen in VD
  */
 
-#include <sblib/eibMASK0701.h>
+#include <sblib/eibBCU1.h>
 #include <sblib/core.h>
 #include <sblib/ioports.h>
 #include <sblib/serial.h>
@@ -38,12 +38,10 @@
 Serial Serial(PIO2_7, PIO2_8);
 #endif
 
-//SPI spi(SPI_PORT_0);
-
 // Timeout
 Timeout timeout[NUM_TIMED_VALUES];
 
-MASK0701 bcu = MASK0701();
+BCU1 bcu = BCU1();
 
 APP_VERSION("SBrtrLcd", "1", "11") // Don't forget to also change the build-variable sw_version
 

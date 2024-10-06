@@ -7,7 +7,7 @@
  */
 
 #include <sblib/core.h>
-#include <sblib/eib/mask0701.h>
+#include <sblib/eib/bcu1.h>
 #include <sblib/timeout.h>
 #include <sblib/eib/com_objects.h>
 #include "app_rtr.h"
@@ -16,7 +16,7 @@
 #include "lcd.h"
 #include "config.h"
 
-extern MASK0701 bcu;
+extern BCU1 bcu;
 
 const byte* functionsParams;
 //const byte* TimingParams;
@@ -200,9 +200,10 @@ void handlePeriodic(void) {
 		//read all temperatures from sensors
 		checkTempSensors();
 
-		bcu.comObjects->objectUpdateFloat(SEND_INTERN_TEMP, temp.tempIntern); // update object value for reading
+		bcu.comObjects->objectSetValue(SEND_INTERN_TEMP, floatToDpt9(temp.tempIntern)); // update object value for reading
 
-		if((*(bcu.userEeprom))[EE_FUNCTIONS_PARAMS_BASE] & SEND_INTERNAL_TEMPERATURE_AFTER_CHANGE){
+		// Sende die intern gemessene Temperatur nach Änderung
+		if(bcu.userEeprom->getUInt8(EE_FUNCTIONS_PARAMS_BASE) & SEND_INTERNAL_TEMPERATURE_AFTER_CHANGE){
 			int diffValue = temp.tempInternOld - temp.tempIntern;
 			if (diffValue < 0) {
 				diffValue = -diffValue;
@@ -213,6 +214,19 @@ void handlePeriodic(void) {
 				bcu.comObjects->objectWriteFloat(SEND_INTERN_TEMP, temp.tempIntern);
 			}
 		}
+
+		// Sende die Solltemperatur nach Änderung
+		/*if(bcu.userEeprom->getUInt8(EE_FUNCTIONS_PARAMS_BASE) & SEND_TARGET_TEMPERATURE_AFTER_CHANGE){
+			int diffValue = temp.tempInternOld - temp.tempIntern;
+			if (diffValue < 0) {
+				diffValue = -diffValue;
+			}
+
+			if(diffValue > getChangeValue(EE_INTERNAL_TEMP_SENDING_PARAM)){
+				temp.tempInternOld = temp.tempIntern;
+				bcu.comObjects->objectWriteFloat(SEND_INTERN_TEMP, temp.tempIntern);
+			}
+		}*/
 #if EXTERNAL_TEMP_SENS
 
 		objectUpdateFloat(SEND_REC_EXT_TEMP, temp.tempExtern); // update object value for reading
@@ -251,7 +265,7 @@ void handlePeriodic(void) {
 
 		checkAirQuality(); // read the Sensor values
 
-		bcu.comObjects->objectUpdateFloat(SEND_AIR_QUALITY, (air_quality.AirCO2*100)); // update object value for reading
+		bcu.comObjects->objectSetValue(SEND_AIR_QUALITY, floatToDpt9(air_quality.AirCO2*100)); // update object value for reading
 
 		if((*(bcu.userEeprom))[EE_FUNCTIONS_PARAMS_BASE] & SEND_VOC_AFTER_CHANGE){
 			int diffValue = air_quality.AirCO2Old - air_quality.AirCO2;
@@ -280,7 +294,7 @@ void handlePeriodic(void) {
 
 		checkAirHumidity(); // read the sensor values
 
-		bcu.comObjects->objectUpdateFloat(SEND_AIR_HUMIDITY, air_humidity.AirRH); // update object value for reading
+		bcu.comObjects->objectSetValue(SEND_AIR_HUMIDITY, floatToDpt9(air_humidity.AirRH)); // update object value for reading
 
 		if((*(bcu.userEeprom))[EE_FUNCTIONS_PARAMS_BASE] & SEND_HUMIDITY_AFTER_CHANGE){
 					int diffValue = air_humidity.AirRHOld - air_humidity.AirRH;

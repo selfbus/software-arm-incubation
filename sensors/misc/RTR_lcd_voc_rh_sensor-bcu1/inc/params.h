@@ -13,12 +13,12 @@
 #include <sblib/mem_mapper.h>
 
 // Eeprom address: Start of Function parameters
-#define EE_FUNCTIONS_PARAMS_BASE         		0x4500
-#define EE_TARGET_TEMP_FUNCTIONS_BASE			0x4501
-#define EE_EXT_TEMP_DISPLAY_FUNCTIONS_BASE		0x4502
+#define EE_FUNCTIONS_PARAMS_BASE         		0x01A0
+#define EE_TARGET_TEMP_FUNCTIONS_BASE			0x01A1
+#define EE_EXT_TEMP_DISPLAY_FUNCTIONS_BASE		0x01A2
 
 // Eeprom address: start of timing parameters
-#define EE_SENDING_PARAMS_BASE  				0x4503
+#define EE_SENDING_PARAMS_BASE  				0x01A3
 
 // 1 Byte Cyclic Faktor and Cyclic Unit + 2 Byte DPT9 Change Value
 #define EE_SIZE_OF_EACH_SENDING_PARAM			0x3
@@ -32,10 +32,10 @@
 
 
 // Eeprom address: switch debounce time [ms]
-#define EE_SWITCH_DEBOUNCE_TIME 				0x4510
+#define EE_SWITCH_DEBOUNCE_TIME 				0x01B2
 
 
-// parameters in address 4500 of knxprod
+// parameters in address 0x01A0 of knxprod
 #define SEND_INTERNAL_TEMPERATURE_CYCLIC		0x80
 #define SEND_INTERNAL_TEMPERATURE_AFTER_CHANGE 	0x40
 #define SEND_VOC_CYCLIC							0x20
@@ -46,12 +46,12 @@
 #define SEND_EXTERNAL_TEMPERATURE_AFTER_CHANGE 	0x01
 
 
-// parameters in address 4501 of knxprod
+// parameters in address 0x1A1 of knxprod
 #define SEND_TARGET_TEMPERATURE_CYCLIC			0x80
 #define SEND_TARGET_TEMPERATURE_AFTER_CHANGE 	0x40
 #define USE_EXTERNAL_TARGET_TEMPERATURE			0x20
 
-// parameters in address 4502 of VD
+// parameters in address 0x01A2 of knxprod
 #define EXT_TEMP_SENSOR_IS_CONNECTED			0x80
 #define CONN_EXT_TEMP_SENSOR					0x40	//if the external Temp Sensor is connected to the board or the value is provided via KNX
 #define DISPLAY_WINDOW_OPEN						0x20
