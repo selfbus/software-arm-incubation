@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>RTR_lcd_voc_rh_sensor-bim112</name>
+	<name>RTR_lcd_voc_rh_sensor-bcu1</name>
 	<comment></comment>
 	<projects>
 		<project>CMSIS_CORE_LPC11xx</project>
