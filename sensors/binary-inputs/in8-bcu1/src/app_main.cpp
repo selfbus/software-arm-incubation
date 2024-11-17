@@ -157,13 +157,13 @@ BcuBase* setup()
     int debounceTime = bcu.userEeprom->getUInt8(EE_INPUT_DEBOUNCE_TIME) >> 1;
     delay.start(startupTimeout);
     while (delay.started() && !delay.expired())
-    {   // while we wait for the power on delay to expire we debounce the input channels
-        scanIO();
-        for (int channel = 0; channel < NUM_CHANNELS; ++channel)
-        {
-            inputDebouncer[channel].debounce(readIO(channel), debounceTime);
-        }
+    {
         waitForInterrupt();
+    }
+    scanIO();
+    for (int channel = 0; channel < NUM_CHANNELS; ++channel)
+    {
+        inputDebouncer[channel].debounce(readIO(channel), debounceTime);
     }
     initApplication();
     return (&bcu);
