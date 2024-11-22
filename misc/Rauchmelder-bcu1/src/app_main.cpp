@@ -21,7 +21,7 @@
 #include "app_main.h"
 #include "sd_app.h"
 
-APP_VERSION("S_RM_H6 ", "3", "00") // Don't forget to also change the build-variable sw_version
+APP_VERSION("S_RM_H6 ", "3", "10") // Don't forget to also change the build-variable sw_version
 
 SmokeDetectorApp *app = nullptr;
 
