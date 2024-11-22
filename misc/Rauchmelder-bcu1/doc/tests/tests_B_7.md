@@ -26,6 +26,7 @@ Setup per finished [Tests B.1](tests_B_1.md), i.e. fully configured module mount
   - Interval [sec]: **5**
   - Send alarm delayed: **Yes**
   - Delay [sec]: **10**
+  - Add `Delayed Alarm` (communication object 4) to a groupadress
 * Download the changes to the device
 * Trigger alarm with a hair dryer
 

@@ -30,4 +30,4 @@ Startup sequence and timing correct.
 
 **Verify:**
 * Sends the `Error code` and `Smoke detector malfunction` group objects (communication objects 12 and 14) with values `0` and `false` immediately
-* Sends all informational group objects with sensible values within the first minute of operation
+* Sends all informational group objects (except communication object 5 `Test alarm status`) with sensible values within the first minute of operation
