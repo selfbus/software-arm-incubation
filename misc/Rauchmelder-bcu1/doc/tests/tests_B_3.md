@@ -5,26 +5,46 @@ Parameters regarding periodic sending of Status Informations respected.
 
 | Test case | Tester | Date | Commit | Result |
 | --- | --- | --- | --- | :---: |
-| B.3.a | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.b | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.c | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.d | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.e | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.f | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.g | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.h | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.i | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.j | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.k | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.l | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.m | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.n | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.o | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.p | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.q | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.r | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.s | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.3.t | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+| B.3.a | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.b | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.c | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.d | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.e | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.f | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.g | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.h | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.i | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.j | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.k | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.l | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.m | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.n | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.o | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.p | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.q | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.r | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.s | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.3.t | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
 
 # Setup
 Setup per finished [Tests B.1](tests_B_1.md), i.e. fully configured module mounted in smoke alarm device, and Group Monitor running.

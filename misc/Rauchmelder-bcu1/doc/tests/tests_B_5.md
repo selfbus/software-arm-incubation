@@ -5,11 +5,16 @@ Parameters regarding periodical sending of Test Alarm respected.
 
 | Test case | Tester | Date | Commit | Result |
 | --- | --- | --- | --- | :---: |
-| B.5.a | @dallmair | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.5.b | @dallmair | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.5.c | @dallmair | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.5.d | @dallmair | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.5.e | @dallmair | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+| B.5.a | @dallmair  | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-21 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.5.b | @dallmair  | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-21 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.5.c | @dallmair  | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-21 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.5.d | @dallmair  | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-21 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.5.e | @dallmair  | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-21 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
 
 # Setup
 Setup per finished [Tests B.1](tests_B_1.md), i.e. fully configured module mounted in smoke alarm device, and Group Monitor running.

@@ -5,7 +5,8 @@ Unmounted modules do not interfere with operating modules on the bus.
 
 | Test case | Tester | Date | Commit | Result |
 | --- | --- | --- | --- | :---: |
-| A | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+| A | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+| A | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
 
 # Setup
 * Use a single module, unmounted (not connected to smoke alarm device)

@@ -48,6 +48,13 @@ void SmokeDetectorCom::initSerialCom()
     serial.begin(9600);
 }
 
+void SmokeDetectorCom::end()
+{
+    serial.end();
+    pinMode(PIN_TX, INPUT | OPEN_DRAIN);
+    pinMode(PIN_RX, INPUT | OPEN_DRAIN);
+}
+
 /**
  * Check whether one of the timeouts expired and act accordingly.
  */

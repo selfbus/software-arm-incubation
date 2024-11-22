@@ -5,10 +5,14 @@ Positive and negative temperatures and temperature offsets work.
 
 | Test case | Tester | Date | Commit | Result |
 | --- | --- | --- | --- | :---: |
-| B.4.a | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.4.b | @dallmair | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.4.c | @dallmair | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| B.4.d | @dallmair | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+| B.4.a | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.4.b | @dallmair  | 2023-12-20 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.4.c | @dallmair  | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.4.d | @dallmair  | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-20 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
 
 # Setup
 Setup per finished [Tests B.1](tests_B_1.md), i.e. fully configured module mounted in smoke alarm device, and Group Monitor running.

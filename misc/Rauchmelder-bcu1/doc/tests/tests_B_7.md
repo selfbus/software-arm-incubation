@@ -5,9 +5,11 @@ Delayed sending of Alarm implemented correctly.
 
 | Test case | Tester | Date | Commit | Result |
 | --- | --- | --- | --- | :---: |
-| B.7.a | @dallmair | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :x: |
-| | @dallmair | 2023-12-22 | a6e41e38be984ce5c6b8985c9ec173a85ef35d48 | :ok: |
-| B.7.b | @dallmair | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+| B.7.a | @dallmair  | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :x:  |
+|       | @dallmair  | 2023-12-22 | a6e41e38be984ce5c6b8985c9ec173a85ef35d48 | :ok: |
+|       | @Darthyson | 2024-11-21 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| B.7.b | @dallmair  | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-21 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
 
 # Setup
 Setup per finished [Tests B.1](tests_B_1.md), i.e. fully configured module mounted in smoke alarm device, and Group Monitor running.
@@ -24,6 +26,7 @@ Setup per finished [Tests B.1](tests_B_1.md), i.e. fully configured module mount
   - Interval [sec]: **5**
   - Send alarm delayed: **Yes**
   - Delay [sec]: **10**
+  - Add `Delayed Alarm` (communication object 4) to a groupadress
 * Download the changes to the device
 * Trigger alarm with a hair dryer
 
