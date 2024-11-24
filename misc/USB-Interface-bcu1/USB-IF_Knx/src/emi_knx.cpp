@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <sblib/digital_pin.h>
+#include <sblib/eib/knx_lpdu.h>
 #include <sblib/eib/userRam.h>
 #include <sblib/eib/bus.h>
 #include <sblib/eib/bcu1.h>
@@ -294,6 +295,7 @@ void EmiKnxIf::receivedUsbEmiPacket(int buffno)
   unsigned EmiAddr = (ptr[TPH_ProtocolLength_V0+IDX_TPB_EMI_Addr_h] << 8) + ptr[TPH_ProtocolLength_V0+IDX_TPB_EMI_Addr_l];
   uint8_t len = ptr[TPH_ProtocolLength_V0+IDX_TPB_EMI_Len];
   bool reset = false;
+  uint8_t * ptrTelegramStart;
   switch (ptr[TPH_ProtocolLength_V0]) // Switch auf den EMI M-Code
   {
   case C_MCode_GetValue: // Einen Emi-Wert abfragen
@@ -332,9 +334,11 @@ void EmiKnxIf::receivedUsbEmiPacket(int buffno)
     }
     break;
   case C_MCode_TxReq: // Ein Telegramm von USB auf den KNX-Bus übertragen
-    firsttxbyte = ptr[TPH_ProtocolLength_V0+IDX_TPB_Data];
+    ptrTelegramStart = ptr + TPH_ProtocolLength_V0 + IDX_TPB_Data;
+    receivedEmiControlByte = *ptrTelegramStart;
+    initLpdu(ptrTelegramStart, priority(ptrTelegramStart), false, FRAME_STANDARD);
     txbuffno = buffno;
-    bcu.bus->sendTelegram(ptr+TPH_ProtocolLength_V0+IDX_TPB_Data, TransferBodyLength-1);
+    bcu.bus->sendTelegram(ptrTelegramStart, TransferBodyLength-1);
     // sendTelegram geht davon aus, dass nach den Telegrammdaten noch 1 Byte frei für die
     // Checksumme ist. Das ist gegeben, die Buffer sind 68 Byte lang für ein 64 Byte HID-Paket.
     // Der Buffer wird erst nach dem Versenden wieder freigegeben
@@ -396,7 +400,6 @@ void EmiKnxIf::EmiIf_Tasks(void)
       if (buffno >= 0)
       {
         uint8_t *buffptr = buffmgr.buffptr(buffno);
-        uint8_t *buffStartPtr = buffptr;
         setTPBodyLength(buffptr, bcu.bus->telegramLen); // [0], [4], [7,8] length positions
         ///\todo missing position 1 ?
         buffptr += 2; // skip [0] (total length) and [1] (unknown usage) (already set in setTPBodyLength(.))
@@ -496,7 +499,7 @@ void EmiKnxIf::EmiIf_Tasks(void)
     ptr[2+C_HRH_HeadLen+TPH_ProtocolLength_V0] = C_MCode_TxEcho;
     // SendTelegram hat die lokale Adresse bereits hinzugefügt
     // Jetzt muss noch das erste Byte des Telegramms rekonstruiert werden
-    ptr[2+C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_Data] = firsttxbyte;
+    ptr[2+C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_Data] = receivedEmiControlByte;
     // Zum Verschicken einreihen
     if (ser_txfifo.Push(txbuffno) != TFifoErr::Ok)
       buffmgr.FreeBuffer(txbuffno);

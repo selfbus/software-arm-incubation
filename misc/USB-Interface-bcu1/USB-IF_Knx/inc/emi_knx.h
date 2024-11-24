@@ -56,7 +56,7 @@ public:
 
 private:
   int txbuffno;
-  uint8_t firsttxbyte; // muss bloederweise gesichert werden
+  uint8_t receivedEmiControlByte; // muss bloederweise gesichert werden
   uint8_t EmiSystemState;
   bool CdcMonActive;
   bool hidIfActive;
