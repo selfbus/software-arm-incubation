@@ -51,7 +51,11 @@ enum class TUartIfErr
 class UartIf
 {
 public:
+#ifndef __USE_LPCOPEN
+	void Init(int baudRate, bool rawMode, uint32_t pinTx, uint32_t pinRx);
+#else
 	void Init(int baudRate, bool rawMode);
+#endif
 	TUartIfErr TransmitBuffer(int buffno);
 	bool TxBusy(void);
 	void interruptHandler(void);

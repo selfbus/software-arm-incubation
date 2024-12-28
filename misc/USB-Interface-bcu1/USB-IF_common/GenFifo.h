@@ -33,7 +33,7 @@ public:
 	TFifoErr Full(void);
 	int Level(void);
 protected:
-	int data[depth+1];
+	int data[depth+1] = {0};
 	int rdptr;
 	int wrptr;
 	int NextPtr(int ptr);

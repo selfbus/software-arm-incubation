@@ -28,7 +28,7 @@ extern "C" void UART_IRQHandler(void)
 	uart.interruptHandler();
 }
 
-void UartIf::Init(int baudRate, bool rawMode)
+void UartIf::Init(int baudRate, bool rawMode, uint32_t pinTx, uint32_t pinRx)
 {
 	disableInterrupt(UART_IRQn);
 	txbuffno = -1;
@@ -38,8 +38,8 @@ void UartIf::Init(int baudRate, bool rawMode)
 	discard = false;
 	rawmode = rawMode;
 	// Uart konfigurieren
-	pinMode(PIO1_6, SERIAL_RXD);
-	pinMode(PIO1_7, SERIAL_TXD);
+    pinMode(pinRx, SERIAL_RXD);
+    pinMode(pinTx, SERIAL_TXD);
 
 	LPC_SYSCON->SYSAHBCLKCTRL |= 1 << 12; // Enable UART clock
 	LPC_SYSCON->UARTCLKDIV = 1;           // divided by 1

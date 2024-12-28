@@ -55,11 +55,11 @@ void DeviceManagement::SysIf_Tasks(bool UsbActive)
 			dev_rxfifo.Pop(buffno);
 			uint8_t *ptr = buffmgr.buffptr(buffno);
 			unsigned DevPacketLength = ptr[0];
-			if ((ptr[2+A_HRH_Id] == C_HRH_IdDev) && (DevPacketLength == (2+3)))
+			if ((ptr[2+IDX_HRH_Id] == C_HRH_IdDev) && (DevPacketLength == (2+3)))
 			{
 				rxtimeout = systemTime + C_RxTimeout; // Wird bei jedem Paket an dieses If gesetzt.
 				KnxActive = true;
-				switch (ptr[2+A_HRH_Id+1])
+				switch (ptr[2+IDX_HRH_Id+1])
 				{
 				case C_Dev_Idle:
 					break;
