@@ -92,7 +92,8 @@ enum TPH_EMI_ID
  * Manufacturer code of the KNX USB Transfer Protocol
  * @note KNX Spec 2.1 9/3 3.4.1.3.5
  */
-constexpr uint16_t TPH_ManufacturerCode_V0 = 0x0000;
+constexpr uint8_t TPH_ManufacturerCode_V0_HIGH_BYTE = 0x00;
+constexpr uint8_t TPH_ManufacturerCode_V0_LOW_BYTE = 0x00;
 
 
 // Transfer Protocol Header - TPH

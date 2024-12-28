@@ -209,8 +209,8 @@ uint8_t* KnxHidIf::BuildUsbPacket(uint8_t *ptr, uint8_t ProtId, uint8_t PayloadL
   *ptr++ = PayloadLen;
   *ptr++ = ProtId;
   *ptr++ = EmiServiceId;
-  *ptr++ = TPH_ManufacturerCode_V0;
-  *ptr++ = TPH_ManufacturerCode_V0;
+  *ptr++ = TPH_ManufacturerCode_V0_HIGH_BYTE;
+  *ptr++ = TPH_ManufacturerCode_V0_LOW_BYTE;
   return ptr;
 }
 
@@ -304,8 +304,8 @@ void KnxHidIf::ReceivedUsbPacket(int buffno)
         (Buffer[IDX_TPH_HeadLen] == TPH_ProtocolLength_V0) &&
         (ReportPacketLength == (TransferBodyLength+TPH_ProtocolLength_V0)) &&
         (TransferBodyLength >= 1) &&
-        (Buffer[IDX_TPH_ManuCode1] == TPH_ManufacturerCode_V0) &&
-        (Buffer[IDX_TPH_ManuCode2] == TPH_ManufacturerCode_V0))
+        (Buffer[IDX_TPH_ManuCode1] == TPH_ManufacturerCode_V0_HIGH_BYTE) &&
+        (Buffer[IDX_TPH_ManuCode2] == TPH_ManufacturerCode_V0_LOW_BYTE))
     {
       switch (Buffer[IDX_TPH_ProtId])
       {
