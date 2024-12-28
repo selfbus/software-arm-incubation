@@ -57,6 +57,8 @@ public:
     void loopReceiveBytes();
     void loopCheckState();
     bool isReady() const;
+    void end();
+    bool isCoverPlateAttached();
 
 private:
     void receivedMessage(uint8_t *bytes, uint8_t len);

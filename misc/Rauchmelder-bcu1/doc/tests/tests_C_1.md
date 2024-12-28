@@ -5,8 +5,10 @@ Ensure correct handling of test alarms when smoke alarm devices are networked us
 
 | Test case | Tester | Date | Commit | Result |
 | --- | --- | --- | --- | :---: |
-| C.1.a | @dallmair | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| C.1.b | @dallmair | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+| C.1.a | @dallmair  | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-22 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| C.1.b | @dallmair  | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-22 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
 
 # Setup
 Use three smoke alarm devices in the following setup:
