@@ -12,8 +12,12 @@
 
 /**
  * @def USE_ISP_UART
- * Comment out, to change UART to 2x10 pole connecter P4
+ * ! COMMENT OUT ONLY FOR DEBUGGING !
+ * In normal operation, the serial Tx/Rx pins are on the ISP-HEADER (JP7).
+ * This means that a debug probe can only be connected with a splitter cable.
+ * To avoid this, comment USE_ISP_UART out to change UART to 2x10 pole connecter P4
  * @note Needs soldering of Tx/Rx to pins on P4
+ * @warning DISABLES THE GALVANIC ISOLATION BETWEEN USB AND KNX!
  */
 #define USE_ISP_UART_PINS
 
