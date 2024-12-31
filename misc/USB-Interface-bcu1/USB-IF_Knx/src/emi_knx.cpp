@@ -415,8 +415,8 @@ void EmiKnxIf::EmiIf_Tasks(void)
         buffptr += 2; // skip [7] & [8] Transfer Protocol Body length (already set in setTPBodyLength(.))
         *buffptr++ = TPH_ProtocolID::knxTunnel; // [9]
         *buffptr++ = TPH_EMI_ID::EMI1; // [10]
-        *buffptr++ = HIGH_BYTE(TPH_ManufacturerCode_V0); // [11]
-        *buffptr++ = lowByte(TPH_ManufacturerCode_V0); //  [12]
+        *buffptr++ = TPH_ManufacturerCode_V0_HIGH_BYTE; // [11]
+        *buffptr++ = TPH_ManufacturerCode_V0_LOW_BYTE; //  [12]
 
         // create KNX USB Transfer Protocol Body (TPB)
         // set EMI message code
