@@ -220,64 +220,65 @@ void KnxHidIf::ReceivedUsbBasPacket(unsigned ServiceId, unsigned BodyLen, uint8_
   uint8_t TxBuffer[HID_REPORT_SIZE];
   switch (Feature)
   {
-  case BAS_FeatureId_SuppEmiType:
+  case BAS_FeatureId::SuppEmiType:
     // Nur Get erlaubt
-    if (ServiceId == BAS_ServiceId_FeatureGet)
+    if (ServiceId == BAS_ServiceId::FeatureGet)
     {
-      uint8_t* ptr = BuildUsbPacket(TxBuffer, TPH_ProtocolID::busAccessServer, 3, BAS_ServiceId_FeatureResp);
-      *ptr++ = BAS_FeatureId_SuppEmiType;
+      uint8_t* ptr = BuildUsbPacket(TxBuffer, TPH_ProtocolID::busAccessServer, 3, BAS_ServiceId::FeatureResp);
+      *ptr++ = BAS_FeatureId::SuppEmiType;
       *ptr++ = 0; //
       *ptr++ = 1; // erst mal nur EMI 1
       SendReport(TxBuffer);
       break;
     }
-  case BAS_FeatureId_DescrType0: // auch Mask-Version genannt
+  case BAS_FeatureId::DescrType0: // auch Mask-Version genannt
     // Nur Get erlaubt
-    if (ServiceId == BAS_ServiceId_FeatureGet)
+    if (ServiceId == BAS_ServiceId::FeatureGet)
     {
-      uint8_t* ptr = BuildUsbPacket(TxBuffer, TPH_ProtocolID::busAccessServer, 3, BAS_ServiceId_FeatureResp);
-      *ptr++ = BAS_FeatureId_DescrType0;
+      uint8_t* ptr = BuildUsbPacket(TxBuffer, TPH_ProtocolID::busAccessServer, 3, BAS_ServiceId::FeatureResp);
+      *ptr++ = BAS_FeatureId::DescrType0;
       *ptr++ = 0x00; // BCU 1, Subcode 0
       *ptr++ = 0x10; // Vorbild antwortet hier 0x12 !
       SendReport(TxBuffer);
       break;
     }
-  case BAS_FeatureId_BusConnStat:
+  case BAS_FeatureId::BusConnStat:
     // Nur Get erlaubt
     // Die Antwort auf Get ist Response, bei diesem Feature kann
     // auch durch einen Wechsel des Zustandes das Antwortpaket ohne Get
     // verschickt werden, dann jedoch als BAS_ServiceId_FeatureInfo
-    if (ServiceId == BAS_ServiceId_FeatureGet)
+    if (ServiceId == BAS_ServiceId::FeatureGet)
     {
-      uint8_t* ptr = BuildUsbPacket(TxBuffer, TPH_ProtocolID::busAccessServer, 2, BAS_ServiceId_FeatureResp);
-      *ptr++ = BAS_FeatureId_BusConnStat;
+      uint8_t* ptr = BuildUsbPacket(TxBuffer, TPH_ProtocolID::busAccessServer, 2, BAS_ServiceId::FeatureResp);
+      *ptr++ = BAS_FeatureId::BusConnStat;
       *ptr++ = (devicemgnt.KnxIsActive()) ? 1:0;
       SendReport(TxBuffer);
       break;
     }
-  case BAS_FeatureId_KnxManCode:
+  case BAS_FeatureId::KnxManCode:
     // Nur Get erlaubt
-    if (ServiceId == BAS_ServiceId_FeatureGet)
+    if (ServiceId == BAS_ServiceId::FeatureGet)
     {
-      uint8_t* ptr = BuildUsbPacket(TxBuffer, TPH_ProtocolID::busAccessServer, 3, BAS_ServiceId_FeatureResp);
-      *ptr++ = BAS_FeatureId_KnxManCode;
+      uint8_t* ptr = BuildUsbPacket(TxBuffer, TPH_ProtocolID::busAccessServer, 3, BAS_ServiceId::FeatureResp);
+      *ptr++ = BAS_FeatureId::KnxManCode;
       *ptr++ = C_ManufacturerCodeHigh; //
       *ptr++ = C_ManufacturerCodeLow; //
       SendReport(TxBuffer);
       break;
     }
-  case BAS_FeatureId_ActiveEmi:
+  case BAS_FeatureId::ActiveEmi:
     // Get und Set erlaubt. Jedoch hat Set nur einen gueltigen Wert,
     // da momentan nur EMI1 unterstuetzt wird
-    if (ServiceId == BAS_ServiceId_FeatureGet)
+    if (ServiceId == BAS_ServiceId::FeatureGet)
     {
-      uint8_t* ptr = BuildUsbPacket(TxBuffer, TPH_ProtocolID::busAccessServer, 2, BAS_ServiceId_FeatureResp);
-      *ptr++ = BAS_FeatureId_ActiveEmi;
+      uint8_t* ptr = BuildUsbPacket(TxBuffer, TPH_ProtocolID::busAccessServer, 2, BAS_ServiceId::FeatureResp);
+      *ptr++ = BAS_FeatureId::ActiveEmi;
       *ptr++ = 1; //
       SendReport(TxBuffer);
       break;
 
-    } else if (ServiceId == BAS_ServiceId_FeatureSet)
+    }
+    else if (ServiceId == BAS_ServiceId::FeatureSet)
     {
       // Da nur ein Wert unterstuetzt wird, braucht hier auch nix gemacht werden.
     }
