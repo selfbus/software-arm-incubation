@@ -55,7 +55,7 @@ extern "C" ErrorCode_t USB_sof_event(USBD_HANDLE_T hUsb)
 int main(void) {
 	ErrorCode_t ret = LPC_OK;
 	unsigned Last10msTime = 0;
-  usb_alive = false;
+	usb_alive = false;
 
 	CdcDeviceMode = TCdcDeviceMode::Halt;
 	SystemCoreClockUpdate();

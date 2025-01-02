@@ -80,7 +80,9 @@ void DeviceManagement::SysIf_Tasks(bool UsbActive)
 			/* Timeout, anscheinen ist die KNX-Seite nicht funktionsfähig
 			 *   -> löscht ein Flag, das wird für das HID-Interface benötigt
 			 */
-			KnxActive = false;
+            KnxActive = false;
+            // todo send a BAS_FeatureId::BusConnStat with BAS_ServiceId::FeatureInfo
+            // to indicate that the bus is not active
 		}
 
 		TCdcDeviceMode mode;
