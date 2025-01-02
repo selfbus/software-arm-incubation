@@ -17,6 +17,8 @@
 
 #ifdef __cplusplus
 
+#include "knxusb_const.h"
+
 class KnxHidIf
 {
 public:
@@ -31,9 +33,9 @@ protected:
 	USBD_HANDLE_T hUsb;	// Handle to USB stack.
 	bool tx_busy;
 	unsigned rx_avail;
-	void ReceivedUsbBasPacket(unsigned ServiceId, unsigned BodyLen, uint8_t* Buffer);
+	void ReceivedUsbBasPacket(BAS_ServiceId ServiceId, unsigned BodyLen, uint8_t* Buffer);
 	void ReceivedUsbPacket(int buffno);
-	uint8_t* BuildUsbPacket(uint8_t *ptr, uint8_t ProtId, uint8_t PayloadLen, uint8_t EmiServiceId);
+	uint8_t* BuildUsbPacket(uint8_t *ptr, uint8_t ProtId, uint8_t PayloadLen, BAS_ServiceId EmiServiceId);
 	ErrorCode_t SendReport(uint8_t* data);
 	ErrorCode_t ReadReport(int &buffno);
 	ErrorCode_t ReadAvail(void);

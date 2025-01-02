@@ -110,7 +110,7 @@ constexpr uint8_t TPH_ManufacturerCode_V0_LOW_BYTE = 0x00;
 
 // Transfer Protocol Body - TPB
 #define IDX_TPB_FeatureId   0
-//#define IDX_TPB_FeatureData 1
+#define IDX_TPB_FeatureData 1
 #define IDX_TPB_MCode       0
 #define IDX_TPB_Data        1 //!< wenn KNX-Frame
 #define IDX_TPB_EMI_Len     1 //!< wenn EMI service
@@ -122,7 +122,7 @@ constexpr uint8_t TPH_ManufacturerCode_V0_LOW_BYTE = 0x00;
  * Device Feature Service of the KNX Bus Access Server - BAS
  * @note KNX Spec 2.1 9/3 3.5.3.2.1
  */
-enum BAS_ServiceId
+enum class BAS_ServiceId
 {
     FeatureGet  = 1, //!> Device Feature Get
     FeatureResp = 2, //!> Device Feature Response
@@ -134,7 +134,7 @@ enum BAS_ServiceId
  * Device Feature of the KNX Bus Access Server - BAS
  * @note KNX Spec 2.1 9/3 3.5.3.3.1
  */
-enum BAS_FeatureId
+enum class BAS_FeatureId
 {
     SuppEmiType = 1, //!> Get supported EMI types
     DescrType0  = 2, //!> Get the local Device Descriptor Type 0 for possible local device management
