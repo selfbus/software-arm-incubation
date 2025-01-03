@@ -155,17 +155,28 @@ enum class BAS_FeatureId
  * EMI1 message code field (C_MCode_...)
  * @note KNX Spec 2.1 3/6/3
  */
-//#define C_MCode_DbgTx          0xCE //!< Selfbus specific ?
-//#define C_MCode_DbgRx          0xC9 //!< Selfbus specific ? Ein von KNX empfangenes Telegramm, nur zum Debug-CDC Interface
 #define C_MCode_TxReq           0x11 //!< L_Data.req / Ein Telegramm von USB auf den KNX-Bus übertragen
 #define C_MCode_TxEcho          0x4E //!< L_Data.con / Das Echo vom KNX-IF zurück Richtung USB nach einem TxReq
 #define C_MCode_RxData          0x49 //!< L_Data.ind / Ein von KNX empfangenes Telegramm Richtung USB
 #define C_MCode_GetValue        0x4C //!< PC_Get_Value.req / Einen Emi-Wert abfragen
 #define C_MCode_ResponseValue   0x4B //!< PC_Get_Value.con / Die Antwort auf eine Emi-Wert Abfrage
 #define C_MCode_SetValue        0x46 //!< PC_Set_Value.req / Einen Emi-Wert setzen
-#define C_MCode_ResetResponse   0xA0 //!< Selfbus specific ?
-#define C_MCode_MonMask         0x7f //!< Selfbus specific ?
-#define C_MCode_SpecMsk         0x80 //!< Selfbus specific ?
+
+/**
+ * LM_Reset.ind PEI Reset indication
+ *
+ * @details Should be send only once on hard or soft-reset.
+ * @note KNX Spec. 2.1 3/6/2 6.3.2.6 p. 19
+ */
+#define C_MCode_PEI_Reset       0xA0
+
+// the USB-IF specific masks and commands for the inter-mcu communication
+#define C_MCode_USB_IF_SpecialMask   0x80 //!< Selfbus specific !
+#define C_MCode_USB_IF_MonitorMask   (~C_MCode_USB_IF_SpecialMask) //!< Selfbus specific !
+
+///\todo Resolve this puzzle.
+//#define C_MCode_DbgTx          0xCE //!< Selfbus specific ?
+//#define C_MCode_DbgRx          0xC9 //!< Selfbus specific ? Ein von KNX empfangenes Telegramm, nur zum Debug-CDC Interface
 
 #endif /* _KNXUSB_CONST_H */
 
