@@ -66,6 +66,8 @@ void set_blink_mode(int channel, int state);
  */
 uint16_t translate_value_to_time(uint8_t value);
 
+#define LEDS 18 // total number of LEDs (a RGB led has 3 LEDs inside) -> 6xRGB LED = 18 LEDs
+
 struct rgb_led{
 	uint8_t blau;
 	uint8_t rot;
@@ -118,6 +120,12 @@ const struct rgb_led rgb_leds[6] = {
 		{15,16,17}
 };
 
+// Die Zuordnung der LEDs zu den Tastern (georndet nach LED Ausgängen am WS2803)
+// z.B. Kanal 1 ist an LED 2
+const uint8_t led_channel_to_switch_table[LEDS/3] = {1,3,5,4,2,0};
 
+// Die Zuordnung der LEDs zu den Tastern (geordnet nach Taster Kanälen)
+// z.B. LED 6 ist bei Taster 1
+const uint8_t switch_to_led_channel_table[LEDS/3] = {5,0,4,1,3,2};
 
 #endif
