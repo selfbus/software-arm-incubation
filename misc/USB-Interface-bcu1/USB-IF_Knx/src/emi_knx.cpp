@@ -316,7 +316,7 @@ void EmiKnxIf::receivedUsbEmiPacket(int buffno)
     {
       setTPBodyLength(buffptr, 1);
       ptr = buffptr + 2 + C_HRH_HeadLen + TPH_ProtocolLength_V0;
-      *ptr++ = C_MCode_ResetResponse;
+      *ptr++ = C_MCode_PEI_Reset;
       *ptr++ = 0;
       *ptr++ = 0;
       *ptr++ = 0;
@@ -418,7 +418,7 @@ void EmiKnxIf::EmiIf_Tasks(void)
         if (hidIfActive)
             emiMessageCode = C_MCode_RxData;
         else
-            emiMessageCode = (C_MCode_RxData | C_MCode_SpecMsk);
+            emiMessageCode = (C_MCode_RxData | C_MCode_USB_IF_SpecialMask);
         *buffptr++ = emiMessageCode; // [13]
 
         // set EMI data (KNX frame)

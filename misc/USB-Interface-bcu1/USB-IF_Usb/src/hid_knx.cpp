@@ -389,7 +389,7 @@ void KnxHidIf::KnxIf_Tasks(void)
 			int buffno;
 			hid_txfifo.Pop(buffno);
 			uint8_t *ptr = buffmgr.buffptr(buffno);
-			if (((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] & C_MCode_SpecMsk) == 0) ||
+			if (((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] & C_MCode_USB_IF_SpecialMask) == 0) ||
 					(ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] == 0xA0))
 			{ // Nur wenn kein "Spezial-MCode" (selber definierte Pakete)
 				// A0, die Antwort auf einen EMI Reset-Request, muss allerdings auch
@@ -403,12 +403,12 @@ void KnxHidIf::KnxIf_Tasks(void)
 			{ // Nur im Monitor-Mode Telegramme über CDC im Klartext ausgeben
 				bool mon = false;
 				bool send = false;
-				if ((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] & C_MCode_MonMask) == (C_MCode_TxEcho & C_MCode_MonMask))
+				if ((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] & C_MCode_USB_IF_MonitorMask) == (C_MCode_TxEcho & C_MCode_USB_IF_MonitorMask))
 				{
 					mon = true;
 					send = true;
 				}
-				if ((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] & C_MCode_MonMask) == (C_MCode_RxData & C_MCode_MonMask))
+				if ((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] & C_MCode_USB_IF_MonitorMask) == (C_MCode_RxData & C_MCode_USB_IF_MonitorMask))
 				{
 					mon = true;
 				}
