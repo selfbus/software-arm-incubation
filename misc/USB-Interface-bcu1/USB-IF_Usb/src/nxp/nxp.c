@@ -188,6 +188,8 @@ ErrorCode_t usb_init(USBD_HANDLE_T *g_hUsb, bool use_singledevonly)
   usb_param.mem_base = USB_STACK_MEM_BASE;
   usb_param.mem_size = USB_STACK_MEM_SIZE;
   usb_param.USB_SOF_Event = USB_sof_event;
+  // usb_param.USB_Error_Event = USB_Error_Event; ///\todo maybe helpfull for virtual com port debugging
+  // usb_param.USB_Configure_Event = USB_Configure_Event; ///\todo maybe helpfull for virtual com port debugging
 
   /* Set the USB descriptors */
   desc.device_desc = (uint8_t *) USB_DeviceDescriptor;

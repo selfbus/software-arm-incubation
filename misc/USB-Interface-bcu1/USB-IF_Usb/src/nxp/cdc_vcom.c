@@ -174,7 +174,12 @@ uint32_t vcom_bread(uint8_t *pBuf, uint32_t buf_len)
 	uint16_t cnt = 0;
 	/* read from the default buffer if any data present */
 	if (pVcom->rx_count) {
+        ///\todo check to enter critical section earlier
+        /* enter critical section */
+        //NVIC_DisableIRQ(USB0_IRQn);
+        // cnt =  (pVcom->rx_count < buf_len) ? pVcom->rx_count : buf_len; // original  ///\todo check below bugfix
 		cnt = ((pVcom->rx_count-pVcom->rx_rd_count) < buf_len) ? (pVcom->rx_count-pVcom->rx_rd_count) : buf_len; // korrigiert
+        // memcpy(pBuf, pVcom->rx_buff, cnt); // original ///\todo check below bugfix
 		memcpy(pBuf, &pVcom->rx_buff[pVcom->rx_rd_count], cnt); // Bug Fix
 		pVcom->rx_rd_count += cnt;
 
