@@ -32,6 +32,11 @@ protected:
 	bool zlp;
 	uint8_t CtrlLines;
 	unsigned int RecDisTime;
+
+private:
+	uint32_t rxByteCounter;
+	uint32_t txByteCounter;
+	void receiveAndPushToUart();
 };
 
 extern CdcDbgIf cdcdbgif;

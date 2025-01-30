@@ -59,40 +59,75 @@ void CdcDbgIf::PurgeRx(void)
 	}
 }
 
+void CdcDbgIf::receiveAndPushToUart()
+{
+    if (!ReceiveEna)
+    {
+        return;
+    }
+
+    uint32_t bytesReadyCount = vcom_read_cnt();
+    while (bytesReadyCount)
+    {
+        deviceIf.BlinkActivityLed();
+        int buffno = buffmgr.AllocBuffer();
+        if (buffno < 0)
+        {
+            // failHardInDebug();
+            return; // Ohne verfügbaren Buffer bleibt nur der exit.
+        }
+
+        if (ser_txfifo.Full() == TFifoErr::Full)
+        {
+            //failHardInDebug();
+            return; // uart tx fifo is full
+        }
+
+        uint8_t* ptr = buffmgr.buffptr(buffno);
+        uint32_t bytesReadCount = vcom_bread(&ptr[cdc_OffSet], BUFF_SIZE - cdc_OffSet); ///\todo was 64, but can be 65
+        if (bytesReadCount == 0)
+        {
+             // das ist merkwürdig...
+             failHardInDebug();
+             buffmgr.FreeBuffer(buffno);
+             break;
+        }
+        ptr[0] = bytesReadCount + cdc_OffSet;
+        ptr[2] = C_HRH_IdCdc; // Kennung fuer CDC-Paket
+/*
+        TFifoErr pushResult = ser_txfifo.Push(buffno);
+        if (pushResult != TFifoErr::Ok)
+        {
+            failHardInDebug();
+            buffmgr.FreeBuffer(buffno);
+        }
+*/
+        rxByteCounter += bytesReadCount;
+        ReceiveEna = true; // immer nur ein Paket vom CDC-Interface im Fifo erlaubt
+        RecDisTime = systemTime;
+        bytesReadyCount = vcom_read_cnt();
+    }
+}
+
 void CdcDbgIf::DbgIf_Tasks(void)
 {
-	static int txcnt = 0;
-	if ( USB_IsConfigured(hUsb))
-	{
-		if ((CdcDeviceMode == TCdcDeviceMode::ProgBusChip) || (CdcDeviceMode == TCdcDeviceMode::ProgUserChip))
-		{ // Nur in diesen Modi werden Daten vom CDC-VCOM Interface angenommen
-			if (ReceiveEna)
-			{
-				while (vcom_read_cnt())
-				{
-				  deviceIf.BlinkActivityLed();
-					int buffno = buffmgr.AllocBuffer();
-					if (buffno < 0)
-						return; // Ohne verfügbaren Buffer bleibt nur der exit.
-					uint8_t* ptr = buffmgr.buffptr(buffno);
-					unsigned rdCnt = vcom_bread(&ptr[3], 64);
-					if (rdCnt == 0)
-					{ // das ist merkwürdig...
-						buffmgr.FreeBuffer(buffno);
-						break;
-					}
-					ptr[0] = rdCnt+3;
-					ptr[2] = 2; // Kennung fuer CDC-Paket
-		    	if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
-		    		buffmgr.FreeBuffer(buffno);
-					ReceiveEna = false; // immer nur ein Paket vom CDC-Interface im Fifo erlaubt
-					RecDisTime = systemTime;
-				}
-			}
-		} else {
-			PurgeRx();
-		}
-	}
+    static int txcnt = 0;
+    if (!USB_IsConfigured(hUsb))
+    {
+        return;
+    }
+
+    // receive (Rx) part of the CDC virtual com port
+    if ((CdcDeviceMode == TCdcDeviceMode::ProgBusChip) || (CdcDeviceMode == TCdcDeviceMode::ProgUserChip))
+    {
+        // Nur in diesen Modi werden Daten vom CDC-VCOM Interface angenommen
+        // und zum uart gesendet
+        receiveAndPushToUart();
+    }
+    else
+    {
+        PurgeRx();
+    }
 
 	// Normalerweise wird ReceiveEna wieder gesetzt, wenn die Übertragung bestätigt wurde.
 	// Für den Fall, dass z.B. unerwarteterweise die KNX-Seite inaktiv ist, muss eine
@@ -104,9 +139,9 @@ void CdcDbgIf::DbgIf_Tasks(void)
 		ReceiveEna = true;
 	}
 
-	if ( USB_IsConfigured(hUsb) &&
-			((CdcDeviceMode == TCdcDeviceMode::ProgBusChip) || (CdcDeviceMode == TCdcDeviceMode::ProgUserChip) ||
-					(CdcDeviceMode == TCdcDeviceMode::BusMon) || (CdcDeviceMode == TCdcDeviceMode::UsbMon)))
+	// transmit (Tx) part of the CDC virtual com port
+	if ((CdcDeviceMode == TCdcDeviceMode::ProgBusChip) || (CdcDeviceMode == TCdcDeviceMode::ProgUserChip) ||
+		(CdcDeviceMode == TCdcDeviceMode::BusMon) || (CdcDeviceMode == TCdcDeviceMode::UsbMon))
 	{
 		if (vcom_txbusy() == LPC_OK)
 		{
@@ -122,7 +157,7 @@ void CdcDbgIf::DbgIf_Tasks(void)
 				{
 					txcnt=0;
 				}
-        deviceIf.BlinkActivityLed();
+                deviceIf.BlinkActivityLed();
 			} else {
 				if (zlp)
 				{
@@ -141,9 +176,10 @@ void CdcDbgIf::DbgIf_Tasks(void)
 		}
 	}
 
-	if ( USB_IsConfigured(hUsb) && (CdcDeviceMode == TCdcDeviceMode::ProgUserChip))
+	if (CdcDeviceMode == TCdcDeviceMode::ProgUserChip)
 	{
-		uint8_t new_ctrl = vcom_readctrllines();
+		// Set soft uart control lines (RTS/CTS...) of the KNX mcu´s soft uart (prog_uart)
+	    uint8_t new_ctrl = vcom_readctrllines();
 		if (new_ctrl != CtrlLines)
 		{
 			CtrlLines = new_ctrl;
@@ -151,7 +187,7 @@ void CdcDbgIf::DbgIf_Tasks(void)
 	    if (buffno >= 0)
 	    {
 	    	uint8_t *buffptr = buffmgr.buffptr(buffno);
-	    	*buffptr++ = 0x05;
+	    	*buffptr++ = C_Dev_Packet_Length;
 	    	buffptr++;
 	    	*buffptr++ = C_HRH_IdDev;
 	    	*buffptr++ = C_Dev_Isp;
@@ -162,7 +198,7 @@ void CdcDbgIf::DbgIf_Tasks(void)
 	    	    buffmgr.FreeBuffer(buffno);
 	    	}
 	    }
-      deviceIf.BlinkActivityLed();
+	    deviceIf.BlinkActivityLed();
 		}
 	} else {
 		CtrlLines = 0xff;
