@@ -17,6 +17,7 @@
 #include "UartIf.h"
 #include "emi_knx.h"
 #include "device_mgnt.h"
+#include "device_mgnt_const.h"
 #include "prog_uart.h"
 
 BCU1 bcu = BCU1();
@@ -33,7 +34,7 @@ BcuBase* setup()
     digitalWrite(PIN_PROG, true);
     digitalWrite(PIO1_5, true);
     bcu.begin(2, 1, 1); // ABB, dummy something device
-    uart.Init(115200, false, PinSerialTx, PinSerialRx);
+    uart.Init(C_Dev_Baurate, false, PinSerialTx, PinSerialRx);
     return (&bcu);
 }
 

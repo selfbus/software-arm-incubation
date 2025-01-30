@@ -13,6 +13,7 @@
 #include "BufferMgr.h"
 #include "knxusb_const.h"
 #include "UartIf.h"
+#include "device_mgnt_const.h"
 
 UartIf uart;
 
@@ -174,7 +175,7 @@ void UartIf::interruptHandler(void)
 					}
 					*rxbuffptr++ = rxlen+3;
 					*rxbuffptr++ = 0; // Checksumme wird nicht mitgeführt in diesem Modus
-					*rxbuffptr = 2; // Das Paket als CDC-Paket kennzeichnen
+					*rxbuffptr = C_HRH_IdCdc; // Das Paket als CDC-Paket kennzeichnen
 					if (cdc_txfifo.Push(rxbuffno) != TFifoErr::Ok)
 					  buffmgr.FreeBuffer(rxbuffno);
 					rxbuffno = -1;

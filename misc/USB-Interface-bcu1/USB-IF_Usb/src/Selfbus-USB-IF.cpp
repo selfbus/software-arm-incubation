@@ -18,6 +18,7 @@
 #include "busdevice_if.h"
 #include "cdc_dbg.h"
 #include "device_mgnt.h"
+#include "device_mgnt_const.h"
 #include "UartIf.h"
 #include "ModeSelect.h"
 
@@ -72,7 +73,7 @@ int main(void) {
 	}
 	else
 	{
-	    uart.Init(115200, false);
+	    uart.Init(C_Dev_Baurate, false);
 	}
 
 	ret = usb_init(&g_hUsb, CdcDeviceMode == TCdcDeviceMode::HidOnly);

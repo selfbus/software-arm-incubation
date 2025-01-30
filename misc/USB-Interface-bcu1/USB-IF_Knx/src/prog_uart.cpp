@@ -13,7 +13,7 @@
 #include "GenFifo.h"
 #include "BufferMgr.h"
 #include "knxusb_const.h"
-#include "device_mgnt.h"
+#include "device_mgnt_const.h"
 #include "prog_uart.h"
 
 // Baudrate des Interfaces
@@ -297,7 +297,7 @@ void ProgUart::timerInterruptHandler()
       timer.captureMode(tx_matchCh, DISABLE);
       // Buffer kann für Bestätigungsantwort verwendet werden
       txptr = buffmgr.buffptr(txbuffno);
-      *txptr++ = 0x05;
+      *txptr++ = C_Dev_Packet_Length;
       txptr++;
       *txptr++ = C_HRH_IdDev;
       *txptr++ = C_Dev_Isp;

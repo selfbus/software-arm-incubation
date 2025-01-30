@@ -11,17 +11,6 @@
 #ifndef DEVICE_MGNT_H_
 #define DEVICE_MGNT_H_
 
-#define C_Dev_Idle 1
-#define C_Dev_Sys  2
-#define C_DevSys_Disable 1
-#define C_DevSys_Normal 2
-#define C_DevSys_CdcMon 3
-#define C_DevSys_UsrPrg 4
-#define C_Dev_Isp  3
-
-//#define C_TxTimeout 450
-#define C_RxTimeout 450
-#define C_IdlePeriod 200
 
 ///todo this class exists also in USB-IF_Usb
 class DeviceManagement

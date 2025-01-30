@@ -15,6 +15,7 @@
 #include "GenFifo.h"
 #include "BufferMgr.h"
 #include "device_mgnt.h"
+#include "device_mgnt_const.h"
 
 DeviceManagement devicemgnt;
 

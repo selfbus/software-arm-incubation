@@ -1,0 +1,57 @@
+/*
+ *  device_mgnt_const.h - Device management, mode management and mode switching
+ *
+ *  Copyright (C) 2018 Florian Voelzke <fvoelzke@gmx.de>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3 as
+ *  published by the Free Software Foundation.
+ */
+ 
+#ifndef DEVICE_MGNT_CONST_H_
+#define DEVICE_MGNT_CONST_H_
+
+#include <stdint.h>
+
+///\todo increase baudrate to at least 115200 (if possible with soft uart (check prog_uart.h)
+constexpr uint32_t C_Dev_Baurate = 115200; //!> Baudrate for the inter-mcu communication
+
+constexpr uint8_t cdc_OffSet = 3; ///\todo find better name
+
+///\todo verify docu
+// Inter-mcu device management protocol
+// Byte     Description
+//  0       Packet length
+///\todo what is byte 1 of the inter-mcu communication?
+//  1       1 Byte Checksumme, alle Bytes des Telegrams addiert (incl Checksumme), modulo 256, ergeben 255 from BufferMgr.h
+//  2       HID Report Header - HRH (see knxusb_const.h for details (e.g. C_HRH_IdDev)
+//  3       C_Dev main command/info?
+//  4       C_DevSys_xx sub command/info?
+//  5       UNKNOWN, in "void DeviceManagement::SysIf_Tasks(bool UsbActive)" it is not set, yet packet lewn
+
+///\todo packet length 5 is right now an assumption based on
+///      USB-IF_Usb => void DeviceManagement::SysIf_Tasks(bool UsbActive)
+///      USB-IF_Knx => void DeviceManagement::DevMgnt_Tasks(void)
+constexpr uint8_t C_Dev_Packet_Length = 5; // searched for (2+3)
+
+#define C_Dev_Idle       1 //!< Inter-mcu communication heartbeat?
+#define C_Dev_Sys        2 //!< Mode control command
+#define C_DevSys_Disable 1 //!< USB is shut down
+#define C_DevSys_Normal  2 //!< KNX-Interface or USB-Monitor
+#define C_DevSys_CdcMon  3 //!< KNX-Monitor
+#define C_DevSys_UsrPrg  4 //!< UserProg-Interface
+
+/**
+ * Set serial control lines (RTS/CTS...)
+ *
+ * @details USB mcu sends it to set the soft uart (prog_uart) control lines.<br>
+ *          KNX mcu sends it to acknowledge that a data packet was sent to the soft uart (prog_uart)
+ */
+#define C_Dev_Isp        3
+
+//#define C_TxTimeout 450
+#define C_RxTimeout 450
+#define C_IdlePeriod 200 //!> Idle heartbeat interval in milliseconds (inter-mcu communication)
+
+
+#endif /* DEVICE_MGNT_CONST_H_ */

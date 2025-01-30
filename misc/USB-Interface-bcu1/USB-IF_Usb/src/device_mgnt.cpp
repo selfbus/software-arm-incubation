@@ -16,6 +16,7 @@
 #include "cdc_dbg.h"
 #include "knxusb_const.h"
 #include "device_mgnt.h"
+#include "device_mgnt_const.h"
 
 DeviceManagement devicemgnt;
 

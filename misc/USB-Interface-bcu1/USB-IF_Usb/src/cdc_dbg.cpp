@@ -14,7 +14,7 @@
 #include "BufferMgr.h"
 #include "GenFifo.h"
 #include "knxusb_const.h"
-#include "device_mgnt.h"
+#include "device_mgnt_const.h"
 #include "cdc_dbg.h"
 
 CdcDbgIf cdcdbgif;
