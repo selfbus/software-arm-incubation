@@ -12,6 +12,7 @@
 #include "busdevice_if.h"
 #include "ModeSelect.h"
 #include "nxp/libeeprom-v3/libeeprom.h"
+#include "error_handler.h"
 
 #define MODELED_HPRD 25
 
@@ -66,6 +67,13 @@ void ModeSelect::SetLeds(void)
         SetSingleLed(i, i == mode_new);
     }
 }
+
+void ModeSelect::setAllLeds(bool on)
+{
+    for (int32_t i = 0; i < ledCount(); i++)
+    {
+        SetSingleLed(i, on);
+    }
 }
 
 TCdcDeviceMode ModeSelect::DeviceMode(void)

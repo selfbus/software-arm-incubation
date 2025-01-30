@@ -26,6 +26,7 @@ public:
     // Liefert als Rückgabewert true, wenn der Modus gewechselt wurde.
     TCdcDeviceMode DeviceMode(void);
     void SetLeds(void); // Setzt die LED-Ausgänge
+    void setAllLeds(bool on);
 
 private:
     bool ButtonDebounce(void);
