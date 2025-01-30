@@ -33,18 +33,24 @@ void DeviceIf::SetActivityLed(bool onoff)
 
 void DeviceIf::BlinkActivityLed(void)
 {
-  if (enabled)
-  {
-    if (blinkcnt < 2)
+    if (!enabled)
     {
-      if (blinkcnt == 0)
-      {
-        SetActivityLed(false);
-      }
-      blinkcnt += 2;
-      timecnt = ACTLED_HPRD;
+        return;
     }
-  }
+
+    if (blinkcnt >= 2)
+    {
+        return;
+    }
+
+    if (blinkcnt != 0)
+    {
+        return;
+    }
+    SetActivityLed(false);
+    blinkcnt += 2;
+    timecnt = ACTLED_HPRD;
+
 }
 
 void DeviceIf::DoActivityLed(bool LedEnabled)
