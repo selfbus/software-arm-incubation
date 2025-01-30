@@ -213,22 +213,6 @@ void EmiKnxIf::setBcuLayerState(const uint8_t layer, const bool newState)
     setSystemState(systemState);
 }
 
-// Die bcu.bus->handleTelegram() händelt die Layer 2 LL_ACKS (1 Byte) intern.
-// Alle "interessanten" Telegramme sind >= 8 Bytes lang. Über USB werden sie ohne Checksumme getunnelt,
-// dort sind sie also >= 7 Bytes lang.
-// Es ist möglich, alle Telegramme >= 8 Bytes an einem Monitor vorbeizuschleusen, indem:
-// In bcu.userRam->status() das Bit BCU_STATUS_TRANSPORT_LAYER gelöscht wird. Dann ruft BcuBase.loop() nie processTelegram()
-// auf und die Telegramme sind noch vorhanden, wenn loop() der Applikation aufgerufen wird.
-// Dort kann dann das Telegramm kopiert und danach bei Bedarf processTelegramm() aufgerufen werden. Muss das
-// überhaupt? Es wäre praktisch, wenn man über den Bus die Adresse schreiben kann, insofern also doch?
-// Wenn Bit BCU_STATUS_TRANSPORT_LAYER gelöscht wird, MUSS auch BCU_STATUS_LINK_LAYER gelöscht werden,
-// ansonsten wird jedes Telegram von uns mit einem LL_ACK beantwortet.
-
-// Also: CdcMonActive ist wahr: Dann werden die Telegramme hier vorselektiert und der sblib übergeben
-// CdcActive wird deaktiviert (und hidIfActive ist false): Jetzt muss die Kontrolle wieder zurück
-// rein an die sblib übertragen werden. Das letzt empfangene und noch im Buffer stehende Telegramm könnte
-// noch ein ungefiltertes sein, dass muss also dennoch hier vorsortiert und evtl an die Sblib übergeben
-// werden.
 void EmiKnxIf::SetCdcMonMode(bool newState)
 {
     CdcMonActive = newState;
@@ -454,6 +438,22 @@ void EmiKnxIf::sendReceivedTelegramAsEMI(uint8_t * telegram, uint8_t length)
     BlinkActivityLed();
 }
 
+// Die bcu.bus->handleTelegram() händelt die Layer 2 LL_ACKS (1 Byte) intern.
+// Alle "interessanten" Telegramme sind >= 8 Bytes lang. Über USB werden sie ohne Checksumme getunnelt,
+// dort sind sie also >= 7 Bytes lang.
+// Es ist möglich, alle Telegramme >= 8 Bytes an einem Monitor vorbeizuschleusen, indem:
+// In bcu.userRam->status() das Bit BCU_STATUS_TRANSPORT_LAYER gelöscht wird. Dann ruft BcuBase.loop() nie processTelegram()
+// auf und die Telegramme sind noch vorhanden, wenn loop() der Applikation aufgerufen wird.
+// Dort kann dann das Telegramm kopiert und danach bei Bedarf processTelegramm() aufgerufen werden. Muss das
+// überhaupt? Es wäre praktisch, wenn man über den Bus die Adresse schreiben kann, insofern also doch?
+// Wenn Bit BCU_STATUS_TRANSPORT_LAYER gelöscht wird, MUSS auch BCU_STATUS_LINK_LAYER gelöscht werden,
+// ansonsten wird jedes Telegram von uns mit einem LL_ACK beantwortet.
+
+// Also: CdcMonActive ist wahr: Dann werden die Telegramme hier vorselektiert und der sblib übergeben
+// CdcActive wird deaktiviert (und isHidActive() ist false): Jetzt muss die Kontrolle wieder zurück
+// rein an die sblib übertragen werden. Das letzt empfangene und noch im Buffer stehende Telegramm könnte
+// noch ein ungefiltertes sein, dass muss also dennoch hier vorsortiert und evtl an die Sblib übergeben
+// werden.
 void EmiKnxIf::EmiIf_Tasks(void)
 {
     if (CdcMonActive && isHidActive())

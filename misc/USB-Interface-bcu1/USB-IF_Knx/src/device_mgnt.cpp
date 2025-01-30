@@ -47,7 +47,7 @@ void DeviceManagement::handleDev_Sys(uint8_t subControlByte)
         // USB disabled
         case C_DevSys_Disable:
             // - Usb side meldet USB unconfigured
-            //   -> löscht CdcMonActive & hidIfActive
+            //   -> löscht CdcMonActive
             //      löscht ProgUserChipModus
             emiknxif.reset(); // Set bcu in download mode to disable all KNX bus communication
             proguart.Disable();
@@ -117,8 +117,8 @@ void DeviceManagement::DevMgnt_Tasks(void)
     if (((int)(millis() - rxtimeout) > 0) && (LastDevSys != 0))
     {
         // Timeout, anscheinen ist die USB-Seite nicht funktionsfähig
-        //   -> löscht CdcMonActive & hidIfActive
-        //     löscht ProgUserChipModus
+        //   -> löscht CdcMonActive
+        //      löscht ProgUserChipModus
         emiknxif.reset(); // Set bcu in download mode to disable all KNX bus communication
         proguart.Disable();
         LastDevSys = 0;
