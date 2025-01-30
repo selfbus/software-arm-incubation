@@ -34,23 +34,11 @@ BcuBase* setup()
     digitalWrite(PIN_PROG, true);
     digitalWrite(PIO1_5, true);
     bcu.begin(2, 1, 1); // ABB, dummy something device
+    emiknxif.reset(); // Set bcu in download mode to disable all KNX bus communication
     uart.Init(C_Dev_Baurate, false, PinSerialTx, PinSerialRx);
     return (&bcu);
 }
 
-/*
- * Es gibt laut HandleTelegramm() irgendwelche Acks < 8 Bytes, dies scheinen jedoch nicht die
- * zu sein, die mich interessieren.
- * Alle "interessanten" Telegramme sind >= 8 Bytes lang. Über USB werden sie ohne Checksumme getunnelt,
- * dort sind sie also >= 7 Bytes lang.
- * Es ist möglich, alle Telegramme >= 8 Bytes an einem Monitor vorbeizuschleusen, indem:
- * In bcu.userRam->status() das Bit BCU_STATUS_TRANSPORT_LAYER gelöscht wird. Dann ruft BcuBase.loop() nie processTelegram()
- * auf und die Telegramme sind noch vorhanden, wenn loop() der Applikation aufgerufen wird.
- * Dort kann dann das Telegramm kopiert und danach bei Bedarf processTelegramm() aufgerufen werden. Muss das
- * überhaupt? Es wäre praktisch, wenn man über den Bus die Adresse schreiben kann, insofern also doch?
- * Wenn Bit BCU_STATUS_TRANSPORT_LAYER gelöscht wird, MUSS auch BCU_STATUS_LINK_LAYER gelöscht werden,
- * ansonsten wird jedes Telegram von uns mit einem LL_ACK beantwortet.
- */
 /*
  * The main processing loop.
  */
