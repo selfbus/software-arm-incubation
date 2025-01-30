@@ -20,9 +20,15 @@
 
 CdcDbgIf cdcdbgif;
 
-CdcDbgIf::CdcDbgIf()
+CdcDbgIf::CdcDbgIf() :
+        hUsb(nullptr),
+        ReceiveEna(true),
+        zlp(false),
+        CtrlLines(0xff),
+        RecDisTime(0),
+        rxByteCounter(0),
+        txByteCounter(0)
 {
-	zlp = false;
 }
 
 void CdcDbgIf::Set_hUsb(USBD_HANDLE_T h_Usb)
