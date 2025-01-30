@@ -67,7 +67,7 @@ void DeviceManagement::SysIf_Tasks(bool UsbActive)
 				case C_Dev_Isp:
 					// Wird von der KNX-Seite verschickt, wenn gerade ein Datenpaket Programmierdaten
 					// vollständig zum Zieldevice verschickt worden ist.
-					cdcdbgif.ReenableRec();
+					cdcdbgif.reEnableReceive();
 					break;
 				default:
 					;// Etwas anderes sollte von KNX-Seite gar nicht kommen

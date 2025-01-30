@@ -85,7 +85,7 @@ int main(void) {
 
 			if (uart.SerIf_Tasks())
 				if (CdcDeviceMode == TCdcDeviceMode::ProgBusChip)
-					cdcdbgif.ReenableRec();
+					cdcdbgif.reEnableReceive();
 
 			if ((systemTime - Last10msTime) >= 10)
 			{
