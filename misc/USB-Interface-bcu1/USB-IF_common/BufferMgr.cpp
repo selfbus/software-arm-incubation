@@ -16,44 +16,44 @@ BufferMgr buffmgr;
 
 BufferMgr::BufferMgr(void)
 {
-	Purge();
+    Purge();
 }
 
 void BufferMgr::Purge(void)
 {
-	for (int i=0; i < BUFF_CNT; i++)
-		alloctable[i] = false;
+    for (int i=0; i < BUFF_CNT; i++)
+        alloctable[i] = false;
 }
 
 int BufferMgr::AllocBuffer(void)
 {
-	for (int i=0; i < BUFF_CNT; i++)
-	{
-		if (!alloctable[i])
-		{
-			alloctable[i] = true;
-			return i;
-		}
-	}
-	//failHardInDebug(); ///\todo remove on release
-	return -1;
+    for (int i=0; i < BUFF_CNT; i++)
+    {
+        if (!alloctable[i])
+        {
+            alloctable[i] = true;
+            return i;
+        }
+    }
+    //failHardInDebug(); ///\todo remove on release
+    return -1;
 }
 
 int BufferMgr::FreeBuffer(int no)
 {
-	if ((no < 0) || (no >= BUFF_CNT))
-		return -1;
-	if (alloctable[no])
-	{
-		alloctable[no] = false;
-		return 0;
-	}
-	return -1;
+    if ((no < 0) || (no >= BUFF_CNT))
+        return -1;
+    if (alloctable[no])
+    {
+        alloctable[no] = false;
+        return 0;
+    }
+    return -1;
 }
 
 uint8_t* BufferMgr::buffptr(int no)
 {
-	if ((no < 0) || (no >= BUFF_CNT))
-		return nullptr;
-	return &data[no][0];
+    if ((no < 0) || (no >= BUFF_CNT))
+        return nullptr;
+    return &data[no][0];
 }

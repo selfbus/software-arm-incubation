@@ -31,14 +31,14 @@
 class BufferMgr
 {
 public:
-	BufferMgr(void);
-	void Purge(void);
-	int AllocBuffer(void);
-	int FreeBuffer(int no);
-	uint8_t* buffptr(int no);
+    BufferMgr(void);
+    void Purge(void);
+    int AllocBuffer(void);
+    int FreeBuffer(int no);
+    uint8_t* buffptr(int no);
 protected:
-	uint8_t data[BUFF_CNT][BUFF_SIZE] = {0};
-	bool alloctable[BUFF_CNT] = {false};
+    uint8_t data[BUFF_CNT][BUFF_SIZE] = {0};
+    bool alloctable[BUFF_CNT] = {false};
 };
 
 extern BufferMgr buffmgr;
