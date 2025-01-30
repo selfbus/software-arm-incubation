@@ -171,6 +171,9 @@ void TelDump::DumpLoadAddressTel(uint8_t tel[], unsigned int len)
 
 void TelDump::DbgParseTele(uint8_t tel[], unsigned int len)
 {
+#ifdef TELEGRAM_DUMP_DISABLED
+    return;
+#else
     unsigned ExDReq = 0;
     unsigned dlen = 0;
     if (len >= 7)
@@ -391,6 +394,7 @@ void TelDump::DbgParseTele(uint8_t tel[], unsigned int len)
         buf_printf("?? Packet too short ??");
     }
     buf_printf("\r\n");
+#endif
 }
 
 void TelDump::buf_printf(const char *fmt, ...)
