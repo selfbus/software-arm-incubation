@@ -17,6 +17,7 @@
 #include "knxusb_const.h"
 #include "device_mgnt.h"
 #include "device_mgnt_const.h"
+#include "error_handler.h"
 
 DeviceManagement devicemgnt;
 
@@ -46,90 +47,109 @@ void DeviceManagement::SysIf_Tasks(bool UsbActive)
 		LastMode = TCdcDeviceMode::ProgBusChip;
 		rxtimeout = systemTime;
 		txtimeout = systemTime;
+		return;
 	}
-	else
-	{
 
-		if (dev_rxfifo.Empty() != TFifoErr::Empty)
-		{
-			int buffno;
-			dev_rxfifo.Pop(buffno);
-			uint8_t *ptr = buffmgr.buffptr(buffno);
-			unsigned DevPacketLength = ptr[0];
-			if ((ptr[2+IDX_HRH_Id] == C_HRH_IdDev) && (DevPacketLength == (2+3)))
-			{
-				rxtimeout = systemTime + C_RxTimeout; // Wird bei jedem Paket an dieses If gesetzt.
-				KnxActive = true;
-				switch (ptr[2+IDX_HRH_Id+1])
-				{
-				case C_Dev_Idle:
-					break;
-				case C_Dev_Isp:
-					// Wird von der KNX-Seite verschickt, wenn gerade ein Datenpaket Programmierdaten
-					// vollständig zum Zieldevice verschickt worden ist.
-					cdcdbgif.reEnableReceive();
-					break;
-				default:
-					;// Etwas anderes sollte von KNX-Seite gar nicht kommen
-				}
-			}
-			buffmgr.FreeBuffer(buffno);
-		}
+    if (dev_rxfifo.Empty() != TFifoErr::Empty)
+    {
+        int buffno;
+        dev_rxfifo.Pop(buffno);
+        uint8_t *ptr = buffmgr.buffptr(buffno);
+        uint8_t DevPacketLength = ptr[0];
+        if ((ptr[2+IDX_HRH_Id] == C_HRH_IdDev) && (DevPacketLength == C_Dev_Packet_Length))
+        {
+            rxtimeout = systemTime + C_RxTimeout; // Wird bei jedem Paket an dieses If gesetzt.
+            KnxActive = true;
+            switch (ptr[2+IDX_HRH_Id+1])
+            {
+                case C_Dev_Idle:
+                    break;
 
-		if ((int)(systemTime - rxtimeout) > 0)
-		{
-			/* Timeout, anscheinen ist die KNX-Seite nicht funktionsfähig
-			 *   -> löscht ein Flag, das wird für das HID-Interface benötigt
-			 */
+                case C_Dev_Isp:
+                    // Wird von der KNX-Seite verschickt, wenn gerade ein Datenpaket Programmierdaten
+                    // vollständig zum Zieldevice verschickt worden ist.
+                    cdcdbgif.reEnableReceive();
+                    break;
+
+                default:
+                    // Etwas anderes sollte von KNX-Seite gar nicht kommen
+                    failHardInDebug();
+                    break;
+            }
+        }
+        buffmgr.FreeBuffer(buffno);
+    }
+
+    if ((int)(systemTime - rxtimeout) > 0)
+    {
+        /* Timeout, anscheinen ist die KNX-Seite nicht funktionsfähig
+         *   -> löscht ein Flag, das wird für das HID-Interface benötigt
+         */
+        KnxActive = false;
+        // todo send a BAS_FeatureId::BusConnStat with BAS_ServiceId::FeatureInfo
+        // to indicate that the bus is not active
+    }
+
+    TCdcDeviceMode mode;
+    if (UsbActive)
+        mode = CdcDeviceMode;
+    else
+        mode = TCdcDeviceMode::Halt;
+
+
+    int deltaMs = (int)(systemTime - txtimeout);
+    if ((deltaMs <= 0) && (LastMode == mode))
+    {
+        // everything is fine, no tx timeout or mode change
+        return;
+    }
+
+    // Idle Paket Richtung USB-Seite verschicken
+    int buffno = buffmgr.AllocBuffer();
+    if (buffno < 0)
+    {
+        failHardInDebug();
+        return;
+    }
+
+    uint8_t *buffptr = buffmgr.buffptr(buffno);
+    *buffptr++ = C_Dev_Packet_Length;
+    buffptr++;
+    *buffptr++ = C_HRH_IdDev;
+    *buffptr++ = C_Dev_Sys;
+    LastMode = mode;
+    switch (LastMode)
+    {
+        case TCdcDeviceMode::Halt:
+        case TCdcDeviceMode::ProgBusChip:
+            *buffptr++ = C_DevSys_Disable;
             KnxActive = false;
-            // todo send a BAS_FeatureId::BusConnStat with BAS_ServiceId::FeatureInfo
-            // to indicate that the bus is not active
-		}
+            break;
 
-		TCdcDeviceMode mode;
-		if (UsbActive)
-			mode = CdcDeviceMode;
-		else
-			mode = TCdcDeviceMode::Halt;
-		if (((int)(systemTime - txtimeout) > 0) || (LastMode != mode))
-		{
-			// Idle Paket Richtung USB-Seite verschicken
-			int buffno = buffmgr.AllocBuffer();
-			if (buffno >= 0)
-			{
-				uint8_t *buffptr = buffmgr.buffptr(buffno);
-				*buffptr++ = 0x05;
-				buffptr++;
-				*buffptr++ = C_HRH_IdDev;
-				*buffptr++ = C_Dev_Sys;
-				LastMode = mode;
-				switch (LastMode)
-				{
-				case TCdcDeviceMode::Halt:
-				case TCdcDeviceMode::ProgBusChip:
-					*buffptr++ = C_DevSys_Disable;
-					KnxActive = false;
-					break;
-				case TCdcDeviceMode::HidOnly:
-				case TCdcDeviceMode::UsbMon:
-					*buffptr++ = C_DevSys_Normal;
-					break;
-				case TCdcDeviceMode::BusMon:
-					*buffptr++ = C_DevSys_CdcMon;
-					break;
-				case TCdcDeviceMode::ProgUserChip:
-					*buffptr++ = C_DevSys_UsrPrg;
-					break;
-				default:
-					*buffptr++ = 0;
-				}
+        case TCdcDeviceMode::HidOnly:
+        case TCdcDeviceMode::UsbMon:
+            *buffptr++ = C_DevSys_Normal;
+            break;
 
-				if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
-					buffmgr.FreeBuffer(buffno);
-				txtimeout = systemTime + C_IdlePeriod;
-			}
-		}
-	}
+        case TCdcDeviceMode::BusMon:
+            *buffptr++ = C_DevSys_CdcMon;
+            break;
+
+        case TCdcDeviceMode::ProgUserChip:
+            *buffptr++ = C_DevSys_UsrPrg;
+            break;
+
+        default:
+            *buffptr++ = 0; //this should never happen. It´s the same 0 as TCdcDeviceMode::Halt
+            failHardInDebug();
+            break;
+    }
+
+    if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
+    {
+        buffmgr.FreeBuffer(buffno);
+    }
+    txtimeout = systemTime + C_IdlePeriod;
 }
 
 	///\todo handle communication timeouts and buffer-overflows, see below
