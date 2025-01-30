@@ -27,95 +27,147 @@
 const uint32_t OscRateIn = 12000000;
 const uint32_t ExtRateIn = 0;
 
+static USBD_HANDLE_T g_hUsb;
+volatile uint32_t usbHeartbeatCounter;
+
 extern "C" void SystemInit(void)
 {
     deviceIf.SystemInit();
 }
 
-static USBD_HANDLE_T g_hUsb;
-
-volatile unsigned alive_cnt;
-bool usb_alive;
-
-
 extern "C" void USB_IRQHandler(void)
 {
-  USBD_API->hw->EnableEvent(g_hUsb, 0, USB_EVT_SOF, 1);
+    USBD_API->hw->EnableEvent(g_hUsb, 0, USB_EVT_SOF, 1);
+    USBD_API->hw->EnableEvent(g_hUsb, 0, USB_EVT_DEV_ERROR, 1);
+
 	USBD_API->hw->ISR(g_hUsb);
 }
 
-extern "C" ErrorCode_t USB_sof_event(USBD_HANDLE_T hUsb)
+extern "C" ErrorCode_t USB_sof_event(USBD_HANDLE_T hUsb) // Start of Frame event
 {
-  alive_cnt++;
-  return LPC_OK;
+    usbHeartbeatCounter++;
+    return LPC_OK;
+}
+
+/**
+ * USB_Error_Event handler
+ *
+ * At the moment it´s here just for debugging
+ */
+extern "C" ErrorCode_t USB_Error_Event(USBD_HANDLE_T hUsb, uint32_t param)
+{
+    // ERR_USBD_UNHANDLED
+    return LPC_OK;
+}
+
+/**
+ * USB_Configure_Event handler
+ *
+ * At the moment it´s here just for debugging
+ */
+extern "C" ErrorCode_t USB_Configure_Event(USBD_HANDLE_T hUsb)
+{
+    // ERR_USBD_UNHANDLED
+    return LPC_OK;
+}
+
+///\todo add more USB Handler
+/// check out usb_param.USB_... in usb_init(..)  (nxp/nxp.c) for more info
+/// There´s also the enum USBD_EVENT_T for even more USB events
+
+void systemReset()
+{
+    USBD_API->hw->Connect(g_hUsb, 0);
+    uint32_t lastSysTick = systemTime;
+    while ((systemTime - lastSysTick) <= 500)
+    {
+        ; // 0,5s warten, damit der PC das Disconnect bemerkt
+    }
+    NVIC_SystemReset();
 }
 
 int main(void) {
-	unsigned Last10msTime = 0;
-	usb_alive = false;
-
 	CdcDeviceMode = TCdcDeviceMode::Halt;
 	SystemCoreClockUpdate();
 
 	deviceIf.PioInit();
 	if (deviceIf.KnxSideProgMode())
 	{
-	  CdcDeviceMode = TCdcDeviceMode::ProgBusChip;
-      modeSelect.SetLeds();
-	} else	{ // wenn nicht "ProgBusChip"
-	  modeSelect.StartModeSelect();
-	  CdcDeviceMode = modeSelect.DeviceMode();
-	}
-
-	if (CdcDeviceMode == TCdcDeviceMode::ProgBusChip) // ISP enable for KNX module is set (JP5=on)
-	{
-	    uart.Init(9200, true); ///\todo check why 9200 and not at least 9600 isn't this the ISP-speed to the knx module?
+	    // jumper JP 5 is closed (PIO 1_19 connected to ground)
+	    CdcDeviceMode = TCdcDeviceMode::ProgBusChip;
+        modeSelect.setAllLeds(true);
+        ///\todo Implement auto-baud routine according to NXP user manual UM10398 26.3.3
+        ///      quote:
+        ///      "The auto-baud routine measures the bit time of the received synchronization character in
+        ///       terms of its own frequency and programs the baud rate generator of the serial port. It also
+        ///       sends an ASCII string ("Synchronized<CR><LF>") to the host"
+        ///
+        ///      The opto-couplers (OK1, OK2) type H11L1M should be fast enough (1Mhz).
+        uart.Init(115200, true);
+        //uart.Init(115200, true);
 	}
 	else
 	{
+	    // wenn nicht "ProgBusChip"
+	    modeSelect.StartModeSelect();
+	    CdcDeviceMode = modeSelect.DeviceMode();
+	    ///\todo The soft-uart of the USB-IF_Knx (prog_uart.h) runs only at 9600baud!
+	    ///      This needs more testing. Maybe 115200 baud is to fast.
+	    // this baudrate must match the baudrate of the soft-uart "prog_uart.h"
 	    uart.Init(C_Dev_Baurate, false);
 	}
 
-	while (1) {
-			devicemgnt.SysIf_Tasks(knxhidif.UsbIsConfigured());
-			knxhidif.KnxIf_Tasks();
-			if (CdcDeviceMode != TCdcDeviceMode::HidOnly) {
-				cdcdbgif.DbgIf_Tasks();
-			}
-
-			if (uart.SerIf_Tasks())
-				if (CdcDeviceMode == TCdcDeviceMode::ProgBusChip)
-					cdcdbgif.reEnableReceive();
-
-			if ((systemTime - Last10msTime) >= 10)
-			{
-			  Last10msTime = systemTime;
-			  usb_alive = (alive_cnt != 0);
-			  alive_cnt = 0;
-			  deviceIf.DoActivityLed(usb_alive);
-			  if (deviceIf.Hid2Knx_Ena()) // Folgendes nur, wenn nicht Prog-Bus-Chip aktiv ist
-			  {
-			    if (modeSelect.DoModeSelect())
-			    {
-			      bool restart = false;
-			      if (CdcDeviceMode == TCdcDeviceMode::HidOnly)
-			        restart = true;
-			      CdcDeviceMode = modeSelect.DeviceMode();
-			      if (CdcDeviceMode == TCdcDeviceMode::HidOnly)
-			        restart = true;
-			      if (restart)
-			      {
-			        USBD_API->hw->Connect(g_hUsb, 0);
-			        while ((systemTime - Last10msTime) <= 500); // 0,5s warten, damit der PC das Disconnect bemerkt
-			        NVIC_SystemReset();
-			      }
-			    }
-			  }
-			}
-	}
     ErrorCode_t ret = usb_init(&g_hUsb, CdcDeviceMode == TCdcDeviceMode::HidOnly);
     if (ret != LPC_OK)
     {
         fatalError();
     }
+
+    uint32_t last10msTime = 0;
+	while (1)
+	{
+        devicemgnt.SysIf_Tasks(knxhidif.UsbIsConfigured());
+        knxhidif.KnxIf_Tasks();
+        if (CdcDeviceMode != TCdcDeviceMode::HidOnly)
+        {
+            cdcdbgif.DbgIf_Tasks(); // virtual serial port (cdc = communication class device, dbgif = debugInterface ?)
+        }
+
+        if (uart.SerIf_Tasks())
+        {
+            if (CdcDeviceMode == TCdcDeviceMode::ProgBusChip)
+            {
+                cdcdbgif.reEnableReceive();
+            }
+        }
+
+
+        // Every 10ms checks
+        if ((systemTime - last10msTime) < 10)
+        {
+            continue;
+        }
+
+        // below code runs only every 10ms
+        last10msTime = systemTime;
+        bool usb_alive = (usbHeartbeatCounter != 0);
+        usbHeartbeatCounter = 0;
+        deviceIf.DoActivityLed(usb_alive);
+
+        if (!deviceIf.Hid2Knx_Ena())
+        {
+            continue;
+        }
+
+        // Folgendes nur, wenn nicht Prog-Bus-Chip aktiv ist
+        if (modeSelect.DoModeSelect())
+        {
+            if (CdcDeviceMode == TCdcDeviceMode::HidOnly)
+                systemReset();
+
+            CdcDeviceMode = modeSelect.DeviceMode();
+            if (CdcDeviceMode == TCdcDeviceMode::HidOnly)
+                systemReset();
+        }
+	} // while (1)
 }
