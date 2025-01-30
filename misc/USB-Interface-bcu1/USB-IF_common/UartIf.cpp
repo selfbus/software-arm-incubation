@@ -21,6 +21,7 @@ UartIf uart;
 #include <sblib/digital_pin.h>
 #include <sblib/interrupt.h>
 #include <sblib/platform.h>
+
 #define LPC_USART LPC_UART
 
 extern "C" void UART_IRQHandler(void)
@@ -85,9 +86,9 @@ void UartIf::Init(int baudRate, bool rawMode)
 	txlen = 0;
 	discard = false;
 	rawmode = rawMode;
-	// Uart konfigurieren
-	Chip_IOCON_PinMuxSet(LPC_IOCON, 1, 14, IOCON_FUNC3); // PIO1_14 as RxD
-	Chip_IOCON_PinMuxSet(LPC_IOCON, 1, 13, IOCON_FUNC3); // PIO1_13 as TxD
+	// configure Uart (IOCON_FUNC3) with hysteresis and pull-up
+    Chip_IOCON_PinMuxSet(LPC_IOCON, 1, 13, IOCON_FUNC3 | IOCON_HYS_EN | IOCON_MODE_PULLUP); // PIO1_13 as TxD
+	Chip_IOCON_PinMuxSet(LPC_IOCON, 1, 14, IOCON_FUNC3 | IOCON_HYS_EN | IOCON_MODE_PULLUP); // PIO1_14 as RxD
 
 	LPC_SYSCTL->SYSAHBCLKCTRL |= 1 << 12; // Enable UART clock
 	LPC_SYSCTL->USARTCLKDIV = 1;           // divided by 1
