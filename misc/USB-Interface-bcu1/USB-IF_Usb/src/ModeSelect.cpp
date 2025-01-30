@@ -32,15 +32,21 @@ const T_PinDef LedPins[MODENUM] =
 
 const T_PinDef ButtonPin = {1, 25};
 
-ModeSelect::ModeSelect() {
-  mode_new = -1;
-  mode_act = -1;
-  Chip_IOCON_PinMuxSet(LPC_IOCON, ButtonPin.port, ButtonPin.pin, IOCON_FUNC1 | IOCON_MODE_PULLUP);
-  for (int i=0; i<MODENUM; i++)
-  {
-    Chip_GPIO_SetPinDIROutput(LPC_GPIO, LedPins[i].port, LedPins[i].pin);
-    SetSingleLed(i, false);
-  }
+int32_t ledCount()
+{
+    return static_cast<int32_t>(sizeof(LedPins)/sizeof(LedPins[0]));
+}
+
+ModeSelect::ModeSelect()
+{
+    mode_new = -1;
+    mode_act = -1;
+    Chip_IOCON_PinMuxSet(LPC_IOCON, ButtonPin.port, ButtonPin.pin, IOCON_FUNC1 | IOCON_MODE_PULLUP);
+    for (int32_t i = 0; i < ledCount(); i++)
+    {
+        Chip_GPIO_SetPinDIROutput(LPC_GPIO, LedPins[i].port, LedPins[i].pin);
+        SetSingleLed(i, false);
+    }
 }
 
 void ModeSelect::SetSingleLed(int mode, bool OnOff)
@@ -55,10 +61,11 @@ bool ModeSelect::ReadButton(void)
 
 void ModeSelect::SetLeds(void)
 {
-  for (int cnt=0; cnt < MODENUM; cnt++)
-  {
-    SetSingleLed(cnt, cnt == mode_new);
-  }
+    for (int32_t i = 0; i < ledCount(); i++)
+    {
+        SetSingleLed(i, i == mode_new);
+    }
+}
 }
 
 TCdcDeviceMode ModeSelect::DeviceMode(void)
@@ -103,7 +110,7 @@ void ModeSelect::StartModeSelect(void)
     buf8 = 0;
   }
 
-  if (buf8 >= MODENUM)
+  if (buf8 >= ledCount())
     buf8 = 0;
   mode_new = buf8;
   mode_act = buf8;
@@ -116,7 +123,7 @@ bool ModeSelect::DoModeSelect(void)
   if (ButtonDebounce())
   {
     mode_new = mode_new+1;
-    if (mode_new >= MODENUM)
+    if (mode_new >= ledCount())
       mode_new = 0;
     blinkcnt = 7;
     timecnt = MODELED_HPRD;
