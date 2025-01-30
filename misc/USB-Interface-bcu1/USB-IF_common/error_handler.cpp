@@ -5,12 +5,29 @@
  */
 
 #include <stdint.h>
-#include <chip.h>
-#include <gpio_11xx_1.h>
-#include <core_cm0.h>
+#ifdef __USE_LPCOPEN
+#   include <chip.h>
+#   include <gpio_11xx_1.h>
+#   include <core_cm0.h>
+#else
+#   include <sblib/utils.h>
+#endif
+
 #include "error_handler.h"
 
+#ifdef __USE_LPCOPEN
+
 extern volatile unsigned int systemTime;
+void blinkLed(uint16_t blinkMilliSeconds);
+
+/**
+* Interrupt service routine to override the default HardFault exception handler in cr_startup_lpc11uxx.cpp
+* This function will never return and all LEDs will blink rapidly.
+*/
+extern "C" void HardFault_Handler()
+{
+   blinkLed(25);
+}
 
 /**
  * Blinks all 4 mode LEDs with the specified duration in milliseconds.
@@ -45,6 +62,7 @@ void fatalError()
 {
     blinkLed(100);
 }
+#endif
 
 void failHardInDebug()
 {
@@ -53,11 +71,3 @@ void failHardInDebug()
 #endif
 }
 
-/**
- * Interrupt service routine to override the default HardFault exception handler in cr_startup_lpc11uxx.cpp
- * This function will never return and all LEDs will blink rapidly.
- */
-extern "C" void HardFault_Handler()
-{
-    blinkLed(25);
-}

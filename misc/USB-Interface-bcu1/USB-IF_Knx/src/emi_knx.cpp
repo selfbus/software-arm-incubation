@@ -14,6 +14,7 @@
 #include <sblib/eib/userRam.h>
 #include <sblib/eib/bus.h>
 #include <sblib/eib/bcu1.h>
+#include "error_handler.h"
 #include "knxusb_const.h"
 #include "GenFifo.h"
 #include "BufferMgr.h"
@@ -24,13 +25,6 @@ EmiKnxIf emiknxif(PIO1_5);
 extern BCU1 bcu;
 
 #define ACTLED_HPRD 10
-
-void failHardInDebug()
-{
-#ifdef DEBUG
-    fatalError();
-#endif
-}
 
 EmiKnxIf::EmiKnxIf(int aLedPin)
 {
