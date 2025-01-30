@@ -89,14 +89,14 @@ void Split_CdcEnqueue(char* ptr, unsigned len)
 		memcpy(partptr, ptr, partlen);
 		ptr+=partlen;
 		len-=partlen;
-  	if (cdc_txfifo.Push(buffno) != TFifoErr::Ok)
-  	{
-  		int no;
-  		while (cdc_txfifo.Pop(no) == TFifoErr::Ok)
-  		{
-  			buffmgr.FreeBuffer(no);
-  		}
-  	}
+        if (cdc_txfifo.Push(buffno) != TFifoErr::Ok)
+        {
+            int no;
+            while (cdc_txfifo.Pop(no) == TFifoErr::Ok)
+            {
+                buffmgr.FreeBuffer(no);
+            }
+        }
 	}
 }
 
@@ -167,27 +167,28 @@ ErrorCode_t KnxHidIf::ReadAvail(void)
 
 ErrorCode_t KnxHidIf::ReadReport(int &buffno)
 {
-	if (ReadAvail() == LPC_OK)
-	{
-		buffno = buffmgr.AllocBuffer();
-		if (buffno < 0)
-			return ERR_FAILED;
-		uint8_t* ptr = buffmgr.buffptr(buffno)+2;
-		NVIC_DisableIRQ(USB0_IRQn);
-		rx_avail--;
-		NVIC_EnableIRQ(USB0_IRQn);
-		unsigned len = USBD_API->hw->ReadEP(hUsb, HID_EP_OUT, ptr);
-		if (len != HID_REPORT_SIZE)
-		{
-			buffmgr.FreeBuffer(buffno);
-			buffno = -1;
-			return ERR_FAILED;
-		} else {
-			DumpReport2Cdc(false, ptr);
-			return LPC_OK;
-		}
-	} else
-		return ERR_FAILED;
+    if (ReadAvail() != LPC_OK)
+    {
+        return ERR_FAILED;
+    }
+
+    buffno = buffmgr.AllocBuffer();
+    if (buffno < 0)
+        return ERR_FAILED;
+    uint8_t* ptr = buffmgr.buffptr(buffno)+2;
+    NVIC_DisableIRQ(USB0_IRQn);
+    rx_avail--;
+    NVIC_EnableIRQ(USB0_IRQn);
+    unsigned len = USBD_API->hw->ReadEP(hUsb, HID_EP_OUT, ptr);
+    if (len != HID_REPORT_SIZE)
+    {
+        buffmgr.FreeBuffer(buffno);
+        buffno = -1;
+        return ERR_FAILED;
+    } else {
+        DumpReport2Cdc(false, ptr);
+        return LPC_OK;
+    }
 }
 
 /* Baut ein Paket auf zum Versand ueber USB an den PC.
@@ -224,7 +225,6 @@ uint8_t* KnxHidIf::BuildUsbPacket(uint8_t *ptr, uint8_t ProtId, uint8_t PayloadL
 void KnxHidIf::ReceivedUsbBasPacket(BAS_ServiceId ServiceId, unsigned BodyLen, uint8_t* Buffer)
 {
   BAS_FeatureId Feature = static_cast<BAS_FeatureId>(Buffer[IDX_TPB_FeatureId]);
-  uint8_t TxBuffer[HID_REPORT_SIZE];
 
   // Only the BAS (i.e. we) may send a FeatureInfo if it detects a bus status change
   if ((ServiceId == BAS_ServiceId::FeatureInfo) || (ServiceId == BAS_ServiceId::FeatureResp))
@@ -240,6 +240,7 @@ void KnxHidIf::ReceivedUsbBasPacket(BAS_ServiceId ServiceId, unsigned BodyLen, u
     return;
   }
 
+  uint8_t TxBuffer[HID_REPORT_SIZE];
   uint8_t* ptr = nullptr;
   switch (Feature)
   {
@@ -377,66 +378,104 @@ bool KnxHidIf::UsbIsConfigured(void)
 
 void KnxHidIf::KnxIf_Tasks(void)
 {
-	int buffno;
-	if ( USB_IsConfigured(hUsb)) {
-		if (ReadReport(buffno) == LPC_OK)
-		{
-			ReceivedUsbPacket(buffno);
-			deviceIf.BlinkActivityLed();
-		}
-	} else {
-		tx_busy = false;
-		rx_avail = 0;
-	}
+    if (!USB_IsConfigured(hUsb))
+    {
+        // USB not configured => clear pending tx buffers
+        tx_busy = false;
+        rx_avail = 0;
+        while (hid_txfifo.Empty() != TFifoErr::Empty)
+        {
+            int dummy;
+            hid_txfifo.Pop(dummy);
+            buffmgr.FreeBuffer(dummy);
+        }
+        return;
+    }
 
-	if ( USB_IsConfigured(hUsb))
-	{
-		if ((!tx_busy) && (hid_txfifo.Empty() != TFifoErr::Empty))
-		{
-			int buffno;
-			hid_txfifo.Pop(buffno);
-			uint8_t *ptr = buffmgr.buffptr(buffno);
-			if (((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] & C_MCode_USB_IF_SpecialMask) == 0) ||
-					(ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] == 0xA0))
-			{ // Nur wenn kein "Spezial-MCode" (selber definierte Pakete)
-				// A0, die Antwort auf einen EMI Reset-Request, muss allerdings auch
-				// über USB weitergeschickt werden. Da die Monitorfunktion intern nie
-			  // einen Reset erzeugt, ist das unproblematisch.
-				SendReport(&ptr[2]);
-				deviceIf.BlinkActivityLed();
-			}
+    // Check for incoming HID reports
+    int rxBuffNo;
+    if (ReadReport(rxBuffNo) == LPC_OK)
+    {
+        ReceivedUsbPacket(rxBuffNo);
+        deviceIf.BlinkActivityLed();
+    }
 
-			if (CdcDeviceMode == TCdcDeviceMode::BusMon)
-			{ // Nur im Monitor-Mode Telegramme über CDC im Klartext ausgeben
-				bool mon = false;
-				bool send = false;
-				if ((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] & C_MCode_USB_IF_MonitorMask) == (C_MCode_TxEcho & C_MCode_USB_IF_MonitorMask))
-				{
-					mon = true;
-					send = true;
-				}
-				if ((ptr[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2] & C_MCode_USB_IF_MonitorMask) == (C_MCode_RxData & C_MCode_USB_IF_MonitorMask))
-				{
-					mon = true;
-				}
-				if (mon)
-				{
-					unsigned telLength = ptr[0];
-					if ((telLength > 2) && (telLength < 66))
-					{
-						teldump.Dump(systemTime, send, telLength-(2+C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_Data), ptr+2+C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_Data);
-					}
-				}
-			}
-			buffmgr.FreeBuffer(buffno);
-		}
-	} else {
-		int buffno;
-		while (hid_txfifo.Empty() != TFifoErr::Empty)
-		{
-			hid_txfifo.Pop(buffno);
-			buffmgr.FreeBuffer(buffno);
-		}
-	}
+    // Check for pending outgoing HID reports
+    if (tx_busy || (hid_txfifo.Empty() == TFifoErr::Empty))
+    {
+        return;
+    }
+
+    // Send outgoing HID reports
+    int txBuffNo;
+    hid_txfifo.Pop(txBuffNo);
+    uint8_t *ptr = buffmgr.buffptr(txBuffNo);
+    uint8_t emiMessageCode = ptr[C_HRH_HeadLen + TPH_ProtocolLength_V0 + IDX_TPB_MCode + 2];
+    if ((emiMessageCode & C_MCode_USB_IF_SpecialMask) == 0)
+    {
+        // handle standard conform EMI 1 telegram
+        // Nur wenn kein "Spezial-MCode" (selber definierte Pakete)
+        SendReport(&ptr[2]);
+        deviceIf.BlinkActivityLed();
+    }
+    else if (emiMessageCode == C_MCode_PEI_Reset)
+    {
+        ///\todo bug: receiving a C_MCode_PEI_Reset from the knx-mcu (TS_ARM)
+        ///           stops us from connecting a second time with e.g. knxd
+        ///           It´s most likely a USB send/reconnect problem.
+        ///           Sending C_MCode_PEI_Reset (0xA)
+        ///                  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17
+        /// packet received 0f 28 01 13 09 00 08 00 01 01 01 00 00 A0 00 00 60 C0
+        /// packet to send     28 01 13 09 00 08 00 01 01 01 00 00 A0 00 00 60 C0
+        /// 13th = A0 ok
+
+        // A0, die Antwort auf einen EMI Reset-Request, muss allerdings auch
+        // über USB weitergeschickt werden. Da die Monitorfunktion intern nie
+        // einen Reset erzeugt, ist das unproblematisch.
+        SendReport(&ptr[2]);
+        deviceIf.BlinkActivityLed();
+    }
+    else
+    {
+        // handle USB-IF masked EMI 1 telegrams (most likely C_MCode_TxEcho / C_MCode_RxData)
+        handleBusMonitorMode(ptr);
+    }
+    buffmgr.FreeBuffer(txBuffNo);
+}
+
+void KnxHidIf::handleBusMonitorMode(uint8_t * buffer)
+{
+    // Nur im Monitor-Mode Telegramme über CDC im Klartext ausgeben
+    if (CdcDeviceMode != TCdcDeviceMode::BusMon)
+    {
+        return;
+    }
+
+    // get EMI message code
+    uint8_t emiMessageCode = buffer[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2];
+    // "unmasked" USB-IF special EMI message code
+    emiMessageCode = emiMessageCode & C_MCode_USB_IF_MonitorMask;
+
+    // Check for USB-IF masked C_MCode_TxEcho
+    bool isTxTelegram = C_MCode_TxEcho == emiMessageCode;
+    // Check for USB-IF masked C_MCode_RxData
+    bool isRxTelegram = C_MCode_RxData == emiMessageCode;
+
+    if (!isTxTelegram && !isRxTelegram)
+    {
+        failHardInDebug();
+        return;
+    }
+
+    uint32_t telLength = buffer[0];
+    if ((telLength <= 2) || (telLength >= 66))
+    {
+        failHardInDebug();
+        return;
+    }
+
+    // Dump telegram
+    teldump.Dump(systemTime, isTxTelegram, telLength-(2+C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_Data),
+                buffer+2+C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_Data);
 }
 

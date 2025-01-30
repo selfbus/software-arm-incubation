@@ -39,6 +39,10 @@ protected:
 	ErrorCode_t SendReport(uint8_t* data);
 	ErrorCode_t ReadReport(int &buffno);
 	ErrorCode_t ReadAvail(void);
+
+private:
+    void handleBusMonitorMode(uint8_t * buffer);
+
 };
 
 extern KnxHidIf knxhidif;
