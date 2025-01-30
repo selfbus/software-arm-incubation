@@ -54,6 +54,10 @@ ErrorCode_t KnxHidIf::Hdlr(uint32_t event)
             if (rx_avail < 255)
                 rx_avail++; // keine Ahnung, ob mehrere Pakete gepuffert werden koennen...
             break;
+
+        default:
+            failHardInDebug();
+
 	}
 	return LPC_OK;
 }

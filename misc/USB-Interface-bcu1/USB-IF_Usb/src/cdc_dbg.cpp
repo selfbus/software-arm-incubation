@@ -16,6 +16,7 @@
 #include "knxusb_const.h"
 #include "device_mgnt_const.h"
 #include "cdc_dbg.h"
+#include "error_handler.h"
 
 CdcDbgIf cdcdbgif;
 
@@ -38,7 +39,7 @@ void CdcIfSet_hUsb(USBD_HANDLE_T h_Usb)
 }
 
 
-void CdcDbgIf::ReenableRec(void)
+void CdcDbgIf::reEnableReceive(void)
 {
 	ReceiveEna = true;
 }
@@ -93,6 +94,7 @@ void CdcDbgIf::DbgIf_Tasks(void)
 	// länger als das längste denkbare Paket (64 Bytes bei 9600 Baud).
 	if (!ReceiveEna && ((systemTime - RecDisTime) > CDC2UARTMAXWAIT))
 	{
+	    failHardInDebug();
 		ReceiveEna = true;
 	}
 
@@ -149,7 +151,10 @@ void CdcDbgIf::DbgIf_Tasks(void)
 	    	*buffptr++ = C_Dev_Isp;
     		*buffptr++ = CtrlLines;
 	    	if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
-	    		buffmgr.FreeBuffer(buffno);
+	    	{
+	    	    failHardInDebug();
+	    	    buffmgr.FreeBuffer(buffno);
+	    	}
 	    }
       deviceIf.BlinkActivityLed();
 		}

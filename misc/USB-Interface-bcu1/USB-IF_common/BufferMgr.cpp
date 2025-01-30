@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include "BufferMgr.h"
+#include "error_handler.h"
 
 BufferMgr buffmgr;
 
@@ -34,6 +35,7 @@ int BufferMgr::AllocBuffer(void)
 			return i;
 		}
 	}
+	//failHardInDebug(); ///\todo remove on release
 	return -1;
 }
 

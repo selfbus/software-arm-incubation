@@ -14,6 +14,7 @@
 #include "knxusb_const.h"
 #include "UartIf.h"
 #include "device_mgnt_const.h"
+#include "error_handler.h"
 
 UartIf uart;
 
@@ -149,6 +150,7 @@ void UartIf::interruptHandler(void)
 	bool rxtimeout = false;
 	if ((LPC_USART->IIR & 0xE) == 0xC) // Character timeout
 	{
+		//failHardInDebug(); ///\todo have seen this, enable to debug
 	    rxtimeout = true; // das kann aber nicht die einzige Paket-Ende Erkennung sein, ansonsten wäre die Wartezeit verpflichtend!
 	}
 	if (LPC_USART->LSR & LSR_RDR)

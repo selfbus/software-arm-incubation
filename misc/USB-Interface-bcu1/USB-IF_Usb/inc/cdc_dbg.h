@@ -24,7 +24,7 @@ public:
 	void Set_hUsb(USBD_HANDLE_T h_Usb);
 	void Reset(void);
 	void PurgeRx(void);
-	void ReenableRec(void);
+	void reEnableReceive(void);
 	void DbgIf_Tasks(void);
 protected:
 	USBD_HANDLE_T hUsb;	// Handle to USB stack.
