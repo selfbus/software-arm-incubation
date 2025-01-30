@@ -276,71 +276,84 @@ TUartIfErr UartIf::TransmitBuffer(int buffno)
 	if (TxBusy())
 	{
 		return TUartIfErr::Busy;
-	} else {
-		uint8_t *ptr = buffmgr.buffptr(buffno);
-		uint8_t len = *ptr;
-		if ((len < 2) || (len > 67)) // auch im RawMode haben die Pakete den 2 Byte Header mit Längenangabe
-		{
-			return TUartIfErr::Error;
-		}
-		uint8_t acc = len; len-=2;
-		if (!rawmode)
-		{ // Berechnen der Checksumme
-			ptr += 2;
-			while (len--)
-			{
-				acc += *ptr++;
-			}
-			acc = 255-acc;
-		}
-		NVIC_DisableIRQ(UART0_IRQn);
-		txbuffptr = buffmgr.buffptr(buffno);
-		txlen = *txbuffptr;
-		if (rawmode)
-		{
-			txbuffptr +=3; // Längenangabe, Checksumme und CDC-Id wird im Raw-Mode nicht mitgesendet
-			txlen-=3;
-		} else {
-			*(txbuffptr+1) = acc;
-		}
-		txbuffno = buffno;
-		LPC_USART->IER |= UART_IE_THRE;
-		NVIC_EnableIRQ(UART0_IRQn);
-		NVIC_SetPendingIRQ(UART0_IRQn);
-		//LPC_USART->THR = 0x55; // dummy
 	}
+
+	uint8_t *ptr = buffmgr.buffptr(buffno);
+    uint8_t len = *ptr;
+    if ((len < 2) || (len > 67)) // auch im RawMode haben die Pakete den 2 Byte Header mit Längenangabe
+    {
+        failHardInDebug();
+        return TUartIfErr::Error;
+    }
+
+    uint8_t acc = len;
+    if (!rawmode)
+    {
+        // Berechnen der Checksumme
+        len -= 2;
+        ptr += 2;
+        while (len--)
+        {
+            acc += *ptr++;
+        }
+        acc = 255-acc;
+    }
+    NVIC_DisableIRQ(UART0_IRQn);
+    txbuffptr = buffmgr.buffptr(buffno);
+    txlen = *txbuffptr;
+    if (rawmode)
+    {
+        txbuffptr += cdc_OffSet; // Längenangabe, Checksumme und CDC-Id wird im Raw-Mode nicht mitgesendet
+        txlen -= cdc_OffSet;
+    } else {
+        *(txbuffptr+1) = acc; // set calculated checksum
+    }
+    txbuffno = buffno;
+    LPC_USART->IER |= UART_IE_THRE;
+    NVIC_EnableIRQ(UART0_IRQn);
+    NVIC_SetPendingIRQ(UART0_IRQn);
+    //LPC_USART->THR = 0x55; // dummy
+
 	return TUartIfErr::Ok;
 }
 
 // Rückgabewert true, wenn ein Cdc-Uart Paket verschickt worden ist
 bool UartIf::SerIf_Tasks(void)
 {
-	bool retval = false;
-	if (!TxBusy())
+	if (TxBusy())
 	{
-		if (ser_buffno >= 0)
-		{ // Der Versand des letzten Pakets wurde wohl gerade beendet
-			// Hier koennten noch irgendwelche Checks gemacht werden. Erneutes Versenden
-			// bei einem Fehler o.ä.
-			buffmgr.FreeBuffer(ser_buffno);
-			ser_buffno = -1;
-		}
-		if (ser_txfifo.Empty() != TFifoErr::Empty)
-		{
-			ser_txfifo.Pop(ser_buffno);
-			uint8_t *ptr = buffmgr.buffptr(ser_buffno);
-			if (ptr[2] == 2)
-			{
-				retval = true;
-			}
-			TUartIfErr err = TransmitBuffer(ser_buffno);
-			if (err != TUartIfErr::Ok)
-			{
-				// Momentan als einzige Fehlerbehandlung: Paket verwerfen
-				buffmgr.FreeBuffer(ser_buffno);
-				ser_buffno = -1;
-			}
-		}
+	    return false;
 	}
+
+	if (ser_buffno >= 0)
+    {
+        ///\todo Der Versand des letzten Pakets wurde wohl gerade beendet
+        /// Hier koennten noch irgendwelche Checks gemacht werden. Erneutes Versenden
+        /// bei einem Fehler o.ä.
+        buffmgr.FreeBuffer(ser_buffno);
+        ser_buffno = -1;
+    }
+
+    if (ser_txfifo.Empty() == TFifoErr::Empty)
+    {
+        return false;
+    }
+
+    bool retval = false;
+    ser_txfifo.Pop(ser_buffno);
+    uint8_t *ptr = buffmgr.buffptr(ser_buffno);
+    if (ptr[2] == C_HRH_IdCdc)
+    {
+        retval = true;
+    }
+
+    TUartIfErr err = TransmitBuffer(ser_buffno);
+    if (err != TUartIfErr::Ok)
+    {
+        ///\todo Momentan als einzige Fehlerbehandlung: Paket verwerfen
+        failHardInDebug();
+        buffmgr.FreeBuffer(ser_buffno);
+        ser_buffno = -1;
+    }
 	return retval;
 }
