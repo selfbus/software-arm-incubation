@@ -22,23 +22,23 @@
 class KnxHidIf
 {
 public:
-  KnxHidIf(void);
+    KnxHidIf(void);
 
-	ErrorCode_t Hdlr(uint32_t event);
-	void Set_hUsb(USBD_HANDLE_T h_Usb);
+    ErrorCode_t Hdlr(uint32_t event);
+    void Set_hUsb(USBD_HANDLE_T h_Usb);
 
-	void KnxIf_Tasks(void);
-	bool UsbIsConfigured(void);
+    void KnxIf_Tasks(void);
+    bool UsbIsConfigured(void);
 protected:
-	USBD_HANDLE_T hUsb;	// Handle to USB stack.
-	bool tx_busy;
-	unsigned rx_avail;
-	void ReceivedUsbBasPacket(BAS_ServiceId ServiceId, unsigned BodyLen, uint8_t* Buffer);
-	void ReceivedUsbPacket(int buffno);
-	uint8_t* BuildUsbPacket(uint8_t *ptr, uint8_t ProtId, uint8_t PayloadLen, BAS_ServiceId EmiServiceId);
-	ErrorCode_t SendReport(uint8_t* data);
-	ErrorCode_t ReadReport(int &buffno);
-	ErrorCode_t ReadAvail(void);
+    USBD_HANDLE_T hUsb;    // Handle to USB stack.
+    bool tx_busy;
+    unsigned rx_avail;
+    void ReceivedUsbBasPacket(BAS_ServiceId ServiceId, unsigned BodyLen, uint8_t* Buffer);
+    void ReceivedUsbPacket(int buffno);
+    uint8_t* BuildUsbPacket(uint8_t *ptr, uint8_t ProtId, uint8_t PayloadLen, BAS_ServiceId EmiServiceId);
+    ErrorCode_t SendReport(uint8_t* data);
+    ErrorCode_t ReadReport(int &buffno);
+    ErrorCode_t ReadAvail(void);
 
 private:
     void handleBusMonitorMode(uint8_t * buffer);

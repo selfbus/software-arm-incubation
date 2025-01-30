@@ -40,7 +40,7 @@ extern "C" void USB_IRQHandler(void)
     USBD_API->hw->EnableEvent(g_hUsb, 0, USB_EVT_SOF, 1);
     USBD_API->hw->EnableEvent(g_hUsb, 0, USB_EVT_DEV_ERROR, 1);
 
-	USBD_API->hw->ISR(g_hUsb);
+    USBD_API->hw->ISR(g_hUsb);
 }
 
 extern "C" ErrorCode_t USB_sof_event(USBD_HANDLE_T hUsb) // Start of Frame event
@@ -87,14 +87,14 @@ void systemReset()
 }
 
 int main(void) {
-	CdcDeviceMode = TCdcDeviceMode::Halt;
-	SystemCoreClockUpdate();
+    CdcDeviceMode = TCdcDeviceMode::Halt;
+    SystemCoreClockUpdate();
 
-	deviceIf.PioInit();
-	if (deviceIf.KnxSideProgMode())
-	{
-	    // jumper JP 5 is closed (PIO 1_19 connected to ground)
-	    CdcDeviceMode = TCdcDeviceMode::ProgBusChip;
+    deviceIf.PioInit();
+    if (deviceIf.KnxSideProgMode())
+    {
+        // jumper JP 5 is closed (PIO 1_19 connected to ground)
+        CdcDeviceMode = TCdcDeviceMode::ProgBusChip;
         modeSelect.setAllLeds(true);
         ///\todo Implement auto-baud routine according to NXP user manual UM10398 26.3.3
         ///      quote:
@@ -105,17 +105,17 @@ int main(void) {
         ///      The opto-couplers (OK1, OK2) type H11L1M should be fast enough (1Mhz).
         uart.Init(115200, true);
         //uart.Init(115200, true);
-	}
-	else
-	{
-	    // wenn nicht "ProgBusChip"
-	    modeSelect.StartModeSelect();
-	    CdcDeviceMode = modeSelect.DeviceMode();
-	    ///\todo The soft-uart of the USB-IF_Knx (prog_uart.h) runs only at 9600baud!
-	    ///      This needs more testing. Maybe 115200 baud is to fast.
-	    // this baudrate must match the baudrate of the soft-uart "prog_uart.h"
-	    uart.Init(C_Dev_Baurate, false);
-	}
+    }
+    else
+    {
+        // wenn nicht "ProgBusChip"
+        modeSelect.StartModeSelect();
+        CdcDeviceMode = modeSelect.DeviceMode();
+        ///\todo The soft-uart of the USB-IF_Knx (prog_uart.h) runs only at 9600baud!
+        ///      This needs more testing. Maybe 115200 baud is to fast.
+        // this baudrate must match the baudrate of the soft-uart "prog_uart.h"
+        uart.Init(C_Dev_Baurate, false);
+    }
 
     ErrorCode_t ret = usb_init(&g_hUsb, CdcDeviceMode == TCdcDeviceMode::HidOnly);
     if (ret != LPC_OK)
@@ -124,8 +124,8 @@ int main(void) {
     }
 
     uint32_t last10msTime = 0;
-	while (1)
-	{
+    while (1)
+    {
         devicemgnt.SysIf_Tasks(knxhidif.UsbIsConfigured());
         knxhidif.KnxIf_Tasks();
         if (CdcDeviceMode != TCdcDeviceMode::HidOnly)
@@ -169,5 +169,5 @@ int main(void) {
             if (CdcDeviceMode == TCdcDeviceMode::HidOnly)
                 systemReset();
         }
-	} // while (1)
+    } // while (1)
 }

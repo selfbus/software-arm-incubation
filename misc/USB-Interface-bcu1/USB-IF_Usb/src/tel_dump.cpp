@@ -53,66 +53,66 @@ struct TPropDesc
 // See KNX standard 03_05_01 Resources
 TPropDesc PropDesc[] =
 {
-        {0, "(unknown)"},
-        {1, "Interface Object Type"},
-        {2, "Interface Object Name"},
-        {5, "Load Control"},
-        {6, "Run Control"},
-        {7, "Table Reference"},
-        {8, "Service Control"},
-        {9, "Firmware Revision"},
-        {10, "Services Supported"},
-        {11, "Serial Number"},
-        {12, "Manufacturer Identifier"},
-        {13, "Program Version"},
-        {14, "Device Control"},
-        {15, "Order Info"},
-        {16, "PEI Type"},
-        {17, "PortADDR"},
-        {18, "Pollgroup Settings"},
-        {19, "Manufacturer Data"},
-        {21, "Description"},
-        {23, "Table"},
-        {25, "Version"},
-        {27, "Memory Control Table"},
-        {28, "Error Code"},
-        {29, "Object Index"},
-        {30, "Download Counter"},
-        {51, "Routing Count"},
-        {52, "MaxRetryCount"},
-        {53, "Error Flags"},
-        {54, "Programming Mode"},
-        {55, "Product Identification"},
-        {56, "MAX. APDU-Length"},
-        {57, "Subnetwork Address"},
-        {58, "Device Address"},
-        {59, "PID_CONFIG_LINK"},
-        {60, "Address report"},
-        {61, "Address Check"},
-        {62, "Object Value"},
-        {63, "Object Link"},
-        {64, "Application"},
-        {65, "Parameter"},
-        {66, "Object Address"},
-        {67, "PSU Type"},
-        {68, "PSU Status"},
-        {69, "PSU Enable"},
-        {70, "Domain Address"},
-        {71, "Interface Object List"},
-        {72, "Management Descriptor 1"},
-        {73, "PL110 Parameters"},
-        {75, "BiBat Receive Block Table"},
-        {76, "BiBat Random Pause Table"},
-        {77, "BiBat Receive Block Number"},
-        {78, "Hardware Type"},
-        {79, "BiBat Retransmitter Number"},
-        {80, "KNX Serial Number Table"},
-        {81, "BiBat Master Individual Address"},
-        {82, "RF Domain Address"},
-        {83, "Device Descriptor"},
-        {85, "group tel rate limit time base"},
-        {86, "group tel rate limit num of tel"},
-        {255, ""}
+    {0, "(unknown)"},
+    {1, "Interface Object Type"},
+    {2, "Interface Object Name"},
+    {5, "Load Control"},
+    {6, "Run Control"},
+    {7, "Table Reference"},
+    {8, "Service Control"},
+    {9, "Firmware Revision"},
+    {10, "Services Supported"},
+    {11, "Serial Number"},
+    {12, "Manufacturer Identifier"},
+    {13, "Program Version"},
+    {14, "Device Control"},
+    {15, "Order Info"},
+    {16, "PEI Type"},
+    {17, "PortADDR"},
+    {18, "Pollgroup Settings"},
+    {19, "Manufacturer Data"},
+    {21, "Description"},
+    {23, "Table"},
+    {25, "Version"},
+    {27, "Memory Control Table"},
+    {28, "Error Code"},
+    {29, "Object Index"},
+    {30, "Download Counter"},
+    {51, "Routing Count"},
+    {52, "MaxRetryCount"},
+    {53, "Error Flags"},
+    {54, "Programming Mode"},
+    {55, "Product Identification"},
+    {56, "MAX. APDU-Length"},
+    {57, "Subnetwork Address"},
+    {58, "Device Address"},
+    {59, "PID_CONFIG_LINK"},
+    {60, "Address report"},
+    {61, "Address Check"},
+    {62, "Object Value"},
+    {63, "Object Link"},
+    {64, "Application"},
+    {65, "Parameter"},
+    {66, "Object Address"},
+    {67, "PSU Type"},
+    {68, "PSU Status"},
+    {69, "PSU Enable"},
+    {70, "Domain Address"},
+    {71, "Interface Object List"},
+    {72, "Management Descriptor 1"},
+    {73, "PL110 Parameters"},
+    {75, "BiBat Receive Block Table"},
+    {76, "BiBat Random Pause Table"},
+    {77, "BiBat Receive Block Number"},
+    {78, "Hardware Type"},
+    {79, "BiBat Retransmitter Number"},
+    {80, "KNX Serial Number Table"},
+    {81, "BiBat Master Individual Address"},
+    {82, "RF Domain Address"},
+    {83, "Device Descriptor"},
+    {85, "group tel rate limit time base"},
+    {86, "group tel rate limit num of tel"},
+    {255, ""}
 };
 
 void TelDump::DumpPropValHeader(uint8_t tel[], unsigned int ExDReq)
@@ -241,14 +241,14 @@ void TelDump::DbgParseTele(uint8_t tel[], unsigned int len)
                 PrintPacketNo( (tel[6+ExDReq] >> 2) & 0xf );
                 switch (apci)
                 {
-                case 2:
-                    buf_printf("ACK  ");
-                    break;
-                case 3:
-                    buf_printf("NACK ");
-                    break;
-                default:
-                    buf_printf("???? ");
+                    case 2:
+                        buf_printf("ACK  ");
+                        break;
+                    case 3:
+                        buf_printf("NACK ");
+                        break;
+                    default:
+                        buf_printf("???? ");
                 }
         }
         if ((tpci & 2) == 0)

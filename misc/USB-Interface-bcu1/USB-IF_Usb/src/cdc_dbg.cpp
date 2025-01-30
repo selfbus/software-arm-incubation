@@ -33,30 +33,30 @@ CdcDbgIf::CdcDbgIf() :
 
 void CdcDbgIf::Set_hUsb(USBD_HANDLE_T h_Usb)
 {
-	hUsb = h_Usb;
-	ReceiveEna = true;
-	zlp = false;
-	CtrlLines = 0xff;
+    hUsb = h_Usb;
+    ReceiveEna = true;
+    zlp = false;
+    CtrlLines = 0xff;
 }
 
 void CdcIfSet_hUsb(USBD_HANDLE_T h_Usb)
 {
-  cdcdbgif.Set_hUsb(h_Usb);
+    cdcdbgif.Set_hUsb(h_Usb);
 }
 
 
 void CdcDbgIf::reEnableReceive(void)
 {
-	ReceiveEna = true;
+    ReceiveEna = true;
 }
 
 void CdcDbgIf::PurgeRx(void)
 {
-	while (vcom_read_cnt())
-	{
-		uint8_t buff[64];
-		vcom_bread(buff, 64);
-	}
+    while (vcom_read_cnt())
+    {
+        uint8_t buff[64];
+        vcom_bread(buff, 64);
+    }
 }
 
 void CdcDbgIf::receiveAndPushToUart()
@@ -129,79 +129,79 @@ void CdcDbgIf::DbgIf_Tasks(void)
         PurgeRx();
     }
 
-	// Normalerweise wird ReceiveEna wieder gesetzt, wenn die Übertragung bestätigt wurde.
-	// Für den Fall, dass z.B. unerwarteterweise die KNX-Seite inaktiv ist, muss eine
-	// dauerhafte Blockierung vermieden werden. Daher gibt es zusätzlich einen Timeout
-	// länger als das längste denkbare Paket (64 Bytes bei 9600 Baud).
-	if (!ReceiveEna && ((systemTime - RecDisTime) > CDC2UARTMAXWAIT))
-	{
-	    failHardInDebug();
-		ReceiveEna = true;
-	}
+    // Normalerweise wird ReceiveEna wieder gesetzt, wenn die Übertragung bestätigt wurde.
+    // Für den Fall, dass z.B. unerwarteterweise die KNX-Seite inaktiv ist, muss eine
+    // dauerhafte Blockierung vermieden werden. Daher gibt es zusätzlich einen Timeout
+    // länger als das längste denkbare Paket (64 Bytes bei 9600 Baud).
+    if (!ReceiveEna && ((systemTime - RecDisTime) > CDC2UARTMAXWAIT))
+    {
+        failHardInDebug();
+        ReceiveEna = true;
+    }
 
-	// transmit (Tx) part of the CDC virtual com port
-	if ((CdcDeviceMode == TCdcDeviceMode::ProgBusChip) || (CdcDeviceMode == TCdcDeviceMode::ProgUserChip) ||
-		(CdcDeviceMode == TCdcDeviceMode::BusMon) || (CdcDeviceMode == TCdcDeviceMode::UsbMon))
-	{
-		if (vcom_txbusy() == LPC_OK)
-		{
-			if (cdc_txfifo.Empty() != TFifoErr::Empty)
-			{
-				int buffno;
-				cdc_txfifo.Pop(buffno);
-				uint8_t *ptr = buffmgr.buffptr(buffno);
-				zlp = (ptr[0]-3) == 64;
-				vcom_write(&ptr[3], ptr[0]-3);
-				buffmgr.FreeBuffer(buffno);
-				if (++txcnt == 2)
-				{
-					txcnt=0;
-				}
+    // transmit (Tx) part of the CDC virtual com port
+    if ((CdcDeviceMode == TCdcDeviceMode::ProgBusChip) || (CdcDeviceMode == TCdcDeviceMode::ProgUserChip) ||
+        (CdcDeviceMode == TCdcDeviceMode::BusMon) || (CdcDeviceMode == TCdcDeviceMode::UsbMon))
+    {
+        if (vcom_txbusy() == LPC_OK)
+        {
+            if (cdc_txfifo.Empty() != TFifoErr::Empty)
+            {
+                int buffno;
+                cdc_txfifo.Pop(buffno);
+                uint8_t *ptr = buffmgr.buffptr(buffno);
+                zlp = (ptr[0]-3) == 64;
+                vcom_write(&ptr[3], ptr[0]-3);
+                buffmgr.FreeBuffer(buffno);
+                if (++txcnt == 2)
+                {
+                    txcnt=0;
+                }
                 deviceIf.BlinkActivityLed();
-			} else {
-				if (zlp)
-				{
-					zlp = false;
-					uint8_t dummy;
-					vcom_write(&dummy, 0);
-				}
-			}
-		}
-	} else {
-		int buffno;
-		while (cdc_txfifo.Empty() != TFifoErr::Empty)
-		{
-			cdc_txfifo.Pop(buffno);
-			buffmgr.FreeBuffer(buffno);
-		}
-	}
+            } else {
+                if (zlp)
+                {
+                    zlp = false;
+                    uint8_t dummy;
+                    vcom_write(&dummy, 0);
+                }
+            }
+        }
+    } else {
+        int buffno;
+        while (cdc_txfifo.Empty() != TFifoErr::Empty)
+        {
+            cdc_txfifo.Pop(buffno);
+            buffmgr.FreeBuffer(buffno);
+        }
+    }
 
-	if (CdcDeviceMode == TCdcDeviceMode::ProgUserChip)
-	{
-		// Set soft uart control lines (RTS/CTS...) of the KNX mcu´s soft uart (prog_uart)
-	    uint8_t new_ctrl = vcom_readctrllines();
-		if (new_ctrl != CtrlLines)
-		{
-			CtrlLines = new_ctrl;
-	    int buffno = buffmgr.AllocBuffer();
-	    if (buffno >= 0)
-	    {
-	    	uint8_t *buffptr = buffmgr.buffptr(buffno);
-	    	*buffptr++ = C_Dev_Packet_Length;
-	    	buffptr++;
-	    	*buffptr++ = C_HRH_IdDev;
-	    	*buffptr++ = C_Dev_Isp;
-    		*buffptr++ = CtrlLines;
-	    	if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
-	    	{
-	    	    failHardInDebug();
-	    	    buffmgr.FreeBuffer(buffno);
-	    	}
-	    }
-	    deviceIf.BlinkActivityLed();
-		}
-	} else {
-		CtrlLines = 0xff;
-		// Die KNX-Seite wird über das Device Management informiert, wenn sich der Modus ändert.
-	}
+    if (CdcDeviceMode == TCdcDeviceMode::ProgUserChip)
+    {
+        // Set soft uart control lines (RTS/CTS...) of the KNX mcu´s soft uart (prog_uart)
+        uint8_t new_ctrl = vcom_readctrllines();
+        if (new_ctrl != CtrlLines)
+        {
+            CtrlLines = new_ctrl;
+        int buffno = buffmgr.AllocBuffer();
+        if (buffno >= 0)
+        {
+            uint8_t *buffptr = buffmgr.buffptr(buffno);
+            *buffptr++ = C_Dev_Packet_Length;
+            buffptr++;
+            *buffptr++ = C_HRH_IdDev;
+            *buffptr++ = C_Dev_Isp;
+            *buffptr++ = CtrlLines;
+            if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
+            {
+                failHardInDebug();
+                buffmgr.FreeBuffer(buffno);
+            }
+        }
+        deviceIf.BlinkActivityLed();
+        }
+    } else {
+        CtrlLines = 0xff;
+        // Die KNX-Seite wird über das Device Management informiert, wenn sich der Modus ändert.
+    }
 }

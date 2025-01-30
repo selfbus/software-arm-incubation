@@ -16,14 +16,14 @@
 class DeviceManagement
 {
 public:
-	DeviceManagement(void);
-	void SysIf_Tasks(bool UsbActive);
-	bool KnxIsActive(void);
+    DeviceManagement(void);
+    void SysIf_Tasks(bool UsbActive);
+    bool KnxIsActive(void);
 protected:
-  unsigned int txtimeout;
-  unsigned int rxtimeout;
-  TCdcDeviceMode LastMode;
-  bool KnxActive;
+    unsigned int txtimeout;
+    unsigned int rxtimeout;
+    TCdcDeviceMode LastMode;
+    bool KnxActive;
 };
 
 extern DeviceManagement devicemgnt;

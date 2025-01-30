@@ -23,32 +23,32 @@ DeviceManagement devicemgnt;
 
 DeviceManagement::DeviceManagement(void)
 {
-  txtimeout = 0;
-  rxtimeout = 0;
-  LastMode = TCdcDeviceMode::Halt;
-  KnxActive = false;
+    txtimeout = 0;
+    rxtimeout = 0;
+    LastMode = TCdcDeviceMode::Halt;
+    KnxActive = false;
 }
 
 bool DeviceManagement::KnxIsActive(void)
 {
-	return KnxActive;
+    return KnxActive;
 }
 
 void DeviceManagement::SysIf_Tasks(bool UsbActive)
 {
-	if (CdcDeviceMode == TCdcDeviceMode::ProgBusChip)
-	{
-		if (dev_rxfifo.Empty() != TFifoErr::Empty)
-		{
-			int buffno;
-			dev_rxfifo.Pop(buffno);
-			buffmgr.FreeBuffer(buffno);
-		}
-		LastMode = TCdcDeviceMode::ProgBusChip;
-		rxtimeout = systemTime;
-		txtimeout = systemTime;
-		return;
-	}
+    if (CdcDeviceMode == TCdcDeviceMode::ProgBusChip)
+    {
+        if (dev_rxfifo.Empty() != TFifoErr::Empty)
+        {
+            int buffno;
+            dev_rxfifo.Pop(buffno);
+            buffmgr.FreeBuffer(buffno);
+        }
+        LastMode = TCdcDeviceMode::ProgBusChip;
+        rxtimeout = systemTime;
+        txtimeout = systemTime;
+        return;
+    }
 
     if (dev_rxfifo.Empty() != TFifoErr::Empty)
     {
@@ -152,47 +152,47 @@ void DeviceManagement::SysIf_Tasks(bool UsbActive)
     txtimeout = systemTime + C_IdlePeriod;
 }
 
-	///\todo handle communication timeouts and buffer-overflows, see below
+    ///\todo handle communication timeouts and buffer-overflows, see below
     // Uart-Schnittstelle zur KNX-Seite
-	/*
-	 * CDC & HID:
-	 * Wie vorgehen, wenn einer oder beide Endpoints keine Daten abnehmen?
-	 * Das ist der zu erwartende Fall, wenn das entsprechende Interface gar nicht
-	 * geöffnet ist.
-	 * Auf USB_IsConfigured(hUsb) testen, das sollte klar sein. Aber das sagt wohl nicht
-	 * sicher, ob das Device geöffnet ist. Oder verwirft der USB-Stack ansonsten einfach
-	 * die Daten, arbeitet aber ansonsten?
-	 * Das entsprechende Fifo läuft voll, dabei werden viele oder alle Buffer belegt.
-	 * Bis jetzt würde kein neuer Buffer angefragt oder kein neuer Buffer in den vollen
-	 * Fifo eingereiht werden. Das führt zu veralteten Daten im Fifo und u.U. dazu, dass
-	 * auch das aktive Interface nicht mehr funktioniert - weil kein freier Buffer mehr
-	 * verfügbar ist.
-	 * Ziel: Alte Buffer im Fifo werden bevorzugt gelöscht.
-	 *  -> Anstatt den neuen Buffer zu droppen, einfach den ältesten Eintrag im Fifo droppen
-	 * Ziel: Wenn später das Interface aktiviert wird, werden keine veralteten Daten
-	 *       verschickt. Für das User-Programm ist es leider nicht klar erkennbar, wann
-	 *       ein Interface aktiv ist bzw aktiviert wird.
-	 *       Timeout z.B. wenn eine Sekunde kein Datentransfer stattfand, aber der Fifo nicht leer ist?
-	 *       Dann Fifo leeren. Muss der aktuell anstehende Transfer abgebrochen werden?
-	 *       Die Knx-Seite muss das erfahren, damit z.B. der HID-Busmonitor Mode beendet wird.
-	 *       Was wenn zufälligerweise kein Transfer notwendig war, während das If disconnected war?
-	 *       -> Die HID-Seite hat mehr Möglichkeiten festzustellen, ob verbunden. Siehe Beispiele
-	 *       auch von Microchip!
-	 * Ziel: Es bleiben genug Buffer für das andere Interface frei.
-	 *  -> Deutlich mehr Buffer als Fifo-Tiefe. 16 Buffer sind nur 1056 Bytes, der Chip hat
-	 *     8kB Main-SRAM. Die Fifos sind 4 Stufen tief.
-	 */
-	/*
-	 * Letzendlich bleibt unklar, ob der Host-Treiber bereits die Daten abholt, wenn das Device
-	 * konfiguriert ist. Das HID-Device sieht beispielsweise Start of Frame Events, obwohl das
-	 * Device nicht vom Programm geöffnet worden ist.
-	 * Also erst mal vereinfacht: Solange USB_IsConfigured() gehe ich davon aus, dass die Daten
-	 * vom Host auch abgeholt werden. Wenn nicht USB_IsConfigured(), dann Fifo und neue Aufträge
-	 * löschen. Wenn das später zu Problemen führt, wird das Ganze noch mal geändert.
-	 */
+    /*
+     * CDC & HID:
+     * Wie vorgehen, wenn einer oder beide Endpoints keine Daten abnehmen?
+     * Das ist der zu erwartende Fall, wenn das entsprechende Interface gar nicht
+     * geöffnet ist.
+     * Auf USB_IsConfigured(hUsb) testen, das sollte klar sein. Aber das sagt wohl nicht
+     * sicher, ob das Device geöffnet ist. Oder verwirft der USB-Stack ansonsten einfach
+     * die Daten, arbeitet aber ansonsten?
+     * Das entsprechende Fifo läuft voll, dabei werden viele oder alle Buffer belegt.
+     * Bis jetzt würde kein neuer Buffer angefragt oder kein neuer Buffer in den vollen
+     * Fifo eingereiht werden. Das führt zu veralteten Daten im Fifo und u.U. dazu, dass
+     * auch das aktive Interface nicht mehr funktioniert - weil kein freier Buffer mehr
+     * verfügbar ist.
+     * Ziel: Alte Buffer im Fifo werden bevorzugt gelöscht.
+     *  -> Anstatt den neuen Buffer zu droppen, einfach den ältesten Eintrag im Fifo droppen
+     * Ziel: Wenn später das Interface aktiviert wird, werden keine veralteten Daten
+     *       verschickt. Für das User-Programm ist es leider nicht klar erkennbar, wann
+     *       ein Interface aktiv ist bzw aktiviert wird.
+     *       Timeout z.B. wenn eine Sekunde kein Datentransfer stattfand, aber der Fifo nicht leer ist?
+     *       Dann Fifo leeren. Muss der aktuell anstehende Transfer abgebrochen werden?
+     *       Die Knx-Seite muss das erfahren, damit z.B. der HID-Busmonitor Mode beendet wird.
+     *       Was wenn zufälligerweise kein Transfer notwendig war, während das If disconnected war?
+     *       -> Die HID-Seite hat mehr Möglichkeiten festzustellen, ob verbunden. Siehe Beispiele
+     *       auch von Microchip!
+     * Ziel: Es bleiben genug Buffer für das andere Interface frei.
+     *  -> Deutlich mehr Buffer als Fifo-Tiefe. 16 Buffer sind nur 1056 Bytes, der Chip hat
+     *     8kB Main-SRAM. Die Fifos sind 4 Stufen tief.
+     */
+    /*
+     * Letzendlich bleibt unklar, ob der Host-Treiber bereits die Daten abholt, wenn das Device
+     * konfiguriert ist. Das HID-Device sieht beispielsweise Start of Frame Events, obwohl das
+     * Device nicht vom Programm geöffnet worden ist.
+     * Also erst mal vereinfacht: Solange USB_IsConfigured() gehe ich davon aus, dass die Daten
+     * vom Host auch abgeholt werden. Wenn nicht USB_IsConfigured(), dann Fifo und neue Aufträge
+     * löschen. Wenn das später zu Problemen führt, wird das Ganze noch mal geändert.
+     */
 
-	/*
-	 * Die KNX-Seite muss die Änderung USB_IsConfigured mitbekommen
-	 * Ebenso steht die Übertragung von RTS/DTR noch aus
-	 */
+    /*
+     * Die KNX-Seite muss die Änderung USB_IsConfigured mitbekommen
+     * Ebenso steht die Übertragung von RTS/DTR noch aus
+     */
 

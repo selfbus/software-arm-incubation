@@ -20,23 +20,23 @@
 class CdcDbgIf
 {
 public:
-	CdcDbgIf(void);
-	void Set_hUsb(USBD_HANDLE_T h_Usb);
-	void Reset(void);
-	void PurgeRx(void);
-	void reEnableReceive(void);
-	void DbgIf_Tasks(void);
+    CdcDbgIf(void);
+    void Set_hUsb(USBD_HANDLE_T h_Usb);
+    void Reset(void);
+    void PurgeRx(void);
+    void reEnableReceive(void);
+    void DbgIf_Tasks(void);
 protected:
-	USBD_HANDLE_T hUsb;	// Handle to USB stack.
-	bool ReceiveEna;
-	bool zlp;
-	uint8_t CtrlLines;
-	unsigned int RecDisTime;
+    USBD_HANDLE_T hUsb;    // Handle to USB stack.
+    bool ReceiveEna;
+    bool zlp;
+    uint8_t CtrlLines;
+    unsigned int RecDisTime;
 
 private:
-	uint32_t rxByteCounter;
-	uint32_t txByteCounter;
-	void receiveAndPushToUart();
+    uint32_t rxByteCounter;
+    uint32_t txByteCounter;
+    void receiveAndPushToUart();
 };
 
 extern CdcDbgIf cdcdbgif;

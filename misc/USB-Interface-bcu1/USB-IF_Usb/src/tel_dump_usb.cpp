@@ -16,7 +16,7 @@ TelDumpUsb teldump;
 // Den evtl. langen String in 64 Byte Häppchen splitten und im Cdc-Fifo einreihen
 void TelDumpUsb::OutputFunction(char* ptr, unsigned len) //Split_CdcEnqueue(char* ptr, unsigned len)
 {
-	Split_CdcEnqueue(ptr, len);
+    Split_CdcEnqueue(ptr, len);
 }
 
 
