@@ -27,50 +27,50 @@ enum class TProgUartErr
 
 class ProgUart
 {
-    public:
-        ProgUart(Timer& aTimer, int aTimerNum, int aRxPin, int aTxPin, TimerCapture arx_CaptureCh, TimerMatch arx_MatchCh, TimerMatch atx_MatchCh, int aIspEnPin, int aIspRstPin);
+public:
+    ProgUart(Timer& aTimer, int aTimerNum, int aRxPin, int aTxPin, TimerCapture arx_CaptureCh, TimerMatch arx_MatchCh, TimerMatch atx_MatchCh, int aIspEnPin, int aIspRstPin);
 
-        void EnableUart();
+    void EnableUart();
 
-        void DisableUart();
+    void DisableUart();
 
-        bool TxBusy(void);
+    bool TxBusy(void);
 
-        TProgUartErr TransmitBuffer(int buffno);
+    TProgUartErr TransmitBuffer(int buffno);
 
-        void SerIf_Tasks(void);
+    void SerIf_Tasks(void);
 
-        void timerInterruptHandler();
+    void timerInterruptHandler();
 
-        void Enable(void);
+    void Enable(void);
 
-        void Disable(void);
+    void Disable(void);
 
-        void SetIspLines(uint8_t data);
+    void SetIspLines(uint8_t data);
 
-    protected:
-        Timer& timer;                //!< The timer
-        int timerNum;
-        int rxPin, txPin;            //!< The pins for bus receiving and sending
-        TimerCapture rx_captureCh;   //!< The timer channel that captures the timer value on the bus-in pin
-        TimerMatch rx_matchCh;
-        TimerMatch tx_matchCh;
-        int rxbitcnt;
-        int txbitcnt;
-        uint8_t rxbyte;
-        uint8_t txbyte;
-        unsigned int txstarttime;
-        int txbuffno;
-        int rxbuffno;
-        uint8_t *txptr;
-        uint8_t *rxptr;
-        int txlen;
-        int rxlen;
+protected:
+    Timer& timer;                //!< The timer
+    int timerNum;
+    int rxPin, txPin;            //!< The pins for bus receiving and sending
+    TimerCapture rx_captureCh;   //!< The timer channel that captures the timer value on the bus-in pin
+    TimerMatch rx_matchCh;
+    TimerMatch tx_matchCh;
+    int rxbitcnt;
+    int txbitcnt;
+    uint8_t rxbyte;
+    uint8_t txbyte;
+    unsigned int txstarttime;
+    int txbuffno;
+    int rxbuffno;
+    uint8_t *txptr;
+    uint8_t *rxptr;
+    int txlen;
+    int rxlen;
 
-        int IspEnPin, IspRstPin;
-        bool Enabled;
-        uint8_t IspLines;
-        void UpdIspLines(void);
+    int IspEnPin, IspRstPin;
+    bool Enabled;
+    uint8_t IspLines;
+    void UpdIspLines(void);
 };
 
 
