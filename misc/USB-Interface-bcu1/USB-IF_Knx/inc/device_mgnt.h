@@ -22,6 +22,10 @@ protected:
   unsigned int txtimeout;
   unsigned int rxtimeout;
   uint8_t LastDevSys;
+
+private:
+  void handleDev_Sys(uint8_t subControlByte);
+
 };
 
 extern DeviceManagement devicemgnt;
