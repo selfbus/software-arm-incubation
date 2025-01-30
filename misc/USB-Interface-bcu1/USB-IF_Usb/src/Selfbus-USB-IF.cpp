@@ -8,8 +8,6 @@
  *  published by the Free Software Foundation.
  */
 
-#include <cr_section_macros.h>
-
 #include "chip.h"
 #include <stdio.h>
 #include <string.h>
@@ -23,8 +21,6 @@
 #include "UartIf.h"
 #include "ModeSelect.h"
 
-// Code Protection deaktiviert
-__attribute__ ((used,section(".crp"))) const unsigned int CRP_WORD = 0xFFFFFFFF;
 
 const uint32_t OscRateIn = 12000000;
 const uint32_t ExtRateIn = 0;
