@@ -96,24 +96,13 @@ int main(void) {
         // jumper JP 5 is closed (PIO 1_19 connected to ground)
         CdcDeviceMode = TCdcDeviceMode::ProgBusChip;
         modeSelect.setAllLeds(true);
-        ///\todo Implement auto-baud routine according to NXP user manual UM10398 26.3.3
-        ///      quote:
-        ///      "The auto-baud routine measures the bit time of the received synchronization character in
-        ///       terms of its own frequency and programs the baud rate generator of the serial port. It also
-        ///       sends an ASCII string ("Synchronized<CR><LF>") to the host"
-        ///
-        ///      The opto-couplers (OK1, OK2) type H11L1M should be fast enough (1Mhz).
-        uart.Init(115200, true);
-        //uart.Init(115200, true);
+        uart.Init(C_Dev_Baurate, true);
     }
     else
     {
         // wenn nicht "ProgBusChip"
         modeSelect.StartModeSelect();
         CdcDeviceMode = modeSelect.DeviceMode();
-        ///\todo The soft-uart of the USB-IF_Knx (prog_uart.h) runs only at 9600baud!
-        ///      This needs more testing. Maybe 115200 baud is to fast.
-        // this baudrate must match the baudrate of the soft-uart "prog_uart.h"
         uart.Init(C_Dev_Baurate, false);
     }
 
