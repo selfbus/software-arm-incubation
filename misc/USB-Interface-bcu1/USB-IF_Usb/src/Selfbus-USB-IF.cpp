@@ -21,6 +21,7 @@
 #include "device_mgnt_const.h"
 #include "UartIf.h"
 #include "ModeSelect.h"
+#include "error_handler.h"
 
 
 const uint32_t OscRateIn = 12000000;
@@ -50,7 +51,6 @@ extern "C" ErrorCode_t USB_sof_event(USBD_HANDLE_T hUsb)
 }
 
 int main(void) {
-	ErrorCode_t ret = LPC_OK;
 	unsigned Last10msTime = 0;
 	usb_alive = false;
 
@@ -76,11 +76,7 @@ int main(void) {
 	    uart.Init(C_Dev_Baurate, false);
 	}
 
-	ret = usb_init(&g_hUsb, CdcDeviceMode == TCdcDeviceMode::HidOnly);
-
 	while (1) {
-		if (ret == LPC_OK) {
-
 			devicemgnt.SysIf_Tasks(knxhidif.UsbIsConfigured());
 			knxhidif.KnxIf_Tasks();
 			if (CdcDeviceMode != TCdcDeviceMode::HidOnly) {
@@ -116,7 +112,10 @@ int main(void) {
 			    }
 			  }
 			}
-
-		}
 	}
+    ErrorCode_t ret = usb_init(&g_hUsb, CdcDeviceMode == TCdcDeviceMode::HidOnly);
+    if (ret != LPC_OK)
+    {
+        fatalError();
+    }
 }
