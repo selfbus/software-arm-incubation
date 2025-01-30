@@ -162,7 +162,8 @@ bool ModeSelect::DoModeSelect(void)
           command[4] = SystemCoreClock / 1000;
           EELIB_entry(command, result);
           if (result[0] != EELIB_IAP_STATUS_CMD_SUCCESS) {
-            // doof das...
+              // doof das...
+              failHardInDebug();
           }
 
           return true;
