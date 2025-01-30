@@ -94,14 +94,14 @@ void CdcDbgIf::receiveAndPushToUart()
         }
         ptr[0] = bytesReadCount + cdc_OffSet;
         ptr[2] = C_HRH_IdCdc; // Kennung fuer CDC-Paket
-/*
+
         TFifoErr pushResult = ser_txfifo.Push(buffno);
         if (pushResult != TFifoErr::Ok)
         {
             failHardInDebug();
             buffmgr.FreeBuffer(buffno);
         }
-*/
+
         rxByteCounter += bytesReadCount;
         ReceiveEna = true; // immer nur ein Paket vom CDC-Interface im Fifo erlaubt
         RecDisTime = systemTime;
