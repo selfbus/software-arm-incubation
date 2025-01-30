@@ -55,15 +55,15 @@ void operator delete[](void *p)
 }
 
 extern "C" int __aeabi_atexit(void *object,
-		void (*destructor)(void *),
-		void *dso_handle)
+        void (*destructor)(void *),
+        void *dso_handle)
 {
-	return 0;
+    return 0;
 }
 
 #ifdef CPP_NO_HEAP
 extern "C" void *malloc(size_t) {
-	return (void *)0;
+    return (void *)0;
 }
 
 extern "C" void free(void *) {

@@ -44,16 +44,16 @@ BcuBase* setup()
  */
 void loop()
 {
-  uart.SerIf_Tasks(); // inter-mcu transmitting
-  // emiknxif.SetCdcMonMode(true); //only for debugging to "hard" activate serial busmonitor mode
-  emiknxif.EmiIf_Tasks();
-  proguart.SerIf_Tasks();
-  devicemgnt.DevMgnt_Tasks();
-  // Sleep until the next 1 msec timer interrupt occurs (or shorter)
-  __WFI();
+    uart.SerIf_Tasks(); // inter-mcu transmitting
+    // emiknxif.SetCdcMonMode(true); //only for debugging to "hard" activate serial busmonitor mode
+    emiknxif.EmiIf_Tasks();
+    proguart.SerIf_Tasks();
+    devicemgnt.DevMgnt_Tasks();
+    // Sleep until the next 1 msec timer interrupt occurs (or shorter)
+    __WFI();
 }
 
 void loop_noapp()
 {
-  loop();
+    loop();
 }

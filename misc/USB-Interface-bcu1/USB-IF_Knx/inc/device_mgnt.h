@@ -15,18 +15,19 @@
 ///todo this class exists also in USB-IF_Usb
 class DeviceManagement
 {
-public:
-  DeviceManagement(void);
-  void DevMgnt_Tasks(void);
-protected:
-  unsigned int txtimeout;
-  unsigned int rxtimeout;
-  uint8_t LastDevSys;
+    public:
+        DeviceManagement(void);
+        void DevMgnt_Tasks(void);
+    protected:
+        unsigned int txtimeout;
+        unsigned int rxtimeout;
+        uint8_t LastDevSys;
 
-private:
-  void handleDev_Sys(uint8_t subControlByte);
+    private:
+        void handleDev_Sys(uint8_t subControlByte);
 
 };
 
 extern DeviceManagement devicemgnt;
+
 #endif /* DEVICE_MGNT_H_ */

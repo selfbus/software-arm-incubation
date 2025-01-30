@@ -28,63 +28,63 @@ extern BCU1 bcu;
 
 EmiKnxIf::EmiKnxIf(int aLedPin)
 {
-  txbuffno = -1;
-  CdcMonActive = false;
-  ledEnabled = true; // Damit die LED beim Start AUSgeschaltet wird
-  ledPin = aLedPin;
-  pinMode(ledPin, OUTPUT);
-  SetActivityLed(false);
-  ledLastDoTime = 0;
+    txbuffno = -1;
+    CdcMonActive = false;
+    ledEnabled = true; // Damit die LED beim Start AUSgeschaltet wird
+    ledPin = aLedPin;
+    pinMode(ledPin, OUTPUT);
+    SetActivityLed(false);
+    ledLastDoTime = 0;
 }
 
 void EmiKnxIf::SetActivityLed(bool onoff)
 {
-  digitalWrite(ledPin, !onoff);
+    digitalWrite(ledPin, !onoff);
 }
 
 void EmiKnxIf::BlinkActivityLed(void)
 {
-  if (ledEnabled)
-  {
-    if (ledBlinkCount < 2)
+    if (ledEnabled)
     {
-      if (ledBlinkCount == 0)
-      {
-        SetActivityLed(false);
-      }
-      ledBlinkCount += 2;
-      ledTimeCount = ACTLED_HPRD;
+        if (ledBlinkCount < 2)
+        {
+            if (ledBlinkCount == 0)
+            {
+                SetActivityLed(false);
+            }
+            ledBlinkCount += 2;
+            ledTimeCount = ACTLED_HPRD;
+        }
     }
-  }
 }
 
 void EmiKnxIf::DoActivityLed(bool Led_Enabled)
 {
-  if (ledEnabled != Led_Enabled)
-  {
-    ledEnabled = Led_Enabled;
-    SetActivityLed(ledEnabled);
-  }
-  if (ledEnabled)
-  {
-    if (ledBlinkCount != 0)
+    if (ledEnabled != Led_Enabled)
     {
-      if (ledTimeCount > 0)
-        ledTimeCount--;
-      if (ledTimeCount == 0)
-      {
-        ledBlinkCount--;
-        if (ledBlinkCount > 0)
-        {
-          ledTimeCount = ACTLED_HPRD;
-          SetActivityLed((ledBlinkCount & 1) != 0);
-        }
-      }
+        ledEnabled = Led_Enabled;
+        SetActivityLed(ledEnabled);
     }
-  } else {
-    ledBlinkCount = 0;
-    ledTimeCount = 0;
-  }
+    if (ledEnabled)
+    {
+        if (ledBlinkCount != 0)
+        {
+            if (ledTimeCount > 0)
+              ledTimeCount--;
+            if (ledTimeCount == 0)
+            {
+                ledBlinkCount--;
+                if (ledBlinkCount > 0)
+                {
+                    ledTimeCount = ACTLED_HPRD;
+                    SetActivityLed((ledBlinkCount & 1) != 0);
+                }
+            }
+        }
+    } else {
+        ledBlinkCount = 0;
+        ledTimeCount = 0;
+    }
 }
 
 uint8_t EmiKnxIf::emiReadOneValue(int memoryAddress)
@@ -253,56 +253,56 @@ void EmiKnxIf::SetCdcMonMode(bool newState)
 
 void EmiKnxIf::emiWriteOneValue(int addr, uint8_t value, bool &isResetEmi)
 {
-  if (bcu.userRam->inRange(addr) && (!bcu.userRam->isStatusAddress(addr)))
-  {
-      failHardInDebug();
-  }
+    if (bcu.userRam->inRange(addr) && (!bcu.userRam->isStatusAddress(addr)))
+    {
+        failHardInDebug();
+    }
 
-  if (bcu.userRam->isStatusAddress(addr))
-  {
-      isResetEmi = SystemState::Reset == value;
-      setSystemState(value);
-      return;
-  }
+    if (bcu.userRam->isStatusAddress(addr))
+    {
+        isResetEmi = SystemState::Reset == value;
+        setSystemState(value);
+        return;
+    }
 
-  // Vorerst werden die eeprom Schreibzugriffe ungefiltert weitergegeben.
-  uint8_t * memoryPtr = bcu.userMemoryPtr(addr);
-  if (memoryPtr == nullptr)
-  {
-      failHardInDebug();
-      return;
-  }
+    // Vorerst werden die eeprom Schreibzugriffe ungefiltert weitergegeben.
+    uint8_t * memoryPtr = bcu.userMemoryPtr(addr);
+    if (memoryPtr == nullptr)
+    {
+        failHardInDebug();
+        return;
+    }
 
-  if (value != bcu.userEeprom->getUInt8(addr))
-  {
-      *bcu.userMemoryPtr(addr) = value;
-      // bcu.userEeprom->setUInt8(addr, value);
-      bcu.userEeprom->modified(true);
-  }
+    if (value != bcu.userEeprom->getUInt8(addr))
+    {
+        *bcu.userMemoryPtr(addr) = value;
+        // bcu.userEeprom->setUInt8(addr, value);
+        bcu.userEeprom->modified(true);
+    }
 
-  if ((addr == AddrIndividualAddressLowByte) || (addr == AddrIndividualAddressHighByte))
-  {
-      uint16_t newAddress = makeWord(bcu.userEeprom->getUInt8(AddrIndividualAddressHighByte),
-                                     bcu.userEeprom->getUInt8(AddrIndividualAddressLowByte));
-      bcu.setOwnAddress(newAddress);
-  }
-  else
-  {
-      switch (addr)
-      {
-          case AddrExpectedPeiType:
-              break;
+    if ((addr == AddrIndividualAddressLowByte) || (addr == AddrIndividualAddressHighByte))
+    {
+        uint16_t newAddress = makeWord(bcu.userEeprom->getUInt8(AddrIndividualAddressHighByte),
+                                       bcu.userEeprom->getUInt8(AddrIndividualAddressLowByte));
+        bcu.setOwnAddress(newAddress);
+    }
+    else
+    {
+        switch (addr)
+        {
+            case AddrExpectedPeiType:
+                break;
 
-          case AddrStartAddressTable:
-              break;
+            case AddrStartAddressTable:
+                break;
 
-          case AddrBaseConfig:
-              break;
+            case AddrBaseConfig:
+                break;
 
-          default:
-              failHardInDebug();
-      }
-  }
+            default:
+                failHardInDebug();
+        }
+    }
 }
 
 void EmiKnxIf::reset(void)
@@ -314,85 +314,88 @@ void EmiKnxIf::reset(void)
 
 void EmiKnxIf::setTPBodyLength(uint8_t *ptr, uint8_t len)
 {
-  // Setzt die Telegrammlänge an den verschiedenen Stellen auf die
-  // passenden Werte, die Länge ist die des Transfer Protocol Body
+    // Setzt die Telegrammlänge an den verschiedenen Stellen auf die
+    // passenden Werte, die Länge ist die des Transfer Protocol Body
                                                                  // len = 9
-  // 2 bytes Transfer Protocol Body length
-  // KNX Spec 2.1 9/3 3.4.1.3.3
-  ptr[2 + C_HRH_HeadLen + IDX_TPH_BodyLen] = HIGH_BYTE(len);       // ptr[7] = 0
-  ptr[2 + C_HRH_HeadLen + IDX_TPH_BodyLen + 1] = lowByte(len);     // ptr[8] = len
+    // 2 bytes Transfer Protocol Body length
+    // KNX Spec 2.1 9/3 3.4.1.3.3
+    ptr[2 + C_HRH_HeadLen + IDX_TPH_BodyLen] = HIGH_BYTE(len);       // ptr[7] = 0
+    ptr[2 + C_HRH_HeadLen + IDX_TPH_BodyLen + 1] = lowByte(len);     // ptr[8] = len
 
-  // 1 byte HID report frame length
-  ptr[2 + IDX_HRH_DataLen] = len + TPH_ProtocolLength_V0;                  // ptr[4] = len + 8
+    // 1 byte HID report frame length
+    ptr[2 + IDX_HRH_DataLen] = len + TPH_ProtocolLength_V0;                  // ptr[4] = len + 8
 
-  // 1 byte total length
-  ptr[0] = len + TPH_ProtocolLength_V0 + C_HRH_HeadLen + IDX_TPB_Data + 2; // ptr[0] = len + 23
+    // 1 byte total length
+    ptr[0] = len + TPH_ProtocolLength_V0 + C_HRH_HeadLen + IDX_TPB_Data + 2; // ptr[0] = len + 23
 }
 
 void EmiKnxIf::receivedUsbEmiPacket(int buffno)
 {
-  uint8_t *buffptr = buffmgr.buffptr(buffno);
-  // Die ganze Auswertung geht vorerst von EMI1 aus
-  // ptr zeigt auf den KNX HID Report Header
-  uint8_t *ptr = buffptr + 2 + C_HRH_HeadLen;
-  // Jetzt zeigt der ptr auf den KNX HID Report Body
-  unsigned TransferBodyLength = (ptr[IDX_TPH_BodyLen] << 8) + ptr[IDX_TPH_BodyLen+1];
-  unsigned EmiAddr = (ptr[TPH_ProtocolLength_V0+IDX_TPB_EMI_Addr_h] << 8) + ptr[TPH_ProtocolLength_V0+IDX_TPB_EMI_Addr_l];
-  uint8_t len = ptr[TPH_ProtocolLength_V0+IDX_TPB_EMI_Len];
-  bool isResetEmi = false;
-  uint8_t * ptrTelegramStart;
-  switch (ptr[TPH_ProtocolLength_V0]) // Switch auf den EMI M-Code
-  {
-  case C_MCode_GetValue: // Einen Emi-Wert abfragen
-    // Das ankommende Telegramm wird sofort für die Antwort benutzt
-    setTPBodyLength(buffptr, len+IDX_TPB_EMI_Data);
-    ptr[TPH_ProtocolLength_V0] = C_MCode_ResponseValue;
-    ptr += TPH_ProtocolLength_V0+IDX_TPB_EMI_Data;
-    while (len > 0)
+    uint8_t *buffptr = buffmgr.buffptr(buffno);
+    // Die ganze Auswertung geht vorerst von EMI1 aus
+    // ptr zeigt auf den KNX HID Report Header
+    uint8_t *ptr = buffptr + 2 + C_HRH_HeadLen;
+    // Jetzt zeigt der ptr auf den KNX HID Report Body
+    unsigned TransferBodyLength = (ptr[IDX_TPH_BodyLen] << 8) + ptr[IDX_TPH_BodyLen+1];
+    unsigned EmiAddr = (ptr[TPH_ProtocolLength_V0+IDX_TPB_EMI_Addr_h] << 8) + ptr[TPH_ProtocolLength_V0+IDX_TPB_EMI_Addr_l];
+    uint8_t len = ptr[TPH_ProtocolLength_V0+IDX_TPB_EMI_Len];
+    bool isResetEmi = false;
+    uint8_t * ptrTelegramStart;
+    switch (ptr[TPH_ProtocolLength_V0]) // Switch auf den EMI M-Code
     {
-      *ptr++ = emiReadOneValue(EmiAddr++);
-      len--;
-    }
-    if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
-      buffmgr.FreeBuffer(buffno);
-    break;
-  case C_MCode_SetValue: // Einen Emi-Wert setzen
-    ptr += TPH_ProtocolLength_V0+IDX_TPB_EMI_Data;
-    while ((len > 0) && !isResetEmi)
-    {
-      emiWriteOneValue(EmiAddr++, *ptr++, isResetEmi);
-      len--;
-    }
-    if (isResetEmi)
-    {
-      ///\todo Bug:
-      /// after the response is sent, the usb-mcu can't connect a second time e.g. with knxd
-      setTPBodyLength(buffptr, 1);
-      ptr = buffptr + 2 + C_HRH_HeadLen + TPH_ProtocolLength_V0;
-      *ptr++ = C_MCode_PEI_Reset;
-      *ptr++ = 0;
-      *ptr++ = 0;
-      *ptr++ = 0;
-      *ptr++ = 0;
-      if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
+    case C_MCode_GetValue: // Einen Emi-Wert abfragen
+        // Das ankommende Telegramm wird sofort für die Antwort benutzt
+        setTPBodyLength(buffptr, len+IDX_TPB_EMI_Data);
+        ptr[TPH_ProtocolLength_V0] = C_MCode_ResponseValue;
+        ptr += TPH_ProtocolLength_V0+IDX_TPB_EMI_Data;
+        while (len > 0)
+        {
+            *ptr++ = emiReadOneValue(EmiAddr++);
+            len--;
+        }
+        if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
+            buffmgr.FreeBuffer(buffno);
+        break;
+
+    case C_MCode_SetValue: // Einen Emi-Wert setzen
+        ptr += TPH_ProtocolLength_V0+IDX_TPB_EMI_Data;
+        while ((len > 0) && !isResetEmi)
+        {
+            emiWriteOneValue(EmiAddr++, *ptr++, isResetEmi);
+            len--;
+        }
+        if (isResetEmi)
+        {
+            ///\todo Bug:
+            /// after the response is sent, the usb-mcu can't connect a second time e.g. with knxd
+            setTPBodyLength(buffptr, 1);
+            ptr = buffptr + 2 + C_HRH_HeadLen + TPH_ProtocolLength_V0;
+            *ptr++ = C_MCode_PEI_Reset;
+            *ptr++ = 0;
+            *ptr++ = 0;
+            *ptr++ = 0;
+            *ptr++ = 0;
+            if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
+                buffmgr.FreeBuffer(buffno);
+        } else {
+            buffmgr.FreeBuffer(buffno);
+        }
+        break;
+
+    case C_MCode_TxReq: // Ein Telegramm von USB auf den KNX-Bus übertragen
+        ptrTelegramStart = ptr + TPH_ProtocolLength_V0 + IDX_TPB_Data;
+        receivedEmiControlByte = *ptrTelegramStart;
+        initLpdu(ptrTelegramStart, priority(ptrTelegramStart), false, FRAME_STANDARD);
+        txbuffno = buffno;
+        bcu.bus->sendTelegram(ptrTelegramStart, TransferBodyLength-1);
+        // sendTelegram geht davon aus, dass nach den Telegrammdaten noch 1 Byte frei für die
+        // Checksumme ist. Das ist gegeben, die Buffer sind 68 Byte lang für ein 64 Byte HID-Paket.
+        // Der Buffer wird erst nach dem Versenden wieder freigegeben
+        BlinkActivityLed();
+        break;
+
+    default:
         buffmgr.FreeBuffer(buffno);
-    } else {
-      buffmgr.FreeBuffer(buffno);
-    }
-    break;
-  case C_MCode_TxReq: // Ein Telegramm von USB auf den KNX-Bus übertragen
-    ptrTelegramStart = ptr + TPH_ProtocolLength_V0 + IDX_TPB_Data;
-    receivedEmiControlByte = *ptrTelegramStart;
-    initLpdu(ptrTelegramStart, priority(ptrTelegramStart), false, FRAME_STANDARD);
-    txbuffno = buffno;
-    bcu.bus->sendTelegram(ptrTelegramStart, TransferBodyLength-1);
-    // sendTelegram geht davon aus, dass nach den Telegrammdaten noch 1 Byte frei für die
-    // Checksumme ist. Das ist gegeben, die Buffer sind 68 Byte lang für ein 64 Byte HID-Paket.
-    // Der Buffer wird erst nach dem Versenden wieder freigegeben
-    BlinkActivityLed();
-    break;
-  default:
-    buffmgr.FreeBuffer(buffno);
   }
 }
 
@@ -517,7 +520,7 @@ void EmiKnxIf::EmiIf_Tasks(void)
         }
         else
         {
-          buffmgr.FreeBuffer(buffno);
+            buffmgr.FreeBuffer(buffno);
         }
     }
 

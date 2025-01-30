@@ -41,102 +41,102 @@ ProgUart proguart(timer32_0, TIMER32_0, PIO2_9, PIO0_11, CAP0, MAT0, MAT3, PIO1_
 ProgUart::ProgUart(Timer& aTimer, int aTimerNum, int aRxPin, int aTxPin, TimerCapture arx_CaptureCh, TimerMatch arx_MatchCh, TimerMatch atx_MatchCh, int aIspEnPin, int aIspRstPin)
 :timer(aTimer)
 {
-  timerNum = aTimerNum;
-  rxPin = aRxPin;
-  txPin = aTxPin;
-  rx_captureCh = arx_CaptureCh;
-  rx_matchCh = arx_MatchCh;
-  tx_matchCh = atx_MatchCh;
-  IspEnPin = aIspEnPin;
-  IspRstPin = aIspRstPin;
-  rxbuffno = -1;
-  txbuffno = -1;
-  rxbitcnt = 0;
-  txbitcnt = 0;
-  rxlen = 0;
-  txlen = 0;
-  Enabled = false;
-  IspLines = 0;
+    timerNum = aTimerNum;
+    rxPin = aRxPin;
+    txPin = aTxPin;
+    rx_captureCh = arx_CaptureCh;
+    rx_matchCh = arx_MatchCh;
+    tx_matchCh = atx_MatchCh;
+    IspEnPin = aIspEnPin;
+    IspRstPin = aIspRstPin;
+    rxbuffno = -1;
+    txbuffno = -1;
+    rxbitcnt = 0;
+    txbitcnt = 0;
+    rxlen = 0;
+    txlen = 0;
+    Enabled = false;
+    IspLines = 0;
 }
 
 void ProgUart::EnableUart(void)
 {
-  pinMode(rxPin, INPUT | PULL_UP);
-  rxbuffno = -1;
-  txbuffno = -1;
-  rxbitcnt = 0;
-  txbitcnt = 0;
-  rxlen = 0;
-  txlen = 0;
-  timer.begin();
-  timer.captureMode(rx_captureCh, FALLING_EDGE | INTERRUPT);
-  timer.start();
-  timer.interrupts();
-  timer.prescaler(TIMER_PRESCALER);
+    pinMode(rxPin, INPUT | PULL_UP);
+    rxbuffno = -1;
+    txbuffno = -1;
+    rxbitcnt = 0;
+    txbitcnt = 0;
+    rxlen = 0;
+    txlen = 0;
+    timer.begin();
+    timer.captureMode(rx_captureCh, FALLING_EDGE | INTERRUPT);
+    timer.start();
+    timer.interrupts();
+    timer.prescaler(TIMER_PRESCALER);
 
-  timer.matchMode(tx_matchCh, SET);
-  timer.match(tx_matchCh, 0xffff);
+    timer.matchMode(tx_matchCh, SET);
+    timer.match(tx_matchCh, 0xffff);
 
-  // So wird der Sende-Ausgang auf 1 gesetzt, siehe auch EIB/bus.cpp
-  timer.value(0xffff);
-  while (timer.getMatchChannelLevel(tx_matchCh) == false);
-  pinMode(txPin, OUTPUT_MATCH);
-  pinMode(rxPin, INPUT_CAPTURE | HYSTERESIS | PULL_UP);
+    // So wird der Sende-Ausgang auf 1 gesetzt, siehe auch EIB/bus.cpp
+    timer.value(0xffff);
+    while (timer.getMatchChannelLevel(tx_matchCh) == false);
+    pinMode(txPin, OUTPUT_MATCH);
+    pinMode(rxPin, INPUT_CAPTURE | HYSTERESIS | PULL_UP);
 }
 
 void ProgUart::DisableUart(void)
 {
-  timer.noInterrupts();
-  rxbuffno = -1;
-  txbuffno = -1;
-  rxbitcnt = 0;
-  txbitcnt = 0;
-  rxlen = 0;
-  txlen = 0;
-  pinMode(txPin, INPUT | PULL_UP);
-  pinMode(rxPin, INPUT | PULL_UP);
+    timer.noInterrupts();
+    rxbuffno = -1;
+    txbuffno = -1;
+    rxbitcnt = 0;
+    txbitcnt = 0;
+    rxlen = 0;
+    txlen = 0;
+    pinMode(txPin, INPUT | PULL_UP);
+    pinMode(rxPin, INPUT | PULL_UP);
 }
 
 void ProgUart::Enable(void)
 {
-  Enabled = true;
-  EnableUart();
-  UpdIspLines();
+    Enabled = true;
+    EnableUart();
+    UpdIspLines();
 }
 
 void ProgUart::Disable(void)
 {
-  Enabled = false;
-  DisableUart();
-  UpdIspLines();
+    Enabled = false;
+    DisableUart();
+    UpdIspLines();
 }
 
 void ProgUart::SetIspLines(uint8_t data)
 {
-  IspLines = data;
-  UpdIspLines();
+    IspLines = data;
+    UpdIspLines();
 }
 
 void ProgUart::UpdIspLines(void)
 {
-  if (Enabled)
-  {
-    // Zustände setzen
-    digitalWrite(IspEnPin, (IspLines & 2) != 0);
-    digitalWrite(IspRstPin, (IspLines & 1) != 0);
-    pinMode(IspEnPin, OUTPUT);
-    pinMode(IspRstPin, OUTPUT);
-  } else {
-    // einen Disabled-Zustand setzen. High-Z? Auf alle Fälle sollte der User-Chip laufen
-    pinMode(IspEnPin, INPUT | PULL_UP);
-    pinMode(IspRstPin, INPUT | PULL_UP);
-    IspLines = 3;
-  }
+    if (Enabled)
+    {
+        // Zustände setzen
+        digitalWrite(IspEnPin, (IspLines & 2) != 0);
+        digitalWrite(IspRstPin, (IspLines & 1) != 0);
+        pinMode(IspEnPin, OUTPUT);
+        pinMode(IspRstPin, OUTPUT);
+    } else {
+        // einen Disabled-Zustand setzen. High-Z? Auf alle Fälle sollte der User-Chip laufen
+        pinMode(IspEnPin, INPUT | PULL_UP);
+        pinMode(IspRstPin, INPUT | PULL_UP);
+        IspLines = 3;
+    }
 }
 
 extern "C" void TIMER32_0_IRQHandler(void)
 {
-  proguart.timerInterruptHandler();
+    proguart.timerInterruptHandler();
 }
 
 /*
@@ -173,221 +173,222 @@ extern "C" void TIMER32_0_IRQHandler(void)
  */
 void ProgUart::timerInterruptHandler()
 {
-  // rx_captureCh Gebraucht zur Erkennung der fallenden Flanke Startbit
-  // rx_matchCh   Erzeugt die Ints bei den Bits und bei einem Rx-Timeout
-  // tx_matchCh   Erzeugt die Flankenwechsel am Sendeausgang
-  bool rx_rearm = false;
-  bool rx_bytedone = false;
-  bool rx_timeout = false;
-  if (timer.flag(rx_captureCh))  // Ereignis an RxD
-  {
-    timer.captureMode(rx_captureCh, DISABLE);
-    if (rxbitcnt == 0) // Läuft schon ein Empfang?
-    { // Nein, noch nicht
-      unsigned int time = timer.capture(rx_captureCh);
-      timer.match(rx_matchCh, HALFBIT_TIME+time);
-      //timer.restart();
-      timer.matchMode(rx_matchCh, INTERRUPT);
-      rxbitcnt = 10;
-    } else {
-      // Hier sollte die ISR nie vorbeikommen
+    // rx_captureCh Gebraucht zur Erkennung der fallenden Flanke Startbit
+    // rx_matchCh   Erzeugt die Ints bei den Bits und bei einem Rx-Timeout
+    // tx_matchCh   Erzeugt die Flankenwechsel am Sendeausgang
+    bool rx_rearm = false;
+    bool rx_bytedone = false;
+    bool rx_timeout = false;
+    if (timer.flag(rx_captureCh))  // Ereignis an RxD
+    {
+        timer.captureMode(rx_captureCh, DISABLE);
+        if (rxbitcnt == 0) // Läuft schon ein Empfang?
+        { // Nein, noch nicht
+            unsigned int time = timer.capture(rx_captureCh);
+            timer.match(rx_matchCh, HALFBIT_TIME+time);
+            //timer.restart();
+            timer.matchMode(rx_matchCh, INTERRUPT);
+            rxbitcnt = 10;
+        } else {
+            // Hier sollte die ISR nie vorbeikommen
+        }
+        timer.resetFlag(rx_captureCh);
     }
-    timer.resetFlag(rx_captureCh);
-  }
 
-  if (timer.flag(rx_matchCh)) // Mitte einer Bitzeit am seriellen Empfänger ODER Timeout
-  {
-    if (rxbitcnt == 0)
+    if (timer.flag(rx_matchCh)) // Mitte einer Bitzeit am seriellen Empfänger ODER Timeout
     {
-      // Timeout
-      rx_timeout = true;
-      timer.matchMode(rx_matchCh, DISABLE);
-      // Kein Rearm, also sollte der Timeout nicht wiederholt auftreten
-    } else if (rxbitcnt == 1)
-    {
-      rxbitcnt = 0;
-      // Stopbit
-      if (digitalRead(rxPin))
-      { // Stopbit empfangen
-        rx_bytedone = true;
-      }
-      timer.matchMode(rx_matchCh, DISABLE);
-      rx_rearm = true;
-    } else if (rxbitcnt == 10)
-    {
-      // Startbit
-      if (digitalRead(rxPin))
-      { // Doch kein Startbit
-        rxbitcnt = 0;
-        timer.matchMode(rx_matchCh, DISABLE);
-        rx_rearm = true;
-      }
-    } else {
-      // Datenbit
-      rxbyte = (rxbyte >> 1) | (digitalRead(rxPin)?128:0);
+        if (rxbitcnt == 0)
+        {
+            // Timeout
+            rx_timeout = true;
+            timer.matchMode(rx_matchCh, DISABLE);
+            // Kein Rearm, also sollte der Timeout nicht wiederholt auftreten
+        } else if (rxbitcnt == 1)
+        {
+            rxbitcnt = 0;
+            // Stopbit
+            if (digitalRead(rxPin))
+            { // Stopbit empfangen
+                rx_bytedone = true;
+            }
+            timer.matchMode(rx_matchCh, DISABLE);
+            rx_rearm = true;
+        } else if (rxbitcnt == 10)
+        {
+            // Startbit
+            if (digitalRead(rxPin))
+            { // Doch kein Startbit
+                rxbitcnt = 0;
+                timer.matchMode(rx_matchCh, DISABLE);
+                rx_rearm = true;
+            }
+        } else {
+            // Datenbit
+            rxbyte = (rxbyte >> 1) | (digitalRead(rxPin)?128:0);
+        }
+        if (rxbitcnt > 1)
+        {
+            unsigned int time = timer.match(rx_matchCh);
+            timer.match(rx_matchCh, BIT_TIME+time);
+            rxbitcnt--;
+        }
+        timer.resetFlag(rx_matchCh);
     }
-    if (rxbitcnt > 1)
+
+    if (timer.flag(tx_matchCh)) // Nach einem Pagelwechsel
     {
-      unsigned int time = timer.match(rx_matchCh);
-      timer.match(rx_matchCh, BIT_TIME+time);
-      rxbitcnt--;
+        unsigned int time = timer.match(tx_matchCh);
+        timer.resetFlag(tx_matchCh);
+        if (txbitcnt != 1)
+        {
+            bool level = false;
+            if (txbitcnt != 11)
+            {
+                level = (txbyte & 0x01) != 0;
+                txbyte = (txbyte >> 1) + 128;
+            }
+            time += BIT_TIME;
+            txbitcnt--;
+            while ((txbitcnt != 1) && (level == ((txbyte & 0x01) != 0)))
+            {
+                txbyte = (txbyte >> 1) + 128;
+                time += BIT_TIME;
+                txbitcnt--;
+            }
+            timer.match(tx_matchCh, time);
+            if (txbitcnt != 1)
+            {
+                if (level)
+                    timer.matchMode(tx_matchCh, CLEAR | INTERRUPT);
+                else
+                    timer.matchMode(tx_matchCh, SET | INTERRUPT);
+            } else {
+                timer.matchMode(tx_matchCh, INTERRUPT);
+            }
+        } else {
+            // Ende des Stopbits ist erreicht
+            txbitcnt = 0;
+            timer.matchMode(tx_matchCh, DISABLE);
+        }
     }
-    timer.resetFlag(rx_matchCh);
-  }
 
-  if (timer.flag(tx_matchCh)) // Nach einem Pagelwechsel
-  {
-    unsigned int time = timer.match(tx_matchCh);
-    timer.resetFlag(tx_matchCh);
-    if (txbitcnt != 1)
+    if (rx_rearm)
     {
-      bool level = false;
-      if (txbitcnt != 11)
-      {
-        level = (txbyte & 0x01) != 0;
-        txbyte = (txbyte >> 1) + 128;
-      }
-      time += BIT_TIME;
-      txbitcnt--;
-      while ((txbitcnt != 1) && (level == ((txbyte & 0x01) != 0)))
-      {
-        txbyte = (txbyte >> 1) + 128;
-        time += BIT_TIME;
-        txbitcnt--;
-      }
-      timer.match(tx_matchCh, time);
-      if (txbitcnt != 1)
-      {
-        if (level)
-          timer.matchMode(tx_matchCh, CLEAR | INTERRUPT);
-        else
-          timer.matchMode(tx_matchCh, SET | INTERRUPT);
-      } else {
-        timer.matchMode(tx_matchCh, INTERRUPT);
-      }
-    } else {
-      // Ende des Stopbits ist erreicht
-      txbitcnt = 0;
-      timer.matchMode(tx_matchCh, DISABLE);
+        // Timeout-Timer setzen
+        unsigned int time = timer.match(rx_matchCh);
+        timer.match(rx_matchCh, REC_TIMEOUT+time);
+        timer.matchMode(rx_matchCh, INTERRUPT);
+        timer.captureMode(rx_captureCh, FALLING_EDGE | INTERRUPT);
     }
-  }
 
-  if (rx_rearm)
-  {
-    // Timeout-Timer setzen
-    unsigned int time = timer.match(rx_matchCh);
-    timer.match(rx_matchCh, REC_TIMEOUT+time);
-    timer.matchMode(rx_matchCh, INTERRUPT);
-    timer.captureMode(rx_captureCh, FALLING_EDGE | INTERRUPT);
-  }
-
-  if ((txbuffno >= 0) && (txbitcnt == 0))
-  {
-    if (txlen != 0)
+    if ((txbuffno >= 0) && (txbitcnt == 0))
     {
-      // Programmiere fallende Flanke Startbit
-      unsigned int time = timer.value() + BIT_TIME;
-      timer.match(tx_matchCh, time);
-      timer.matchMode(tx_matchCh, INTERRUPT | CLEAR);
-      txbyte = *txptr++;
-      txlen--;
-      txbitcnt = 11;
-    } else {
-      // Buffer wurde versendet
-      timer.captureMode(tx_matchCh, DISABLE);
-      // Buffer kann für Bestätigungsantwort verwendet werden
-      txptr = buffmgr.buffptr(txbuffno);
-      *txptr++ = C_Dev_Packet_Length;
-      txptr++;
-      *txptr++ = C_HRH_IdDev;
-      *txptr++ = C_Dev_Isp;
-      *txptr++ = 0;
-      if (ser_txfifo.Push(txbuffno) != TFifoErr::Ok)
-        buffmgr.FreeBuffer(txbuffno);
-      txbuffno = -1;
+        if (txlen != 0)
+        {
+            // Programmiere fallende Flanke Startbit
+            unsigned int time = timer.value() + BIT_TIME;
+            timer.match(tx_matchCh, time);
+            timer.matchMode(tx_matchCh, INTERRUPT | CLEAR);
+            txbyte = *txptr++;
+            txlen--;
+            txbitcnt = 11;
+        } else {
+            // Buffer wurde versendet
+            timer.captureMode(tx_matchCh, DISABLE);
+            // Buffer kann für Bestätigungsantwort verwendet werden
+            txptr = buffmgr.buffptr(txbuffno);
+            *txptr++ = C_Dev_Packet_Length;
+            txptr++;
+            *txptr++ = C_HRH_IdDev;
+            *txptr++ = C_Dev_Isp;
+            *txptr++ = 0;
+            if (ser_txfifo.Push(txbuffno) != TFifoErr::Ok)
+            buffmgr.FreeBuffer(txbuffno);
+            txbuffno = -1;
+        }
     }
-  }
 
-  if (rx_bytedone)
-  {
-    if (rxbuffno < 0)
+    if (rx_bytedone)
     {
-      rxbuffno = buffmgr.AllocBuffer();
-      if (rxbuffno >= 0)
-      {
-        rxlen = 0;
+        if (rxbuffno < 0)
+        {
+            rxbuffno = buffmgr.AllocBuffer();
+            if (rxbuffno >= 0)
+            {
+                rxlen = 0;
+                rxptr = buffmgr.buffptr(rxbuffno);
+                *rxptr++ = 3; // Länge, Wird bei Abschluss des Pakets noch mal aktualisiert
+                *rxptr++ = 0; // Checksumme wird im Uart-Transceiver Richtung USB gerechnet
+                *rxptr++ = 2; // Das Paket als CDC-Paket kennzeichnen
+            }
+        }
+        if (rxbuffno >= 0)
+        {
+            *rxptr++ = rxbyte;
+            rxlen++;
+        }
+    }
+
+    if ((rxlen >= 16) || (rx_timeout && (rxlen > 0))) // Um die Verzögerung klein zu halten, wird die Paketlänge auf 16 begrenzt
+    {
         rxptr = buffmgr.buffptr(rxbuffno);
-        *rxptr++ = 3; // Länge, Wird bei Abschluss des Pakets noch mal aktualisiert
-        *rxptr++ = 0; // Checksumme wird im Uart-Transceiver Richtung USB gerechnet
-        *rxptr++ = 2; // Das Paket als CDC-Paket kennzeichnen
-      }
+        *rxptr = rxlen+3; // Die Länge setzen
+        if (ser_txfifo.Push(rxbuffno) != TFifoErr::Ok)
+            buffmgr.FreeBuffer(rxbuffno);
+        rxbuffno = -1;
+        rxlen = 0;
     }
-    if (rxbuffno >= 0)
-    {
-      *rxptr++ = rxbyte;
-      rxlen++;
-    }
-  }
-  if ((rxlen >= 16) || (rx_timeout && (rxlen > 0))) // Um die Verzögerung klein zu halten, wird die Paketlänge auf 16 begrenzt
-  {
-    rxptr = buffmgr.buffptr(rxbuffno);
-    *rxptr = rxlen+3; // Die Länge setzen
-    if (ser_txfifo.Push(rxbuffno) != TFifoErr::Ok)
-      buffmgr.FreeBuffer(rxbuffno);
-    rxbuffno = -1;
-    rxlen = 0;
-  }
 }
 
 bool ProgUart::TxBusy(void)
 {
-  return (txbuffno >= 0);
+    return (txbuffno >= 0);
 }
 
 TProgUartErr ProgUart::TransmitBuffer(int buffno)
 {
-  if (TxBusy())
-  {
-    return TProgUartErr::Busy;
-  } else {
-    uint8_t *ptr = buffmgr.buffptr(buffno);
-    uint8_t len = *ptr;
-    if ((len < 2) || (len > 67))
+    if (TxBusy())
     {
-      return TProgUartErr::Error;
-    }
+        return TProgUartErr::Busy;
+    } else {
+        uint8_t *ptr = buffmgr.buffptr(buffno);
+        uint8_t len = *ptr;
+        if ((len < 2) || (len > 67))
+        {
+            return TProgUartErr::Error;
+        }
 
-    timer.noInterrupts();
-    txptr = buffmgr.buffptr(buffno);
-    txlen = *txptr-3;
-    txptr += 3; // Längenangabe, Checksumme und CDC-Id überspringen
-    txbuffno = buffno;
-    timer.interrupts();
-    NVIC_SetPendingIRQ((IRQn_Type) (TIMER_16_0_IRQn + timerNum));
-  }
-  return TProgUartErr::Ok;
+        timer.noInterrupts();
+        txptr = buffmgr.buffptr(buffno);
+        txlen = *txptr-3;
+        txptr += 3; // Längenangabe, Checksumme und CDC-Id überspringen
+        txbuffno = buffno;
+        timer.interrupts();
+        NVIC_SetPendingIRQ((IRQn_Type) (TIMER_16_0_IRQn + timerNum));
+    }
+    return TProgUartErr::Ok;
 }
 
 void ProgUart::SerIf_Tasks(void)
 {
-  if (!TxBusy())
-  {
-    if (cdc_txfifo.Empty() != TFifoErr::Empty)
+    if (!TxBusy())
     {
-      int buffno;
-      cdc_txfifo.Pop(buffno);
-      if (Enabled)
-      {
-        TProgUartErr err = TransmitBuffer(buffno);
-        if (err != TProgUartErr::Ok)
+        if (cdc_txfifo.Empty() != TFifoErr::Empty)
         {
-          // Momentan als einzige Fehlerbehandlung: Paket verwerfen
-          buffmgr.FreeBuffer(buffno);
-          buffno = -1;
+            int buffno;
+            cdc_txfifo.Pop(buffno);
+            if (Enabled)
+            {
+                TProgUartErr err = TransmitBuffer(buffno);
+                if (err != TProgUartErr::Ok)
+                {
+                    // Momentan als einzige Fehlerbehandlung: Paket verwerfen
+                    buffmgr.FreeBuffer(buffno);
+                    buffno = -1;
+                }
+            } else {
+                buffmgr.FreeBuffer(buffno);
+            }
         }
-      } else {
-        buffmgr.FreeBuffer(buffno);
-      }
     }
-  }
 }

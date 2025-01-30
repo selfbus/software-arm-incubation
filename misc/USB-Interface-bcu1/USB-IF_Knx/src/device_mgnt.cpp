@@ -22,9 +22,9 @@ DeviceManagement devicemgnt;
 
 DeviceManagement::DeviceManagement()
 {
-  txtimeout = 0;
-  rxtimeout = 0;
-  LastDevSys = 0;
+    txtimeout = 0;
+    rxtimeout = 0;
+    LastDevSys = 0;
 }
 
 void DeviceManagement::handleDev_Sys(uint8_t subControlByte)

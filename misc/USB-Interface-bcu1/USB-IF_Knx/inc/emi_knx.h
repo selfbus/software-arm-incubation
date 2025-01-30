@@ -42,45 +42,45 @@ constexpr uint16_t AddrIndividualAddressLowByte = 0x118;   //!< Individual addre
 
 class EmiKnxIf
 {
-public:
-  EmiKnxIf(int aLedPin);
-  void EmiIf_Tasks(void);
+    public:
+        EmiKnxIf(int aLedPin);
+        void EmiIf_Tasks(void);
 
-  /**
-   *  Set bcu in download mode to disable all KNX-Bus communication
-   */
-  void reset(void);
-  void SetCdcMonMode(bool newState);
-  void SetActivityLed(bool onoff);
-  void BlinkActivityLed(void);
-  void DoActivityLed(bool LedEnabled);
+        /**
+         *  Set bcu in download mode to disable all KNX-Bus communication
+         */
+        void reset(void);
+        void SetCdcMonMode(bool newState);
+        void SetActivityLed(bool onoff);
+        void BlinkActivityLed(void);
+        void DoActivityLed(bool LedEnabled);
 
-private:
-  int txbuffno;
-  uint8_t receivedEmiControlByte; // muss bloederweise für die spätere EMI 1 response gesichert werden
-  bool CdcMonActive;
-  int ledBlinkCount;
-  int ledTimeCount;
-  int ledPin;
-  uint32_t ledLastDoTime;
-  bool ledEnabled;
+    private:
+        int txbuffno;
+        uint8_t receivedEmiControlByte; // muss bloederweise für die spätere EMI 1 response gesichert werden
+        bool CdcMonActive;
+        int ledBlinkCount;
+        int ledTimeCount;
+        int ledPin;
+        uint32_t ledLastDoTime;
+        bool ledEnabled;
 
-  void receivedUsbEmiPacket(int buffno);
-  void sendReceivedTelegramAsEMI(uint8_t * telegram, uint8_t length);
+        void receivedUsbEmiPacket(int buffno);
+        void sendReceivedTelegramAsEMI(uint8_t * telegram, uint8_t length);
 
-  uint8_t emiReadOneValue(int memoryAddress);
-  void emiWriteOneValue(int addr, uint8_t value, bool &reset);
-  void setTPBodyLength(uint8_t *ptr, uint8_t len);
+        uint8_t emiReadOneValue(int memoryAddress);
+        void emiWriteOneValue(int addr, uint8_t value, bool &reset);
+        void setTPBodyLength(uint8_t *ptr, uint8_t len);
 
-  uint8_t getSystemState();
-  void setSystemState(const uint8_t newStatus);
+        uint8_t getSystemState();
+        void setSystemState(const uint8_t newStatus);
 
-  bool getBcuLayerState(const uint8_t layer);
-  void setBcuLayerState(const uint8_t layer, const bool newState);
+        bool getBcuLayerState(const uint8_t layer);
+        void setBcuLayerState(const uint8_t layer, const bool newState);
 
-  bool isHidActive();
+        bool isHidActive();
 
-  void handleTelegramForUs(uint8_t * telegram, uint8_t lenght);
+        void handleTelegramForUs(uint8_t * telegram, uint8_t lenght);
 };
 
 extern EmiKnxIf emiknxif;
