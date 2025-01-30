@@ -56,8 +56,8 @@ public:
 
 private:
   int txbuffno;
-  uint8_t receivedEmiControlByte; // muss bloederweise gesichert werden
   uint8_t EmiSystemState;
+  uint8_t receivedEmiControlByte; // muss bloederweise für die spätere EMI 1 response gesichert werden
   bool CdcMonActive;
   bool hidIfActive;
   bool procTelWait;

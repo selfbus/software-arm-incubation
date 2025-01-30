@@ -23,6 +23,7 @@
 #define C_RxTimeout 450
 #define C_IdlePeriod 200
 
+///todo this class exists also in USB-IF_Knx
 class DeviceManagement
 {
 public:

@@ -1,5 +1,5 @@
 /*
- *  device_mgnt.h - Device management, mode management
+ *  device_mgnt.h - Device management, mode management and mode switching
  *
  *  Copyright (C) 2018 Florian Voelzke <fvoelzke@gmx.de>
  *
@@ -23,6 +23,7 @@
 #define C_RxTimeout 450
 #define C_IdlePeriod 200
 
+///todo this class exists also in USB-IF_Usb
 class DeviceManagement
 {
 public:

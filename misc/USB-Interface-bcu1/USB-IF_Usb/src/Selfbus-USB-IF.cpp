@@ -31,7 +31,7 @@ const uint32_t ExtRateIn = 0;
 
 extern "C" void SystemInit(void)
 {
-	deviceIf.SystemInit();
+    deviceIf.SystemInit();
 }
 
 static USBD_HANDLE_T g_hUsb;

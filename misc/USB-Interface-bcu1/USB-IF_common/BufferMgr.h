@@ -20,8 +20,8 @@
  * 1 Byte Paketlänge, über alle Bytes gezählt
  * 1 Byte Checksumme, alle Bytes des Telegrams addiert (incl Checksumme), modulo 256, ergeben 255
  * Bei einem HID-Paket folgt hier der bis zu 64 Byte lange HID-Report, incl. Report Nummer 1 am Anfang.
- * Bei einem CDC-Paket folgt als Byte eine 2 zur Unterscheidung von einem HID-Report. Danach bis zu 64
- * Byte Nutzdaten.
+ * Bei einem CDC-Paket folgt als Byte eine 2 zur Unterscheidung von einem HID-Report.
+ * Danach bis zu 64 Byte Nutzdaten.
  * Diese Pakete werden im paketorientierten Modus genau so über die serielle Schnittstelle gesendet
  * und empfangen.
  * Auch im RawMode der seriellen Schnittstelle wird dieser Aufbau intern beibehalten, der

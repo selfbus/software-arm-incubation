@@ -15,12 +15,25 @@ extern volatile unsigned int systemTime;
 
 enum class TCdcDeviceMode
 {
-	Halt, //!< Initialization or USB stopped working
-	HidOnly,
-	UsbMon,
-	BusMon,
+    ///\todo verify docu
+	Halt,           //!< Initialization or USB stopped working
+	HidOnly,        //!< KNX-Interface only, KNX bus interface for ETS, knxd or Updater.
+	UsbMon,         //!< USB-Monitor, sends raw EMI 1 messages to virtual serial port of the USB port.
+	BusMon,         //!< KNX-Busmonitor, sends decoded KNX TP1 telegrams to virtual serial port of the USB port.
+
+	/**
+     * ISP-Programmer for KNX bus access mcu (TS_ARM connected at P1).
+     *
+     * @note Jumper JP5 (PIO 1_19) must be closed on startup.
+     */
 	ProgBusChip,
-	ProgUserChip
+
+    /**
+     * ISP-Programmer for user mcu (connected at Prog-If (P3)).
+     *
+     * @note Jumper JP2 (PIO 0_3) and JP6 (3.3V)  must be closed.
+     */
+	ProgUserChip    //!< ISP-Programmer for ARM controller
 };
 
 extern TCdcDeviceMode CdcDeviceMode;

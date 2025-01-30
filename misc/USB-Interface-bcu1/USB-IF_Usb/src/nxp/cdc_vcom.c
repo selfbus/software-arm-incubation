@@ -234,6 +234,7 @@ uint32_t vcom_write(uint8_t *pBuf, uint32_t len)
 
 	if ( (pVcom->tx_flags & VCOM_TX_CONNECTED) && ((pVcom->tx_flags & VCOM_TX_BUSY) == 0) ) {
 		pVcom->tx_flags |= VCOM_TX_BUSY;
+		///\todo why is this commented out?
 		/* enter critical section */
 		//NVIC_DisableIRQ(USB0_IRQn);
 		ret = USBD_API->hw->WriteEP(pVcom->hUsb, USB_CDC_IN_EP, pBuf, len);

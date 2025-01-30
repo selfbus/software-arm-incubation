@@ -131,7 +131,8 @@ void DeviceManagement::SysIf_Tasks(bool UsbActive)
 	}
 }
 
-	// Uart-Schnittstelle zur KNX-Seite
+	///\todo handle communication timeouts and buffer-overflows, see below
+    // Uart-Schnittstelle zur KNX-Seite
 	/*
 	 * CDC & HID:
 	 * Wie vorgehen, wenn einer oder beide Endpoints keine Daten abnehmen?
