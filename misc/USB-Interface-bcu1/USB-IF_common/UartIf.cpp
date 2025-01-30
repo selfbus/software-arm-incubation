@@ -120,7 +120,7 @@ void UartIf::interruptHandler(void)
 	// Interpretation. Ist er mit dem Paket fertig, wird der Speicherplatz nicht freigegeben.
 	if ((LPC_USART->IER & UART_IE_THRE) && (LPC_USART->LSR & LSR_THRE))
 	{
-		if (txlen==0)
+		if (txlen == 0)
 		{
 			txbuffno = -1;
 			LPC_USART->IER &= ~UART_IE_THRE;
@@ -128,9 +128,11 @@ void UartIf::interruptHandler(void)
 		else
 		{
 			// Wenn das Transmit Holding Reg leer ist, sind im Fifo Platz für 16 Wörter
-			int cnt=16;
+			int cnt = 16;
 			if (txlen < 16)
+			{
 				cnt = txlen;
+			}
 			txlen -= cnt;
 			while (cnt-- > 0)
 			{
@@ -146,7 +148,7 @@ void UartIf::interruptHandler(void)
 	bool rxtimeout = false;
 	if ((LPC_USART->IIR & 0xE) == 0xC) // Character timeout
 	{
-		rxtimeout = true; // das kann aber nicht die einzige Paket-Ende Erkennung sein, ansonsten wäre die Wartezeit verpflichtend!
+	    rxtimeout = true; // das kann aber nicht die einzige Paket-Ende Erkennung sein, ansonsten wäre die Wartezeit verpflichtend!
 	}
 	if (LPC_USART->LSR & LSR_RDR)
 	{

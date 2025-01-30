@@ -45,12 +45,12 @@ ModeSelect::ModeSelect() {
 
 void ModeSelect::SetSingleLed(int mode, bool OnOff)
 {
-  Chip_GPIO_SetPinState(LPC_GPIO, LedPins[mode].port, LedPins[mode].pin, !OnOff);
+    Chip_GPIO_SetPinState(LPC_GPIO, LedPins[mode].port, LedPins[mode].pin, !OnOff);
 }
 
 bool ModeSelect::ReadButton(void)
 {
- return Chip_GPIO_GetPinState(LPC_GPIO, ButtonPin.port, ButtonPin.pin) == false;
+   return Chip_GPIO_GetPinState(LPC_GPIO, ButtonPin.port, ButtonPin.pin) == false;
 }
 
 void ModeSelect::SetLeds(void)
@@ -63,18 +63,18 @@ void ModeSelect::SetLeds(void)
 
 TCdcDeviceMode ModeSelect::DeviceMode(void)
 {
-  switch (mode_act)
-  {
-  case 0:
+    switch (mode_act)
+    {
+        case 0:
+          return TCdcDeviceMode::HidOnly;
+        case 1:
+          return TCdcDeviceMode::BusMon;
+        case 2:
+          return TCdcDeviceMode::UsbMon;
+        case 3:
+          return TCdcDeviceMode::ProgUserChip;
+    }
     return TCdcDeviceMode::HidOnly;
-  case 1:
-    return TCdcDeviceMode::BusMon;
-  case 2:
-    return TCdcDeviceMode::UsbMon;
-  case 3:
-    return TCdcDeviceMode::ProgUserChip;
-  }
-  return TCdcDeviceMode::HidOnly;
 }
 
 void ModeSelect::StartModeSelect(void)

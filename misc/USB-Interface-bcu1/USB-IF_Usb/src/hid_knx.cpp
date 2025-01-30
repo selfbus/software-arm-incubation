@@ -44,13 +44,16 @@ ErrorCode_t HidIf_Ep_Hdlr(USBD_HANDLE_T hUsb, void *data, uint32_t event)
 
 ErrorCode_t KnxHidIf::Hdlr(uint32_t event)
 {
-	switch (event) {
-	case USB_EVT_IN: // Completed sending IN packet from device to host
-		tx_busy = false;
-		break;
-	case USB_EVT_OUT: // Completed receiving OUT packet from host to device
-		if (rx_avail < 255)
-			rx_avail++; // keine Ahnung, ob mehrere Pakete gepuffert werden koennen...
+	switch (event)
+	{
+        case USB_EVT_IN: // Completed sending IN packet from device to host
+            tx_busy = false;
+            break;
+
+        case USB_EVT_OUT: // Completed receiving OUT packet from host to device
+            if (rx_avail < 255)
+                rx_avail++; // keine Ahnung, ob mehrere Pakete gepuffert werden koennen...
+            break;
 	}
 	return LPC_OK;
 }
