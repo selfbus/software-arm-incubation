@@ -183,22 +183,22 @@ void CdcDbgIf::DbgIf_Tasks(void)
         if (new_ctrl != CtrlLines)
         {
             CtrlLines = new_ctrl;
-        int buffno = buffmgr.AllocBuffer();
-        if (buffno >= 0)
-        {
-            uint8_t *buffptr = buffmgr.buffptr(buffno);
-            *buffptr++ = C_Dev_Packet_Length;
-            buffptr++;
-            *buffptr++ = C_HRH_IdDev;
-            *buffptr++ = C_Dev_Isp;
-            *buffptr++ = CtrlLines;
-            if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
+            int buffno = buffmgr.AllocBuffer();
+            if (buffno >= 0)
             {
-                failHardInDebug();
-                buffmgr.FreeBuffer(buffno);
+                uint8_t *buffptr = buffmgr.buffptr(buffno);
+                *buffptr++ = C_Dev_Packet_Length;
+                buffptr++;
+                *buffptr++ = C_HRH_IdDev;
+                *buffptr++ = C_Dev_Isp;
+                *buffptr++ = CtrlLines;
+                if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
+                {
+                    failHardInDebug();
+                    buffmgr.FreeBuffer(buffno);
+                }
             }
-        }
-        deviceIf.BlinkActivityLed();
+            deviceIf.BlinkActivityLed();
         }
     } else {
         CtrlLines = 0xff;
