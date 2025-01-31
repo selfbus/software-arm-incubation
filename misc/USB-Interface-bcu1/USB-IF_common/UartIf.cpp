@@ -41,8 +41,8 @@ void UartIf::Init(int baudRate, bool rawMode, uint32_t pinTx, uint32_t pinRx)
     discard = false;
     rawmode = rawMode;
     // Uart konfigurieren
-    pinMode(pinRx, SERIAL_RXD);
-    pinMode(pinTx, SERIAL_TXD);
+    pinMode(pinRx, SERIAL_RXD | PULL_UP | HYSTERESIS);
+    pinMode(pinTx, SERIAL_TXD | PULL_UP | HYSTERESIS);
 
     LPC_SYSCON->SYSAHBCLKCTRL |= 1 << 12; // Enable UART clock
     LPC_SYSCON->UARTCLKDIV = 1;           // divided by 1

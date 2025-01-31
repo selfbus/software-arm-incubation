@@ -107,6 +107,10 @@ void DeviceManagement::DevMgnt_Tasks(void)
                     break;
 
                 default:
+                    // should never happen, but
+                    // happened with ptr[0..4] == 05 f6 03 01 00 (command == 1 (C_Dev_Idle), subCommand == 0)
+                    // caused by an echo of our own sent C_Dev_Idle
+                    // now with PULL_UP and HYSTERESIS on serial rx pin, this should really never happen
                     failHardInDebug();
                     break;
             }
