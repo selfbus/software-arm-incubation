@@ -64,6 +64,7 @@ private:
     void DisableUart();
     bool TxBusy(void);
     TProgUartErr TransmitBuffer(int buffno);
+    void initialize();
 };
 
 

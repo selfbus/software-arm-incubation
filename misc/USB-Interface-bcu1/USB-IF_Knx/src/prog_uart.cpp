@@ -49,25 +49,31 @@ ProgUart::ProgUart(Timer& aTimer, int aTimerNum, int aRxPin, int aTxPin, TimerCa
     tx_matchCh = atx_MatchCh;
     IspEnPin = aIspEnPin;
     IspRstPin = aIspRstPin;
+    Enabled = false;
+    initialize();
+}
+
+void ProgUart::initialize()
+{
+    pinMode(txPin, INPUT | PULL_UP);
+    pinMode(rxPin, INPUT | HYSTERESIS | PULL_UP);
     rxbuffno = -1;
     txbuffno = -1;
     rxbitcnt = 0;
     txbitcnt = 0;
     rxlen = 0;
     txlen = 0;
-    Enabled = false;
     IspLines = 0;
+    UpdIspLines();
+    rxbyte = 0;
+    txbyte = 0;
+    txptr = nullptr;
+    rxptr = nullptr;
 }
 
 void ProgUart::EnableUart(void)
 {
-    pinMode(rxPin, INPUT | PULL_UP);
-    rxbuffno = -1;
-    txbuffno = -1;
-    rxbitcnt = 0;
-    txbitcnt = 0;
-    rxlen = 0;
-    txlen = 0;
+    initialize();
     timer.begin();
     timer.captureMode(rx_captureCh, FALLING_EDGE | INTERRUPT);
     timer.start();
@@ -87,14 +93,7 @@ void ProgUart::EnableUart(void)
 void ProgUart::DisableUart(void)
 {
     timer.noInterrupts();
-    rxbuffno = -1;
-    txbuffno = -1;
-    rxbitcnt = 0;
-    txbitcnt = 0;
-    rxlen = 0;
-    txlen = 0;
-    pinMode(txPin, INPUT | PULL_UP);
-    pinMode(rxPin, INPUT | PULL_UP);
+    initialize();
 }
 
 void ProgUart::Enable(void)
