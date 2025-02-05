@@ -29,23 +29,10 @@ class ProgUart
 {
 public:
     ProgUart(Timer& aTimer, int aTimerNum, int aRxPin, int aTxPin, TimerCapture arx_CaptureCh, TimerMatch arx_MatchCh, TimerMatch atx_MatchCh, int aIspEnPin, int aIspRstPin);
-
-    void EnableUart();
-
-    void DisableUart();
-
-    bool TxBusy(void);
-
-    TProgUartErr TransmitBuffer(int buffno);
-
     void SerIf_Tasks(void);
-
     void timerInterruptHandler();
-
     void Enable(void);
-
     void Disable(void);
-
     void SetIspLines(uint8_t data);
 
 protected:
@@ -59,7 +46,6 @@ protected:
     int txbitcnt;
     uint8_t rxbyte;
     uint8_t txbyte;
-    unsigned int txstarttime;
     int txbuffno;
     int rxbuffno;
     uint8_t *txptr;
@@ -67,10 +53,17 @@ protected:
     int txlen;
     int rxlen;
 
-    int IspEnPin, IspRstPin;
+    int IspEnPin;
+    int IspRstPin;
     bool Enabled;
     uint8_t IspLines;
     void UpdIspLines(void);
+
+private:
+    void EnableUart();
+    void DisableUart();
+    bool TxBusy(void);
+    TProgUartErr TransmitBuffer(int buffno);
 };
 
 
