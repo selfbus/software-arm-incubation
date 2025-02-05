@@ -15,8 +15,16 @@
 #include "knxusb_const.h"
 #include "device_mgnt_const.h"
 #include "prog_uart.h"
+#include "error_handler.h"
 
-// Baudrate des Interfaces
+#define RX_BYTE_MAX_COLLECT 16 //!< Number of bytes to receive (collect) before queuing them to transmit over hardware uart/serial
+
+/**
+ * Baudrate of the softUART for Prog-If
+ * @details According to NXP AN10955 with 48MHz system clock an softUART could transmit with 57600 and receive with 19200.
+ *          In reality the current implementation only works reliably with Tx/Rx 9600 baud.
+ * @note  https://www.nxp.com/docs/en/application-note/AN10955.pdf
+ */
 #define BAUDRATE 9600
 
 // Zeit eines Bits in us
@@ -86,7 +94,9 @@ void ProgUart::EnableUart(void)
 
     // So wird der Sende-Ausgang auf 1 gesetzt, siehe auch EIB/bus.cpp
     timer.value(0xffff);
-    while (timer.getMatchChannelLevel(tx_matchCh) == false);
+    while (timer.getMatchChannelLevel(tx_matchCh) == false)
+        ;
+
     pinMode(txPin, OUTPUT_MATCH);
     pinMode(rxPin, INPUT_CAPTURE | HYSTERESIS | PULL_UP);
 }
@@ -191,6 +201,7 @@ void ProgUart::timerInterruptHandler()
             rxbitcnt = 10;
         } else {
             // Hier sollte die ISR nie vorbeikommen
+            failHardInDebug();
         }
         timer.resetFlag(rx_captureCh);
     }
@@ -203,7 +214,8 @@ void ProgUart::timerInterruptHandler()
             rx_timeout = true;
             timer.matchMode(rx_matchCh, DISABLE);
             // Kein Rearm, also sollte der Timeout nicht wiederholt auftreten
-        } else if (rxbitcnt == 1)
+        }
+        else if (rxbitcnt == 1)
         {
             rxbitcnt = 0;
             // Stopbit
@@ -211,9 +223,14 @@ void ProgUart::timerInterruptHandler()
             { // Stopbit empfangen
                 rx_bytedone = true;
             }
+            else
+            {
+                failHardInDebug();
+            }
             timer.matchMode(rx_matchCh, DISABLE);
             rx_rearm = true;
-        } else if (rxbitcnt == 10)
+        }
+        else if (rxbitcnt == 10)
         {
             // Startbit
             if (digitalRead(rxPin))
@@ -222,10 +239,13 @@ void ProgUart::timerInterruptHandler()
                 timer.matchMode(rx_matchCh, DISABLE);
                 rx_rearm = true;
             }
-        } else {
+        }
+        else
+        {
             // Datenbit
             rxbyte = (rxbyte >> 1) | (digitalRead(rxPin)?128:0);
         }
+
         if (rxbitcnt > 1)
         {
             unsigned int time = timer.match(rx_matchCh);
@@ -235,7 +255,7 @@ void ProgUart::timerInterruptHandler()
         timer.resetFlag(rx_matchCh);
     }
 
-    if (timer.flag(tx_matchCh)) // Nach einem Pagelwechsel
+    if (timer.flag(tx_matchCh)) // Nach einem Pegelwechsel
     {
         unsigned int time = timer.match(tx_matchCh);
         timer.resetFlag(tx_matchCh);
@@ -262,10 +282,14 @@ void ProgUart::timerInterruptHandler()
                     timer.matchMode(tx_matchCh, CLEAR | INTERRUPT);
                 else
                     timer.matchMode(tx_matchCh, SET | INTERRUPT);
-            } else {
+            }
+            else
+            {
                 timer.matchMode(tx_matchCh, INTERRUPT);
             }
-        } else {
+        }
+        else
+        {
             // Ende des Stopbits ist erreicht
             txbitcnt = 0;
             timer.matchMode(tx_matchCh, DISABLE);
@@ -292,7 +316,9 @@ void ProgUart::timerInterruptHandler()
             txbyte = *txptr++;
             txlen--;
             txbitcnt = 11;
-        } else {
+        }
+        else
+        {
             // Buffer wurde versendet
             timer.captureMode(tx_matchCh, DISABLE);
             // Buffer kann für Bestätigungsantwort verwendet werden
@@ -303,7 +329,10 @@ void ProgUart::timerInterruptHandler()
             *txptr++ = C_Dev_Isp;
             *txptr++ = 0;
             if (ser_txfifo.Push(txbuffno) != TFifoErr::Ok)
-            buffmgr.FreeBuffer(txbuffno);
+            {
+                failHardInDebug();
+                buffmgr.FreeBuffer(txbuffno);
+            }
             txbuffno = -1;
         }
     }
@@ -329,12 +358,15 @@ void ProgUart::timerInterruptHandler()
         }
     }
 
-    if ((rxlen >= 16) || (rx_timeout && (rxlen > 0))) // Um die Verzögerung klein zu halten, wird die Paketlänge auf 16 begrenzt
+    if ((rxlen >= RX_BYTE_MAX_COLLECT) || (rx_timeout && (rxlen > 0))) // Um die Verzögerung klein zu halten, wird die Paketlänge auf RX_BYTE_MAX_COLLECT begrenzt
     {
         rxptr = buffmgr.buffptr(rxbuffno);
         *rxptr = rxlen+3; // Die Länge setzen
         if (ser_txfifo.Push(rxbuffno) != TFifoErr::Ok)
+        {
+            failHardInDebug();
             buffmgr.FreeBuffer(rxbuffno);
+        }
         rxbuffno = -1;
         rxlen = 0;
     }
