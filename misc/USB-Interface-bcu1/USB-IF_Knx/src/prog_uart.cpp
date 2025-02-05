@@ -382,45 +382,52 @@ TProgUartErr ProgUart::TransmitBuffer(int buffno)
     if (TxBusy())
     {
         return TProgUartErr::Busy;
-    } else {
-        uint8_t *ptr = buffmgr.buffptr(buffno);
-        uint8_t len = *ptr;
-        if ((len < 2) || (len > 67))
-        {
-            return TProgUartErr::Error;
-        }
-
-        timer.noInterrupts();
-        txptr = buffmgr.buffptr(buffno);
-        txlen = *txptr-3;
-        txptr += 3; // Längenangabe, Checksumme und CDC-Id überspringen
-        txbuffno = buffno;
-        timer.interrupts();
-        NVIC_SetPendingIRQ((IRQn_Type) (TIMER_16_0_IRQn + timerNum));
     }
+
+    uint8_t *ptr = buffmgr.buffptr(buffno);
+    uint8_t len = *ptr;
+    if ((len < 2) || (len > 67))
+    {
+        return TProgUartErr::Error;
+    }
+
+    timer.noInterrupts();
+    txptr = buffmgr.buffptr(buffno);
+    txlen = *txptr-3;
+    txptr += 3; // Längenangabe, Checksumme und CDC-Id überspringen
+    txbuffno = buffno;
+    timer.interrupts();
+    NVIC_SetPendingIRQ((IRQn_Type) (TIMER_16_0_IRQn + timerNum));
+
     return TProgUartErr::Ok;
 }
 
 void ProgUart::SerIf_Tasks(void)
 {
-    if (!TxBusy())
+    if (TxBusy())
     {
-        if (cdc_txfifo.Empty() != TFifoErr::Empty)
-        {
-            int buffno;
-            cdc_txfifo.Pop(buffno);
-            if (Enabled)
-            {
-                TProgUartErr err = TransmitBuffer(buffno);
-                if (err != TProgUartErr::Ok)
-                {
-                    // Momentan als einzige Fehlerbehandlung: Paket verwerfen
-                    buffmgr.FreeBuffer(buffno);
-                    buffno = -1;
-                }
-            } else {
-                buffmgr.FreeBuffer(buffno);
-            }
-        }
+        return;
+    }
+
+    if (cdc_txfifo.Empty() == TFifoErr::Empty)
+    {
+        return;
+    }
+
+    int buffno;
+    cdc_txfifo.Pop(buffno);
+    if (!Enabled)
+    {
+        buffmgr.FreeBuffer(buffno);
+        return;
+    }
+
+    TProgUartErr err = TransmitBuffer(buffno);
+    if (err != TProgUartErr::Ok)
+    {
+        // Momentan als einzige Fehlerbehandlung: Paket verwerfen
+        failHardInDebug();
+        buffmgr.FreeBuffer(buffno);
+        buffno = -1;
     }
 }
