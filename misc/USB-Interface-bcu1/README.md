@@ -9,7 +9,7 @@
     * [ISP programming / flashing / updates](#isp-programming--flashing--updates)
       * [Selfbus ARM device/controller](#selfbus-arm-devicecontroller)
       * [KNX bus access controller (TS_ARM) firmware](#knx-bus-access-controller-ts_arm-firmware)
-      * [USB mcu/controller U1 (LPC11uxx)](#usb-mcucontroller-u1-lpc11uxx)
+      * [USB mcu/controller U1 (LPC11U24/401)](#usb-mcucontroller-u1-lpc11u24401)
     * [Firmware](#firmware)
     * [Hardware / PCB](#hardware--pcb)
   * [Usage with knxd](#usage-with-knxd)
@@ -84,7 +84,6 @@ Virtual serial port settings: 115200 baud, 8 data bits, no parity, 1 stop bit
   * Close jumper JP1
   * Connect USB
   * Copy binary `*.bin` [usb-if_usb_release_vx.xx_libvx.xx.bin](https://github.com/selfbus/software-releases/tree/main/misc/USB-Interface-bcu1) to removable drive **LPC1XXX IFLASH**
-<br>
 - ISP programming over UART (P2)
   * Disconnect USB and KNX-supply
   * Close jumpers JP1 and JP2
