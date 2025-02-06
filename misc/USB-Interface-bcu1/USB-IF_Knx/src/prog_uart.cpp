@@ -358,6 +358,7 @@ void ProgUart::timerInterruptHandler()
             *rxptr++ = rxbyte;
             rxlen++;
         }
+        rxbyte = 0;
     }
 
     if ((rxlen >= RX_BYTE_MAX_COLLECT) || (rx_timeout && (rxlen > 0))) // Um die Verzögerung klein zu halten, wird die Paketlänge auf RX_BYTE_MAX_COLLECT begrenzt
