@@ -17,6 +17,8 @@
     * [Start in terminal](#start-in-terminal)
     * [Create simple knxd.ini for USB-Interface](#create-simple-knxdini-for-usb-interface)
     * [udev rule](#udev-rule)
+  * [Known Issues](#known-issues)
+    * [ISP programming issues](#isp-programming-issues)
   * [Forum](#forum)
 <!-- TOC -->
 
@@ -121,6 +123,15 @@ create file `/etc/udev/rules.d/70-knxd.rules` and add following line<br>
 `ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="147b", ATTR{idProduct}=="5120", OWNER="knxd", MODE="0600"` to it,<br>
 or run in a terminal<br>
 `echo 'ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="147b", ATTR{idProduct}=="5120", OWNER="knxd", MODE="0600"' | sudo tee --append /etc/udev/rules.d/70-knxd.rules`
+
+## Known Issues
+
+### ISP programming issues
+- Since Flashmagic version 12.85 the checkbox *No echo* (menu *View->Preferences->Communications*) must be **unchecked**.  
+  <img alt="Flashmagic no echo option" src="resources/flashmagic_no_echo_off.png" title="Flashmagic no echo option" height="120"/>
+- Very slow ISP programming (Prog-If mode) of an User-mcu connected to P3 (9600 baud, half-duplex).  
+  The checkbox *Half-duplex* (menu *View->Preferences->Communications*) must be **checked**.  
+  <img alt="Flashmagic half-duplex option" src="resources/flashmagic_half_duplex_on.png" title="Flashmagic no echo option" height="120"/>
 
 ## Forum
 
