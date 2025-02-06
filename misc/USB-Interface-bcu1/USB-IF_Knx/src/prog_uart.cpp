@@ -375,6 +375,13 @@ void ProgUart::timerInterruptHandler()
             timer.matchMode(rx_matchCh, INTERRUPT);
             timer.captureMode(rx_captureCh, FALLING_EDGE | INTERRUPT);
         }
+
+        if (!rx_rearm && rx_timeout)
+        {
+            // enable falling edge detection
+            timer.matchMode(rx_matchCh, DISABLE);
+            timer.captureMode(rx_captureCh, FALLING_EDGE | INTERRUPT);
+        }
     }
 
     if (rx_bytedone)
