@@ -403,10 +403,11 @@ TProgUartErr ProgUart::TransmitBuffer(int buffno)
         return TProgUartErr::Error;
     }
 
+    ptr += 3; // skip length, checksum and CDC-Id
+    len -= 3; // adjust length
     timer.noInterrupts();
-    txptr = buffmgr.buffptr(buffno);
-    txlen = *txptr-3;
-    txptr += 3; // Längenangabe, Checksumme und CDC-Id überspringen
+    txptr = ptr;
+    txlen = len;
     txbuffno = buffno;
     timer.interrupts();
     NVIC_SetPendingIRQ((IRQn_Type) (TIMER_16_0_IRQn + timerNum));
