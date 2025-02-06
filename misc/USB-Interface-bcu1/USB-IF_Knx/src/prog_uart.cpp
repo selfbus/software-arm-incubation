@@ -384,6 +384,11 @@ bool ProgUart::TxBusy(void)
     return (txbuffno >= 0);
 }
 
+bool ProgUart::rxBusy(void)
+{
+    return (rxbuffno >= 0);
+}
+
 TProgUartErr ProgUart::TransmitBuffer(int buffno)
 {
     if (TxBusy())
@@ -412,6 +417,11 @@ TProgUartErr ProgUart::TransmitBuffer(int buffno)
 void ProgUart::SerIf_Tasks(void)
 {
     if (TxBusy())
+    {
+        return;
+    }
+
+    if (rxBusy())
     {
         return;
     }
