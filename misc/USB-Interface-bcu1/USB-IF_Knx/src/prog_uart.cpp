@@ -199,6 +199,7 @@ void ProgUart::timerInterruptHandler()
             //timer.restart();
             timer.matchMode(rx_matchCh, INTERRUPT);
             rxbitcnt = 10;
+            rxbyte = 0;
         } else {
             // Hier sollte die ISR nie vorbeikommen
             failHardInDebug();
