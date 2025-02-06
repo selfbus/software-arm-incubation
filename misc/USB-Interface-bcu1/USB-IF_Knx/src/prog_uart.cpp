@@ -303,7 +303,6 @@ void ProgUart::timerInterruptHandler()
         {   // Nein, noch nicht
             uint32_t time = timer.capture(rx_captureCh);
             timer.match(rx_matchCh, HALFBIT_TIME + time);
-            //timer.restart();
             timer.matchMode(rx_matchCh, INTERRUPT);
             rxbitcnt = 10;
             if (rxbyte != 0)
@@ -498,6 +497,5 @@ void ProgUart::SerIf_Tasks(void)
         // Momentan als einzige Fehlerbehandlung: Paket verwerfen
         failHardInDebug();
         buffmgr.FreeBuffer(buffno);
-        buffno = -1;
     }
 }
