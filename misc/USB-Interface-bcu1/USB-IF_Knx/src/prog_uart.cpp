@@ -192,9 +192,9 @@ void ProgUart::timerInterruptHandler()
     {
         timer.captureMode(rx_captureCh, DISABLE);
         if (rxbitcnt == 0) // Läuft schon ein Empfang?
-        { // Nein, noch nicht
-            unsigned int time = timer.capture(rx_captureCh);
-            timer.match(rx_matchCh, HALFBIT_TIME+time);
+        {   // Nein, noch nicht
+            uint32_t time = timer.capture(rx_captureCh);
+            timer.match(rx_matchCh, HALFBIT_TIME + time);
             //timer.restart();
             timer.matchMode(rx_matchCh, INTERRUPT);
             rxbitcnt = 10;
@@ -250,7 +250,7 @@ void ProgUart::timerInterruptHandler()
 
         if (rxbitcnt > 1)
         {
-            unsigned int time = timer.match(rx_matchCh);
+            uint32_t time = timer.match(rx_matchCh);
             timer.match(rx_matchCh, BIT_TIME+time);
             rxbitcnt--;
         }
@@ -259,7 +259,7 @@ void ProgUart::timerInterruptHandler()
         if (rx_rearm)
         {
             // Timeout-Timer setzen
-            unsigned int time = timer.match(rx_matchCh);
+            uint32_t time = timer.match(rx_matchCh);
             timer.match(rx_matchCh, REC_TIMEOUT + time);
             timer.matchMode(rx_matchCh, INTERRUPT);
             timer.captureMode(rx_captureCh, FALLING_EDGE | INTERRUPT);
@@ -268,7 +268,7 @@ void ProgUart::timerInterruptHandler()
 
     if (timer.flag(tx_matchCh)) // Nach einem Pegelwechsel
     {
-        unsigned int time = timer.match(tx_matchCh);
+        uint32_t time = timer.match(tx_matchCh);
         timer.resetFlag(tx_matchCh);
         if (txbitcnt != 1)
         {
@@ -312,7 +312,7 @@ void ProgUart::timerInterruptHandler()
         if (txlen != 0)
         {
             // Programmiere fallende Flanke Startbit
-            unsigned int time = timer.value() + BIT_TIME;
+            uint32_t time = timer.value() + BIT_TIME;
             timer.match(tx_matchCh, time);
             timer.matchMode(tx_matchCh, INTERRUPT | CLEAR);
             txbyte = *txptr++;
