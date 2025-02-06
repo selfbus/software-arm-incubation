@@ -7,6 +7,10 @@
 #ifndef USB_IF_COMMON_ERROR_HANDLER_H_
 #define USB_IF_COMMON_ERROR_HANDLER_H_
 
+#ifndef __USE_LPCOPEN
+#   include <sblib/utils.h>
+#endif
+
 #ifdef __USE_LPCOPEN
 /**
  * Enter a fatal error state and blink all 4 mode LEDs every 100ms.

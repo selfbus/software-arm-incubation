@@ -9,8 +9,6 @@
 #   include <chip.h>
 #   include <gpio_11xx_1.h>
 #   include <core_cm0.h>
-#else
-#   include <sblib/utils.h>
 #endif
 
 #include "error_handler.h"
