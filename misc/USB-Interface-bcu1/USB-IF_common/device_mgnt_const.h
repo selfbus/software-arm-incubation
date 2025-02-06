@@ -13,7 +13,6 @@
 
 #include <stdint.h>
 
-///\todo increase baudrate to at least 115200 (if possible with soft uart (check prog_uart.h)
 constexpr uint32_t C_Dev_Baurate = 115200; //!> Baudrate for the inter-mcu communication
 
 constexpr uint8_t cdc_OffSet = 3; ///\todo find better name
