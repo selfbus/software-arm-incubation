@@ -186,6 +186,79 @@ void ProgUart::timerInterruptHandler()
     // rx_captureCh Gebraucht zur Erkennung der fallenden Flanke Startbit
     // rx_matchCh   Erzeugt die Ints bei den Bits und bei einem Rx-Timeout
     // tx_matchCh   Erzeugt die Flankenwechsel am Sendeausgang
+    if (timer.flag(tx_matchCh)) // Nach einem Pegelwechsel
+    {
+        uint32_t time = timer.match(tx_matchCh);
+        timer.resetFlag(tx_matchCh);
+        if (txbitcnt != 1)
+        {
+            bool level = false;
+            if (txbitcnt != 11)
+            {
+                level = (txbyte & 0x01) != 0;
+                txbyte = (txbyte >> 1) + 128;
+            }
+            time += BIT_TIME;
+            txbitcnt--;
+            while ((txbitcnt != 1) && (level == ((txbyte & 0x01) != 0)))
+            {
+                txbyte = (txbyte >> 1) + 128;
+                time += BIT_TIME;
+                txbitcnt--;
+            }
+            timer.match(tx_matchCh, time);
+            if (txbitcnt != 1)
+            {
+                if (level)
+                    timer.matchMode(tx_matchCh, CLEAR | INTERRUPT);
+                else
+                    timer.matchMode(tx_matchCh, SET | INTERRUPT);
+            }
+            else
+            {
+                timer.matchMode(tx_matchCh, INTERRUPT);
+            }
+        }
+        else
+        {
+            // Ende des Stopbits ist erreicht
+            txbitcnt = 0;
+            timer.matchMode(tx_matchCh, DISABLE);
+        }
+    }
+
+    if ((txbuffno >= 0) && (txbitcnt == 0))
+    {
+        if (txlen != 0)
+        {
+            txbyte = *txptr++;
+            txlen--;
+            txbitcnt = 11;
+            // Programmiere fallende Flanke Startbit
+            uint32_t time = timer.value() + BIT_TIME;
+            timer.match(tx_matchCh, time);
+            timer.matchMode(tx_matchCh, INTERRUPT | CLEAR);
+        }
+        else
+        {
+            // Buffer wurde versendet
+            timer.captureMode(tx_matchCh, DISABLE);
+            // Buffer kann für Bestätigungsantwort verwendet werden
+            txptr = buffmgr.buffptr(txbuffno);
+            *txptr++ = C_Dev_Packet_Length;
+            txptr++;
+            *txptr++ = C_HRH_IdDev;
+            *txptr++ = C_Dev_Isp;
+            *txptr++ = 0;
+            if (ser_txfifo.Push(txbuffno) != TFifoErr::Ok)
+            {
+                failHardInDebug();
+                buffmgr.FreeBuffer(txbuffno);
+            }
+            txbuffno = -1;
+        }
+    }
+
     bool rx_bytedone = false;
     bool rx_timeout = false;
     if (timer.flag(rx_captureCh))  // Ereignis an RxD
@@ -267,79 +340,6 @@ void ProgUart::timerInterruptHandler()
             timer.match(rx_matchCh, REC_TIMEOUT + time);
             timer.matchMode(rx_matchCh, INTERRUPT);
             timer.captureMode(rx_captureCh, FALLING_EDGE | INTERRUPT);
-        }
-    }
-
-    if (timer.flag(tx_matchCh)) // Nach einem Pegelwechsel
-    {
-        uint32_t time = timer.match(tx_matchCh);
-        timer.resetFlag(tx_matchCh);
-        if (txbitcnt != 1)
-        {
-            bool level = false;
-            if (txbitcnt != 11)
-            {
-                level = (txbyte & 0x01) != 0;
-                txbyte = (txbyte >> 1) + 128;
-            }
-            time += BIT_TIME;
-            txbitcnt--;
-            while ((txbitcnt != 1) && (level == ((txbyte & 0x01) != 0)))
-            {
-                txbyte = (txbyte >> 1) + 128;
-                time += BIT_TIME;
-                txbitcnt--;
-            }
-            timer.match(tx_matchCh, time);
-            if (txbitcnt != 1)
-            {
-                if (level)
-                    timer.matchMode(tx_matchCh, CLEAR | INTERRUPT);
-                else
-                    timer.matchMode(tx_matchCh, SET | INTERRUPT);
-            }
-            else
-            {
-                timer.matchMode(tx_matchCh, INTERRUPT);
-            }
-        }
-        else
-        {
-            // Ende des Stopbits ist erreicht
-            txbitcnt = 0;
-            timer.matchMode(tx_matchCh, DISABLE);
-        }
-    }
-
-    if ((txbuffno >= 0) && (txbitcnt == 0))
-    {
-        if (txlen != 0)
-        {
-            // Programmiere fallende Flanke Startbit
-            uint32_t time = timer.value() + BIT_TIME;
-            timer.match(tx_matchCh, time);
-            timer.matchMode(tx_matchCh, INTERRUPT | CLEAR);
-            txbyte = *txptr++;
-            txlen--;
-            txbitcnt = 11;
-        }
-        else
-        {
-            // Buffer wurde versendet
-            timer.captureMode(tx_matchCh, DISABLE);
-            // Buffer kann für Bestätigungsantwort verwendet werden
-            txptr = buffmgr.buffptr(txbuffno);
-            *txptr++ = C_Dev_Packet_Length;
-            txptr++;
-            *txptr++ = C_HRH_IdDev;
-            *txptr++ = C_Dev_Isp;
-            *txptr++ = 0;
-            if (ser_txfifo.Push(txbuffno) != TFifoErr::Ok)
-            {
-                failHardInDebug();
-                buffmgr.FreeBuffer(txbuffno);
-            }
-            txbuffno = -1;
         }
     }
 
