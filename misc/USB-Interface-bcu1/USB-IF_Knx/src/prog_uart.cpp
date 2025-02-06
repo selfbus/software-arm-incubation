@@ -435,9 +435,19 @@ TProgUartErr ProgUart::TransmitBuffer(int buffno)
     uint8_t len = *ptr;
     if ((len < 2) || (len > 67))
     {
+        failHardInDebug();
         return TProgUartErr::Error;
     }
 
+    // have seen hex 05 f2 03 01 04 here
+    // That is length 5 (05), checksum (f2), C_HRH_IdDev (03) with C_Dev_Isp (01)
+    // which never should be transmitted over this softUART
+    auto isISPprogammingMessage = (ptr[2] == C_HRH_IdCdc);
+    if (!isISPprogammingMessage)
+    {
+        failHardInDebug();
+        return TProgUartErr::Error;
+    }
     ptr += 3; // skip length, checksum and CDC-Id
     len -= 3; // adjust length
 
