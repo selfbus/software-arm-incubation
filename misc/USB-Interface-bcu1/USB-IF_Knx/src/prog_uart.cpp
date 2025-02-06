@@ -144,6 +144,35 @@ void ProgUart::UpdIspLines(void)
     }
 }
 
+bool ProgUart::isValidUUEncoding(uint8_t * buffer, uint32_t length)
+{
+    for (uint32_t i = 0; i < length; i ++)
+    {
+        if ((buffer[i] == 0x0d) || // line feed
+            (buffer[i] == '\e')||  // <ESC> escape
+            (buffer[i] == 'y') ||  // lower case letters of Synchronized
+            (buffer[i] == 'n') ||
+            (buffer[i] == 'c') ||
+            (buffer[i] == 'h') ||
+            (buffer[i] == 'r') ||
+            (buffer[i] == 'o') ||
+            (buffer[i] == 'i') ||
+            (buffer[i] == 'z') ||
+            (buffer[i] == 'e') ||
+            (buffer[i] == 'd')     // lower case end
+           )
+        {
+            continue;
+        }
+
+        if (!((buffer[i] >= ' ') && (buffer[i] <= '`'))) // check for correct UUencoding ' ' = 0x20 and '`'= 0x60
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 extern "C" void TIMER32_0_IRQHandler(void)
 {
     proguart.timerInterruptHandler();
@@ -232,6 +261,12 @@ void ProgUart::timerInterruptHandler()
         if (txlen != 0)
         {
             txbyte = *txptr++;
+#ifdef DEBUG
+            if (!(isValidUUEncoding(&txbyte, 1))) // just for debugging, we check a second time for valid UUEncoding
+            {
+                failHardInDebug();
+            }
+#endif
             txlen--;
             txbitcnt = 11;
             // Programmiere fallende Flanke Startbit
@@ -405,6 +440,13 @@ TProgUartErr ProgUart::TransmitBuffer(int buffno)
 
     ptr += 3; // skip length, checksum and CDC-Id
     len -= 3; // adjust length
+
+    // ensure that we only transmit valid UUencoded ISP commands/data
+    if (!isValidUUEncoding(ptr, len))
+    {
+        fatalError();
+    }
+
     timer.noInterrupts();
     txptr = ptr;
     txlen = len;

@@ -66,6 +66,26 @@ private:
     bool rxBusy(void);
     TProgUartErr TransmitBuffer(int buffno);
     void initialize();
+
+    /**
+     * Validates if a given buffer adheres to UUencoding rules.
+     *
+     * @details This method checks whether each byte in the provided buffer is valid
+     *          according to UUencoding specifications. Valid characters for UUencoding
+     *          are within the range of ASCII ' ' (0x20) to '`' (0x60). It also
+     *          accepts characters which hold special significance in contexts of
+     *          ISP autobaud synchronization and escape sequences.
+     *
+     * @param buffer Pointer to the input buffer containing bytes to validate.
+     * @param length The length of the input buffer.
+     * @return true if the buffer is valid UUencoded data, false otherwise.
+     *
+     * @note The following characters are explicitly ignored during validation:
+     *       - Line feed (0x0d)
+     *       - Escape character (<ESC>)
+     *       - Lower case letters of the word "Synchronized"
+     */
+    static bool isValidUUEncoding(uint8_t * buffer, uint32_t length);
 };
 
 
