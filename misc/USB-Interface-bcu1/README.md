@@ -65,7 +65,8 @@ Virtual serial port settings: 115200 baud, 8 data bits, no parity, 1 stop bit
 
 #### Selfbus ARM device/controller
 - Disconnect USB and KNX-supply
-- Close jumper JP2 and JP6 (+3.3V)
+- Close jumper JP2 and JP6 (+3.3V)  
+  <img alt="jumper ISP User mcu" src="resources/jumper/usb_if_user_mcu_isp.png" title="jumper ISP User mcu" height="100"/>
 - Connect the ARM controller´s ISP connector with a 10pole cable to the Prog-If connector (P3)  
 - Connect USB and KNX-supply
 - Select mode Prog-If (LED4 on) with switch S1
@@ -74,7 +75,8 @@ Virtual serial port settings: 115200 baud, 8 data bits, no parity, 1 stop bit
 
 #### KNX bus access controller (TS_ARM) firmware
 - Disconnect USB and KNX-supply
-- Close jumpers JP4 and JP5
+- Close jumpers JP4 and JP5  
+  <img alt="jumper KNX mcu (TS_ARM)" src="resources/jumper/usb_if_knx_mcu_isp.png" title="jumper KNX mcu (TS_ARM)" height="100"/>
 - Connect USB and KNX-supply
 - All mode LEDs (LED1-4) should be on, indicating the ISP firmware update mode
 - Flash the TS_ARM with e.g. [Flashmagic](https://www.flashmagictool.com)
@@ -83,12 +85,14 @@ Virtual serial port settings: 115200 baud, 8 data bits, no parity, 1 stop bit
 #### USB mcu/controller U1 (LPC11U24/401)
 - ISP programming over USB (X1)
   * Disconnect USB and KNX-supply
-  * Close jumper JP1
+  * Close jumper JP1  
+    <img alt="jumper USB mcu ISP over USB" src="resources/jumper/usb_if_usb_mcu_isp_over_usb.png" title="jumper USB mcu ISP over USB" height="100"/>
   * Connect USB
   * Copy binary `*.bin` [usb-if_usb_release_vx.xx_libvx.xx.bin](https://github.com/selfbus/software-releases/tree/main/misc/USB-Interface-bcu1) to removable drive **LPC1XXX IFLASH**
 - ISP programming over UART (P2)
   * Disconnect USB and KNX-supply
-  * Close jumpers JP1 and JP2
+  * Close jumpers JP1 and JP2  
+    <img alt="jumper USB mcu ISP over UART" src="resources/jumper/usb_if_usb_mcu_isp_over_uart.png" title="jumper USB mcu ISP over UART" height="100"/>
   * Connect ISP-Programmer to P2
   * Flash `*.hex` [usb-if_usb_release_vx.xx_libvx.xx.hex](https://github.com/selfbus/software-releases/tree/main/misc/USB-Interface-bcu1) with e.g. [Flashmagic](https://www.flashmagictool.com)
 
