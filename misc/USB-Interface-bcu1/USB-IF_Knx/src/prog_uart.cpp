@@ -186,7 +186,6 @@ void ProgUart::timerInterruptHandler()
     // rx_captureCh Gebraucht zur Erkennung der fallenden Flanke Startbit
     // rx_matchCh   Erzeugt die Ints bei den Bits und bei einem Rx-Timeout
     // tx_matchCh   Erzeugt die Flankenwechsel am Sendeausgang
-    bool rx_rearm = false;
     bool rx_bytedone = false;
     bool rx_timeout = false;
     if (timer.flag(rx_captureCh))  // Ereignis an RxD
@@ -200,7 +199,8 @@ void ProgUart::timerInterruptHandler()
             timer.matchMode(rx_matchCh, INTERRUPT);
             rxbitcnt = 10;
             rxbyte = 0;
-        } else {
+        }
+        else {
             // Hier sollte die ISR nie vorbeikommen
             failHardInDebug();
         }
@@ -209,6 +209,7 @@ void ProgUart::timerInterruptHandler()
 
     if (timer.flag(rx_matchCh)) // Mitte einer Bitzeit am seriellen Empfänger ODER Timeout
     {
+        bool rx_rearm = false;
         if (rxbitcnt == 0)
         {
             // Timeout
@@ -254,6 +255,15 @@ void ProgUart::timerInterruptHandler()
             rxbitcnt--;
         }
         timer.resetFlag(rx_matchCh);
+
+        if (rx_rearm)
+        {
+            // Timeout-Timer setzen
+            unsigned int time = timer.match(rx_matchCh);
+            timer.match(rx_matchCh, REC_TIMEOUT + time);
+            timer.matchMode(rx_matchCh, INTERRUPT);
+            timer.captureMode(rx_captureCh, FALLING_EDGE | INTERRUPT);
+        }
     }
 
     if (timer.flag(tx_matchCh)) // Nach einem Pegelwechsel
@@ -295,15 +305,6 @@ void ProgUart::timerInterruptHandler()
             txbitcnt = 0;
             timer.matchMode(tx_matchCh, DISABLE);
         }
-    }
-
-    if (rx_rearm)
-    {
-        // Timeout-Timer setzen
-        unsigned int time = timer.match(rx_matchCh);
-        timer.match(rx_matchCh, REC_TIMEOUT+time);
-        timer.matchMode(rx_matchCh, INTERRUPT);
-        timer.captureMode(rx_captureCh, FALLING_EDGE | INTERRUPT);
     }
 
     if ((txbuffno >= 0) && (txbitcnt == 0))
