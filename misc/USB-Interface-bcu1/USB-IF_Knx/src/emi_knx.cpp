@@ -391,8 +391,7 @@ void EmiKnxIf::sendReceivedTelegramAsEMI(uint8_t * telegram, uint8_t length)
 
     uint8_t *buffptr = buffmgr.buffptr(buffno);
     setTPBodyLength(buffptr, length); // [0], [4], [7,8] length positions
-    ///\todo missing position 1 ?
-    buffptr += 2; // skip [0] (total length) and [1] (unknown usage) (already set in setTPBodyLength(.))
+    buffptr += 2; // skip [0] (total length) and [1] (checksum) (already set in setTPBodyLength(.))
 
     // create HID report header (HRH)
     *buffptr++ = HRH_ReportID; // [2] HRH report id
