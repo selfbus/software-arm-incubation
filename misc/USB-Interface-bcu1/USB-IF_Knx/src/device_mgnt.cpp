@@ -67,10 +67,8 @@ void DeviceManagement::handleDev_Sys(uint8_t subControlByte)
             // - Usb side aktiviert Prog User Chip
             //   -> Initialisiert Interface, aktiviert den ProgUserChip Modus
             //      löscht CdcMonActive
-            //
             emiknxif.SetCdcMonMode(false);
             proguart.Enable();
-            LastDevSys = C_DevSys_UsrPrg;
             break;
 
         // should never happen
