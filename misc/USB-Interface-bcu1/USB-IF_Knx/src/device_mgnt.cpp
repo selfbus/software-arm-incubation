@@ -67,7 +67,7 @@ void DeviceManagement::handleDev_Sys(uint8_t subControlByte)
             // - Usb side aktiviert Prog User Chip
             //   -> Initialisiert Interface, aktiviert den ProgUserChip Modus
             //      löscht CdcMonActive
-            emiknxif.SetCdcMonMode(false);
+            emiknxif.reset(); // Set bcu in download mode to disable all KNX bus communication
             proguart.Enable();
             break;
 
