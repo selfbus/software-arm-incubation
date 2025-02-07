@@ -156,14 +156,14 @@ uint8_t EmiKnxIf::emiReadOneValue(int memoryAddress)
 
 bool EmiKnxIf::isHidActive()
 {
-    uint8_t systemState = getSystemState();        // get current bcu status
+    uint8_t systemState = getSystemState();      // get current bcu status
     systemState &= ~BCU_STATUS_PARITY;           // clear parity bit for easier check
     systemState &= ~BCU_STATUS_PROGRAMMING_MODE; // clear programming mode bit
 
     // HID-Interface is active, when serial pei or link layer are enabled
     // e.g. ETS GroupMonitor in normal operation
-    // EMI "46 01 00 60 12" =>_MCode_SetValue Addr 0x0060 1 Byte 0x12
-    bool result = systemState == (BCU_STATUS_SERIAL_PEI | BCU_STATUS_LINK_LAYER); //
+    // EMI "46 01 00 60 12" => C_MCode_SetValue Addr 0x0060 1 Byte 0x12 (BCU_STATUS_SERIAL_PEI | BCU_STATUS_LINK_LAYER)
+    bool result = systemState == (BCU_STATUS_SERIAL_PEI | BCU_STATUS_LINK_LAYER);
     return result;
 }
 
