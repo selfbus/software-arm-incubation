@@ -122,21 +122,21 @@ void DeviceManagement::SysIf_Tasks(bool UsbActive)
     {
         case TCdcDeviceMode::Halt:
         case TCdcDeviceMode::ProgBusChip:
-            *buffptr++ = C_DevSys_Disable;
+            *buffptr++ = static_cast<uint8_t>(DeviceMode::Disable);
             KnxActive = false;
             break;
 
         case TCdcDeviceMode::HidOnly:
         case TCdcDeviceMode::UsbMon:
-            *buffptr++ = C_DevSys_Normal;
+            *buffptr++ = static_cast<uint8_t>(DeviceMode::Normal);
             break;
 
         case TCdcDeviceMode::BusMon:
-            *buffptr++ = C_DevSys_CdcMon;
+            *buffptr++ = static_cast<uint8_t>(DeviceMode::CdcMon);
             break;
 
         case TCdcDeviceMode::ProgUserChip:
-            *buffptr++ = C_DevSys_UsrPrg;
+            *buffptr++ = static_cast<uint8_t>(DeviceMode::UsrPrg);
             break;
 
         default:

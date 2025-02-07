@@ -15,7 +15,6 @@
 #include "GenFifo.h"
 #include "BufferMgr.h"
 #include "device_mgnt.h"
-#include "device_mgnt_const.h"
 #include "error_handler.h"
 
 DeviceManagement devicemgnt;
@@ -24,28 +23,33 @@ DeviceManagement::DeviceManagement()
 {
     txtimeout = 0;
     rxtimeout = 0;
-    LastDevSys = 0;
+    LastDevSys = DeviceMode::Invalid;
+    handleDev_Sys(DeviceMode::Disable);
 }
 
-void DeviceManagement::handleDev_Sys(uint8_t subControlByte)
+void DeviceManagement::handleDev_Sys(DeviceMode newDeviceMode)
 {
-    if (LastDevSys == subControlByte)
+
+    if (LastDevSys == newDeviceMode)
     {
         // Mode didn´t change, so everything is already fine
         return;
     }
-    LastDevSys = subControlByte;
+    LastDevSys = newDeviceMode;
+
+
     switch (LastDevSys)
     {
         // KNX-Interface or
         // USB-Monitor
-        case C_DevSys_Normal:
+        case DeviceMode::Normal:
             emiknxif.SetCdcMonMode(false);
             proguart.Disable();
             break;
 
         // USB disabled
-        case C_DevSys_Disable:
+        case DeviceMode::Disable:
+        case DeviceMode::Invalid:
             // - Usb side meldet USB unconfigured
             //   -> löscht CdcMonActive
             //      löscht ProgUserChipModus
@@ -54,7 +58,7 @@ void DeviceManagement::handleDev_Sys(uint8_t subControlByte)
             break;
 
         // KNX-Monitor
-        case C_DevSys_CdcMon:
+        case DeviceMode::CdcMon:
             // - Usb side aktiviert Cdc-Monitor
             //   -> setzt CdcMonActive
             //      löscht ProgUserChipModus
@@ -63,7 +67,7 @@ void DeviceManagement::handleDev_Sys(uint8_t subControlByte)
             break;
 
         // Prog-Interface
-        case C_DevSys_UsrPrg:
+        case DeviceMode::UsrPrg:
             // - Usb side aktiviert Prog User Chip
             //   -> Initialisiert Interface, aktiviert den ProgUserChip Modus
             //      löscht CdcMonActive
@@ -94,7 +98,7 @@ void DeviceManagement::DevMgnt_Tasks(void)
             switch (command)
             {
                 case C_Dev_Sys:
-                    handleDev_Sys(subCommand);
+                    handleDev_Sys(static_cast<DeviceMode>(subCommand));
                     break;
 
                 case C_Dev_Isp:
@@ -116,14 +120,10 @@ void DeviceManagement::DevMgnt_Tasks(void)
         buffmgr.FreeBuffer(buffno);
     }
 
-    if (((int)(millis() - rxtimeout) > 0) && (LastDevSys != 0))
+    if ((int)(millis() - rxtimeout) > 0)
     {
-        // Timeout, anscheinen ist die USB-Seite nicht funktionsfähig
-        //   -> löscht CdcMonActive
-        //      löscht ProgUserChipModus
-        emiknxif.reset(); // Set bcu in download mode to disable all KNX bus communication
-        proguart.Disable();
-        LastDevSys = 0;
+        // Timeout, anscheinend ist die USB-Seite nicht funktionsfähig
+        handleDev_Sys(DeviceMode::Disable);
     }
 
     if ((int)(millis() - txtimeout) > 0)
@@ -137,7 +137,7 @@ void DeviceManagement::DevMgnt_Tasks(void)
             buffptr++;
             *buffptr++ = C_HRH_IdDev;
             *buffptr++ = C_Dev_Idle;
-            *buffptr++ = LastDevSys;
+            *buffptr++ = static_cast<uint8_t>(LastDevSys);
             if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
                 buffmgr.FreeBuffer(buffno);
         }

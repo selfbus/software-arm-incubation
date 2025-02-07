@@ -21,12 +21,11 @@ constexpr uint8_t cdc_OffSet = 3; ///\todo find better name
 // Inter-mcu device management protocol
 // Byte     Description
 //  0       Packet length
-///\todo what is byte 1 of the inter-mcu communication?
 //  1       1 Byte Checksumme, alle Bytes des Telegrams addiert (incl Checksumme), modulo 256, ergeben 255 from BufferMgr.h
 //  2       HID Report Header - HRH (see knxusb_const.h for details (e.g. C_HRH_IdDev)
 //  3       C_Dev main command/info?
 //  4       C_DevSys_xx sub command/info?
-//  5       UNKNOWN, in "void DeviceManagement::SysIf_Tasks(bool UsbActive)" it is not set, yet packet lewn
+//  5       UNKNOWN, in "void DeviceManagement::SysIf_Tasks(bool UsbActive)" it is not set, yet packet len
 
 ///\todo packet length 5 is right now an assumption based on
 ///      USB-IF_Usb => void DeviceManagement::SysIf_Tasks(bool UsbActive)
@@ -34,11 +33,19 @@ constexpr uint8_t cdc_OffSet = 3; ///\todo find better name
 constexpr uint8_t C_Dev_Packet_Length = 5; // searched for (2+3)
 
 #define C_Dev_Idle       1 //!< Inter-mcu communication heartbeat?
-#define C_Dev_Sys        2 //!< Mode control command
-#define C_DevSys_Disable 1 //!< USB is shut down
-#define C_DevSys_Normal  2 //!< KNX-Interface or USB-Monitor
-#define C_DevSys_CdcMon  3 //!< KNX-Monitor
-#define C_DevSys_UsrPrg  4 //!< UserProg-Interface
+#define C_Dev_Sys        2 //!< Mode control command. See @ref DeviceMode for possible device modes
+
+/**
+ * Device modes for @ref C_Dev_Sys inter-mcu mode control
+ */
+enum class DeviceMode
+{
+    Invalid = 0, //!< Invalid mode
+    Disable = 1, //!< USB is shut down
+    Normal  = 2, //!< KNX-Interface or USB-Monitor
+    CdcMon  = 3, //!< KNX-Monitor
+    UsrPrg  = 4, //!< UserProg-Interface
+};
 
 /**
  * Set serial control lines (RTS/CTS...)

@@ -11,6 +11,7 @@
 #ifndef DEVICE_MGNT_H_
 #define DEVICE_MGNT_H_
 
+#include "device_mgnt_const.h"
 
 ///todo this class exists also in USB-IF_Usb
 class DeviceManagement
@@ -21,10 +22,10 @@ public:
 protected:
     unsigned int txtimeout;
     unsigned int rxtimeout;
-    uint8_t LastDevSys;
+    DeviceMode LastDevSys;
 
 private:
-    void handleDev_Sys(uint8_t subControlByte);
+    void handleDev_Sys(DeviceMode newDeviceMode);
 
 };
 
