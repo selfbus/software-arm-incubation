@@ -22,8 +22,18 @@ public:
     ModeSelect();
     void StartModeSelect(void); // Liest den Tastenzustand ein, liest Modus aus EEPROM, aktiviert LED, liefert Modus zurück
 
-    bool DoModeSelect(void); // Muss in einem festen Zeitraster aufgerufen werden. z.B. alle 10ms
-    // Liefert als Rückgabewert true, wenn der Modus gewechselt wurde.
+    /**
+     * Handles mode selection and updates system behavior accordingly.
+     *
+     * @details This function processes button presses to cycle through modes, updates the LEDs
+     *          to reflect the selected mode and saves the selected mode to flash.
+     *
+     * @return true if the mode was changed; otherwise false.
+     *
+     * @note Must be called in a fixed time interval, e.g. every 10ms
+     */
+    bool DoModeSelect(void);
+
     DeviceMode getDeviceMode(void);
     void SetLeds(void); // Setzt die LED-Ausgänge
     void setAllLeds(bool on);

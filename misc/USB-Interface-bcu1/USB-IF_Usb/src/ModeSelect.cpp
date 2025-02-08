@@ -124,7 +124,6 @@ void ModeSelect::StartModeSelect(void)
     SetLeds();
 }
 
-// alle 10 ms aufrufen
 bool ModeSelect::DoModeSelect(void)
 {
     if (ButtonDebounce())
