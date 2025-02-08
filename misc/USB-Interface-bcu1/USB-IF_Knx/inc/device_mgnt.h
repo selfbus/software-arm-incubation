@@ -25,12 +25,13 @@ public:
 protected:
     uint32_t txtimeout = 0;
     uint32_t rxtimeout = 0;
-    DeviceMode deviceMode = DeviceMode::Invalid;
+    TCdcDeviceMode deviceMode = TCdcDeviceMode::Invalid;
 
 private:
     ProgUart * softUART = nullptr;
     EmiKnxIf * emiKnxIf = nullptr;
-    void setDeviceMode(DeviceMode newDeviceMode);
+    void setDeviceMode(TCdcDeviceMode newDeviceMode);
+    void failAndNeverReturn(uint16_t blinkTimeMs);
 
 };
 

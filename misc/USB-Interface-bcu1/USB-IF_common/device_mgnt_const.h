@@ -36,18 +36,6 @@ constexpr uint8_t C_Dev_Packet_Length = 5; // searched for (2+3)
 #define C_Dev_Sys        2 //!< Mode control command. See @ref DeviceMode for possible device modes
 
 /**
- * Device modes for @ref C_Dev_Sys inter-mcu mode control
- */
-enum class DeviceMode
-{
-    Invalid = 0, //!< Invalid mode
-    Disable = 1, //!< USB is shut down
-    Normal  = 2, //!< KNX-Interface or USB-Monitor
-    CdcMon  = 3, //!< KNX-Monitor
-    UsrPrg  = 4, //!< UserProg-Interface
-};
-
-/**
  * Set serial control lines (RTS/CTS...)
  *
  * @details USB mcu sends it to set the soft uart (prog_uart) control lines.<br>
@@ -59,7 +47,7 @@ enum class DeviceMode
 #define C_RxTimeout 450
 #define C_IdlePeriod 200 //!> Idle heartbeat interval in milliseconds (inter-mcu communication)
 
-enum class TCdcDeviceMode
+enum class TCdcDeviceMode : uint8_t
 {
     Invalid = 0,    //!< Invalid mode
     Halt = 1,       //!< Initialization or USB stopped working

@@ -114,34 +114,29 @@ void DeviceManagement::SysIf_Tasks(bool UsbActive)
 
     uint8_t *buffptr = buffmgr.buffptr(buffno);
     *buffptr++ = C_Dev_Packet_Length;
-    buffptr++;
+    buffptr++; // skip checksum
     *buffptr++ = C_HRH_IdDev;
     *buffptr++ = C_Dev_Sys;
     LastMode = mode;
+    *buffptr++ = static_cast<uint8_t>(LastMode);
     switch (LastMode)
     {
+        case TCdcDeviceMode::Invalid:
         case TCdcDeviceMode::Halt:
         case TCdcDeviceMode::ProgBusChip:
-            *buffptr++ = static_cast<uint8_t>(DeviceMode::Disable);
             KnxActive = false;
             break;
 
         case TCdcDeviceMode::HidOnly:
         case TCdcDeviceMode::UsbMon:
-            *buffptr++ = static_cast<uint8_t>(DeviceMode::Normal);
-            break;
-
         case TCdcDeviceMode::BusMon:
-            *buffptr++ = static_cast<uint8_t>(DeviceMode::CdcMon);
-            break;
-
         case TCdcDeviceMode::ProgUserChip:
-            *buffptr++ = static_cast<uint8_t>(DeviceMode::UsrPrg);
             break;
 
         default:
-            *buffptr++ = 0; //this should never happen. It´s the same 0 as TCdcDeviceMode::Halt
-            failHardInDebug();
+            // This should never happen.
+            // If you land here, check that the switch statement checks all TCdcDeviceMode
+            fatalError();
             break;
     }
 
