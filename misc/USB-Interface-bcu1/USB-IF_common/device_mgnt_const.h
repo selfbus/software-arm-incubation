@@ -59,5 +59,27 @@ enum class DeviceMode
 #define C_RxTimeout 450
 #define C_IdlePeriod 200 //!> Idle heartbeat interval in milliseconds (inter-mcu communication)
 
+enum class TCdcDeviceMode
+{
+    Invalid = 0,    //!< Invalid mode
+    Halt = 1,       //!< Initialization or USB stopped working
+    HidOnly = 2,    //!< KNX-Interface only, KNX bus interface for ETS, knxd or Updater.
+    UsbMon = 3,     //!< USB-Monitor, sends raw EMI 1 messages to virtual serial port of the USB port.
+    BusMon = 4,     //!< KNX-Busmonitor, sends decoded KNX TP1 telegrams to virtual serial port of the USB port.
+
+    /**
+     * ISP-Programmer for KNX bus access mcu (TS_ARM connected at P1).
+     *
+     * @note Jumper JP5 (PIO 1_19) must be closed on startup.
+     */
+    ProgBusChip = 5,
+
+    /**
+     * ISP-Programmer for user mcu (connected at Prog-If (P3)).
+     *
+     * @note Jumper JP2 (PIO 0_3) and JP6 (3.3V)  must be closed.
+     */
+    ProgUserChip = 6
+};
 
 #endif /* DEVICE_MGNT_CONST_H_ */
