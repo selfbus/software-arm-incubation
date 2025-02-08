@@ -208,8 +208,6 @@ void EmiKnxIf::setBcuLayerState(const uint8_t layer, const bool newState)
 
 void EmiKnxIf::SetCdcMonMode(bool newState)
 {
-    CdcMonActive = newState;
-
     // Make sure there is no telegram waiting to be sent
     // before we change the transport layer state
     uint32_t starttime = millis();
@@ -220,6 +218,7 @@ void EmiKnxIf::SetCdcMonMode(bool newState)
             emiBcu->bus->discardReceivedTelegram();
         }
     }
+    CdcMonActive = newState;
     // change layer states
     setBcuLayerState(BCU_STATUS_TRANSPORT_LAYER, !CdcMonActive);
     setBcuLayerState(BCU_STATUS_APPLICATION_LAYER, CdcMonActive);
