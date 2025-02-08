@@ -25,12 +25,12 @@ public:
 protected:
     uint32_t txtimeout = 0;
     uint32_t rxtimeout = 0;
-    DeviceMode LastDevSys = DeviceMode::Invalid;
+    DeviceMode deviceMode = DeviceMode::Invalid;
 
 private:
     ProgUart * softUART = nullptr;
     EmiKnxIf * emiKnxIf = nullptr;
-    void handleDev_Sys(DeviceMode newDeviceMode);
+    void setDeviceMode(DeviceMode newDeviceMode);
 
 };
 

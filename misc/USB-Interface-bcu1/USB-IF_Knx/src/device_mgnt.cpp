@@ -25,18 +25,18 @@ DeviceManagement::DeviceManagement(ProgUart * softUART, EmiKnxIf * emiKnxIf):
     emiKnxIf->reset();
 }
 
-void DeviceManagement::handleDev_Sys(DeviceMode newDeviceMode)
+void DeviceManagement::setDeviceMode(DeviceMode newDeviceMode)
 {
 
-    if (LastDevSys == newDeviceMode)
+    if (deviceMode == newDeviceMode)
     {
         // Mode didn´t change, so everything is already fine
         return;
     }
-    LastDevSys = newDeviceMode;
+    deviceMode = newDeviceMode;
 
 
-    switch (LastDevSys)
+    switch (deviceMode)
     {
         // KNX-Interface or
         // USB-Monitor
@@ -97,7 +97,7 @@ void DeviceManagement::DevMgnt_Tasks(void)
             switch (command)
             {
                 case C_Dev_Sys:
-                    handleDev_Sys(static_cast<DeviceMode>(subCommand));
+                    setDeviceMode(static_cast<DeviceMode>(subCommand));
                     break;
 
                 case C_Dev_Isp:
@@ -122,7 +122,7 @@ void DeviceManagement::DevMgnt_Tasks(void)
     if ((int)(millis() - rxtimeout) > 0)
     {
         // Timeout, anscheinend ist die USB-Seite nicht funktionsfähig
-        handleDev_Sys(DeviceMode::Disable);
+        setDeviceMode(DeviceMode::Disable);
     }
 
     if ((int)(millis() - txtimeout) > 0)
@@ -136,7 +136,7 @@ void DeviceManagement::DevMgnt_Tasks(void)
             buffptr++;
             *buffptr++ = C_HRH_IdDev;
             *buffptr++ = C_Dev_Idle;
-            *buffptr++ = static_cast<uint8_t>(LastDevSys);
+            *buffptr++ = static_cast<uint8_t>(deviceMode);
             if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
                 buffmgr.FreeBuffer(buffno);
         }
