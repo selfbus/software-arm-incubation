@@ -87,14 +87,14 @@ void systemReset()
 }
 
 int main(void) {
-    CdcDeviceMode = TCdcDeviceMode::Halt;
+    currentDeviceMode = DeviceMode::Halt;
     SystemCoreClockUpdate();
 
     deviceIf.PioInit();
     if (deviceIf.KnxSideProgMode())
     {
         // jumper JP 5 is closed (PIO 1_19 connected to ground)
-        CdcDeviceMode = TCdcDeviceMode::ProgBusChip;
+        currentDeviceMode = DeviceMode::ProgBusChip;
         modeSelect.setAllLeds(true);
         uart.Init(C_Dev_Baurate, true);
     }
@@ -102,11 +102,11 @@ int main(void) {
     {
         // wenn nicht "ProgBusChip"
         modeSelect.StartModeSelect();
-        CdcDeviceMode = modeSelect.DeviceMode();
+        currentDeviceMode = modeSelect.getDeviceMode();
         uart.Init(C_Dev_Baurate, false);
     }
 
-    ErrorCode_t ret = usb_init(&g_hUsb, CdcDeviceMode == TCdcDeviceMode::HidOnly);
+    ErrorCode_t ret = usb_init(&g_hUsb, currentDeviceMode == DeviceMode::HidOnly);
     if (ret != LPC_OK)
     {
         fatalError();
@@ -117,14 +117,14 @@ int main(void) {
     {
         devicemgnt.SysIf_Tasks(knxhidif.UsbIsConfigured());
         knxhidif.KnxIf_Tasks();
-        if (CdcDeviceMode != TCdcDeviceMode::HidOnly)
+        if (currentDeviceMode != DeviceMode::HidOnly)
         {
             cdcdbgif.DbgIf_Tasks(); // virtual serial port (cdc = communication class device, dbgif = debugInterface ?)
         }
 
         if (uart.SerIf_Tasks())
         {
-            if (CdcDeviceMode == TCdcDeviceMode::ProgBusChip)
+            if (currentDeviceMode == DeviceMode::ProgBusChip)
             {
                 cdcdbgif.reEnableReceive();
             }
@@ -151,11 +151,11 @@ int main(void) {
         // Folgendes nur, wenn nicht Prog-Bus-Chip aktiv ist
         if (modeSelect.DoModeSelect())
         {
-            if (CdcDeviceMode == TCdcDeviceMode::HidOnly)
+            if (currentDeviceMode == DeviceMode::HidOnly)
                 systemReset();
 
-            CdcDeviceMode = modeSelect.DeviceMode();
-            if (CdcDeviceMode == TCdcDeviceMode::HidOnly)
+            currentDeviceMode = modeSelect.getDeviceMode();
+            if (currentDeviceMode == DeviceMode::HidOnly)
                 systemReset();
         }
     } // while (1)

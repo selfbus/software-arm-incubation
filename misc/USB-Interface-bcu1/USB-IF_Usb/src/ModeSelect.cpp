@@ -76,20 +76,20 @@ void ModeSelect::setAllLeds(bool on)
     }
 }
 
-TCdcDeviceMode ModeSelect::DeviceMode(void)
+DeviceMode ModeSelect::getDeviceMode(void)
 {
     switch (mode_act)
     {
         case 0:
-          return TCdcDeviceMode::HidOnly;
+          return DeviceMode::HidOnly;
         case 1:
-          return TCdcDeviceMode::BusMon;
+          return DeviceMode::BusMon;
         case 2:
-          return TCdcDeviceMode::UsbMon;
+          return DeviceMode::UsbMon;
         case 3:
-          return TCdcDeviceMode::ProgUserChip;
+          return DeviceMode::ProgUserChip;
     }
-    return TCdcDeviceMode::HidOnly;
+    return DeviceMode::HidOnly;
 }
 
 void ModeSelect::StartModeSelect(void)

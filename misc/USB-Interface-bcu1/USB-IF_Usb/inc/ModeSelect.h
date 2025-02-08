@@ -24,7 +24,7 @@ public:
 
     bool DoModeSelect(void); // Muss in einem festen Zeitraster aufgerufen werden. z.B. alle 10ms
     // Liefert als Rückgabewert true, wenn der Modus gewechselt wurde.
-    TCdcDeviceMode DeviceMode(void);
+    DeviceMode getDeviceMode(void);
     void SetLeds(void); // Setzt die LED-Ausgänge
     void setAllLeds(bool on);
 

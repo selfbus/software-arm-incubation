@@ -47,7 +47,7 @@ constexpr uint8_t C_Dev_Packet_Length = 5; // searched for (2+3)
 #define C_RxTimeout 450
 #define C_IdlePeriod 200 //!> Idle heartbeat interval in milliseconds (inter-mcu communication)
 
-enum class TCdcDeviceMode : uint8_t
+enum class DeviceMode : uint8_t
 {
     Invalid = 0,    //!< Invalid mode
     Halt = 1,       //!< Initialization or USB stopped working

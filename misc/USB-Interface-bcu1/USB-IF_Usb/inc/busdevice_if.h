@@ -15,7 +15,7 @@
 
 extern volatile unsigned int systemTime;
 
-extern TCdcDeviceMode CdcDeviceMode;
+extern DeviceMode currentDeviceMode;
 
 class DeviceIf;
 

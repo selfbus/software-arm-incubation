@@ -102,7 +102,7 @@ void Split_CdcEnqueue(char* ptr, unsigned len)
 
 void DumpReport2Cdc(bool DirSend, uint8_t* data)
 {
-    if (CdcDeviceMode == TCdcDeviceMode::UsbMon)
+    if (currentDeviceMode == DeviceMode::UsbMon)
     {
         static uint16_t SeqNo = 0;
         unsigned len;
@@ -446,7 +446,7 @@ void KnxHidIf::KnxIf_Tasks(void)
 void KnxHidIf::handleBusMonitorMode(uint8_t * buffer)
 {
     // Nur im Monitor-Mode Telegramme über CDC im Klartext ausgeben
-    if (CdcDeviceMode != TCdcDeviceMode::BusMon)
+    if (currentDeviceMode != DeviceMode::BusMon)
     {
         return;
     }

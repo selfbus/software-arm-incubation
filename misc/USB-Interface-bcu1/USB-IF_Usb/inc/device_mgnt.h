@@ -22,7 +22,7 @@ public:
 protected:
     unsigned int txtimeout;
     unsigned int rxtimeout;
-    TCdcDeviceMode LastMode;
+    DeviceMode LastMode;
     bool KnxActive;
 };
 

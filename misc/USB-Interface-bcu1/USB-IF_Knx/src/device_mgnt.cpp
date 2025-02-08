@@ -27,7 +27,7 @@ DeviceManagement::DeviceManagement(ProgUart * softUART, EmiKnxIf * emiKnxIf):
     emiKnxIf->reset();
 }
 
-void DeviceManagement::setDeviceMode(TCdcDeviceMode newDeviceMode)
+void DeviceManagement::setDeviceMode(DeviceMode newDeviceMode)
 {
     if (deviceMode == newDeviceMode)
     {
@@ -40,15 +40,15 @@ void DeviceManagement::setDeviceMode(TCdcDeviceMode newDeviceMode)
     {
         // KNX-Interface or
         // USB-Monitor
-        case TCdcDeviceMode::HidOnly:
-        case TCdcDeviceMode::UsbMon:
+        case DeviceMode::HidOnly:
+        case DeviceMode::UsbMon:
             emiKnxIf->SetCdcMonMode(false);
             softUART->Disable();
             break;
 
         // USB disabled
-        case TCdcDeviceMode::Invalid:
-        case TCdcDeviceMode::Halt:
+        case DeviceMode::Invalid:
+        case DeviceMode::Halt:
             // - Usb side meldet USB unconfigured
             //   -> löscht CdcMonActive
             //      löscht ProgUserChipModus
@@ -57,7 +57,7 @@ void DeviceManagement::setDeviceMode(TCdcDeviceMode newDeviceMode)
             break;
 
         // KNX-Monitor
-        case TCdcDeviceMode::BusMon:
+        case DeviceMode::BusMon:
             // - Usb side aktiviert Cdc-Monitor
             //   -> setzt CdcMonActive
             //      löscht ProgUserChipModus
@@ -67,7 +67,7 @@ void DeviceManagement::setDeviceMode(TCdcDeviceMode newDeviceMode)
             break;
 
         // Prog-Interface
-        case TCdcDeviceMode::ProgUserChip:
+        case DeviceMode::ProgUserChip:
             // - Usb side aktiviert Prog User Chip
             //   -> Initialisiert Interface, aktiviert den ProgUserChip Modus
             //      löscht CdcMonActive
@@ -75,7 +75,7 @@ void DeviceManagement::setDeviceMode(TCdcDeviceMode newDeviceMode)
             softUART->Enable();
             break;
 
-        case TCdcDeviceMode::ProgBusChip:
+        case DeviceMode::ProgBusChip:
             // This should never happen.
             // If this happens jumper JP5 is set, but JP4 is not set.
             // JP4 must be set to enable ISP bootloader of us (KNX-mcu/TS_ARM)
@@ -84,7 +84,7 @@ void DeviceManagement::setDeviceMode(TCdcDeviceMode newDeviceMode)
 
         default:
             // This should never happen.
-            // If you land here, check that the switch statement checks all TCdcDeviceMode
+            // If you land here, check that the switch statement checks all DeviceMode
             fatalError();
             break;
     }
@@ -106,7 +106,7 @@ void DeviceManagement::DevMgnt_Tasks(void)
             switch (command)
             {
                 case C_Dev_Sys:
-                    setDeviceMode(static_cast<TCdcDeviceMode>(subCommand));
+                    setDeviceMode(static_cast<DeviceMode>(subCommand));
                     break;
 
                 case C_Dev_Isp:
@@ -131,7 +131,7 @@ void DeviceManagement::DevMgnt_Tasks(void)
     if ((int)(millis() - rxtimeout) > 0)
     {
         // Timeout, anscheinend ist die USB-Seite nicht funktionsfähig
-        setDeviceMode(TCdcDeviceMode::Halt);
+        setDeviceMode(DeviceMode::Halt);
     }
 
     if ((int)(millis() - txtimeout) > 0)

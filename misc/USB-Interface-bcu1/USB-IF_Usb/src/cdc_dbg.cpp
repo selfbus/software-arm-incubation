@@ -118,7 +118,7 @@ void CdcDbgIf::DbgIf_Tasks(void)
     }
 
     // receive (Rx) part of the CDC virtual com port
-    if ((CdcDeviceMode == TCdcDeviceMode::ProgBusChip) || (CdcDeviceMode == TCdcDeviceMode::ProgUserChip))
+    if ((currentDeviceMode == DeviceMode::ProgBusChip) || (currentDeviceMode == DeviceMode::ProgUserChip))
     {
         // Nur in diesen Modi werden Daten vom CDC-VCOM Interface angenommen
         // und zum uart gesendet
@@ -140,8 +140,8 @@ void CdcDbgIf::DbgIf_Tasks(void)
     }
 
     // transmit (Tx) part of the CDC virtual com port
-    if ((CdcDeviceMode == TCdcDeviceMode::ProgBusChip) || (CdcDeviceMode == TCdcDeviceMode::ProgUserChip) ||
-        (CdcDeviceMode == TCdcDeviceMode::BusMon) || (CdcDeviceMode == TCdcDeviceMode::UsbMon))
+    if ((currentDeviceMode == DeviceMode::ProgBusChip) || (currentDeviceMode == DeviceMode::ProgUserChip) ||
+        (currentDeviceMode == DeviceMode::BusMon) || (currentDeviceMode == DeviceMode::UsbMon))
     {
         if (vcom_txbusy() == LPC_OK)
         {
@@ -176,7 +176,7 @@ void CdcDbgIf::DbgIf_Tasks(void)
         }
     }
 
-    if (CdcDeviceMode == TCdcDeviceMode::ProgUserChip)
+    if (currentDeviceMode == DeviceMode::ProgUserChip)
     {
         // Set soft uart control lines (RTS/CTS...) of the KNX mcu´s soft uart (prog_uart)
         uint8_t new_ctrl = vcom_readctrllines();

@@ -15,7 +15,7 @@
 
 volatile unsigned int systemTime;
 
-TCdcDeviceMode CdcDeviceMode;
+DeviceMode currentDeviceMode;
 
 DeviceIf deviceIf;
 
@@ -83,13 +83,13 @@ void DeviceIf::DoActivityLed(bool LedEnabled)
 
 bool DeviceIf::Hid2Knx_Ena(void)
 {
-    if (CdcDeviceMode == TCdcDeviceMode::HidOnly)
+    if (currentDeviceMode == DeviceMode::HidOnly)
         return true;
-    if (CdcDeviceMode == TCdcDeviceMode::BusMon)
+    if (currentDeviceMode == DeviceMode::BusMon)
         return true;
-    if (CdcDeviceMode == TCdcDeviceMode::UsbMon)
+    if (currentDeviceMode == DeviceMode::UsbMon)
         return true;
-    if (CdcDeviceMode == TCdcDeviceMode::ProgUserChip)
+    if (currentDeviceMode == DeviceMode::ProgUserChip)
         return true;
     return false;
 }
