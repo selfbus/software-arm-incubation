@@ -17,6 +17,8 @@
 #include "prog_uart.h"
 #include "error_handler.h"
 
+extern ProgUart proguart; // declared in app_main.cpp
+
 #define RX_BYTE_MAX_COLLECT 16 //!< Number of bytes to receive (collect) before queuing them to transmit over hardware uart/serial
 
 /**
@@ -38,8 +40,6 @@
 
 // Wert des Vorteilers, um einen 1us Tick zu erhalten
 #define TIMER_PRESCALER (SystemCoreClock / 1000000 - 1)
-
-ProgUart proguart(timer32_0, TIMER32_0, PIO2_9, PIO0_11, CAP0, MAT0, MAT3, PIO1_10, PIO0_8);
 
 // arx_CaptureCh braucht'nen Pin, den RX-Pin
 // arx_MatchCh ist intern

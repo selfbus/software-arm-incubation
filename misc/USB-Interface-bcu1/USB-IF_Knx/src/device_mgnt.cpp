@@ -17,14 +17,12 @@
 #include "device_mgnt.h"
 #include "error_handler.h"
 
-DeviceManagement devicemgnt;
-
-DeviceManagement::DeviceManagement()
+DeviceManagement::DeviceManagement(ProgUart * softUART, EmiKnxIf * emiKnxIf):
+        softUART(softUART),
+        emiKnxIf(emiKnxIf)
 {
-    txtimeout = 0;
-    rxtimeout = 0;
-    LastDevSys = DeviceMode::Invalid;
-    handleDev_Sys(DeviceMode::Disable);
+    softUART->Disable();
+    emiKnxIf->reset();
 }
 
 void DeviceManagement::handleDev_Sys(DeviceMode newDeviceMode)
@@ -43,8 +41,8 @@ void DeviceManagement::handleDev_Sys(DeviceMode newDeviceMode)
         // KNX-Interface or
         // USB-Monitor
         case DeviceMode::Normal:
-            emiknxif.SetCdcMonMode(false);
-            proguart.Disable();
+            emiKnxIf->SetCdcMonMode(false);
+            softUART->Disable();
             break;
 
         // USB disabled
@@ -53,8 +51,8 @@ void DeviceManagement::handleDev_Sys(DeviceMode newDeviceMode)
             // - Usb side meldet USB unconfigured
             //   -> löscht CdcMonActive
             //      löscht ProgUserChipModus
-            emiknxif.reset(); // Set bcu in download mode to disable all KNX bus communication
-            proguart.Disable();
+            emiKnxIf->reset(); // Set bcu in download mode to disable all KNX bus communication
+            softUART->Disable();
             break;
 
         // KNX-Monitor
@@ -62,8 +60,9 @@ void DeviceManagement::handleDev_Sys(DeviceMode newDeviceMode)
             // - Usb side aktiviert Cdc-Monitor
             //   -> setzt CdcMonActive
             //      löscht ProgUserChipModus
-            emiknxif.SetCdcMonMode(true);
-            proguart.Disable();
+            emiKnxIf->reset();
+            emiKnxIf->SetCdcMonMode(true);
+            softUART->Disable();
             break;
 
         // Prog-Interface
@@ -71,8 +70,8 @@ void DeviceManagement::handleDev_Sys(DeviceMode newDeviceMode)
             // - Usb side aktiviert Prog User Chip
             //   -> Initialisiert Interface, aktiviert den ProgUserChip Modus
             //      löscht CdcMonActive
-            emiknxif.reset(); // Set bcu in download mode to disable all KNX bus communication
-            proguart.Enable();
+            emiKnxIf->reset(); // Set bcu in download mode to disable all KNX bus communication
+            softUART->Enable();
             break;
 
         // should never happen
@@ -105,7 +104,7 @@ void DeviceManagement::DevMgnt_Tasks(void)
                     // - Usb side schickt Isp-Enable, Isp-Reset Daten für das Isp-If
                     //   -> weiterleiten zum entsprechenden If
                     //
-                    proguart.SetIspLines(subCommand);
+                    softUART->SetIspLines(subCommand);
                     break;
 
                 default:

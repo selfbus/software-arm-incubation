@@ -8,33 +8,26 @@
  *  published by the Free Software Foundation.
  */
 
-#include <stdio.h>
 #include <sblib/digital_pin.h>
 #include <sblib/eib/knx_lpdu.h>
 #include <sblib/eib/userRam.h>
 #include <sblib/eib/bus.h>
-#include <sblib/eib/bcu1.h>
 #include "error_handler.h"
 #include "knxusb_const.h"
 #include "GenFifo.h"
 #include "BufferMgr.h"
 #include "emi_knx.h"
 
-EmiKnxIf emiknxif(PIO1_5);
-
-extern BCU1 bcu;
 
 #define ACTLED_HPRD 10
 
-EmiKnxIf::EmiKnxIf(int aLedPin)
+EmiKnxIf::EmiKnxIf(BCU1 * bcu,int aLedPin):
+    emiBcu(bcu),
+    ledPin(aLedPin)
 {
-    txbuffno = -1;
-    CdcMonActive = false;
-    ledEnabled = true; // Damit die LED beim Start AUSgeschaltet wird
-    ledPin = aLedPin;
     pinMode(ledPin, OUTPUT);
     SetActivityLed(false);
-    ledLastDoTime = 0;
+    reset(); // Set bcu in download mode to disable all KNX bus communication
 }
 
 void EmiKnxIf::SetActivityLed(bool onoff)
@@ -89,8 +82,8 @@ void EmiKnxIf::DoActivityLed(bool Led_Enabled)
 
 uint8_t EmiKnxIf::emiReadOneValue(int memoryAddress)
 {
-    auto isUserRamAddress = bcu.userRam->inRange(memoryAddress);
-    auto isUserEepromAddress = bcu.userEeprom->inRange(memoryAddress);
+    auto isUserRamAddress = emiBcu->userRam->inRange(memoryAddress);
+    auto isUserEepromAddress = emiBcu->userEeprom->inRange(memoryAddress);
     if (!isUserRamAddress && !isUserEepromAddress)
     {
         failHardInDebug();
@@ -102,11 +95,11 @@ uint8_t EmiKnxIf::emiReadOneValue(int memoryAddress)
         switch (memoryAddress)
         {
             case AddrMaskVersionHighByte: // mask version high byte
-                return HIGH_BYTE(bcu.getMaskVersion());
+                return HIGH_BYTE(emiBcu->getMaskVersion());
                 break;
 
             case AddrMaskVersionLowByte: // mask version low byte
-                return (lowByte(bcu.getMaskVersion()));
+                return (lowByte(emiBcu->getMaskVersion()));
                 break;
 
             case AddrSystemState:
@@ -128,26 +121,26 @@ uint8_t EmiKnxIf::emiReadOneValue(int memoryAddress)
         switch (memoryAddress)
         {
             case AddrIndividualAddressLowByte:
-                return lowByte(bcu.ownAddress());
+                return lowByte(emiBcu->ownAddress());
                 break;
             case AddrIndividualAddressHighByte:
-                return HIGH_BYTE(bcu.ownAddress());
+                return HIGH_BYTE(emiBcu->ownAddress());
                 break;
             case AddrExpectedPeiType:
-                return bcu.userEeprom->getUInt8(memoryAddress);
+                return emiBcu->userEeprom->getUInt8(memoryAddress);
                 break;
 
             case AddrStartAddressTable:
-                return bcu.userEeprom->getUInt8(memoryAddress);
+                return emiBcu->userEeprom->getUInt8(memoryAddress);
                 break;
 
             case AddrBaseConfig:
-                return bcu.userEeprom->getUInt8(memoryAddress);
+                return emiBcu->userEeprom->getUInt8(memoryAddress);
                 break;
 
             default:
                 failHardInDebug();
-                return bcu.userEeprom->getUInt8(memoryAddress);
+                return emiBcu->userEeprom->getUInt8(memoryAddress);
         }
     }
 
@@ -169,7 +162,7 @@ bool EmiKnxIf::isHidActive()
 
 uint8_t EmiKnxIf::getSystemState()
 {
-    return bcu.userRam->status();
+    return emiBcu->userRam->status();
 }
 
 void EmiKnxIf::setSystemState(const uint8_t newStatus)
@@ -182,13 +175,13 @@ void EmiKnxIf::setSystemState(const uint8_t newStatus)
         case SystemState::LinkLayer:
         case SystemState::TransportLayer:
         case SystemState::Reset:
-            bcu.userRam->status() = newStatus;
+            emiBcu->userRam->status() = newStatus;
             break;
 
         // most likely USB-IF specific custom layer changes,
         // e.g. enabling/disabling of CdCMonMode
         default:
-            bcu.userRam->status() = newStatus;
+            emiBcu->userRam->status() = newStatus;
             break;
     }
 }
@@ -220,11 +213,11 @@ void EmiKnxIf::SetCdcMonMode(bool newState)
     // Make sure there is no telegram waiting to be sent
     // before we change the transport layer state
     uint32_t starttime = millis();
-    while (bcu.bus->sendingFrame())
+    while (emiBcu->bus->sendingFrame())
     {
         if (elapsed(starttime) > 100) // Warte max 100 ms
         {
-            bcu.bus->discardReceivedTelegram();
+            emiBcu->bus->discardReceivedTelegram();
         }
     }
     // change layer states
@@ -234,12 +227,12 @@ void EmiKnxIf::SetCdcMonMode(bool newState)
 
 void EmiKnxIf::emiWriteOneValue(int addr, uint8_t value, bool &isResetEmi)
 {
-    if (bcu.userRam->inRange(addr) && (!bcu.userRam->isStatusAddress(addr)))
+    if (emiBcu->userRam->inRange(addr) && (!emiBcu->userRam->isStatusAddress(addr)))
     {
         failHardInDebug();
     }
 
-    if (bcu.userRam->isStatusAddress(addr))
+    if (emiBcu->userRam->isStatusAddress(addr))
     {
         isResetEmi = SystemState::Reset == value;
         setSystemState(value);
@@ -247,25 +240,25 @@ void EmiKnxIf::emiWriteOneValue(int addr, uint8_t value, bool &isResetEmi)
     }
 
     // Vorerst werden die eeprom Schreibzugriffe ungefiltert weitergegeben.
-    uint8_t * memoryPtr = bcu.userMemoryPtr(addr);
+    uint8_t * memoryPtr = emiBcu->userMemoryPtr(addr);
     if (memoryPtr == nullptr)
     {
         failHardInDebug();
         return;
     }
 
-    if (value != bcu.userEeprom->getUInt8(addr))
+    if (value != emiBcu->userEeprom->getUInt8(addr))
     {
-        *bcu.userMemoryPtr(addr) = value;
+        *emiBcu->userMemoryPtr(addr) = value;
         // bcu.userEeprom->setUInt8(addr, value);
-        bcu.userEeprom->modified(true);
+        emiBcu->userEeprom->modified(true);
     }
 
     if ((addr == AddrIndividualAddressLowByte) || (addr == AddrIndividualAddressHighByte))
     {
-        uint16_t newAddress = makeWord(bcu.userEeprom->getUInt8(AddrIndividualAddressHighByte),
-                                       bcu.userEeprom->getUInt8(AddrIndividualAddressLowByte));
-        bcu.setOwnAddress(newAddress);
+        uint16_t newAddress = makeWord(emiBcu->userEeprom->getUInt8(AddrIndividualAddressHighByte),
+                                       emiBcu->userEeprom->getUInt8(AddrIndividualAddressLowByte));
+        emiBcu->setOwnAddress(newAddress);
     }
     else
     {
@@ -290,7 +283,7 @@ void EmiKnxIf::reset(void)
 {
     bool dummy;
     emiWriteOneValue(AddrSystemState, SystemState::Reset, dummy);
-    emiknxif.SetCdcMonMode(false);
+    SetCdcMonMode(false);
 }
 
 void EmiKnxIf::setTPBodyLength(uint8_t *ptr, uint8_t len)
@@ -368,7 +361,7 @@ void EmiKnxIf::receivedUsbEmiPacket(int buffno)
         receivedEmiControlByte = *ptrTelegramStart;
         initLpdu(ptrTelegramStart, priority(ptrTelegramStart), false, FRAME_STANDARD);
         txbuffno = buffno;
-        bcu.bus->sendTelegram(ptrTelegramStart, TransferBodyLength-1);
+        emiBcu->bus->sendTelegram(ptrTelegramStart, TransferBodyLength-1);
         // sendTelegram geht davon aus, dass nach den Telegrammdaten noch 1 Byte frei für die
         // Checksumme ist. Das ist gegeben, die Buffer sind 68 Byte lang für ein 64 Byte HID-Paket.
         // Der Buffer wird erst nach dem Versenden wieder freigegeben
@@ -460,25 +453,25 @@ void EmiKnxIf::EmiIf_Tasks(void)
         failHardInDebug(); // this invalid state should never happen
     }
 
-    if (bcu.bus->sendingFrame())
+    if (emiBcu->bus->sendingFrame())
     {
         return;
     }
 
     // Check and handle received KNX bus telegram
-    if (bcu.bus->telegramReceived())
+    if (emiBcu->bus->telegramReceived())
     {
         if (CdcMonActive || isHidActive())
         {
-            sendReceivedTelegramAsEMI(bcu.bus->telegram, bcu.bus->telegramLen);
+            sendReceivedTelegramAsEMI(emiBcu->bus->telegram, emiBcu->bus->telegramLen);
         }
 
         // check that we are not in monitor mode (USB or KNX) and have no EMI connection
         if (!CdcMonActive && !isHidActive())
         {
-            handleTelegramForUs(bcu.bus->telegram, bcu.bus->telegramLen);
+            handleTelegramForUs(emiBcu->bus->telegram, emiBcu->bus->telegramLen);
         }
-        bcu.bus->discardReceivedTelegram();
+        emiBcu->bus->discardReceivedTelegram();
     }
 
     // Das Response-Telegramm Richtung USB schicken.
@@ -537,16 +530,16 @@ void EmiKnxIf::handleTelegramForUs(uint8_t * telegram, uint8_t lenght)
     if (telegram[5] & 0x80) // group address or physical address
     {
         processTel = (destAddr == 0); // broadcast
-        processTel |= (bcu.addrTables != nullptr) && (bcu.addrTables->indexOfAddr(destAddr) >= 0); // known group address
+        processTel |= (emiBcu->addrTables != nullptr) && (emiBcu->addrTables->indexOfAddr(destAddr) >= 0); // known group address
     }
-    else if (destAddr == bcu.ownAddress())
+    else if (destAddr == emiBcu->ownAddress())
     {
         processTel = true;
     }
 
     if (processTel)
     {
-        bcu.processTelegram(&telegram[0], lenght);
+        emiBcu->processTelegram(&telegram[0], lenght);
     }
 }
 

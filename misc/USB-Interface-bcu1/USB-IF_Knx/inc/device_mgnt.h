@@ -12,23 +12,26 @@
 #define DEVICE_MGNT_H_
 
 #include "device_mgnt_const.h"
+#include "prog_uart.h"
+#include "emi_knx.h"
 
 ///todo this class exists also in USB-IF_Usb
 class DeviceManagement
 {
 public:
-    DeviceManagement(void);
+    DeviceManagement(void) = delete;
+    DeviceManagement(ProgUart * softUART, EmiKnxIf * emiKnxIf);
     void DevMgnt_Tasks(void);
 protected:
-    unsigned int txtimeout;
-    unsigned int rxtimeout;
-    DeviceMode LastDevSys;
+    uint32_t txtimeout = 0;
+    uint32_t rxtimeout = 0;
+    DeviceMode LastDevSys = DeviceMode::Invalid;
 
 private:
+    ProgUart * softUART = nullptr;
+    EmiKnxIf * emiKnxIf = nullptr;
     void handleDev_Sys(DeviceMode newDeviceMode);
 
 };
-
-extern DeviceManagement devicemgnt;
 
 #endif /* DEVICE_MGNT_H_ */

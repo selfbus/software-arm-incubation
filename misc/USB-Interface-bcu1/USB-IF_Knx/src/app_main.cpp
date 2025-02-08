@@ -21,6 +21,9 @@
 #include "prog_uart.h"
 
 BCU1 bcu = BCU1();
+ProgUart proguart(timer32_0, TIMER32_0, PIO2_9, PIO0_11, CAP0, MAT0, MAT3, PIO1_10, PIO0_8);
+EmiKnxIf * emiknxif = nullptr;
+DeviceManagement * devicemgnt = nullptr;
 
 APP_VERSION("SBif_knx", "1", "10") // Don't forget to also change the build-variable sw_version
 
@@ -34,7 +37,8 @@ BcuBase* setup()
     digitalWrite(PIN_PROG, true);
     digitalWrite(PIO1_5, true);
     bcu.begin(2, 1, 1); // ABB, dummy something device
-    emiknxif.reset(); // Set bcu in download mode to disable all KNX bus communication
+    emiknxif = new EmiKnxIf(&bcu, PIO1_5); // Must be instantiated after bcu.begin(..)
+    devicemgnt = new DeviceManagement(&proguart, emiknxif);
     uart.Init(C_Dev_Baurate, false, PinSerialTx, PinSerialRx);
     return (&bcu);
 }
@@ -45,10 +49,10 @@ BcuBase* setup()
 void loop()
 {
     uart.SerIf_Tasks(); // inter-mcu transmitting
-    // emiknxif.SetCdcMonMode(true); //only for debugging to "hard" activate serial busmonitor mode
-    emiknxif.EmiIf_Tasks();
+    // emiknxif->SetCdcMonMode(true); //only for debugging to "hard" activate serial busmonitor mode
+    emiknxif->EmiIf_Tasks();
     proguart.SerIf_Tasks();
-    devicemgnt.DevMgnt_Tasks();
+    devicemgnt->DevMgnt_Tasks();
     // Sleep until the next 1 msec timer interrupt occurs (or shorter)
     __WFI();
 }

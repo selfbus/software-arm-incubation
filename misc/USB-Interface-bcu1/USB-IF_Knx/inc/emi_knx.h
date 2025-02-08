@@ -11,6 +11,8 @@
 #ifndef EMI_KNX_H_
 #define EMI_KNX_H_
 
+#include <sblib/eib/bcu1.h>
+
 /**
  * Layer access in EMI 1
  *
@@ -43,7 +45,21 @@ constexpr uint16_t AddrIndividualAddressLowByte = 0x118;   //!< Individual addre
 class EmiKnxIf
 {
 public:
-    EmiKnxIf(int aLedPin);
+    EmiKnxIf(void) = delete;
+
+    /**
+     * Constructs an EmiKnxIf object.
+     *
+     * @details It puts the BCU into download mode, which disables all KNX bus communication.
+     *
+     * @param bcu Pointer to a BCU1 object that represents the KNX bus access controller.
+     * @param aLedPin The GPIO pin used to control the activity LED.
+     *
+     * @warning bcu must already be started with bcu.begin().
+     *          Otherwise @ref SetCdcMonMode may hang in `while (emiBcu->bus->sendingFrame())`,
+     *          because bus->sendCurTelegram may be uninitialized.
+     */
+    EmiKnxIf(BCU1 * bcu, int aLedPin);
     void EmiIf_Tasks(void);
 
     /**
@@ -56,14 +72,16 @@ public:
     void DoActivityLed(bool LedEnabled);
 
 private:
-    int txbuffno;
-    uint8_t receivedEmiControlByte; // muss bloederweise für die spätere EMI 1 response gesichert werden
-    bool CdcMonActive;
-    int ledBlinkCount;
-    int ledTimeCount;
-    int ledPin;
-    uint32_t ledLastDoTime;
-    bool ledEnabled;
+    BCU1 * emiBcu = nullptr;
+
+    int txbuffno = -1;
+    uint8_t receivedEmiControlByte = 0; // muss bloederweise für die spätere EMI 1 response gesichert werden
+    bool CdcMonActive = false;
+    int ledBlinkCount = 0;
+    int ledTimeCount = 0;
+    int ledPin = 0;
+    uint32_t ledLastDoTime = 0;
+    bool ledEnabled = true; // Damit die LED beim Start AUSgeschaltet wird
 
     void receivedUsbEmiPacket(int buffno);
     void sendReceivedTelegramAsEMI(uint8_t * telegram, uint8_t length);
@@ -82,7 +100,5 @@ private:
 
     void handleTelegramForUs(uint8_t * telegram, uint8_t lenght);
 };
-
-extern EmiKnxIf emiknxif;
 
 #endif /* EMI_KNX_H_ */

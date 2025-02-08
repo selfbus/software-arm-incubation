@@ -13,11 +13,6 @@
 
 #include <sblib/timer.h>
 
-class ProgUart;
-
-extern ProgUart proguart;
-
-
 enum class TProgUartErr
 {
     Ok,
