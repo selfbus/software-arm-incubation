@@ -13,8 +13,6 @@
 
 #include "usbd_rom_api.h"
 
-#define HID_REPORT_SIZE        64
-
 #ifdef __cplusplus
 
 #include "knxusb_const.h"

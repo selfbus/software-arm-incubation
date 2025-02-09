@@ -13,6 +13,8 @@
 
 #include <stdint.h>
 
+#define HID_REPORT_SIZE 64
+
 /**
  * HID Report header report id
  * @details report id is always 1
