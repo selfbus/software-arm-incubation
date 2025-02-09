@@ -147,19 +147,6 @@ uint8_t EmiKnxIf::emiReadOneValue(int memoryAddress)
     return 0; // we should never land here
 }
 
-bool EmiKnxIf::isHidActive()
-{
-    uint8_t systemState = getSystemState();      // get current bcu status
-    systemState &= ~BCU_STATUS_PARITY;           // clear parity bit for easier check
-    systemState &= ~BCU_STATUS_PROGRAMMING_MODE; // clear programming mode bit
-
-    // HID-Interface is active, when serial pei or link layer are enabled
-    // e.g. ETS GroupMonitor in normal operation
-    // EMI "46 01 00 60 12" => C_MCode_SetValue Addr 0x0060 1 Byte 0x12 (BCU_STATUS_SERIAL_PEI | BCU_STATUS_LINK_LAYER)
-    bool result = systemState == (BCU_STATUS_SERIAL_PEI | BCU_STATUS_LINK_LAYER);
-    return result;
-}
-
 uint8_t EmiKnxIf::getSystemState()
 {
     return emiBcu->userRam->status();
@@ -204,24 +191,6 @@ void EmiKnxIf::setBcuLayerState(const uint8_t layer, const bool newState)
     // Set new layer state by flipping layer and parity bit;
     systemState ^= layer | BCU_STATUS_PARITY;
     setSystemState(systemState);
-}
-
-void EmiKnxIf::SetCdcMonMode(bool newState)
-{
-    // Make sure there is no telegram waiting to be sent
-    // before we change the transport layer state
-    uint32_t starttime = millis();
-    while (emiBcu->bus->sendingFrame())
-    {
-        if (elapsed(starttime) > 100) // Warte max 100 ms
-        {
-            emiBcu->bus->discardReceivedTelegram();
-        }
-    }
-    CdcMonActive = newState;
-    // change layer states
-    setBcuLayerState(BCU_STATUS_TRANSPORT_LAYER, !CdcMonActive);
-    setBcuLayerState(BCU_STATUS_APPLICATION_LAYER, CdcMonActive);
 }
 
 void EmiKnxIf::emiWriteOneValue(int addr, uint8_t value, bool &isResetEmi)
@@ -282,7 +251,6 @@ void EmiKnxIf::reset(void)
 {
     bool dummy;
     emiWriteOneValue(AddrSystemState, SystemState::Reset, dummy);
-    SetCdcMonMode(false);
 }
 
 void EmiKnxIf::setTPBodyLength(uint8_t *ptr, uint8_t len)
@@ -402,7 +370,7 @@ void EmiKnxIf::sendReceivedTelegramAsEMI(uint8_t * telegram, uint8_t length)
     // create KNX USB Transfer Protocol Body (TPB)
     // set EMI message code
     uint8_t emiMessageCode;
-    if (isHidActive())
+    if (deviceMode == DeviceMode::HidOnly)
     {
         // Standard EMI message
         emiMessageCode = C_MCode_RxData;
@@ -447,11 +415,6 @@ void EmiKnxIf::sendReceivedTelegramAsEMI(uint8_t * telegram, uint8_t length)
 // werden.
 void EmiKnxIf::EmiIf_Tasks(void)
 {
-    if (CdcMonActive && isHidActive())
-    {
-        failHardInDebug(); // this invalid state should never happen
-    }
-
     if (emiBcu->bus->sendingFrame())
     {
         return;
@@ -460,13 +423,12 @@ void EmiKnxIf::EmiIf_Tasks(void)
     // Check and handle received KNX bus telegram
     if (emiBcu->bus->telegramReceived())
     {
-        if (CdcMonActive || isHidActive())
+        BlinkActivityLed();
+        if (isKNXenabled())
         {
             sendReceivedTelegramAsEMI(emiBcu->bus->telegram, emiBcu->bus->telegramLen);
         }
-
-        // check that we are not in monitor mode (USB or KNX) and have no EMI connection
-        if (!CdcMonActive && !isHidActive())
+        else
         {
             handleTelegramForUs(emiBcu->bus->telegram, emiBcu->bus->telegramLen);
         }
@@ -516,7 +478,7 @@ void EmiKnxIf::EmiIf_Tasks(void)
     if (elapsed(ledLastDoTime) >= 10)
     {
         ledLastDoTime = millis();
-        DoActivityLed(CdcMonActive || isHidActive());
+        DoActivityLed(isKNXenabled());
     }
 }
 
@@ -542,3 +504,37 @@ void EmiKnxIf::handleTelegramForUs(uint8_t * telegram, uint8_t lenght)
     }
 }
 
+void EmiKnxIf::setDeviceMode(DeviceMode newDeviceMode)
+{
+    bool dummy;
+    deviceMode = newDeviceMode;
+    switch (deviceMode)
+    {
+        case DeviceMode::Invalid:
+        case DeviceMode::Halt:
+        case DeviceMode::ProgBusChip:
+        case DeviceMode::ProgUserChip:
+            reset();
+            break;
+
+        case DeviceMode::HidOnly:
+        case DeviceMode::UsbMon:
+            emiWriteOneValue(AddrSystemState, SystemState::LinkLayer, dummy); // sets BCU_STATUS_SERIAL_PEI, BCU_STATUS_LINK_LAYER
+            break;
+
+        case DeviceMode::BusMon:
+            emiWriteOneValue(AddrSystemState, SystemState::BusMonitor, dummy); // sets BCU_STATUS_SERIAL_PEI
+            break;
+
+        default:
+            break;
+    }
+}
+
+bool EmiKnxIf::isKNXenabled()
+{
+    bool result = ((deviceMode == DeviceMode::HidOnly) ||
+                   (deviceMode == DeviceMode::UsbMon) ||
+                   (deviceMode == DeviceMode::BusMon));
+    return result;
+}

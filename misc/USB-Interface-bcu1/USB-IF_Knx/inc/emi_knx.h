@@ -12,6 +12,7 @@
 #define EMI_KNX_H_
 
 #include <sblib/eib/bcu1.h>
+#include "device_mgnt_const.h"
 
 /**
  * Layer access in EMI 1
@@ -66,22 +67,22 @@ public:
      *  Set bcu in download mode to disable all KNX-Bus communication
      */
     void reset(void);
-    void SetCdcMonMode(bool newState);
     void SetActivityLed(bool onoff);
     void BlinkActivityLed(void);
     void DoActivityLed(bool LedEnabled);
+    void setDeviceMode(DeviceMode newDeviceMode);
 
 private:
     BCU1 * emiBcu = nullptr;
 
     int txbuffno = -1;
     uint8_t receivedEmiControlByte = 0; // muss bloederweise für die spätere EMI 1 response gesichert werden
-    bool CdcMonActive = false;
     int ledBlinkCount = 0;
     int ledTimeCount = 0;
     int ledPin = 0;
     uint32_t ledLastDoTime = 0;
     bool ledEnabled = true; // Damit die LED beim Start AUSgeschaltet wird
+    DeviceMode deviceMode = DeviceMode::Invalid;
 
     void receivedUsbEmiPacket(int buffno);
     void sendReceivedTelegramAsEMI(uint8_t * telegram, uint8_t length);
@@ -96,9 +97,8 @@ private:
     bool getBcuLayerState(const uint8_t layer);
     void setBcuLayerState(const uint8_t layer, const bool newState);
 
-    bool isHidActive();
-
     void handleTelegramForUs(uint8_t * telegram, uint8_t lenght);
+    bool isKNXenabled();
 };
 
 #endif /* EMI_KNX_H_ */

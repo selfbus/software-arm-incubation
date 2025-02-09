@@ -35,43 +35,22 @@ void DeviceManagement::setDeviceMode(DeviceMode newDeviceMode)
         return;
     }
 
+    softUART->Disable();
     deviceMode = newDeviceMode;
+    emiKnxIf->setDeviceMode(deviceMode);
     switch (deviceMode)
     {
-        // KNX-Interface or
-        // USB-Monitor
-        case DeviceMode::HidOnly:
-        case DeviceMode::UsbMon:
-            emiKnxIf->SetCdcMonMode(false);
-            softUART->Disable();
-            break;
-
-        // USB disabled
         case DeviceMode::Invalid:
-        case DeviceMode::Halt:
-            // - Usb side meldet USB unconfigured
-            //   -> löscht CdcMonActive
-            //      löscht ProgUserChipModus
-            emiKnxIf->reset(); // Set bcu in download mode to disable all KNX bus communication
-            softUART->Disable();
+        case DeviceMode::Halt:      // USB disabled
+        case DeviceMode::HidOnly:   // KNX-Interface
+        case DeviceMode::UsbMon:    // USB-Monitor
+        case DeviceMode::BusMon:    // KNX Bus-Monitor
+            // Nothing to do here.
+            // softUART is already disabled and
+            // emiKnxIf is already configured according to the new deviceMode
             break;
 
-        // KNX-Monitor
-        case DeviceMode::BusMon:
-            // - Usb side aktiviert Cdc-Monitor
-            //   -> setzt CdcMonActive
-            //      löscht ProgUserChipModus
-            emiKnxIf->reset();
-            emiKnxIf->SetCdcMonMode(true);
-            softUART->Disable();
-            break;
-
-        // Prog-Interface
-        case DeviceMode::ProgUserChip:
-            // - Usb side aktiviert Prog User Chip
-            //   -> Initialisiert Interface, aktiviert den ProgUserChip Modus
-            //      löscht CdcMonActive
-            emiKnxIf->reset(); // Set bcu in download mode to disable all KNX bus communication
+        case DeviceMode::ProgUserChip: // Prog-Interface (User-mcu connected to connector P3)
             softUART->Enable();
             break;
 
