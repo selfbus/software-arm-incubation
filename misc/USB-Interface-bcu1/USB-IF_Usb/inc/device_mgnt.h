@@ -18,12 +18,17 @@ class DeviceManagement
 public:
     DeviceManagement(void);
     void SysIf_Tasks(bool UsbActive);
-    bool KnxIsActive(void);
+    bool getKnxActive(void);
+    DeviceMode getDeviceMode();
+
 protected:
-    unsigned int txtimeout;
-    unsigned int rxtimeout;
-    DeviceMode LastMode;
-    bool KnxActive;
+    uint32_t txtimeout = 0;
+    uint32_t rxtimeout = 0;
+    DeviceMode LastMode = DeviceMode::Halt;
+    bool knxActive = false;
+
+private:
+    void setKnxActive(bool newValue);
 };
 
 extern DeviceManagement devicemgnt;

@@ -20,14 +20,7 @@
 
 CdcDbgIf cdcdbgif;
 
-CdcDbgIf::CdcDbgIf() :
-        hUsb(nullptr),
-        ReceiveEna(true),
-        zlp(false),
-        CtrlLines(0xff),
-        RecDisTime(0),
-        rxByteCounter(0),
-        txByteCounter(0)
+CdcDbgIf::CdcDbgIf()
 {
 }
 
@@ -35,7 +28,7 @@ void CdcDbgIf::Set_hUsb(USBD_HANDLE_T h_Usb)
 {
     hUsb = h_Usb;
     ReceiveEna = true;
-    zlp = false;
+    sendZeroLengthPacket = false;
     CtrlLines = 0xff;
 }
 
@@ -111,7 +104,6 @@ void CdcDbgIf::receiveAndPushToUart()
 
 void CdcDbgIf::DbgIf_Tasks(void)
 {
-    static int txcnt = 0;
     if (!USB_IsConfigured(hUsb))
     {
         return;
@@ -140,41 +132,7 @@ void CdcDbgIf::DbgIf_Tasks(void)
     }
 
     // transmit (Tx) part of the CDC virtual com port
-    if ((currentDeviceMode == DeviceMode::ProgBusChip) || (currentDeviceMode == DeviceMode::ProgUserChip) ||
-        (currentDeviceMode == DeviceMode::BusMon) || (currentDeviceMode == DeviceMode::UsbMon))
-    {
-        if (vcom_txbusy() == LPC_OK)
-        {
-            if (cdc_txfifo.Empty() != TFifoErr::Empty)
-            {
-                int buffno;
-                cdc_txfifo.Pop(buffno);
-                uint8_t *ptr = buffmgr.buffptr(buffno);
-                zlp = (ptr[0]-3) == 64;
-                vcom_write(&ptr[3], ptr[0]-3);
-                buffmgr.FreeBuffer(buffno);
-                if (++txcnt == 2)
-                {
-                    txcnt=0;
-                }
-                deviceIf.BlinkActivityLed();
-            } else {
-                if (zlp)
-                {
-                    zlp = false;
-                    uint8_t dummy;
-                    vcom_write(&dummy, 0);
-                }
-            }
-        }
-    } else {
-        int buffno;
-        while (cdc_txfifo.Empty() != TFifoErr::Empty)
-        {
-            cdc_txfifo.Pop(buffno);
-            buffmgr.FreeBuffer(buffno);
-        }
-    }
+    handleCDCtransmit();
 
     if (currentDeviceMode == DeviceMode::ProgUserChip)
     {
@@ -204,4 +162,52 @@ void CdcDbgIf::DbgIf_Tasks(void)
         CtrlLines = 0xff;
         // Die KNX-Seite wird über das Device Management informiert, wenn sich der Modus ändert.
     }
+}
+
+void CdcDbgIf::handleCDCtransmit(void)
+{
+    auto cdcDebuggingEnabled = (currentDeviceMode == DeviceMode::ProgBusChip) ||
+                               (currentDeviceMode == DeviceMode::ProgUserChip) ||
+                               (currentDeviceMode == DeviceMode::BusMon) ||
+                               (currentDeviceMode == DeviceMode::UsbMon);
+    if (!cdcDebuggingEnabled)
+    {
+        int buffno;
+        while (cdc_txfifo.Empty() != TFifoErr::Empty)
+        {
+            cdc_txfifo.Pop(buffno);
+            buffmgr.FreeBuffer(buffno);
+        }
+        return;
+    }
+
+    if (vcom_txbusy() != LPC_OK)
+    {
+        return;
+    }
+
+    if (sendZeroLengthPacket)
+    {
+        sendZeroLengthPacket = false;
+        uint8_t dummy;
+        vcom_write(&dummy, 0);
+        return;
+    }
+
+    if (cdc_txfifo.Empty() == TFifoErr::Empty)
+    {
+        return;
+    }
+
+    int buffno;
+    cdc_txfifo.Pop(buffno);
+    uint8_t *ptr = buffmgr.buffptr(buffno);
+    uint8_t packetLength = ptr[0] - 3;
+    // If packetLength matches HID_REPORT_SIZE (64 bytes) we need to send in the next DbgIf_Tasks() cycle a zero length packet
+    // to indicate that the transmission is complete.
+    // See https://stackoverflow.com/questions/48975323/what-is-zero-length-packet
+    sendZeroLengthPacket = packetLength == HID_REPORT_SIZE;
+    vcom_write(&ptr[3], packetLength);
+    buffmgr.FreeBuffer(buffno);
+    deviceIf.BlinkActivityLed();
 }

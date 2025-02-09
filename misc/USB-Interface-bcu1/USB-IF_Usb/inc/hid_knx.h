@@ -39,8 +39,9 @@ protected:
     ErrorCode_t ReadAvail(void);
 
 private:
+    bool lastKnxState = false; //!< Last state of the KNX connection; True if KNX connection is active, otherwise false
+    void setLastKnxState(bool newKnxState);
     void handleBusMonitorMode(uint8_t * buffer);
-
 };
 
 extern KnxHidIf knxhidif;

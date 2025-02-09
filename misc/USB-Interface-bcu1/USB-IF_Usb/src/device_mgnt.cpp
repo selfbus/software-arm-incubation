@@ -23,15 +23,25 @@ DeviceManagement devicemgnt;
 
 DeviceManagement::DeviceManagement(void)
 {
-    txtimeout = 0;
-    rxtimeout = 0;
-    LastMode = DeviceMode::Halt;
-    KnxActive = false;
 }
 
-bool DeviceManagement::KnxIsActive(void)
+DeviceMode DeviceManagement::getDeviceMode()
 {
-    return KnxActive;
+    return LastMode;
+}
+
+bool DeviceManagement::getKnxActive(void)
+{
+    return knxActive;
+}
+
+void DeviceManagement::setKnxActive(bool newValue)
+{
+    if (knxActive == newValue)
+    {
+        return;
+    }
+    knxActive = newValue;
 }
 
 void DeviceManagement::SysIf_Tasks(bool UsbActive)
@@ -59,7 +69,28 @@ void DeviceManagement::SysIf_Tasks(bool UsbActive)
         if ((ptr[2+IDX_HRH_Id] == C_HRH_IdDev) && (DevPacketLength == C_Dev_Packet_Length))
         {
             rxtimeout = systemTime + C_RxTimeout; // Wird bei jedem Paket an dieses If gesetzt.
-            KnxActive = true;
+            switch (LastMode)
+            {
+                case DeviceMode::Invalid:
+                case DeviceMode::Halt:
+                case DeviceMode::ProgBusChip:
+                case DeviceMode::ProgUserChip:
+                    setKnxActive(false);
+                    break;
+
+                case DeviceMode::HidOnly:
+                case DeviceMode::UsbMon:
+                case DeviceMode::BusMon:
+                    setKnxActive(true);
+                    break;
+
+                default:
+                    // This should never happen.
+                    // If you land here, check that the switch statement checks all DeviceMode
+                    fatalError();
+                    break;
+            }
+
             switch (ptr[2+IDX_HRH_Id+1])
             {
                 case C_Dev_Idle:
@@ -85,9 +116,7 @@ void DeviceManagement::SysIf_Tasks(bool UsbActive)
         /* Timeout, anscheinen ist die KNX-Seite nicht funktionsfähig
          *   -> löscht ein Flag, das wird für das HID-Interface benötigt
          */
-        KnxActive = false;
-        // todo send a BAS_FeatureId::BusConnStat with BAS_ServiceId::FeatureInfo
-        // to indicate that the bus is not active
+        setKnxActive(false);
     }
 
     DeviceMode mode;
@@ -119,27 +148,6 @@ void DeviceManagement::SysIf_Tasks(bool UsbActive)
     *buffptr++ = C_Dev_Sys;
     LastMode = mode;
     *buffptr++ = static_cast<uint8_t>(LastMode);
-    switch (LastMode)
-    {
-        case DeviceMode::Invalid:
-        case DeviceMode::Halt:
-        case DeviceMode::ProgBusChip:
-            KnxActive = false;
-            break;
-
-        case DeviceMode::HidOnly:
-        case DeviceMode::UsbMon:
-        case DeviceMode::BusMon:
-        case DeviceMode::ProgUserChip:
-            break;
-
-        default:
-            // This should never happen.
-            // If you land here, check that the switch statement checks all DeviceMode
-            fatalError();
-            break;
-    }
-
     if (ser_txfifo.Push(buffno) != TFifoErr::Ok)
     {
         buffmgr.FreeBuffer(buffno);

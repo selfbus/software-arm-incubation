@@ -27,16 +27,17 @@ public:
     void reEnableReceive(void);
     void DbgIf_Tasks(void);
 protected:
-    USBD_HANDLE_T hUsb;    // Handle to USB stack.
-    bool ReceiveEna;
-    bool zlp;
-    uint8_t CtrlLines;
-    unsigned int RecDisTime;
+    USBD_HANDLE_T hUsb = nullptr;    // Handle to USB stack.
+    bool ReceiveEna = true;
+    bool sendZeroLengthPacket = false;
+    uint8_t CtrlLines = 0xff;
+    unsigned int RecDisTime = 0;
 
 private:
-    uint32_t rxByteCounter;
-    uint32_t txByteCounter;
+    uint32_t rxByteCounter = 0;
+    uint32_t txByteCounter = 0;
     void receiveAndPushToUart();
+    void handleCDCtransmit(void);
 };
 
 extern CdcDbgIf cdcdbgif;

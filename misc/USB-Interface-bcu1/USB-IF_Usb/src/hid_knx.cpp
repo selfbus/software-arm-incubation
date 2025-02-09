@@ -72,6 +72,15 @@ void HidIfSet_hUsb(USBD_HANDLE_T h_Usb)
     knxhidif.Set_hUsb(h_Usb);
 }
 
+void flushBuffer(GenFifo<int> buffer)
+{
+    int no;
+    while (buffer.Pop(no) == TFifoErr::Ok)
+    {
+        buffmgr.FreeBuffer(no);
+    }
+}
+
 void Split_CdcEnqueue(char* ptr, unsigned len)
 {
     while (len)
@@ -81,7 +90,13 @@ void Split_CdcEnqueue(char* ptr, unsigned len)
             partlen = 64;
         int buffno = buffmgr.AllocBuffer();
         if (buffno < 0)
+        {
+            // We will always come here, then nobody is receiving our USB CDC packets.
+            // E.g. We are successfully connected by USB to a PC, but no program/terminal
+            // has opened the CDC virtual com port to receive our packets.
+            flushBuffer(cdc_txfifo);
             return; // Kein Speicher frei? -> abbrechen
+        }
         uint8_t* partptr = buffmgr.buffptr(buffno);
         *partptr++ = partlen+3; // Länge
         *partptr++ = 0; // Checksumme (unbenutzt)
@@ -91,11 +106,7 @@ void Split_CdcEnqueue(char* ptr, unsigned len)
         len-=partlen;
         if (cdc_txfifo.Push(buffno) != TFifoErr::Ok)
         {
-            int no;
-            while (cdc_txfifo.Pop(no) == TFifoErr::Ok)
-            {
-                buffmgr.FreeBuffer(no);
-            }
+            flushBuffer(cdc_txfifo);
         }
     }
 }
@@ -225,8 +236,8 @@ ErrorCode_t KnxHidIf::ReadReport(int &buffno)
  */
 uint8_t* KnxHidIf::BuildUsbPacket(uint8_t *ptr, uint8_t ProtId, uint8_t PayloadLen, BAS_ServiceId EmiServiceId)
 {
-    *ptr++ = 0x01; // Report Identifier
-    *ptr++ = 0x13; // Packet Info - nur Single Packets unterstuetzt im Moment
+    *ptr++ = C_HRH_IdHid; // Report Identifier
+    *ptr++ = C_HRH_PacketInfoSinglePacket; // Packet Info - nur Single Packets unterstuetzt im Moment
     *ptr++ = TPH_ProtocolLength_V0+PayloadLen;
     *ptr++ = 0;
     *ptr++ = TPH_ProtocolLength_V0;
@@ -280,7 +291,7 @@ void KnxHidIf::ReceivedUsbBasPacket(BAS_ServiceId ServiceId, unsigned BodyLen, u
         case BAS_FeatureId::BusConnStat:
             ptr = BuildUsbPacket(TxBuffer, TPH_ProtocolID::busAccessServer, 2, BAS_ServiceId::FeatureResp);
             *ptr++ = static_cast<uint8_t>(BAS_FeatureId::BusConnStat);
-            *ptr++ = (devicemgnt.KnxIsActive()) ? 1:0;
+            *ptr++ = (devicemgnt.getKnxActive()) ? 1:0;
             SendReport(TxBuffer);
             break;
 
@@ -416,8 +427,18 @@ void KnxHidIf::KnxIf_Tasks(void)
     }
 
     // Check for pending outgoing HID reports
-    if (tx_busy || (hid_txfifo.Empty() == TFifoErr::Empty))
+    if (tx_busy)
     {
+        return;
+    }
+
+    // Check if KNX connection state has changed
+    if (hid_txfifo.Empty() == TFifoErr::Empty)
+    {
+        if (lastKnxState != devicemgnt.getKnxActive())
+        {
+            setLastKnxState(devicemgnt.getKnxActive());
+        }
         return;
     }
 
@@ -458,10 +479,32 @@ void KnxHidIf::KnxIf_Tasks(void)
     buffmgr.FreeBuffer(txBuffNo);
 }
 
+void KnxHidIf::setLastKnxState(bool newKnxState)
+{
+    if (lastKnxState == newKnxState)
+    {
+        return;
+    }
+    lastKnxState = newKnxState;
+    if (!((devicemgnt.getDeviceMode() == DeviceMode::HidOnly) || (devicemgnt.getDeviceMode() == DeviceMode::UsbMon)))
+    {
+        return;
+    }
+    // Send a BAS_ServiceId::FeatureInfo with BAS_FeatureId::BusConnStat
+    // to indicate that the KNX bus state has changed
+    uint8_t txHidBuffer[HID_REPORT_SIZE];
+    uint8_t *ptr;
+    ptr = BuildUsbPacket(txHidBuffer, TPH_ProtocolID::busAccessServer, 2,
+            BAS_ServiceId::FeatureInfo);
+    *ptr++ = static_cast<uint8_t>(BAS_FeatureId::BusConnStat);
+    *ptr++ = lastKnxState ? 1 : 0;
+    SendReport(txHidBuffer);
+}
+
 void KnxHidIf::handleBusMonitorMode(uint8_t * buffer)
 {
     // Nur im Monitor-Mode Telegramme über CDC im Klartext ausgeben
-    if (currentDeviceMode != DeviceMode::BusMon)
+    if ((currentDeviceMode != DeviceMode::BusMon) && (currentDeviceMode != DeviceMode::UsbMon))
     {
         return;
     }
@@ -489,8 +532,18 @@ void KnxHidIf::handleBusMonitorMode(uint8_t * buffer)
         return;
     }
 
-    // Dump telegram
-    teldump.Dump(systemTime, isTxTelegram, telLength-(2+C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_Data),
-                buffer+2+C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_Data);
+    switch (currentDeviceMode)
+    {
+        case DeviceMode::UsbMon:
+            DumpReport2Cdc(isTxTelegram, buffer + 2);
+            break;
+        case DeviceMode::BusMon:
+            // Dump telegram
+            teldump.Dump(systemTime, isTxTelegram, telLength-(2+C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_Data),
+                        buffer+2+C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_Data);
+            break;
+        default:
+            failHardInDebug(); // This should never happen
+            break;
+    }
 }
-
