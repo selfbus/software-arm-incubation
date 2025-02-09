@@ -102,43 +102,44 @@ void Split_CdcEnqueue(char* ptr, unsigned len)
 
 void DumpReport2Cdc(bool DirSend, uint8_t* data)
 {
-    if (currentDeviceMode == DeviceMode::UsbMon)
+    if (currentDeviceMode != DeviceMode::UsbMon)
     {
-        static uint16_t SeqNo = 0;
-        unsigned len;
-        char line[210];
-        //char part[10];
-        char *ptr;
-        if (DirSend)
-            snprintf(line, sizeof(line), "%04u IN  ", SeqNo++);
-        else
-            snprintf(line, sizeof(line), "%04u OUT ", SeqNo++);
-        if (SeqNo >= 10000)
-            SeqNo = 0;
-        len = data[IDX_HRH_DataLen];
-        if ((len <= 8) || (len+3 > HID_REPORT_SIZE))
-        {
-            // Längenangabe unplausibel, jetzt wird die Länge bestimmt,
-            // indem von hinten das erste nicht-Nullbyte gesucht wird.
-            // Es wird mindestens 1 Byte ausgegeben.
-            for (len=63; (len>1) && (data[len] == 0); len--);
-        } else {
-            len += 3;
-        }
-        ptr = &line[9];
-        for (unsigned i=0; i<len; i++)
-        {
-            sprintf(ptr, "%02X ", *data++);
-            ptr+=3;
-        }
-        *ptr++ = 13;
-        *ptr++ = 10;
-        *ptr = 0;
-        // Und jetzt den evtl. langen String in 64 Byte Häppchen splitten und im Cdc-Fifo einreihen
-        len = strlen(line);
-        ptr = &line[0];
-        Split_CdcEnqueue(ptr, len);
+        return;
     }
+    static uint16_t SeqNo = 0;
+    unsigned len;
+    char line[210];
+    //char part[10];
+    char *ptr;
+    if (DirSend)
+        snprintf(line, sizeof(line), "%04u IN  ", SeqNo++);
+    else
+        snprintf(line, sizeof(line), "%04u OUT ", SeqNo++);
+    if (SeqNo >= 10000)
+        SeqNo = 0;
+    len = data[IDX_HRH_DataLen];
+    if ((len <= 8) || (len+3 > HID_REPORT_SIZE))
+    {
+        // Längenangabe unplausibel, jetzt wird die Länge bestimmt,
+        // indem von hinten das erste nicht-Nullbyte gesucht wird.
+        // Es wird mindestens 1 Byte ausgegeben.
+        for (len=63; (len>1) && (data[len] == 0); len--);
+    } else {
+        len += 3;
+    }
+    ptr = &line[9];
+    for (unsigned i=0; i<len; i++)
+    {
+        sprintf(ptr, "%02X ", *data++);
+        ptr+=3;
+    }
+    *ptr++ = 13;
+    *ptr++ = 10;
+    *ptr = 0;
+    // Und jetzt den evtl. langen String in 64 Byte Häppchen splitten und im Cdc-Fifo einreihen
+    len = strlen(line);
+    ptr = &line[0];
+    Split_CdcEnqueue(ptr, len);
 }
 
 ErrorCode_t KnxHidIf::SendReport(uint8_t* data)
