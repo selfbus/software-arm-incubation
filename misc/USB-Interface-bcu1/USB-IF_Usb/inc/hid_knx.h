@@ -30,9 +30,9 @@ public:
     void KnxIf_Tasks(void);
     bool UsbIsConfigured(void);
 protected:
-    USBD_HANDLE_T hUsb;    // Handle to USB stack.
-    bool tx_busy;
-    unsigned rx_avail;
+    USBD_HANDLE_T hUsb = nullptr; //!< Handle to USB stack.
+    bool tx_busy = false;
+    unsigned rx_avail = 0;
     void ReceivedUsbBasPacket(BAS_ServiceId ServiceId, unsigned BodyLen, uint8_t* Buffer);
     void ReceivedUsbPacket(int buffno);
     uint8_t* BuildUsbPacket(uint8_t *ptr, uint8_t ProtId, uint8_t PayloadLen, BAS_ServiceId EmiServiceId);

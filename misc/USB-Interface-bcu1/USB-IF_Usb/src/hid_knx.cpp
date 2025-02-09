@@ -367,8 +367,6 @@ void KnxHidIf::ReceivedUsbPacket(int buffno)
 
 KnxHidIf::KnxHidIf(void)
 {
-    tx_busy = false;
-    rx_avail = 0;
 }
 
 bool KnxHidIf::UsbIsConfigured(void)
