@@ -100,46 +100,62 @@ void Split_CdcEnqueue(char* ptr, unsigned len)
     }
 }
 
-void DumpReport2Cdc(bool DirSend, uint8_t* data)
+void DumpReport2Cdc(bool isIncomingData, uint8_t* data)
 {
     if (currentDeviceMode != DeviceMode::UsbMon)
     {
         return;
     }
-    static uint16_t SeqNo = 0;
-    unsigned len;
+    static uint16_t seqNo = 0;
     char line[210];
-    //char part[10];
-    char *ptr;
-    if (DirSend)
-        snprintf(line, sizeof(line), "%04u IN  ", SeqNo++);
-    else
-        snprintf(line, sizeof(line), "%04u OUT ", SeqNo++);
-    if (SeqNo >= 10000)
-        SeqNo = 0;
-    len = data[IDX_HRH_DataLen];
-    if ((len <= 8) || (len+3 > HID_REPORT_SIZE))
+    constexpr size_t lineLength = sizeof(line)/sizeof(line[0]);
+    char * ptrCurrentLinePosition = &line[0];
+    if (isIncomingData)
     {
+        snprintf(line, lineLength, "%04u IN  ", seqNo);
+        ptrCurrentLinePosition += 9; // move same amount as above´s snprintf output
+    }
+    else
+    {
+        snprintf(line, lineLength, "%04u OUT ", seqNo);
+        ptrCurrentLinePosition += 9; // move same amount as above´s snprintf output
+    }
+
+    seqNo++;
+    if (seqNo >= 10000)
+    {
+        seqNo = 0;
+    }
+
+    uint8_t len = data[IDX_HRH_DataLen];
+    if ((len <= 8) || (len + 3 > HID_REPORT_SIZE))
+    {
+        ///\todo this "reversed 0x00 check" will most likely fail, because uint8_t* data may not be fully initialized with zeros.
         // Längenangabe unplausibel, jetzt wird die Länge bestimmt,
         // indem von hinten das erste nicht-Nullbyte gesucht wird.
         // Es wird mindestens 1 Byte ausgegeben.
-        for (len=63; (len>1) && (data[len] == 0); len--);
-    } else {
+        for (len = 63; (len > 1) && (data[len] == 0); len--)
+        {
+            ;
+        }
+        failHardInDebug();
+    }
+    else
+    {
         len += 3;
     }
-    ptr = &line[9];
-    for (unsigned i=0; i<len; i++)
+
+    for (uint8_t i = 0; i < len; i++)
     {
-        sprintf(ptr, "%02X ", *data++);
-        ptr+=3;
+        sprintf(ptrCurrentLinePosition, "%02X ", *data++);
+        ptrCurrentLinePosition += 3; // move same amount as above´s snprintf output
     }
-    *ptr++ = 13;
-    *ptr++ = 10;
-    *ptr = 0;
+    *ptrCurrentLinePosition++ = 13; // carrige return
+    *ptrCurrentLinePosition++ = 10; // line feed
+    *ptrCurrentLinePosition = 0; // zero-terminated string
     // Und jetzt den evtl. langen String in 64 Byte Häppchen splitten und im Cdc-Fifo einreihen
     len = strlen(line);
-    ptr = &line[0];
-    Split_CdcEnqueue(ptr, len);
+    Split_CdcEnqueue(&line[0], len);
 }
 
 ErrorCode_t KnxHidIf::SendReport(uint8_t* data)
