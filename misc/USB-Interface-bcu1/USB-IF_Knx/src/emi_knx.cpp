@@ -175,7 +175,8 @@ void EmiKnxIf::setSystemState(const uint8_t newStatus)
 
 bool EmiKnxIf::getBcuLayerState(const uint8_t layer)
 {
-    bool layerState = getSystemState() & layer;
+    uint8_t systemState = getSystemState();
+    bool layerState = systemState & layer;
     return layerState;
 }
 
@@ -424,7 +425,7 @@ void EmiKnxIf::EmiIf_Tasks(void)
     if (emiBcu->bus->telegramReceived())
     {
         BlinkActivityLed();
-        if (isKNXenabled())
+        if (isKNXenabled() && (getBcuLayerState(BCU_STATUS_SERIAL_PEI)))
         {
             sendReceivedTelegramAsEMI(emiBcu->bus->telegram, emiBcu->bus->telegramLen);
         }
@@ -514,10 +515,11 @@ void EmiKnxIf::setDeviceMode(DeviceMode newDeviceMode)
         case DeviceMode::Halt:
         case DeviceMode::ProgBusChip:
         case DeviceMode::ProgUserChip:
+        case DeviceMode::HidOnly: // Reset also on HidOnly and wait till ETS/knxd/calimero
+                                  // sets the correct SystemState via C_MCode_SetValue with address AddrSystemState
             reset();
             break;
 
-        case DeviceMode::HidOnly:
         case DeviceMode::UsbMon:
             emiWriteOneValue(AddrSystemState, SystemState::LinkLayer, dummy); // sets BCU_STATUS_SERIAL_PEI, BCU_STATUS_LINK_LAYER
             break;
