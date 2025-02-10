@@ -529,6 +529,9 @@ void EmiKnxIf::setDeviceMode(DeviceMode newDeviceMode)
             break;
 
         default:
+            // This should never happen.
+            // If you land here, check that the switch statement checks all DeviceMode
+            failHardInDebug();
             break;
     }
 }
