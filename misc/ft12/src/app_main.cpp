@@ -78,22 +78,13 @@ void sendft12Ack()
  * @param frame     ft12 frame to send
  * @param frameSize size of the frame
  */
-void sendft12withAckWaiting(byte* frame, int32_t frameSize)
+void sendft12withAckWaiting(byte* frame, const int32_t frameSize)
 {
-    uint8_t sendSize = 15;
     digitalWrite(LED_SERIAL_RX, LED_ON);
+    repeatCounter = FT12_REPEAT_LIMIT;
     ftFrameOutBufferLength = frameSize;
     memcpy(ftFrameOutBuffer, frame, ftFrameOutBufferLength);
-    repeatCounter = FT12_REPEAT_LIMIT;
-    uint8_t i = 0;
-    while (frameSize >= sendSize)
-    {
-        serial.write(&frame[i], sendSize);
-        i += sendSize;
-        frameSize -= sendSize;
-    }
-    serial.write(&frame[i], frameSize);
-
+    serial.write(frame, ftFrameOutBufferLength);
     lastSerialSendTime = millis();
     ft12AckTimeout.start(ft12ExchangeTimeoutMs);
 }
