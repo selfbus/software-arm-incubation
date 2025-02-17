@@ -54,6 +54,13 @@ FtFrameType frameType = FT_NONE;
 
 
 
+void resetRx()
+{
+    ftFrameInLen = 0;
+    frameType = FT_NONE;
+    lastSerialRecvTime = 0;
+    lastCheckSum = InvalidCheckSum;
+}
 
 
 /**
@@ -422,13 +429,6 @@ void processTelegram()
     sendVariableFrame(ftFrameOut, FC_SEND_UDAT, L_Data_Ind, bcu.bus->telegramLen + 1, sendFrameCountBit);
 }
 
-static void timeoutSerial()
-{
-    // Timeout, discard any received partial FT frame
-    frameType = FT_NONE;
-    ftFrameInLen = 0;
-}
-
 /**
  * The main processing loop.
  */
@@ -501,7 +501,7 @@ void loop()
             {
                 debugFatal();
             }
-            timeoutSerial();
+            resetRx();
         }
         else if (frameType == FT_VARIABLE_START)
         {
@@ -514,7 +514,7 @@ void loop()
             {
                 debugFatal();
             }
-            timeoutSerial();
+            resetRx();
         }
 	}
 
@@ -536,7 +536,7 @@ void loop()
 
 	if (frameType != FT_NONE && elapsed(lastSerialRecvTime) > ft12ExchangeTimeoutMs)
 	{
-	    timeoutSerial();
+	    resetRx();
 	}
 }
 
