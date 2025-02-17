@@ -177,7 +177,7 @@ BcuBase* setup()
     }
 
     serial.setTxPin(PIN_FT_SERIAL_TX);
-    serial.setRxPin(PIN_FT_SERIAL_RX);
+    pinMode(PIN_FT_SERIAL_RX, SERIAL_RXD | PULL_UP | HYSTERESIS);
     serial.begin(FT_BAUDRATE, SERIAL_8E1);
     reset();
     return (&bcu);
