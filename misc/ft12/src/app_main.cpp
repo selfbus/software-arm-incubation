@@ -41,10 +41,8 @@ byte repeatCounter;             //! Decrement on every repeat until its zero, in
 uint32_t lastSerialRecvTime;
 uint32_t lastSerialSendTime;
 
-byte* telegramOut1; //!< 1.Buffer for outgoing telegrams
-byte* telegramOut2; //!< 2.Buffer for outgoing telegrams
+byte* telegramOut = nullptr; //!< Buffer for outgoing KNX telegrams
 
-int telegramOutId; //!< Index of the next buffer for an outgoing knx telegram
 
 
 
@@ -145,7 +143,6 @@ void reset()
     }
     ft12AckTimeout.stop();
     frameType = FT_NONE;
-    telegramOutId = 0;
     lastSerialRecvTime = 0;
     lastSerialSendTime = 0;
 }
@@ -155,9 +152,7 @@ void reset()
  */
 BcuBase* setup()
 {
-    telegramOut1 = new byte(bcu.maxTelegramSize());
-    telegramOut2 = new byte(bcu.maxTelegramSize());
-
+    telegramOut = new byte[bcu.maxTelegramSize()](); // don´t delete () they ensure initialization with zeros
     // led init and test
     pinMode(LED_KNX_RX, OUTPUT);    // KNX-Rx LED
     digitalWrite(LED_KNX_RX, LED_ON);
@@ -337,7 +332,6 @@ void processDataConnectedRequest()
  */
 bool processVariableFrame(uint8_t* frame, uint8_t length)
 {
-    byte* telegramOut;
     FtControlField cf  = controlFieldFromByte(frame[4]);
 
     if (cf.functionCode != FC_SEND_UDAT)
@@ -387,10 +381,9 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
     {
         sendft12Ack();
         uint8_t userDataLength = frame[1];
-        if (telegramOutId)
-            telegramOut = telegramOut1;
-        else telegramOut = telegramOut2;
-        telegramOutId = !telegramOutId;
+
+        while (bcu.bus->sendingFrame())
+            ;
 
         for (uint8_t i = 3; i < userDataLength - 2; ++i)
         {
