@@ -53,6 +53,13 @@ Timeout knxRxTimeout;       //!< KNX-Rx LED blinking timeout
 FtFrameType frameType = FT_NONE;
 
 
+void resetTx()
+{
+    ft12AckTimeout.stop();
+    ftFrameOutBufferLength = 0;
+    lastSerialSendTime = 0;
+    repeatCounter = FT12_REPEAT_LIMIT;
+}
 
 void resetRx()
 {
@@ -62,6 +69,17 @@ void resetRx()
     lastCheckSum = InvalidCheckSum;
 }
 
+/**
+ * Reset the buffers.
+ */
+void reset()
+{
+    serial.clearBuffers();
+    sendFrameCountBit = true;
+    rcvFrameCountBit = true;
+    resetTx();
+    resetRx();
+}
 
 /**
  * Sends a @ref FT_ACK
@@ -80,8 +98,8 @@ void sendft12Ack()
  */
 void sendft12withAckWaiting(byte* frame, const int32_t frameSize)
 {
+    resetTx();
     digitalWrite(LED_SERIAL_RX, LED_ON);
-    repeatCounter = FT12_REPEAT_LIMIT;
     ftFrameOutBufferLength = frameSize;
     memcpy(ftFrameOutBuffer, frame, ftFrameOutBufferLength);
     serial.write(frame, ftFrameOutBufferLength);
@@ -124,22 +142,6 @@ void sendFixedFrame(byte* frame, const FtFunctionCode& funcCode, const bool& fra
     frame[2] = frame[1];
     frame[3] = FT_END;
     sendft12withAckWaiting(frame, FIXED_FRAME_LENGTH);
-}
-
-/**
- * Reset the buffers.
- */
-void reset()
-{
-    serial.clearBuffers();
-    sendFrameCountBit = true;
-    lastCheckSum = -1;
-    ftFrameInLen = 0;
-    ftFrameOutBufferLength = 0;
-    ft12AckTimeout.stop();
-    frameType = FT_NONE;
-    lastSerialRecvTime = 0;
-    lastSerialSendTime = 0;
 }
 
 /**
@@ -439,8 +441,7 @@ void loop()
 		    {
 		        case FT_ACK:
                 {
-                    ft12AckTimeout.stop();
-                    ftFrameOutBufferLength = 0;
+                    resetTx();
                     sendFrameCountBit = !sendFrameCountBit;
                     digitalWrite(LED_SERIAL_RX, LED_OFF);
                     continue;
