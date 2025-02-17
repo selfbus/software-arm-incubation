@@ -30,11 +30,11 @@ uint32_t ft12ExchangeTimeoutMs = 2 * ((FT12_EXCHANGE_TIMEOUT_BITS * 1000/FT_BAUD
 /** ft12 line idle timeout converted in milliseconds */
 uint32_t ft12LineIdleTimeoutMs = 2 * ((FT12_LINE_IDLE_TIMEOUT_BITS * 1000/FT_BAUDRATE) + 1);
 
-byte ftFrameOutBuffer[FT_FRAME_SIZE]; //!< Buffer for outgoing FT1.2 frames which are waiting for an ACK
-uint8_t ftFrameOutBufferLength;       //!< Length of the data in ftFrameOutBuffer
 byte ftFrameIn[FT_FRAME_SIZE] = {0};        //!< Buffer for incoming FT1.2 frames
 uint8_t ftFrameInLen = 0;                   //!< Length of the data in ftFrameIn
 byte ftFrameOut[FT_FRAME_SIZE] = {0};       //!< Buffer for preparing FT1.2 frames to send to serial port
+byte ftFrameOutBuffer[FT_FRAME_SIZE] = {0}; //!< Buffer for outgoing FT1.2 frames which are waiting for an ACK
+uint8_t ftFrameOutBufferLength = 0;         //!< Length of the data in ftFrameOutBuffer
 
 int16_t repeatCounter = 0;                  //! Decrement on every repeat until its zero, initialized with @ref FT12_REPEAT_LIMIT
 
