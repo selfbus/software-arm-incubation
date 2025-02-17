@@ -22,7 +22,6 @@
 #define FT_FRAME_SIZE               (32)     //!< Maximum size of FT1.2 frames
 #define FT_MAX_SEND_RETRY           (0)      //!< Do not repeat sending
 #define FT_BAUDRATE                 (19200)  //!< Ft12 baudrate
-#define FT_OUTBUFFER_COUNT          (2)      //!< Number of outgoing FT12 frame buffers
 
 
 

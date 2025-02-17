@@ -30,8 +30,8 @@ uint32_t ft12ExchangeTimeoutMs = 2 * ((FT12_EXCHANGE_TIMEOUT_BITS * 1000/FT_BAUD
 /** ft12 line idle timeout converted in milliseconds */
 uint32_t ft12LineIdleTimeoutMs = 2 * ((FT12_LINE_IDLE_TIMEOUT_BITS * 1000/FT_BAUDRATE) + 1);
 
-byte ftFrameOutBuffer[FT_FRAME_SIZE][FT_OUTBUFFER_COUNT]; //!< Buffer for outgoing FT1.2 frames which are waiting for an ACK
-uint8_t ftFrameOutBufferLength[FT_OUTBUFFER_COUNT];       //!< Length of the data in ftFrameOutBuffer
+byte ftFrameOutBuffer[FT_FRAME_SIZE]; //!< Buffer for outgoing FT1.2 frames which are waiting for an ACK
+uint8_t ftFrameOutBufferLength;       //!< Length of the data in ftFrameOutBuffer
 byte ftFrameIn[FT_FRAME_SIZE] = {0};        //!< Buffer for incoming FT1.2 frames
 uint8_t ftFrameInLen = 0;                   //!< Length of the data in ftFrameIn
 byte ftFrameOut[FT_FRAME_SIZE] = {0};       //!< Buffer for preparing FT1.2 frames to send to serial port
@@ -82,8 +82,8 @@ void sendft12withAckWaiting(byte* frame, int32_t frameSize)
 {
     uint8_t sendSize = 15;
     digitalWrite(LED_SERIAL_RX, LED_ON);
-    ftFrameOutBufferLength[0] = frameSize;
-    memcpy(ftFrameOutBuffer, frame, ftFrameOutBufferLength[0]);
+    ftFrameOutBufferLength = frameSize;
+    memcpy(ftFrameOutBuffer, frame, ftFrameOutBufferLength);
     repeatCounter = FT12_REPEAT_LIMIT;
     uint8_t i = 0;
     while (frameSize >= sendSize)
@@ -102,16 +102,16 @@ void sendft12RepeatedFrame()
 {
     return; ///\todo repeating doesn't work reliably right now
 
-    if ((ftFrameOutBufferLength[0] == 0) || (repeatCounter <= 0))
+    if ((ftFrameOutBufferLength == 0) || (repeatCounter <= 0))
     {
-        ftFrameOutBufferLength[0] = 0;
+        ftFrameOutBufferLength = 0;
         ft12AckTimeout.stop();
         return;
     }
 
     repeatCounter--;
     digitalWrite(LED_SERIAL_RX, LED_ON);
-    serial.write(ftFrameOutBuffer[0], ftFrameOutBufferLength[0]);
+    serial.write(ftFrameOutBuffer, ftFrameOutBufferLength);
     ft12AckTimeout.start(ft12ExchangeTimeoutMs);
 }
 
@@ -144,10 +144,7 @@ void reset()
     sendFrameCountBit = true;
     lastCheckSum = -1;
     ftFrameInLen = 0;
-    for (uint8_t i = 0; i < FT_OUTBUFFER_COUNT; i++)
-    {
-        ftFrameOutBufferLength[i] = 0;
-    }
+    ftFrameOutBufferLength = 0;
     ft12AckTimeout.stop();
     frameType = FT_NONE;
     lastSerialRecvTime = 0;
@@ -452,7 +449,7 @@ void loop()
 		        case FT_ACK:
                 {
                     ft12AckTimeout.stop();
-                    ftFrameOutBufferLength[0] = 0;
+                    ftFrameOutBufferLength = 0;
                     sendFrameCountBit = !sendFrameCountBit;
                     digitalWrite(LED_SERIAL_RX, LED_OFF);
                     continue;
@@ -527,7 +524,7 @@ void loop()
     {
         digitalWrite(LED_KNX_RX, LED_ON);
         knxRxTimeout.start(LED_KNX_RX_BLINKTIME);
-        if (ftFrameOutBufferLength[0] == 0)
+        if (ftFrameOutBufferLength == 0)
         {
             processTelegram();
             bcu.bus->discardReceivedTelegram();
