@@ -30,31 +30,31 @@ uint32_t ft12ExchangeTimeoutMs = 2 * ((FT12_EXCHANGE_TIMEOUT_BITS * 1000/FT_BAUD
 /** ft12 line idle timeout converted in milliseconds */
 uint32_t ft12LineIdleTimeoutMs = 2 * ((FT12_LINE_IDLE_TIMEOUT_BITS * 1000/FT_BAUDRATE) + 1);
 
-byte ftFrameIn[FT_FRAME_SIZE];        //!< Buffer for incoming FT1.2 frames
-uint8_t ftFrameInLen;                 //!< Length of the data in ftFrameIn
-byte ftFrameOut[FT_FRAME_SIZE];       //!< Buffer for preparing FT1.2 frames to send to serial port
 byte ftFrameOutBuffer[FT_FRAME_SIZE][FT_OUTBUFFER_COUNT]; //!< Buffer for outgoing FT1.2 frames which are waiting for an ACK
 uint8_t ftFrameOutBufferLength[FT_OUTBUFFER_COUNT];       //!< Length of the data in ftFrameOutBuffer
+byte ftFrameIn[FT_FRAME_SIZE] = {0};        //!< Buffer for incoming FT1.2 frames
+uint8_t ftFrameInLen = 0;                   //!< Length of the data in ftFrameIn
+byte ftFrameOut[FT_FRAME_SIZE] = {0};       //!< Buffer for preparing FT1.2 frames to send to serial port
 
-byte repeatCounter;             //! Decrement on every repeat until its zero, initialized with @ref FT12_REPEAT_LIMIT
+int16_t repeatCounter = 0;                  //! Decrement on every repeat until its zero, initialized with @ref FT12_REPEAT_LIMIT
 
-uint32_t lastSerialRecvTime;
-uint32_t lastSerialSendTime;
+uint32_t lastSerialRecvTime = 0;
+uint32_t lastSerialSendTime = 0;
 
 byte* telegramOut = nullptr; //!< Buffer for outgoing KNX telegrams
 
+bool sendFrameCountBit = true;
+bool rcvFrameCountBit = true;
 
-
-
-
-bool sendFrameCountBit;
-bool rcvFrameCountBit;
-int16_t lastChecksum;
-
+int16_t lastCheckSum = InvalidCheckSum;
 Timeout ft12AckTimeout;     //!< waiting for ft12 ACK timeout
 Timeout knxRxTimeout;       //!< KNX-Rx LED blinking timeout
 
 FtFrameType frameType = FT_NONE;
+
+
+
+
 
 /**
  * Sends a @ref FT_ACK
@@ -135,7 +135,7 @@ void reset()
 {
     serial.clearBuffers();
     sendFrameCountBit = true;
-    lastChecksum = -1;
+    lastCheckSum = -1;
     ftFrameInLen = 0;
     for (uint8_t i = 0; i < FT_OUTBUFFER_COUNT; i++)
     {

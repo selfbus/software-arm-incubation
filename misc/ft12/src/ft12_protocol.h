@@ -30,6 +30,8 @@
 #define FIXED_FRAME_LENGTH (4)            //!< Length of a fixed ft12 frame
 #define VARIABLE_FRAME_HEADER_LENGTH (6)  //!< Header length of a variable ft12 frame
 
+constexpr int16_t InvalidCheckSum = -1;  //!< Invalid checksum
+
 /**
  * FT frame type
  * @note KNX Spec. 2.1 3/6/2 6.4.3.2 p.23ff
