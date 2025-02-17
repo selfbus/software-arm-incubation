@@ -20,6 +20,7 @@
  ---------------------------------------------------------------------------*/
 
 #include "ft12_protocol.h"
+#include "debug_handler.h"
 
 FtControlField controlFieldFromByte(const uint8_t& controlByte)
 {
@@ -77,41 +78,56 @@ bool isValidVariableFrameHeader(const uint8_t* frame, uint8_t frameLength)
     if (frameLength < VARIABLE_FRAME_HEADER_LENGTH)
     {
         // to short
+        debugFatal();
         return (false);
     }
 
     if (frame[0] != FT_VARIABLE_START)
     {
         // start byte wrong
+        debugFatal();
         return (false);
     }
 
     if (frame[0] != frame[3])
     {
-        //4. bytes doesn't match start byte'
+        //4. byte doesn't match start byte
+        debugFatal();
         return (false);
     }
 
     if (frame[1] != frame[2])
     {
         // mismatch of both length bytes
+        debugFatal();
         return (false);
     }
 
     if (frame[frameLength - 1] != FT_END)
     {
         // end byte wrong
+        debugFatal();
         return (false);
     }
+
     uint8_t userDataLength = frame[1];
     if (frameLength != (userDataLength + VARIABLE_FRAME_HEADER_LENGTH))
     {
         // length mismatch
-        return (false);
+        if (frameLength > (userDataLength + VARIABLE_FRAME_HEADER_LENGTH))
+        {
+            // length now to long
+            debugFatal();
+            return false;
+        }
+        // length yet to short
+        return false;
     }
 
     if (calcCheckSum(frame, userDataLength) != frame[frameLength - 2])
     {
+        debugFatal();
+        // checksum mismatch
         return (false);
     }
 

@@ -19,6 +19,7 @@
 #include "config.h"
 #include "bcu_ft12.h"
 #include "ft12_protocol.h"
+#include "debug_handler.h"
 
 APP_VERSION("SBft12  ", "0", "02")  // Don't forget to also change the build-variable sw_version
 
@@ -56,15 +57,6 @@ Timeout ft12AckTimeout;     //!< waiting for ft12 ACK timeout
 Timeout knxRxTimeout;       //!< KNX-Rx LED blinking timeout
 
 FtFrameType frameType = FT_NONE;
-
-
-void debugFatal()
-{
-#ifdef DEBUG
-    bcu.setProgPin(LED_KNX_RX);
-    fatalError();
-#endif
-}
 
 /**
  * Sends a @ref FT_ACK
@@ -483,16 +475,16 @@ void loop()
 		            continue;
 		            break;
 		        default:
+		            debugFatal();
 		            frameType = FT_NONE; // we should never land here, otherwise something is really wrong
-		            // sendFixedFrame(ftFrameOut, FC_SEND_RESET, sendFrameCountBit);
 		            continue;
-		            // debugFatal();
 		    }
 		}
 
 		// buffer overflow prevention
         if (ftFrameInLen >= FT_FRAME_SIZE)
         {
+            debugFatal();
             reset();
             continue;
         }
@@ -508,6 +500,7 @@ void loop()
         {
             if (!isValidFixedFrameHeader(&ftFrameIn[0], ftFrameInLen))
             {
+                debugFatal();
                 continue;
             }
 
