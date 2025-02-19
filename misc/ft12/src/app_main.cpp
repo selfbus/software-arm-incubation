@@ -158,16 +158,24 @@ void sendft12RepeatedFrame()
  *
  * @param frame          The buffer that contains the frame
  * @param funcCode       The function code, e.g. FC_RESET
- * @param frameCountBit  Frame count bit of the control byte
  */
-void sendFixedFrame(byte* frame, const FtFunctionCode& funcCode, const bool& frameCountBit)
+void sendFixedFrame(byte* frame, const FtFunctionCode& funcCode)
 {
-    frame[0] = FT_FIXED_START;
-    frame[1] = 0xD0 | (funcCode & 0x0f);
-    if (frameCountBit)
+    if (funcCode == FC_SEND_UDAT)
     {
-        frame[1] |= 0x20;
+        // only FC_SEND_RESET or FC_REQ_STATUS allowed as fixed frame
+        debugFatal();
+        return;
     }
+
+    frame[0] = FT_FIXED_START;
+    FtControlField cf;
+    cf.fromBCUtoDevice = true;
+    cf.isRequest = true;
+    cf.frameCountBit = false;
+    cf.frameCountBitValid = false;
+    cf.functionCode = funcCode;
+    frame[1] = controlFieldToByte(cf);
     frame[2] = frame[1];
     frame[3] = FT_END;
     sendft12withAckWaiting(frame, FIXED_FRAME_LENGTH);
