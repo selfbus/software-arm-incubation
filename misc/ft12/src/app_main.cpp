@@ -352,19 +352,20 @@ void processDataConnectedRequest()
         ftFrameOut[i] = 0;
     }
 
+    constexpr uint16_t version = 0x0012;
     uint16_t apci = makeWord(ftFrameIn[12], ftFrameIn[13]);
     switch (apci)
     {
-    case APCI_DEVICEDESCRIPTOR_READ_PDU:
-        sendft12Ack();
-        uint16_t version = 0x0012;
-        ftFrameOut[11] = 0x63; // DRL 3 bytes
-        ftFrameOut[12] = HIGH_BYTE(APCI_DEVICEDESCRIPTOR_RESPONSE_PDU);
-        ftFrameOut[13] = lowByte(APCI_DEVICEDESCRIPTOR_RESPONSE_PDU);
-        ftFrameOut[14] = HIGH_BYTE(version);
-        ftFrameOut[15] = lowByte(version);
-        sendVariableFrame(ftFrameOut, FC_SEND_UDAT, T_Data_Connected_Con, 12);
-        break;
+        case APCI_DEVICEDESCRIPTOR_READ_PDU:
+            sendft12Ack();
+            ftFrameOut[11] = 0x63; // DRL 3 bytes
+            ftFrameOut[12] = HIGH_BYTE(APCI_DEVICEDESCRIPTOR_RESPONSE_PDU);
+            ftFrameOut[13] = lowByte(APCI_DEVICEDESCRIPTOR_RESPONSE_PDU);
+            ftFrameOut[14] = HIGH_BYTE(version);
+            ftFrameOut[15] = lowByte(version);
+            sendVariableFrame(ftFrameOut, FC_SEND_UDAT, T_Data_Connected_Con, 12);
+            break;
+
         default:
            break;
     }
