@@ -53,6 +53,12 @@ Timeout knxRxTimeout;       //!< KNX-Rx LED blinking timeout
 
 FtFrameType frameType = FT_NONE;
 
+bool ackPending()
+{
+    auto stopped = ft12AckTimeout.stopped();
+    auto expired = ft12AckTimeout.expired();
+    return !stopped && !expired;
+}
 
 void resetTx()
 {
@@ -99,7 +105,17 @@ void sendft12Ack()
  */
 void sendft12withAckWaiting(byte* frame, const int32_t frameSize)
 {
+    FtControlField cf  = controlFieldFromByte(frame[4]);
+    if (cf.frameCountBitValid && ackPending())
+    {
+        //todo this happens, when calimero sends a non-blocking frame, followed by another frame
+        // E.g. non-blocking TL4 T_ACK followed by blocking T_DataConnected within
+        // #68#09#09#68 #73#11#00#00#00#FF#C0#60#C2#65#16 (calimero log: sending FT1.2 frame, non-blocking, attempt 1)
+        // #68#17#17#68 #53#11#0C#00#00#FF#C0#6E#46#F8#BF#3D#90#02#13#49#84#5E#AF#67#AB#F5#5D#BA#16 (calimero log: sending FT1.2 frame, blocking, attempt 1)
+        //debugFatal();
+    }
     resetTx();
+
     ftFrameOutBufferLength = frameSize;
     memcpy(ftFrameOutBuffer, frame, ftFrameOutBufferLength);
     serial.write(frame, ftFrameOutBufferLength);
@@ -441,6 +457,10 @@ void loop()
 		    {
 		        case FT_ACK:
                 {
+                    if (!ackPending())
+                    {
+                        //debugFatal(); //todo been here with knxd, but it should never happen
+                    }
                     resetTx();
                     sendFrameCountBit = !sendFrameCountBit;
                     digitalWrite(LED_SERIAL_RX, LED_OFF);
@@ -512,7 +532,7 @@ void loop()
         sendft12RepeatedFrame();
     }
 
-    if (bcu.bus->telegramReceived())
+    if (bcu.bus->telegramReceived() && !ackPending())
     {
         digitalWrite(LED_KNX_RX, LED_ON);
         knxRxTimeout.start(LED_KNX_RX_BLINKTIME);
