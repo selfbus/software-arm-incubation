@@ -23,7 +23,7 @@
 
 APP_VERSION("SBft12  ", "0", "02")  // Don't forget to also change the build-variable sw_version
 
-BcuFt12 bcu = BcuFt12();  //!< Bus coupling unit Maskversion 0x0012 of the ft12 module
+BcuFt12 bcuFt12 = BcuFt12();  //!< Bus coupling unit Maskversion 0x0012 of the ft12 module
 
 /** ft12 bit timeout converted in milliseconds */
 uint32_t ft12ExchangeTimeoutMs = 2 * ((FT12_EXCHANGE_TIMEOUT_BITS * 1000/FT_BAUDRATE) + 1);
@@ -41,7 +41,7 @@ int16_t repeatCounter = 0;                  //! Decrement on every repeat until 
 uint32_t lastSerialRecvTime = 0;
 uint32_t lastSerialSendTime = 0;
 
-byte* telegramOut = new byte[bcu.maxTelegramSize()](); //!< Buffer for outgoing KNX telegrams
+byte* telegramOut = new byte[bcuFt12.maxTelegramSize()](); //!< Buffer for outgoing KNX telegrams
 
 
 bool sendFrameCountBit = true;
@@ -207,13 +207,13 @@ BcuBase* setup()
     delay(LED_TEST_MS);
     digitalWrite(LED_SERIAL_RX, LED_OFF);
 
-    bcu.begin(); // bcu.userRam->status is set in BcuFt12::begin()
-    bcu.setOwnAddress(FT_OWN_KNX_ADDRESS);
+    bcuFt12.begin(); // bcu.userRam->status is set in BcuFt12::begin()
+    bcuFt12.setOwnAddress(FT_OWN_KNX_ADDRESS);
     serial.setTxPin(PIN_FT_SERIAL_TX);
     pinMode(PIN_FT_SERIAL_RX, SERIAL_RXD | PULL_UP | HYSTERESIS);
     serial.begin(FT_BAUDRATE, SERIAL_8E1);
     reset();
-    return (&bcu);
+    return (&bcuFt12);
 }
 
 
@@ -408,8 +408,8 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
     case PEI_Identify_Req: // KNX Spec. 3/6/3 3.3.9.5 p.54
         sendft12Ack();
         buffer = getFtFrameOut();
-        buffer[6]  = HIGH_BYTE(bcu.ownAddress()); // create PEI_Identify_con
-        buffer[7]  = lowByte(bcu.ownAddress());
+        buffer[6]  = HIGH_BYTE(bcuFt12.ownAddress()); // create PEI_Identify_con
+        buffer[7]  = lowByte(bcuFt12.ownAddress());
         buffer[8]  = 0x00; // 6 bytes KNX serial number
         buffer[9]  = 0x01;
         buffer[10] = 0x00;
@@ -451,7 +451,7 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
         uint8_t priority = (emiControl & 0x0c);
         bool ackRequest = (emiControl & 0x02);
 
-        if (ackRequest != ((bcu.userRam->status() & BCU_STATUS_LINK_LAYER) == BCU_STATUS_LINK_LAYER))
+        if (ackRequest != ((bcuFt12.userRam->status() & BCU_STATUS_LINK_LAYER) == BCU_STATUS_LINK_LAYER))
         {
             //\todo doesn´t work right now with our Updater, which does no ft12 link configuration
             // match data link layer and ackRequest
@@ -467,14 +467,14 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
         sendVariableFrame(buffer, FC_SEND_UDAT, L_Data_Con, userDataLength);
 
         // Wait till bcu.bus has sent our previous telegramOut[]
-        while (bcu.bus->sendingFrame())
+        while (bcuFt12.bus->sendingFrame())
             ;
 
         // copy frame userdata to telegramOut
         memcpy(telegramOut, &frame[VARIABLE_FRAME_HEADER_LENGTH], userDataLength - 2);
 
         telegramOut[0] = 0xB0 | priority; // control byte
-        bcu.bus->sendTelegram(telegramOut, userDataLength - 2);
+        bcuFt12.bus->sendTelegram(telegramOut, userDataLength - 2);
         break;
     }
 
@@ -493,8 +493,8 @@ void processTelegram()
     while (ackPending())
          ;
     uint8_t * buffer = getFtFrameOut();
-    memcpy(buffer + VARIABLE_FRAME_HEADER_LENGTH, bcu.bus->telegram, bcu.bus->telegramLen - 1);
-    sendVariableFrame(buffer, FC_SEND_UDAT, L_Data_Ind, bcu.bus->telegramLen + 1);
+    memcpy(buffer + VARIABLE_FRAME_HEADER_LENGTH, bcuFt12.bus->telegram, bcuFt12.bus->telegramLen - 1);
+    sendVariableFrame(buffer, FC_SEND_UDAT, L_Data_Ind, bcuFt12.bus->telegramLen + 1);
 }
 
 /**
@@ -640,14 +640,14 @@ void loop()
         sendft12RepeatedFrame();
     }
 
-    if (bcu.bus->telegramReceived() && !ackPending())
+    if (bcuFt12.bus->telegramReceived() && !ackPending())
     {
         digitalWrite(LED_KNX_RX, LED_ON);
         knxRxTimeout.start(LED_KNX_RX_BLINKTIME);
         if (ftFrameOutBufferLength == 0)
         {
             processTelegram();
-            bcu.bus->discardReceivedTelegram();
+            bcuFt12.bus->discardReceivedTelegram();
         }
     }
 

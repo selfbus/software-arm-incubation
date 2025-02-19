@@ -9,12 +9,12 @@
 #include "bcu_ft12.h"
 #include "config.h"
 
-extern BcuFt12 bcu;
+extern BcuFt12 bcuFt12;
 
 void debugFatal()
 {
 #ifdef DEBUG
-    bcu.setProgPin(LED_KNX_RX);
+    bcuFt12.setProgPin(LED_KNX_RX);
     fatalError();
 #endif
 }
