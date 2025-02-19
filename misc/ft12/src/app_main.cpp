@@ -209,8 +209,6 @@ BcuBase* setup()
 
     bcu.begin();
     bcu.setOwnAddress(FT_OWN_KNX_ADDRESS);
-    bcu.bus->maxSendRetries(FT_MAX_SEND_RETRY);
-    bcu.bus->maxSendBusyRetries(FT_MAX_SEND_RETRY);
     bcu.userRam->status() ^= BCU_STATUS_TRANSPORT_LAYER | BCU_STATUS_PARITY;
 
     // Disable telegram processing by the lib
