@@ -306,6 +306,7 @@ bool processFixedFrame(uint8_t* frame)
 
     if (!cf.isRequest)
     {
+        debugFatal();
         return false;
     }
 
@@ -321,6 +322,7 @@ bool processFixedFrame(uint8_t* frame)
             return true; ///\todo FC_REQ_STATUS
             break;
         default:
+            debugFatal();
             return false;
     }
     return true;
@@ -349,6 +351,8 @@ void processDataConnectedRequest()
         ftFrameOut[15] = lowByte(version);
         sendVariableFrame(ftFrameOut, FC_SEND_UDAT, T_Data_Connected_Con, 12, true);
         break;
+        default:
+           break;
     }
 }
 
@@ -429,6 +433,7 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
     }
 
     default:
+        debugFatal();
         return false;
     }
     return true;
