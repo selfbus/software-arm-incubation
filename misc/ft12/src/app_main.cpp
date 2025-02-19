@@ -475,11 +475,7 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
  */
 void processTelegram()
 {
-    for (uint8_t i = 0; i < bcu.bus->telegramLen - 1; i++)
-    {
-        ftFrameOut[i + VARIABLE_FRAME_HEADER_LENGTH] = bcu.bus->telegram[i];
-    }
-    ftFrameOut[4] = 0xf0;
+    memcpy(ftFrameOut + VARIABLE_FRAME_HEADER_LENGTH, bcu.bus->telegram, bcu.bus->telegramLen - 1);
     sendVariableFrame(ftFrameOut, FC_SEND_UDAT, L_Data_Ind, bcu.bus->telegramLen + 1);
 }
 
