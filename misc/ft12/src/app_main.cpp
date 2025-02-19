@@ -113,6 +113,18 @@ void sendft12withAckWaiting(byte* frame, const int32_t frameSize)
         // #68#09#09#68 #73#11#00#00#00#FF#C0#60#C2#65#16 (calimero log: sending FT1.2 frame, non-blocking, attempt 1)
         // #68#17#17#68 #53#11#0C#00#00#FF#C0#6E#46#F8#BF#3D#90#02#13#49#84#5E#AF#67#AB#F5#5D#BA#16 (calimero log: sending FT1.2 frame, blocking, attempt 1)
         //debugFatal();
+        uint8_t operand;
+        if (cf.frameCountBit) // we flip 5.bit, so calculate new checksum
+        {
+            operand = -(1 << 5);
+        }
+        else
+        {
+            operand = +(1 << 5);
+        }
+        frame[frameSize - 2] = (frame[frameSize - 2] + operand) % 256; // set checksum for flipped frameCountBit
+        cf.frameCountBit = !cf.frameCountBit; // flip frameCountBit
+        frame[4] = controlFieldToByte(cf);
     }
     resetTx();
 
