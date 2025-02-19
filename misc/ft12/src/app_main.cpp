@@ -324,12 +324,10 @@ bool processFixedFrame(uint8_t* frame)
     switch (cf.functionCode)
     {
         case FC_SEND_RESET:
-            sendft12Ack();
             reset();
             return true;
             break;
         case FC_REQ_STATUS:
-            sendft12Ack();
             return true; ///\todo FC_REQ_STATUS
             break;
         default:
@@ -385,13 +383,13 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
         return false;
     }
 
-    //Check cf.frameCountBit and checksum with last received once
+    //Compare cf.frameCountBit and checksum with last received once
     if (cf.frameCountBit == rcvFrameCountBit)
     {
         if ((checkSum == lastCheckSum) && (lastCheckSum != InvalidCheckSum))
         {
             // Same cf.frameCountBit and checksum => ignore already received repeated frame
-            sendft12Ack();
+            ///\todo maybe we need to send our last L_Data_Con?
             return true;
         }
     }
@@ -403,7 +401,6 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
     switch (emi)  // EMI code
     {
     case PEI_Identify_Req: // KNX Spec. 3/6/3 3.3.9.5 p.54
-        sendft12Ack();
         buffer = getFtFrameOut();
         buffer[6]  = HIGH_BYTE(bcuFt12.ownAddress()); // create PEI_Identify_con
         buffer[7]  = lowByte(bcuFt12.ownAddress());
@@ -420,11 +417,9 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
     case PEI_Switch_Req: // KNX Spec. 3/6/3 3.1.4 p.14
         // classes BcuBase nor Bus support layer switching
         reset();
-        sendft12Ack();
         break;
 
     case T_Connect_Req:
-        sendft12Ack();
         buffer = getFtFrameOut();
         buffer[6]  = 0;
         buffer[7]  = frame[9];
@@ -436,13 +431,11 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
         break;
 
     case T_Data_Connected_Req:
-        sendft12Ack();
         processDataConnectedRequest(frame, length);
         break;
 
     case L_Data_Req: // KNX Spec. 2.1 3/6/3 3.3.4.2 p.20
     {
-        sendft12Ack();
         uint8_t userDataLength = frame[1];
         uint8_t emiControl = frame[VARIABLE_FRAME_HEADER_LENGTH];
         // read requested priority
@@ -574,6 +567,7 @@ void loop()
                     break;
 
                 case FtError::FT_NO_ERROR:
+                    sendft12Ack();
                     if (ackPending())
                     {
                         //todo this may happen, see sendft12withAckWaiting(..) for details
@@ -611,6 +605,7 @@ void loop()
                     break;
 
                 case FtError::FT_NO_ERROR:
+                    sendft12Ack();
                     if (ackPending())
                     {
                         //todo this may happen, see sendft12withAckWaiting(..) for details
