@@ -276,25 +276,31 @@ bool dirtyCheckAndReplaceInvalidDefaultSenderAddress(byte* frame, const FtFuncti
  * @param funcCode       The function code, e.g. FC_SEND_UDAT
  * @param emi            The @ref EmiCode to send
  * @param userDataLength The length of the frame's payload
- * @param frameCountBit  Frame count bit of the control byte
  */
-void sendVariableFrame(byte* frame, const FtFunctionCode& funcCode, const EmiCode& emi, const uint8_t& userDataLength,
-        const bool& frameCountBit)
+void sendVariableFrame(byte* frame, const FtFunctionCode& funcCode, const EmiCode& emi, const uint8_t& userDataLength)
 {
+    if (funcCode != FC_SEND_UDAT)
+    {
+        // only FC_SEND_UDAT allowed as variable length frame
+        debugFatal();
+        return;
+    }
+
     // This is a VERY VERY dirty hack for older Selfbus devices with default knx address 0.0.0
     dirtyCheckAndReplaceInvalidDefaultSenderAddress(frame, funcCode, emi, userDataLength);
 
-    frame[4] = 0xD0;
-    if (frameCountBit)
-    {
-        frame[4] |= 0x20;
-    }
+    FtControlField cf;
+    cf.fromBCUtoDevice = true;
+    cf.isRequest = true;
+    cf.frameCountBit = sendFrameCountBit;
+    cf.frameCountBitValid = true;
+    cf.functionCode = funcCode;
 
     frame[0] = FT_VARIABLE_START;
     frame[1] = userDataLength;
     frame[2] = userDataLength;
     frame[3] = FT_VARIABLE_START;
-    frame[4] |= (funcCode & 0x0f);
+    frame[4] = controlFieldToByte(cf);
     frame[5] = emi;
 
     frame[4 + userDataLength] = calcCheckSum(frame, userDataLength);
@@ -357,7 +363,7 @@ void processDataConnectedRequest()
         ftFrameOut[13] = lowByte(APCI_DEVICEDESCRIPTOR_RESPONSE_PDU);
         ftFrameOut[14] = HIGH_BYTE(version);
         ftFrameOut[15] = lowByte(version);
-        sendVariableFrame(ftFrameOut, FC_SEND_UDAT, T_Data_Connected_Con, 12, true);
+        sendVariableFrame(ftFrameOut, FC_SEND_UDAT, T_Data_Connected_Con, 12);
         break;
         default:
            break;
@@ -411,7 +417,7 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
         ftFrameOut[12] = 0xE4;
         ftFrameOut[13] = 0x5A;
         ftFrameOut[14] = 0;
-        sendVariableFrame(ftFrameOut, FC_SEND_UDAT, PEI_Identify_Con, 10, sendFrameCountBit);
+        sendVariableFrame(ftFrameOut, FC_SEND_UDAT, PEI_Identify_Con, 10);
         break;
 
     case PEI_Switch_Req: // KNX Spec. 3/6/3 3.1.4 p.14
@@ -427,7 +433,7 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
         ftFrameOut[9]  = 0;
         ftFrameOut[10] = 0;
         ftFrameOut[11] = 0;
-        sendVariableFrame(ftFrameOut, FC_SEND_UDAT, T_Connect_Con, 7, sendFrameCountBit);
+        sendVariableFrame(ftFrameOut, FC_SEND_UDAT, T_Connect_Con, 7);
         break;
 
     case T_Data_Connected_Req:
@@ -456,7 +462,7 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
         }
 
         bcu.bus->sendTelegram(telegramOut, userDataLength - 2);
-        sendVariableFrame(ftFrameOut, FC_SEND_UDAT, L_Data_Con, userDataLength, sendFrameCountBit);
+        sendVariableFrame(ftFrameOut, FC_SEND_UDAT, L_Data_Con, userDataLength);
         break;
     }
 
@@ -477,7 +483,7 @@ void processTelegram()
         ftFrameOut[i + VARIABLE_FRAME_HEADER_LENGTH] = bcu.bus->telegram[i];
     }
     ftFrameOut[4] = 0xf0;
-    sendVariableFrame(ftFrameOut, FC_SEND_UDAT, L_Data_Ind, bcu.bus->telegramLen + 1, sendFrameCountBit);
+    sendVariableFrame(ftFrameOut, FC_SEND_UDAT, L_Data_Ind, bcu.bus->telegramLen + 1);
 }
 
 /**
