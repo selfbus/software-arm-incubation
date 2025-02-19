@@ -33,7 +33,7 @@ uint32_t ft12LineIdleTimeoutMs = 2 * ((FT12_LINE_IDLE_TIMEOUT_BITS * 1000/FT_BAU
 byte ftFrameIn[FT_FRAME_SIZE] = {0};        //!< Buffer for incoming FT1.2 frames
 uint8_t ftFrameInLen = 0;                   //!< Length of the data in ftFrameIn
 byte ftFrameOut[FT_FRAME_SIZE] = {0};       //!< Buffer for preparing FT1.2 frames to send to serial port
-byte ftFrameOutBuffer[FT_FRAME_SIZE] = {0}; //!< Buffer for outgoing FT1.2 frames which are waiting for an ACK
+byte ftFrameOutBuffer[FT_FRAME_SIZE] = {0}; //!< Buffer for outgoing FT1.2 frames which are waiting an ACK
 uint8_t ftFrameOutBufferLength = 0;         //!< Length of the data in ftFrameOutBuffer
 
 int16_t repeatCounter = 0;                  //! Decrement on every repeat until its zero, initialized with @ref FT12_REPEAT_LIMIT
@@ -41,7 +41,8 @@ int16_t repeatCounter = 0;                  //! Decrement on every repeat until 
 uint32_t lastSerialRecvTime = 0;
 uint32_t lastSerialSendTime = 0;
 
-byte* telegramOut = nullptr; //!< Buffer for outgoing KNX telegrams
+byte* telegramOut = new byte[bcu.maxTelegramSize()](); //!< Buffer for outgoing KNX telegrams
+
 
 bool sendFrameCountBit = true;
 bool rcvFrameCountBit = true;
@@ -149,7 +150,6 @@ void sendFixedFrame(byte* frame, const FtFunctionCode& funcCode, const bool& fra
  */
 BcuBase* setup()
 {
-    telegramOut = new byte[bcu.maxTelegramSize()](); // don´t delete () they ensure initialization with zeros
     // led init and test
     pinMode(LED_KNX_RX, OUTPUT);    // KNX-Rx LED
     digitalWrite(LED_KNX_RX, LED_ON);
