@@ -343,21 +343,16 @@ bool processFixedFrame(uint8_t* frame)
 }
 
 /**
- * Process a L_DataConnected request in ftFrameIn[]
+ * Process a L_DataConnected request in frame[]
  */
-void processDataConnectedRequest()
+void processDataConnectedRequest(const uint8_t * frame, uint8_t frameLength)
 {
-    for (uint32_t i = VARIABLE_FRAME_HEADER_LENGTH; i < 10; ++i)
-    {
-        ftFrameOut[i] = 0;
-    }
-
     constexpr uint16_t version = 0x0012;
-    uint16_t apci = makeWord(ftFrameIn[12], ftFrameIn[13]);
+    uint16_t apci = makeWord(frame[12], frame[13]);    
     switch (apci)
     {
         case APCI_DEVICEDESCRIPTOR_READ_PDU:
-            sendft12Ack();
+            memset(&ftFrameOut[VARIABLE_FRAME_HEADER_LENGTH], 0, 10 - VARIABLE_FRAME_HEADER_LENGTH);
             ftFrameOut[11] = 0x63; // DRL 3 bytes
             ftFrameOut[12] = HIGH_BYTE(APCI_DEVICEDESCRIPTOR_RESPONSE_PDU);
             ftFrameOut[13] = lowByte(APCI_DEVICEDESCRIPTOR_RESPONSE_PDU);
@@ -438,7 +433,8 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
         break;
 
     case T_Data_Connected_Req:
-        processDataConnectedRequest();
+        sendft12Ack();
+        processDataConnectedRequest(frame, length);
         break;
 
     case L_Data_Req: // KNX Spec. 2.1 3/6/3 3.3.4.2 p.20
