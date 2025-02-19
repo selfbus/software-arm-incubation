@@ -157,10 +157,10 @@ void sendft12RepeatedFrame()
         return;
     }
 
-    repeatCounter--;
-    digitalWrite(LED_SERIAL_RX, LED_ON);
     serial.write(ftFrameOutBuffer, ftFrameOutBufferLength);
     ft12AckTimeout.start(ft12ExchangeTimeoutMs);
+    repeatCounter--;
+    digitalWrite(LED_SERIAL_RX, LED_ON);
 }
 
 /**
