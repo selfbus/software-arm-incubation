@@ -207,16 +207,8 @@ BcuBase* setup()
     delay(LED_TEST_MS);
     digitalWrite(LED_SERIAL_RX, LED_OFF);
 
-    bcu.begin();
+    bcu.begin(); // bcu.userRam->status is set in BcuFt12::begin()
     bcu.setOwnAddress(FT_OWN_KNX_ADDRESS);
-    bcu.userRam->status() ^= BCU_STATUS_TRANSPORT_LAYER | BCU_STATUS_PARITY;
-
-    // Disable telegram processing by the lib
-    if (bcu.userRam->status() & BCU_STATUS_TRANSPORT_LAYER)
-    {
-        bcu.userRam->status() ^= BCU_STATUS_TRANSPORT_LAYER | BCU_STATUS_PARITY;
-    }
-
     serial.setTxPin(PIN_FT_SERIAL_TX);
     pinMode(PIN_FT_SERIAL_RX, SERIAL_RXD | PULL_UP | HYSTERESIS);
     serial.begin(FT_BAUDRATE, SERIAL_8E1);
