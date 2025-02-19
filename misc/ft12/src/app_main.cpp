@@ -518,16 +518,16 @@ void loop()
         digitalWrite(LED_KNX_RX, LED_OFF);
     }
 
-	int32_t byte;
-	while ((byte = serial.read()) > -1)
-	{
-		lastSerialRecvTime = millis();
-		// start byte / frame detection, fixed or variable frame or just a ack
-		if (frameType == FT_NONE)
-		{
-		    switch (byte)
-		    {
-		        case FT_ACK:
+    int32_t byte;
+    while ((byte = serial.read()) > -1)
+    {
+        lastSerialRecvTime = millis();
+        // start byte / frame detection, fixed or variable frame or just a ack
+        if (frameType == FT_NONE)
+        {
+            switch (byte)
+            {
+                case FT_ACK:
                 {
                     if (!ackPending())
                     {
@@ -538,24 +538,24 @@ void loop()
                     digitalWrite(LED_SERIAL_RX, LED_OFF);
                     continue;
                 }
-		        case FT_FIXED_START:
+                case FT_FIXED_START:
                     frameType = FT_FIXED_START;
                     break;
-		        case FT_VARIABLE_START:
+                case FT_VARIABLE_START:
                     frameType = FT_VARIABLE_START;
                     break;
-		        case 0xA0:
-		            reset();
-		            continue;
-		            break;
-		        default:
-		            debugFatal();
-		            frameType = FT_NONE; // we should never land here, otherwise something is really wrong
-		            continue;
-		    }
-		}
+                case 0xA0:
+                    reset();
+                    continue;
+                    break;
+                default:
+                    debugFatal();
+                    frameType = FT_NONE; // we should never land here, otherwise something is really wrong
+                    continue;
+            }
+        }
 
-		// buffer overflow prevention
+        // buffer overflow prevention
         if (ftFrameInLen >= FT_FRAME_SIZE)
         {
             debugFatal();
@@ -643,7 +643,7 @@ void loop()
                     break;
             }
         }
-	}
+    }
 
     if (ft12AckTimeout.expired())
     {
@@ -661,10 +661,10 @@ void loop()
         }
     }
 
-	if (frameType != FT_NONE && elapsed(lastSerialRecvTime) > ft12ExchangeTimeoutMs)
-	{
-	    resetRx();
-	}
+    if (frameType != FT_NONE && elapsed(lastSerialRecvTime) > ft12ExchangeTimeoutMs)
+    {
+        resetRx();
+    }
 }
 
 /**
