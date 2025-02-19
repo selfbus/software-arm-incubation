@@ -41,9 +41,6 @@ int16_t repeatCounter = 0;                  //! Decrement on every repeat until 
 uint32_t lastSerialRecvTime = 0;
 uint32_t lastSerialSendTime = 0;
 
-byte* telegramOut = new byte[bcuFt12.maxTelegramSize()](); //!< Buffer for outgoing KNX telegrams
-
-
 bool sendFrameCountBit = true;
 bool rcvFrameCountBit = true;
 
@@ -467,15 +464,14 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
 
         sendVariableFrame(buffer, FC_SEND_UDAT, L_Data_Con, userDataLength);
 
-        // Wait till bcu.bus has sent our previous telegramOut[]
-        while (bcuFt12.bus->sendingFrame())
-            ;
+        // Wait till bcuFt12 has sent our previous telegram
+        uint8_t * sendBuffer = bcuFt12.acquireSendBuffer();
 
-        // copy frame userdata to telegramOut
-        memcpy(telegramOut, &frame[VARIABLE_FRAME_HEADER_LENGTH], userDataLength - 2);
+        // copy frame userdata to sendBuffer
+        memcpy(sendBuffer, &frame[VARIABLE_FRAME_HEADER_LENGTH], userDataLength - 2);
 
-        telegramOut[0] = 0xB0 | priority; // control byte
-        bcuFt12.bus->sendTelegram(telegramOut, userDataLength - 2);
+        sendBuffer[0] = 0xB0 | priority; // control byte
+        bcuFt12.bus->sendTelegram(sendBuffer, userDataLength - 2);
         break;
     }
 
