@@ -441,25 +441,34 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
     {
         sendft12Ack();
         uint8_t userDataLength = frame[1];
+        uint8_t emiControl = frame[VARIABLE_FRAME_HEADER_LENGTH];
+        // read requested priority
+        uint8_t priority = (emiControl & 0x0c);
+        bool ackRequest = (emiControl & 0x02);
 
+        if (ackRequest != ((bcu.userRam->status() & BCU_STATUS_LINK_LAYER) == BCU_STATUS_LINK_LAYER))
+        {
+            //\todo doesn´t work right now with our Updater, which does no ft12 link configuration
+            // match data link layer and ackRequest
+            //bcu.userRam->status() ^= BCU_STATUS_LINK_LAYER | BCU_STATUS_PARITY;
+        }
+
+        // copy frame to buffer
+        memcpy(ftFrameOut, frame, length - 2);
+        // set requested priority and positive ACK flag (last bit 0)
+        ftFrameOut[VARIABLE_FRAME_HEADER_LENGTH] = priority & 0xfe;
+
+        sendVariableFrame(ftFrameOut, FC_SEND_UDAT, L_Data_Con, userDataLength);
+
+        // Wait till bcu.bus has sent our previous telegramOut[]
         while (bcu.bus->sendingFrame())
             ;
 
-        for (uint8_t i = 3; i < userDataLength - 2; ++i)
-        {
-            telegramOut[i] = ftFrameIn[i + 6];
-        }
+        // copy frame userdata to telegramOut
+        memcpy(telegramOut, &frame[VARIABLE_FRAME_HEADER_LENGTH], userDataLength - 2);
 
-        uint8_t priority = (frame[6] &0x0C); // requested priority
-        telegramOut[0] = 0xB0 | (frame[6] & 0x0F); // control byte
-        ftFrameOut[6]  = priority & 0xfe; // return requested priority and a positive ACK (last bit 0)
-        for (uint8_t i = 7; i < length - 2; ++i)
-        {
-            ftFrameOut[i] = ftFrameIn[i];
-        }
-
+        telegramOut[0] = 0xB0 | priority; // control byte
         bcu.bus->sendTelegram(telegramOut, userDataLength - 2);
-        sendVariableFrame(ftFrameOut, FC_SEND_UDAT, L_Data_Con, userDataLength);
         break;
     }
 
