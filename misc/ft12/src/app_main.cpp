@@ -26,9 +26,9 @@ APP_VERSION("SBft12  ", "0", "02")  // Don't forget to also change the build-var
 BcuFt12 bcuFt12 = BcuFt12();  //!< Bus coupling unit Maskversion 0x0012 of the ft12 module
 
 /** ft12 bit timeout converted in milliseconds */
-uint32_t ft12ExchangeTimeoutMs = 2 * ((FT12_EXCHANGE_TIMEOUT_BITS * 1000/FT_BAUDRATE) + 1);
+constexpr uint32_t ft12ExchangeTimeoutMs = 2 * ((FT12_EXCHANGE_TIMEOUT_BITS * 1000/FT_BAUDRATE) + 1);
 /** ft12 line idle timeout converted in milliseconds */
-uint32_t ft12LineIdleTimeoutMs = 2 * ((FT12_LINE_IDLE_TIMEOUT_BITS * 1000/FT_BAUDRATE) + 1);
+constexpr uint32_t ft12LineIdleTimeoutMs = 2 * ((FT12_LINE_IDLE_TIMEOUT_BITS * 1000/FT_BAUDRATE) + 1);
 
 byte ftFrameIn[FT_FRAME_SIZE] = {0};        //!< Buffer for incoming FT1.2 frames
 uint8_t ftFrameInLen = 0;                   //!< Length of the data in ftFrameIn
@@ -421,6 +421,7 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
         break;
 
     case PEI_Switch_Req: // KNX Spec. 3/6/3 3.1.4 p.14
+        // classes BcuBase nor Bus support layer switching
         reset();
         sendft12Ack();
         break;
@@ -500,7 +501,6 @@ void processTelegram()
 /**
  * The main processing loop.
  */
-//__attribute__((optimize("O3"))) void loop()
 void loop()
 {
     if (knxRxTimeout.expired())
