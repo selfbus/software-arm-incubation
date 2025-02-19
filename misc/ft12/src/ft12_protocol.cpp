@@ -22,14 +22,38 @@
 #include "ft12_protocol.h"
 #include "debug_handler.h"
 
+uint8_t controlFieldToByte(const FtControlField& cf)
+{
+    uint8_t result = 0;
+    if (cf.fromBCUtoDevice) // DIR bit 7 (physical transmission direction)
+    {
+        result |= 0x80;
+    }
+
+    if (cf.isRequest) // PRM bit 6 (primary message)
+    {
+        result |= 0x40;
+    }
+    if (cf.frameCountBitValid) // FCV bit 4 (frame count bit valid)
+    {
+        result |= 0x10;
+        if (cf.frameCountBit) // FCB bit 5 (frame count bit)
+        {
+            result |= 0x20;
+        }
+    }
+    result |= cf.functionCode & 0x0f; // bit 0-3 function code
+    return result;
+}
+
 FtControlField controlFieldFromByte(const uint8_t& controlByte)
 {
     FtControlField cf;
-    cf.fromBCUtoDevice = controlByte & 0x80;
-    cf.isRequest = controlByte & 0x40;
-    cf.frameCountBit = controlByte & 0x20;
-    cf.frameCountBitValid = controlByte & 0x10;
-    cf.functionCode = (FtFunctionCode)(controlByte & 0x0f);
+    cf.fromBCUtoDevice = controlByte & 0x80;    // DIR bit 7 (physical transmission direction)
+    cf.isRequest = controlByte & 0x40;          // PRM bit 6 (primary message)
+    cf.frameCountBit = controlByte & 0x20;      // FCB bit 5 (frame count bit)
+    cf.frameCountBitValid = controlByte & 0x10; // FCV bit 4 (frame count bit valid)
+    cf.functionCode = (FtFunctionCode)(controlByte & 0x0f); // bit 0-3 function code
     return (cf);
 }
 
