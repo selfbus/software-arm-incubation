@@ -373,11 +373,31 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
 
     if (cf.functionCode != FC_SEND_UDAT)
     {
+        debugFatal();
         return false;
     }
 
+    uint8_t checkSum = frame[length - 2];
+    if (!cf.frameCountBitValid)
+    {
+        debugFatal();
+        return false;
+    }
+
+    //Check cf.frameCountBit and checksum with last received once
+    if (cf.frameCountBit == rcvFrameCountBit)
+    {
+        if ((checkSum == lastCheckSum) && (lastCheckSum != InvalidCheckSum))
+        {
+            // Same cf.frameCountBit and checksum => ignore already received repeated frame
+            sendft12Ack();
+            return true;
+        }
+    }
+    rcvFrameCountBit = cf.frameCountBit;
+    lastCheckSum = checkSum;
+
     EmiCode emi = (EmiCode)frame[5]; //1. PEI_Switch_Req
-    rcvFrameCountBit = (ftFrameIn[4] >> 5) & 0x1;
     switch (emi)  // EMI code
     {
     case PEI_Identify_Req: // KNX Spec. 3/6/3 3.3.9.5 p.54
