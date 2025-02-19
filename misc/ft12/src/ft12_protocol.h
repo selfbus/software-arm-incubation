@@ -32,6 +32,17 @@
 
 constexpr int16_t InvalidCheckSum = -1;  //!< Invalid checksum
 
+enum class FtError
+{
+    FT_NO_ERROR = 0,
+    FT_TOO_SHORT = 1,
+    FT_TOO_LONG = 2,
+    FT_INVALID_START = 3,
+    FT_INVALID_END = 4,
+    FT_INVALID_CHECKSUM = 5,
+    FT_INVALID_LENGTH = 6
+};
+
 /**
  * FT frame type
  * @note KNX Spec. 2.1 3/6/2 6.4.3.2 p.23ff
@@ -221,8 +232,8 @@ uint8_t controlFieldToByte(const FtControlField& cf);
  */
 FtControlField controlFieldFromByte(const uint8_t& controlByte);
 
-bool isValidFixedFrameHeader(const uint8_t* frame, uint8_t frameLength);
-bool isValidVariableFrameHeader(const uint8_t* frame, uint8_t frameLength);
+FtError isValidFixedFrameHeader(const uint8_t* frame, uint8_t frameLength);
+FtError isValidVariableFrameHeader(const uint8_t* frame, uint8_t frameLength);
 uint8_t calcCheckSum(const uint8_t* frame, const uint8_t& userDataLength);
 
 #endif /* FT12_PROTOCOL_H_ */

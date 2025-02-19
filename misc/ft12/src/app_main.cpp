@@ -546,30 +546,76 @@ void loop()
 
         if (frameType == FT_FIXED_START)
         {
-            if (!isValidFixedFrameHeader(&ftFrameIn[0], ftFrameInLen))
+            FtError ftError = isValidFixedFrameHeader(&ftFrameIn[0], ftFrameInLen);
+            switch (ftError)
             {
-                debugFatal();
-                continue;
-            }
+                case FtError::FT_TOO_SHORT:
+                    continue;
+                    break;
 
-            if (!processFixedFrame(&ftFrameIn[0]))
-            {
-                debugFatal();
+                case FtError::FT_TOO_LONG:
+                case FtError::FT_INVALID_START:
+                case FtError::FT_INVALID_END:
+                case FtError::FT_INVALID_CHECKSUM:
+                    resetRx();
+                    debugFatal();
+                    break;
+
+                case FtError::FT_NO_ERROR:
+                    if (ackPending())
+                    {
+                        //todo this may happen, see sendft12withAckWaiting(..) for details
+                        //debugFatal();
+                    }
+                    if (!processFixedFrame(&ftFrameIn[0]))
+                    {
+                        debugFatal();
+                    }
+                    resetRx();
+                    break;
+
+                default:
+                    debugFatal();
+                    resetRx();
+                    break;
             }
-            resetRx();
         }
         else if (frameType == FT_VARIABLE_START)
         {
-            if (!isValidVariableFrameHeader(&ftFrameIn[0], ftFrameInLen))
+            FtError ftError = isValidVariableFrameHeader(&ftFrameIn[0], ftFrameInLen);
+            switch (ftError)
             {
-                continue;
-            }
+                case FtError::FT_TOO_SHORT:
+                    continue;
+                    break;
 
-            if (!processVariableFrame(&ftFrameIn[0], ftFrameInLen))
-            {
-                debugFatal();
+                case FtError::FT_TOO_LONG:
+                case FtError::FT_INVALID_START:
+                case FtError::FT_INVALID_END:
+                case FtError::FT_INVALID_CHECKSUM:
+                case FtError::FT_INVALID_LENGTH:
+                    resetRx();
+                    debugFatal();
+                    break;
+
+                case FtError::FT_NO_ERROR:
+                    if (ackPending())
+                    {
+                        //todo this may happen, see sendft12withAckWaiting(..) for details
+                        //debugFatal();
+                    }
+                    if (!processVariableFrame(&ftFrameIn[0], ftFrameInLen))
+                    {
+                        debugFatal();
+                    }
+                    resetRx();
+                    break;
+
+                default:
+                    debugFatal();
+                    resetRx();
+                    break;
             }
-            resetRx();
         }
 	}
 

@@ -57,33 +57,39 @@ FtControlField controlFieldFromByte(const uint8_t& controlByte)
     return (cf);
 }
 
-bool isValidFixedFrameHeader(const uint8_t* frame, uint8_t frameLength)
+FtError isValidFixedFrameHeader(const uint8_t* frame, uint8_t frameLength)
 {
-    // check length
-    if (frameLength != FIXED_FRAME_LENGTH)
+    // check length too short
+    if (frameLength < FIXED_FRAME_LENGTH)
     {
-        return (false);
+        return FtError::FT_TOO_SHORT;
+    }
+
+    // check length to long
+    if (frameLength > FIXED_FRAME_LENGTH)
+    {
+        return FtError::FT_TOO_LONG;
     }
 
     // check start byte
     if (frame[0] != FT_FIXED_START)
     {
-        return false;
+        return FtError::FT_INVALID_START;
     }
 
     // check end byte
     if (frame[3] != FT_END)
     {
-        return false;
+        return FtError::FT_INVALID_END;
     }
 
     // check that control field equals checksum
     if (frame[1] != frame[2])
     {
-        return false;
+        return FtError::FT_INVALID_CHECKSUM;
     }
 
-    return (true);
+    return FtError::FT_NO_ERROR;
 }
 
 uint8_t calcCheckSum(const uint8_t* frame, const uint8_t& userDataLength)
@@ -97,41 +103,33 @@ uint8_t calcCheckSum(const uint8_t* frame, const uint8_t& userDataLength)
     return checkSum;
 }
 
-bool isValidVariableFrameHeader(const uint8_t* frame, uint8_t frameLength)
+FtError isValidVariableFrameHeader(const uint8_t* frame, uint8_t frameLength)
 {
     if (frameLength < VARIABLE_FRAME_HEADER_LENGTH)
     {
-        // to short
-        debugFatal();
-        return (false);
+        return FtError::FT_TOO_SHORT;
     }
 
     if (frame[0] != FT_VARIABLE_START)
     {
-        // start byte wrong
-        debugFatal();
-        return (false);
+        return FtError::FT_INVALID_START;
     }
 
     if (frame[0] != frame[3])
     {
         //4. byte doesn't match start byte
-        debugFatal();
-        return (false);
+        return FtError::FT_INVALID_START;
     }
 
     if (frame[1] != frame[2])
     {
         // mismatch of both length bytes
-        debugFatal();
-        return (false);
+        return FtError::FT_INVALID_LENGTH;
     }
 
     if (frame[frameLength - 1] != FT_END)
     {
-        // end byte wrong
-        debugFatal();
-        return (false);
+        return FtError::FT_INVALID_END;
     }
 
     uint8_t userDataLength = frame[1];
@@ -141,21 +139,19 @@ bool isValidVariableFrameHeader(const uint8_t* frame, uint8_t frameLength)
         if (frameLength > (userDataLength + VARIABLE_FRAME_HEADER_LENGTH))
         {
             // length now to long
-            debugFatal();
-            return false;
+            return FtError::FT_TOO_LONG;
         }
         // length yet to short
-        return false;
+        return FtError::FT_TOO_SHORT;
     }
 
     if (calcCheckSum(frame, userDataLength) != frame[frameLength - 2])
     {
-        debugFatal();
         // checksum mismatch
-        return (false);
+        return FtError::FT_INVALID_CHECKSUM;
     }
 
-    return (true);
+    return FtError::FT_NO_ERROR;
 }
 
 
