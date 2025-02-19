@@ -88,6 +88,13 @@ void reset()
     resetRx();
 }
 
+uint8_t * getFtFrameOut()
+{
+    // while (ackPending()) ///\todo does not yet work reliably
+    //     ;
+    return ftFrameOut;
+}
+
 /**
  * Sends a @ref FT_ACK
  */
@@ -351,17 +358,19 @@ bool processFixedFrame(uint8_t* frame)
 void processDataConnectedRequest(const uint8_t * frame, uint8_t frameLength)
 {
     constexpr uint16_t version = 0x0012;
+    uint8_t * buffer;
     uint16_t apci = makeWord(frame[12], frame[13]);    
     switch (apci)
     {
         case APCI_DEVICEDESCRIPTOR_READ_PDU:
-            memset(&ftFrameOut[VARIABLE_FRAME_HEADER_LENGTH], 0, 10 - VARIABLE_FRAME_HEADER_LENGTH);
-            ftFrameOut[11] = 0x63; // DRL 3 bytes
-            ftFrameOut[12] = HIGH_BYTE(APCI_DEVICEDESCRIPTOR_RESPONSE_PDU);
-            ftFrameOut[13] = lowByte(APCI_DEVICEDESCRIPTOR_RESPONSE_PDU);
-            ftFrameOut[14] = HIGH_BYTE(version);
-            ftFrameOut[15] = lowByte(version);
-            sendVariableFrame(ftFrameOut, FC_SEND_UDAT, T_Data_Connected_Con, 12);
+            buffer = getFtFrameOut();
+            memset(&buffer[VARIABLE_FRAME_HEADER_LENGTH], 0, 10 - VARIABLE_FRAME_HEADER_LENGTH);
+            buffer[11] = 0x63; // DRL 3 bytes
+            buffer[12] = HIGH_BYTE(APCI_DEVICEDESCRIPTOR_RESPONSE_PDU);
+            buffer[13] = lowByte(APCI_DEVICEDESCRIPTOR_RESPONSE_PDU);
+            buffer[14] = HIGH_BYTE(version);
+            buffer[15] = lowByte(version);
+            sendVariableFrame(buffer, FC_SEND_UDAT, T_Data_Connected_Con, 12);
             break;
 
         default:
@@ -402,21 +411,23 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
     rcvFrameCountBit = cf.frameCountBit;
     lastCheckSum = checkSum;
 
+    uint8_t * buffer;
     EmiCode emi = (EmiCode)frame[5]; //1. PEI_Switch_Req
     switch (emi)  // EMI code
     {
     case PEI_Identify_Req: // KNX Spec. 3/6/3 3.3.9.5 p.54
         sendft12Ack();
-        ftFrameOut[6]  = HIGH_BYTE(bcu.ownAddress()); // create PEI_Identify_con
-        ftFrameOut[7]  = lowByte(bcu.ownAddress());
-        ftFrameOut[8]  = 0x00; // 6 bytes KNX serial number
-        ftFrameOut[9]  = 0x01;
-        ftFrameOut[10] = 0x00;
-        ftFrameOut[11] = 0x01;
-        ftFrameOut[12] = 0xE4;
-        ftFrameOut[13] = 0x5A;
-        ftFrameOut[14] = 0;
-        sendVariableFrame(ftFrameOut, FC_SEND_UDAT, PEI_Identify_Con, 10);
+        buffer = getFtFrameOut();
+        buffer[6]  = HIGH_BYTE(bcu.ownAddress()); // create PEI_Identify_con
+        buffer[7]  = lowByte(bcu.ownAddress());
+        buffer[8]  = 0x00; // 6 bytes KNX serial number
+        buffer[9]  = 0x01;
+        buffer[10] = 0x00;
+        buffer[11] = 0x01;
+        buffer[12] = 0xE4;
+        buffer[13] = 0x5A;
+        buffer[14] = 0;
+        sendVariableFrame(buffer, FC_SEND_UDAT, PEI_Identify_Con, 10);
         break;
 
     case PEI_Switch_Req: // KNX Spec. 3/6/3 3.1.4 p.14
@@ -426,13 +437,14 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
 
     case T_Connect_Req:
         sendft12Ack();
-        ftFrameOut[6]  = 0;
-        ftFrameOut[7]  = frame[9];
-        ftFrameOut[8]  = frame[10];
-        ftFrameOut[9]  = 0;
-        ftFrameOut[10] = 0;
-        ftFrameOut[11] = 0;
-        sendVariableFrame(ftFrameOut, FC_SEND_UDAT, T_Connect_Con, 7);
+        buffer = getFtFrameOut();
+        buffer[6]  = 0;
+        buffer[7]  = frame[9];
+        buffer[8]  = frame[10];
+        buffer[9]  = 0;
+        buffer[10] = 0;
+        buffer[11] = 0;
+        sendVariableFrame(buffer, FC_SEND_UDAT, T_Connect_Con, 7);
         break;
 
     case T_Data_Connected_Req:
@@ -456,12 +468,13 @@ bool processVariableFrame(uint8_t* frame, uint8_t length)
             //bcu.userRam->status() ^= BCU_STATUS_LINK_LAYER | BCU_STATUS_PARITY;
         }
 
+        buffer = getFtFrameOut();
         // copy frame to buffer
-        memcpy(ftFrameOut, frame, length - 2);
+        memcpy(buffer, frame, length - 2);
         // set requested priority and positive ACK flag (last bit 0)
-        ftFrameOut[VARIABLE_FRAME_HEADER_LENGTH] = priority & 0xfe;
+        buffer[VARIABLE_FRAME_HEADER_LENGTH] = priority & 0xfe;
 
-        sendVariableFrame(ftFrameOut, FC_SEND_UDAT, L_Data_Con, userDataLength);
+        sendVariableFrame(buffer, FC_SEND_UDAT, L_Data_Con, userDataLength);
 
         // Wait till bcu.bus has sent our previous telegramOut[]
         while (bcu.bus->sendingFrame())
@@ -489,8 +502,9 @@ void processTelegram()
 {
     while (ackPending())
          ;
-    memcpy(ftFrameOut + VARIABLE_FRAME_HEADER_LENGTH, bcu.bus->telegram, bcu.bus->telegramLen - 1);
-    sendVariableFrame(ftFrameOut, FC_SEND_UDAT, L_Data_Ind, bcu.bus->telegramLen + 1);
+    uint8_t * buffer = getFtFrameOut();
+    memcpy(buffer + VARIABLE_FRAME_HEADER_LENGTH, bcu.bus->telegram, bcu.bus->telegramLen - 1);
+    sendVariableFrame(buffer, FC_SEND_UDAT, L_Data_Ind, bcu.bus->telegramLen + 1);
 }
 
 /**
