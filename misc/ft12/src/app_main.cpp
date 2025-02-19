@@ -138,12 +138,15 @@ void sendft12withAckWaiting(byte* frame, const int32_t frameSize)
 
 void sendft12RepeatedFrame()
 {
-    return; ///\todo repeating doesn't work reliably right now
-
-    if ((ftFrameOutBufferLength == 0) || (repeatCounter <= 0))
+    if (ftFrameOutBufferLength == 0)
     {
-        ftFrameOutBufferLength = 0;
-        ft12AckTimeout.stop();
+        resetTx();
+        return;
+    }
+
+    if (repeatCounter <= 0)
+    {
+        resetTx();
         return;
     }
 
