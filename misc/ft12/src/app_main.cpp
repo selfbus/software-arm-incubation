@@ -100,12 +100,12 @@ void sendft12Ack()
 void sendft12withAckWaiting(byte* frame, const int32_t frameSize)
 {
     resetTx();
-    digitalWrite(LED_SERIAL_RX, LED_ON);
     ftFrameOutBufferLength = frameSize;
     memcpy(ftFrameOutBuffer, frame, ftFrameOutBufferLength);
     serial.write(frame, ftFrameOutBufferLength);
     lastSerialSendTime = millis();
     ft12AckTimeout.start(ft12ExchangeTimeoutMs);
+    digitalWrite(LED_SERIAL_RX, LED_ON);
 }
 
 void sendft12RepeatedFrame()
