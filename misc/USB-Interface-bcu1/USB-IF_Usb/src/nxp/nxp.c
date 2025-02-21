@@ -302,8 +302,8 @@ ErrorCode_t HidIf_Init(USBD_HANDLE_T hUsb,
   /* user defined functions */
   hid_param.HID_GetReport = HidIf_GetReport;
   hid_param.HID_SetReport = HidIf_SetReport;
-  hid_param.HID_EpIn_Hdlr  = HidIf_Ep_Hdlr;
-  hid_param.HID_EpOut_Hdlr  = HidIf_Ep_Hdlr;
+  hid_param.HID_EpIn_Hdlr = HidIf_Ep_Hdlr;
+  hid_param.HID_EpOut_Hdlr = HidIf_Ep_Hdlr;
   /* Init reports_data */
   reports_data[0].len = HidIf_ReportDescSize;
   reports_data[0].idle_time = 0;
