@@ -308,8 +308,6 @@ void EmiKnxIf::receivedUsbEmiPacket(int buffno)
         }
         if (isResetEmi)
         {
-            ///\todo Bug:
-            /// after the response is sent, the usb-mcu can't connect a second time e.g. with knxd
             setTPBodyLength(buffptr, 1);
             ptr = buffptr + 2 + C_HRH_HeadLen + TPH_ProtocolLength_V0;
             *ptr++ = C_MCode_PEI_Reset;
