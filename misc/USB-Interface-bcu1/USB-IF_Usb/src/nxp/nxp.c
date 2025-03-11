@@ -224,7 +224,7 @@ ErrorCode_t usb_init(USBD_HANDLE_T *g_hUsb, bool use_singledevonly)
         }
       }
       if (ret == LPC_OK) {
-        /*  enable USB interrrupts */
+        /*  enable USB interrupts */
         NVIC_EnableIRQ(USB0_IRQn);
         /* now connect */
         USBD_API->hw->Connect(*g_hUsb, 1);

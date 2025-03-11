@@ -462,7 +462,7 @@ void KnxHidIf::KnxIf_Tasks(void)
         ///           Sending C_MCode_PEI_Reset (0xA)
         ///                  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17
         /// packet received 0f 28 01 13 09 00 08 00 01 01 01 00 00 A0 00 00 60 C0
-        /// packet to send     28 01 13 09 00 08 00 01 01 01 00 00 A0 00 00 60 C0
+        /// packet to send        01 13 09 00 08 00 01 01 01 00 00 A0 00 00 60 C0
         /// 13th = A0 ok
 
         // A0, die Antwort auf einen EMI Reset-Request, muss allerdings auch
