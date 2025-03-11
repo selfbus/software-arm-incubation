@@ -49,7 +49,6 @@ BcuBase* setup()
 void loop()
 {
     uart.SerIf_Tasks(); // inter-mcu transmitting
-    // emiknxif->SetCdcMonMode(true); //only for debugging to "hard" activate serial busmonitor mode
     emiknxif->EmiIf_Tasks();
     proguart.SerIf_Tasks();
     devicemgnt->DevMgnt_Tasks();
