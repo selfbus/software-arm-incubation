@@ -495,7 +495,7 @@ void KnxHidIf::KnxIf_Tasks(void)
     uint8_t *ptr = buffmgr.buffptr(txBuffNo);
     uint8_t emiMessageCode = ptr[C_HRH_HeadLen + TPH_ProtocolLength_V0 + IDX_TPB_MCode + 2];
     bool isPeiReset = emiMessageCode == C_MCode_PEI_Reset;
-    bool isStandardEMI = (emiMessageCode & C_MCode_USB_IF_SpecialMask) == 0;
+    bool isStandardEMI = (emiMessageCode & C_MCode_USB_IF_Special) == 0;
     if (isPeiReset || isStandardEMI)
     {
         // handle standard conform EMI 1 telegram
@@ -505,7 +505,7 @@ void KnxHidIf::KnxIf_Tasks(void)
     }
     else
     {
-        // handle USB-IF masked EMI 1 telegrams (most likely C_MCode_TxEcho / C_MCode_RxData)
+        // handle Selfbus USB-IF masked busmonitor EMI 1 telegrams (C_MCode_RxData)
         handleBusMonitorMode(ptr);
     }
     buffmgr.FreeBuffer(txBuffNo);
@@ -544,7 +544,7 @@ void KnxHidIf::handleBusMonitorMode(uint8_t * buffer)
     // get EMI message code
     uint8_t emiMessageCode = buffer[C_HRH_HeadLen+TPH_ProtocolLength_V0+IDX_TPB_MCode+2];
     // "unmasked" USB-IF special EMI message code
-    emiMessageCode = emiMessageCode & C_MCode_USB_IF_MonitorMask;
+    emiMessageCode = emiMessageCode & ~C_MCode_USB_IF_Special;
 
     // Check for USB-IF masked C_MCode_TxEcho
     bool isTxTelegram = C_MCode_TxEcho == emiMessageCode;

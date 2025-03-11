@@ -377,7 +377,7 @@ void EmiKnxIf::sendReceivedTelegramAsEMI(uint8_t * telegram, uint8_t length)
     else
     {
         // "Special" EMI message for inter-mcu communication
-        emiMessageCode = (C_MCode_RxData | C_MCode_USB_IF_SpecialMask);
+        emiMessageCode = (C_MCode_RxData | C_MCode_USB_IF_Special);
     }
     *buffptr++ = emiMessageCode; // [13]
 

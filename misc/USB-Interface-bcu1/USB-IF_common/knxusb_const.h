@@ -172,13 +172,7 @@ enum class BAS_FeatureId
  */
 #define C_MCode_PEI_Reset       0xA0
 
-// the USB-IF specific masks and commands for the inter-mcu communication
-#define C_MCode_USB_IF_SpecialMask   0x80 //!< Selfbus specific !
-#define C_MCode_USB_IF_MonitorMask   (~C_MCode_USB_IF_SpecialMask) //!< Selfbus specific !
-
-///\todo Resolve this puzzle.
-//#define C_MCode_DbgTx          0xCE //!< Selfbus specific ?
-//#define C_MCode_DbgRx          0xC9 //!< Selfbus specific ? Ein von KNX empfangenes Telegramm, nur zum Debug-CDC Interface
+#define C_MCode_USB_IF_Special   0x80 //!< Selfbus USB-IF specific masked busmonitor EMI 1 telegrams!
 
 #endif /* _KNXUSB_CONST_H */
 
