@@ -49,32 +49,6 @@ extern "C" ErrorCode_t USB_sof_event(USBD_HANDLE_T hUsb) // Start of Frame event
     return LPC_OK;
 }
 
-/**
- * USB_Error_Event handler
- *
- * At the moment it´s here just for debugging
- */
-extern "C" ErrorCode_t USB_Error_Event(USBD_HANDLE_T hUsb, uint32_t param)
-{
-    // ERR_USBD_UNHANDLED
-    return LPC_OK;
-}
-
-/**
- * USB_Configure_Event handler
- *
- * At the moment it´s here just for debugging
- */
-extern "C" ErrorCode_t USB_Configure_Event(USBD_HANDLE_T hUsb)
-{
-    // ERR_USBD_UNHANDLED
-    return LPC_OK;
-}
-
-///\todo add more USB Handler
-/// check out usb_param.USB_... in usb_init(..)  (nxp/nxp.c) for more info
-/// There´s also the enum USBD_EVENT_T for even more USB events
-
 void systemReset()
 {
     USBD_API->hw->Connect(g_hUsb, 0);
