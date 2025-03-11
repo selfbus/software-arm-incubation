@@ -55,8 +55,18 @@ ErrorCode_t KnxHidIf::Hdlr(uint32_t event)
                 rx_avail++; // keine Ahnung, ob mehrere Pakete gepuffert werden koennen...
             break;
 
+        case USB_EVT_SETUP:
+            return ERR_USBD_UNHANDLED;
+            break;
+
+        case USB_EVT_RESET:
+            reset();
+            return ERR_USBD_UNHANDLED;
+            break;
+
         default:
             failHardInDebug();
+            return ERR_USBD_UNHANDLED;
 
     }
     return LPC_OK;
