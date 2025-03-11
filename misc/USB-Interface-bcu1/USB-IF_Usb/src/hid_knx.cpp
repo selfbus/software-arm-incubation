@@ -169,18 +169,56 @@ void DumpReport2Cdc(bool isIncomingData, uint8_t* data)
     Split_CdcEnqueue(&line[0], len);
 }
 
+void KnxHidIf::resetRx()
+{
+    rx_avail = 0;
+}
+
+void KnxHidIf::resetTx()
+{
+    tx_busy = false;
+    lastSysTickSendReport = 0;
+}
+
+void KnxHidIf::reset()
+{
+    resetRx();
+    resetTx();
+}
+
 ErrorCode_t KnxHidIf::SendReport(uint8_t* data)
 {
-    unsigned int startTime = systemTime;
+    if (!USB_IsConfigured(hUsb))
+    {
+        reset();
+        return ERR_FAILED;
+    }
+
+    uint32_t startTime = systemTime;
     while (tx_busy)
     {
-        if (systemTime > (startTime+10))
+        if ((systemTime - lastSysTickSendReport) > KnxHidIf::HidTxTimeoutMs)
+        {
+            resetTx();
+            break;
+        }
+
+        if (systemTime > (startTime + KnxHidIf::HidTxBusyWaitMs))
+        {
+            failHardInDebug();
             return ERR_TIME_OUT;
+        }
     }
+
     tx_busy = true;
     if (USBD_API->hw->WriteEP(hUsb, HID_EP_IN, data, HID_REPORT_SIZE) != HID_REPORT_SIZE)
+    {
+        failHardInDebug();
         return ERR_FAILED;
-    else {
+    }
+    else
+    {
+        lastSysTickSendReport = systemTime;
         DumpReport2Cdc(true, data);
         return LPC_OK;
     }
@@ -407,8 +445,7 @@ void KnxHidIf::KnxIf_Tasks(void)
     if (!USB_IsConfigured(hUsb))
     {
         // USB not configured => clear pending tx buffers
-        tx_busy = false;
-        rx_avail = 0;
+        reset();
         while (hid_txfifo.Empty() != TFifoErr::Empty)
         {
             int dummy;
@@ -456,18 +493,6 @@ void KnxHidIf::KnxIf_Tasks(void)
     }
     else if (emiMessageCode == C_MCode_PEI_Reset)
     {
-        ///\todo bug: receiving a C_MCode_PEI_Reset from the knx-mcu (TS_ARM)
-        ///           stops us from connecting a second time with e.g. knxd
-        ///           It´s most likely a USB send/reconnect problem.
-        ///           Sending C_MCode_PEI_Reset (0xA)
-        ///                  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17
-        /// packet received 0f 28 01 13 09 00 08 00 01 01 01 00 00 A0 00 00 60 C0
-        /// packet to send        01 13 09 00 08 00 01 01 01 00 00 A0 00 00 60 C0
-        /// 13th = A0 ok
-
-        // A0, die Antwort auf einen EMI Reset-Request, muss allerdings auch
-        // über USB weitergeschickt werden. Da die Monitorfunktion intern nie
-        // einen Reset erzeugt, ist das unproblematisch.
         SendReport(&ptr[2]);
         deviceIf.BlinkActivityLed();
     }

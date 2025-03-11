@@ -39,9 +39,16 @@ protected:
     ErrorCode_t ReadAvail(void);
 
 private:
+    static const uint32_t HidTxBusyWaitMs = 10; //!< Time in milliseconds to wait for a HID-Report to be sent
+    static const uint32_t HidTxTimeoutMs = 100; //!< Timeout in milliseconds after a HID-Report was sent
+
     bool lastKnxState = false; //!< Last state of the KNX connection; True if KNX connection is active, otherwise false
     void setLastKnxState(bool newKnxState);
     void handleBusMonitorMode(uint8_t * buffer);
+    void resetRx();
+    void resetTx();
+    void reset();
+    uint32_t lastSysTickSendReport = 0;
 };
 
 extern KnxHidIf knxhidif;
