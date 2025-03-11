@@ -27,6 +27,17 @@ constexpr uint8_t cdc_OffSet = 3; ///\todo find better name
 //  4       C_DevSys_xx sub command/info?
 //  5       UNKNOWN, in "void DeviceManagement::SysIf_Tasks(bool UsbActive)" it is not set, yet packet len
 
+// Aufbau eines Pakets:
+// 1 Byte Paketlänge, über alle Bytes gezählt
+// 1 Byte Checksumme, alle Bytes des Telegrams addiert (incl Checksumme), modulo 256, ergeben 255
+// Bei einem HID-Paket folgt hier der bis zu 64 Byte lange HID-Report, incl. Report Nummer 1 am Anfang.
+// Bei einem CDC-Paket folgt als Byte eine 2 zur Unterscheidung von einem HID-Report.
+// Danach bis zu 64 Byte Nutzdaten.
+// Diese Pakete werden im paketorientierten Modus genau so über die serielle Schnittstelle gesendet
+// und empfangen.
+// Auch im RawMode der seriellen Schnittstelle wird dieser Aufbau intern beibehalten, der
+// Uart-Transceiver strippt die drei Header-Bytes jedoch vor dem Versenden bzw. ergänzt sie nach Empfang.
+
 ///\todo packet length 5 is right now an assumption based on
 ///      USB-IF_Usb => void DeviceManagement::SysIf_Tasks(bool UsbActive)
 ///      USB-IF_Knx => void DeviceManagement::DevMgnt_Tasks(void)
