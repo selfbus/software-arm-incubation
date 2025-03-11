@@ -103,8 +103,6 @@ void DeviceIf::SystemInit(void)
 void DeviceIf::PioInit(void)
 {
     Chip_GPIO_Init(LPC_GPIO);
-    ///\todo check why is PIO0_3 configured here? It is not used by our code, but the mcu´s bootloader evaluates it on reset
-    Chip_IOCON_PinMuxSet(LPC_IOCON, 0,  3, IOCON_FUNC1 | IOCON_MODE_INACT),  // PIO0_3 used for USB_VBUS
     //Chip_IOCON_PinMuxSet(LPC_IOCON, 0,  6, IOCON_FUNC1 | IOCON_MODE_INACT),  // PIO0_6 used for USB_CONNECT
     Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 11, IOCON_FUNC1 | IOCON_MODE_PULLUP); // JTAG Pins, unused
     Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 12, IOCON_FUNC1 | IOCON_MODE_PULLUP); //   on the board. But
@@ -115,8 +113,6 @@ void DeviceIf::PioInit(void)
     // PIO0_3 and PIO1_0 are evaluates by the mcu´s bootloader on reset (see UM10462 20.4 page 390)
     // If PIO0_3 is high the bootloader enters the ISP in USB mode (connector X3)
     // If PIO0_3 is low the bootloader enters the ISP in UART mode (connector P2)
-    ///\todo check why is PIO0_3 configured here? It is not used by our code, but the mcu´s bootloader evaluates it on reset
-    Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 3, IOCON_FUNC0 | IOCON_MODE_PULLUP);  // ISP UART Enable
     Chip_IOCON_PinMuxSet(LPC_IOCON, 1, 19, IOCON_FUNC0 | IOCON_MODE_PULLUP); // KNX Side ISP Enable
     Chip_IOCON_PinMuxSet(LPC_IOCON, 1, 25, IOCON_FUNC0 | IOCON_MODE_PULLUP); // Switch input
 
