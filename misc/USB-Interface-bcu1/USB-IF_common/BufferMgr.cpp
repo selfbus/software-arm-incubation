@@ -35,7 +35,6 @@ int BufferMgr::AllocBuffer(void)
             return i;
         }
     }
-    //failHardInDebug(); ///\todo remove on release
     return -1;
 }
 

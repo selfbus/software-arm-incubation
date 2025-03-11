@@ -10,8 +10,6 @@ extern "C"
 void USB_IRQHandler(void);
 
 ErrorCode_t USB_sof_event(USBD_HANDLE_T hUsb);
-// ErrorCode_t USB_Error_Event(USBD_HANDLE_T hUsb, uint32_t param); ///\todo maybe helpfull for virtual com port debugging
-// ErrorCode_t USB_Configure_Event(USBD_HANDLE_T hUsb);
 
 void SystemSetupClocking(void);
 

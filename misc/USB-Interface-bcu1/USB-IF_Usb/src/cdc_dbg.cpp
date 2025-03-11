@@ -77,7 +77,7 @@ void CdcDbgIf::receiveAndPushToUart()
         }
 
         uint8_t* ptr = buffmgr.buffptr(buffno);
-        uint32_t bytesReadCount = vcom_bread(&ptr[cdc_OffSet], BUFF_SIZE - cdc_OffSet); ///\todo was 64, but can be 65
+        uint32_t bytesReadCount = vcom_bread(&ptr[cdc_OffSet], BUFF_SIZE - cdc_OffSet);
         if (bytesReadCount == 0)
         {
              // das ist merkwürdig...
