@@ -173,7 +173,8 @@ void TelDump::DbgParseTele(uint8_t tel[], unsigned int len)
 {
 #ifdef TELEGRAM_DUMP_DISABLED
     return;
-#else
+#endif
+
     unsigned ExDReq = 0;
     unsigned dlen = 0;
     if (len >= 7)
@@ -362,6 +363,10 @@ void TelDump::DbgParseTele(uint8_t tel[], unsigned int len)
                 buf_printf("UserMfgInfo Read");
             } else if (apci == 0x2c6) {
                 buf_printf("UserMfgInfo Response");
+            } else if (apci == 0x2f8) {
+                buf_printf("SB_Updater Command"); // Mfg Specific - 0
+            } else if (apci == 0x2fe) {
+                buf_printf("SB_Updater Response"); // Mfg Specific - 6
             } else if ((apci & 0x3f8) == 0x2f8) {
                 buf_printf("Mfg Specific - %u", apci & 7);
             } else if (apci == 0x3d1) {
@@ -394,7 +399,6 @@ void TelDump::DbgParseTele(uint8_t tel[], unsigned int len)
         buf_printf("?? Packet too short ??");
     }
     buf_printf("\r\n");
-#endif
 }
 
 void TelDump::buf_printf(const char *fmt, ...)
