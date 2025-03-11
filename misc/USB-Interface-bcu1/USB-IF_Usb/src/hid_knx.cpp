@@ -494,15 +494,12 @@ void KnxHidIf::KnxIf_Tasks(void)
     hid_txfifo.Pop(txBuffNo);
     uint8_t *ptr = buffmgr.buffptr(txBuffNo);
     uint8_t emiMessageCode = ptr[C_HRH_HeadLen + TPH_ProtocolLength_V0 + IDX_TPB_MCode + 2];
-    if ((emiMessageCode & C_MCode_USB_IF_SpecialMask) == 0)
+    bool isPeiReset = emiMessageCode == C_MCode_PEI_Reset;
+    bool isStandardEMI = (emiMessageCode & C_MCode_USB_IF_SpecialMask) == 0;
+    if (isPeiReset || isStandardEMI)
     {
         // handle standard conform EMI 1 telegram
         // Nur wenn kein "Spezial-MCode" (selber definierte Pakete)
-        SendReport(&ptr[2]);
-        deviceIf.BlinkActivityLed();
-    }
-    else if (emiMessageCode == C_MCode_PEI_Reset)
-    {
         SendReport(&ptr[2]);
         deviceIf.BlinkActivityLed();
     }
