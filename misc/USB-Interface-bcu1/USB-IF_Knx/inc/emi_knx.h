@@ -56,11 +56,23 @@ public:
      * @param bcu Pointer to a BCU1 object that represents the KNX bus access controller.
      * @param aLedPin The GPIO pin used to control the activity LED.
      *
-     * @warning bcu must already be started with bcu.begin().
-     *          Otherwise @ref SetCdcMonMode may hang in `while (emiBcu->bus->sendingFrame())`,
-     *          because bus->sendCurTelegram may be uninitialized.
      */
     EmiKnxIf(BCU1 * bcu, int aLedPin);
+
+    /**
+     * Handles the EMI KNX interface tasks, including telegram reception, transmission, and activity LED handling.
+     *
+     * @details This function performs the following tasks in sequence:
+     * - Checks if the KNX bus is currently sending a frame and skips execution if it's busy.
+     * - Checks and processes any received KNX bus telegrams. The telegram is handled according to the current settings (either sent as EMI or processed internally).
+     * - Prepares and sends response telegrams to USB mcu.
+     * - Checks and processes any received EMI telegrams from the USB mcu.
+     * - Updates and handles the activity LED based on current activity.
+     *
+     * @warning @ref emiBcu must already be started with bcu.begin().
+     *          Otherwise we may dead lock in `while (emiBcu->bus->sendingFrame())`,
+     *          because bus->sendCurTelegram may be uninitialized.
+     */
     void EmiIf_Tasks(void);
 
     /**
