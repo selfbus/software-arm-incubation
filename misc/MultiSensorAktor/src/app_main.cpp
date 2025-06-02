@@ -4,25 +4,25 @@
  *  published by the Free Software Foundation.
  */
 
-#include <ARMPinItem.h>
+#include <sblib/eib/bcu_base.h>
 #include <sblib/eibMASK0701.h>
 #include <sblib/spi.h>
 #include <sblib/i2c.h>
 #include <cstring>
-#include <DeviceConfig.h>
-#include <ARMPinConfig.h>
-#include <PCA9555DConfig.h>
-#include <CCS811Config.h>
+
 #include <GenericItem.h>
+#include <ARMPinItem.h>
 #include <PCA9555DItem.h>
 #include <CCS811Item.h>
-#include <ARMPinItem.h>
 #include <SHT2xItem.h>
 #include <SHT4xItem.h>
 #include <SGP4xItem.h>
+
+#include <DeviceConfig.h>
+
 #include <HelperFunctions.h>
 
-APP_VERSION("MSA     ", "0", "13"); // Don't forget to also change the build-variable sw_version
+APP_VERSION("MSA     ", "0", "15"); // Don't forget to also change the build-variable sw_version
 #define CONFIG_ADDRESS 0x4800
 
 MASK0701 bcu = MASK0701();
@@ -42,7 +42,7 @@ MemMapper memMapper = MemMapper(0xe000, 0x1000, false);
 BcuBase* setup()
 {
     bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
-    bcu.begin(0x13A, 0x01, 0x05); // Manufacturer name "Not assigned", app-id 0x01, version 0.5
+    bcu.begin(0x13A, 0x01, 0x0A); // Manufacturer name "Not assigned", app-id 0x01, version 0.10
 
     GenericItem::BCU = &bcu;
     GenericPin::BCU = &bcu;
@@ -60,7 +60,7 @@ BcuBase* setup()
     byte nextComObj = 1;
     byte* configPos = memMapper.memoryPtr(0x6000, false);
 
-    if (deviceConfig->BusSwitches & BusSwitch::SPI0)
+  /*  if (deviceConfig->BusSwitches & BusSwitch::SPI0)
     {
     	SPI spi0 = SPI(SPI_PORT_0);
     	spi0.setClockDivider(120); // 400kHz
@@ -76,7 +76,10 @@ BcuBase* setup()
     	spi0.setDataSize(SPI_DATA_8BIT);
     	spi0.begin();
 
-    }
+    }*/
+
+    // We need millis to be at least 1 for debouncer to work
+    while (!millis());
 
     if (deviceConfig->BusSwitches & BusSwitch::I2C)
     {
@@ -120,9 +123,10 @@ BcuBase* setup()
     }
 
     configPos = &(*bcu.userEeprom)[CONFIG_ADDRESS + sizeof(DeviceConfig)];
-	for (int i = 0; i < 32; i++)
+    unsigned int pinCount = sizeof(ARMPinItem::PortPins) / sizeof(ARMPinItem::PortPins[0]);
+	for (unsigned int i = 0; i < pinCount; i++)
 	{
-		if (deviceConfig->PortAssignment[i] > 0 && deviceConfig->PortAssignment[i] <= 32)
+		if (deviceConfig->PortAssignment[i] > 0 && deviceConfig->PortAssignment[i] <= pinCount)
 		{
 			firstItem = new ARMPinItem(nextComObj, deviceConfig->PortAssignment[i] - 1, (ARMPinConfig*)configPos, firstItem, objRamPointer);
 			nextComObj += firstItem->ComObjCount();

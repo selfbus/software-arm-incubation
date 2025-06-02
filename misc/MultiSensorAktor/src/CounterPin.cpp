@@ -4,6 +4,8 @@
  *  published by the Free Software Foundation.
  */
 
+#include <sblib/eib/bcu_base.h>
+
 #include <CounterPin.h>
 #include <math.h>
 

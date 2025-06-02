@@ -4,7 +4,7 @@
     <Manufacturer RefId="M-013A">
       <Catalog>
         <CatalogSection Id="M-013A_CS-1" Name="Geräte" Number="1" DefaultLanguage="de-DE">
-          <CatalogItem Id="M-013A_H-2-1_HP-0001-03-8861_CI-1-1" Name="Multi-Sensor-Aktor" Number="1" ProductRefId="M-013A_H-2-1_P-1" Hardware2ProgramRefId="M-013A_H-2-1_HP-0001-05-8861" DefaultLanguage="de-DE" />
+          <CatalogItem Id="M-013A_H-2-1_HP-0001-03-8861_CI-1-1" Name="Multi-Sensor-Aktor" Number="1" ProductRefId="M-013A_H-2-1_P-1" Hardware2ProgramRefId="M-013A_H-2-1_HP-0001-0A-8861" DefaultLanguage="de-DE" />
         </CatalogSection>
       </Catalog>
       <Languages>

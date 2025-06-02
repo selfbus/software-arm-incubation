@@ -8,9 +8,10 @@
 #define SGP4XITEM_H_
 
 #include <sblib/eib/bcu_base.h>
+#include <sblib/i2c/SGP4x.h>
+
 #include <GenericItem.h>
 #include <TempHumSensorConfig.h>
-#include <sblib/i2c/SGP4x.h>
 
 class SGP4xItem : public GenericItem
 {

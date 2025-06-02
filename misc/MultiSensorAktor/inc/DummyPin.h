@@ -7,6 +7,8 @@
 #ifndef DUMMYPIN_H_
 #define DUMMYPIN_H_
 
+#include <sblib/eib/bcu_base.h>
+
 #include <GenericPin.h>
 
 class DummyPin : public GenericPin

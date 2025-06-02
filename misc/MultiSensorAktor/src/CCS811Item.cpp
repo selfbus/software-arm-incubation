@@ -4,9 +4,11 @@
  *  published by the Free Software Foundation.
  */
 
-#include <CCS811Item.h>
+#include <sblib/eib/bcu_base.h>
 #include <sblib/i2c.h>
 #include <sblib/timer.h>
+
+#include <CCS811Item.h>
 #include <HelperFunctions.h>
 #include <ARMPinItem.h>
 

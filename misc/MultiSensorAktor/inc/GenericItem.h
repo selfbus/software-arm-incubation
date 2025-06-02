@@ -15,7 +15,6 @@ public:
 	GenericItem(byte firstComIndex, GenericItem* nextItem) : nextItem(nextItem), firstComIndex(firstComIndex) {}
 
 	virtual void Loop(uint32_t now, int updatedObjNo) = 0;
-//	virtual void Irq(void* item, byte newValue) {}
 	GenericItem* GetNextItem() { return nextItem; };
 
 	virtual int ConfigLength() = 0;
@@ -24,7 +23,6 @@ public:
 	static BcuBase* BCU;
 protected:
 	GenericItem* nextItem;
-//	BcuBase* bcu;
 	byte firstComIndex;
 };
 

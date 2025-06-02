@@ -7,10 +7,12 @@
 #ifndef DEVICECONFIG_H_
 #define DEVICECONFIG_H_
 
+#include <sblib/eib/bcu_base.h>
+
 enum class BusSwitch : byte
 {
-	SPI0 = 0x01,
-	SPI1 = 0x02,
+//	SPI0 = 0x01,
+//	SPI1 = 0x02,
 	I2C = 0x04
 };
 
@@ -44,7 +46,7 @@ struct DeviceConfig
 	byte iAQCoreCount;
 	SHTSwitch SHTOption;
 	byte PCA9555DCount;
-	uint8_t PortAssignment[32];
+	uint8_t PortAssignment[36];
 };
 #pragma pack()
 

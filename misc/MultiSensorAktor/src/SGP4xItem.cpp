@@ -4,9 +4,11 @@
  *  published by the Free Software Foundation.
  */
 
-#include <SGP4xItem.h>
+#include <sblib/eib/bcu_base.h>
 #include <sblib/i2c.h>
 #include <sblib/timer.h>
+
+#include <SGP4xItem.h>
 #include <HelperFunctions.h>
 
 extern int portPins[32];

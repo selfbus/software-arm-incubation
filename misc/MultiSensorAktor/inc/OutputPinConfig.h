@@ -7,6 +7,8 @@
 #ifndef OUTPUTPINCONFIG_H_
 #define OUTPUTPINCONFIG_H_
 
+#include <sblib/eib/bcu_base.h>
+
 enum class PortOutLockAction : byte
 {
 	PosNothing = 0,

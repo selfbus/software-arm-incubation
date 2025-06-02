@@ -4,6 +4,8 @@
  *  published by the Free Software Foundation.
  */
 
+#include <sblib/eib/bcu_base.h>
+
 #include <OutputPin.h>
 #include <HelperFunctions.h>
 
@@ -15,7 +17,7 @@ OutputPin::OutputPin(byte firstComIndex, OutputPinConfig* config, uint16_t& objR
 	{
 		BCU->comObjects->requestObjectRead(firstComIndex + 1);
 	}
-	setType();
+	setType(millis());
 
 	HelperFunctions::setComObjPtr(BCU, firstComIndex, BIT_1, objRamPointer);
 	HelperFunctions::setComObjPtr(BCU, firstComIndex + 1, BIT_1, objRamPointer);
@@ -29,13 +31,13 @@ byte OutputPin::GetState(uint32_t now, byte updatedObjectNo)
 	{
 		sw = BCU->comObjects->objectRead(firstComIndex) != 0;
 
-		setType();
+		setType(now);
 	}
 	else if (updatedObjectNo == firstComIndex + 1)
 	{
 		blinkObjState = BCU->comObjects->objectRead(firstComIndex + 1);
 
-		setType();
+		setType(now);
 	}
 	else if (updatedObjectNo == firstComIndex + 2)
 	{
@@ -78,6 +80,7 @@ byte OutputPin::GetState(uint32_t now, byte updatedObjectNo)
 			if (sw && !locked)
 			{
 				blinkActionTime = 0xFFFFFFFF;
+				blink = false;
 				sw = false;
 				BCU->comObjects->objectWrite(firstComIndex, sw);
 			}
@@ -110,7 +113,7 @@ byte OutputPin::GetState(uint32_t now, byte updatedObjectNo)
 
 	bool outVal = config->Invert ? !lastState : lastState;
 
-	if (config->Blink != PortOutPulse && BCU->comObjects->objectRead(firstComIndex + 3) != outVal)
+	if (config->Blink != PortOutPulse && BCU->comObjects->objectRead(firstComIndex + 3) != sw)
 	{
 		BCU->comObjects->objectWrite(firstComIndex + 3, sw);
 	}
@@ -118,12 +121,11 @@ byte OutputPin::GetState(uint32_t now, byte updatedObjectNo)
 	return outVal;
 }
 
-void OutputPin::setType()
+void OutputPin::setType(uint32_t now)
 {
 	switch (config->Blink)
 	{
 	case PortOutBlinkNever:
-		blinkActionTime = 0xFFFFFFFF;
 		blink = false;
 		break;
 	case PortOutBlinkIfOff:
@@ -145,10 +147,23 @@ void OutputPin::setType()
 		blink = true;
 		break;
 	case PortOutPulse:
+		blink = false;
 		if (sw)
 		{
 			blinkActionTime = millis() + config->BlinkOnTime;
 		}
-		break;
+		return;
+	}
+
+	if (blink)
+	{
+		if (blinkActionTime == 0xFFFFFFFF)
+		{
+			blinkActionTime = now;
+		}
+	}
+	else
+	{
+		blinkActionTime = 0xFFFFFFFF;
 	}
 }

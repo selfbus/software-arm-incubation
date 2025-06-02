@@ -7,10 +7,12 @@
 #ifndef PCA9555DCONFIG_H_
 #define PCA9555DCONFIG_H_
 
-#include <InputPin.h>
-#include <OutputPin.h>
-#include <CounterPin.h>
-#include <PWMPin.h>
+#include <sblib/eib/bcu_base.h>
+
+#include <InputPinConfig.h>
+#include <OutputPinConfig.h>
+#include <CounterPinConfig.h>
+#include <PWMPinConfig.h>
 
 enum PCA9555DPinType : byte
 {

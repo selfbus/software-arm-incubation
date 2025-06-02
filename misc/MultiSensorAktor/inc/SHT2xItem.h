@@ -8,9 +8,10 @@
 #define SHT2XITEM_H_
 
 #include <sblib/eib/bcu_base.h>
+#include <sblib/i2c/SHT2x.h>
+
 #include <GenericItem.h>
 #include <TempHumSensorConfig.h>
-#include <sblib/i2c/SHT2x.h>
 
 class SHT2xItem : public GenericItem
 {

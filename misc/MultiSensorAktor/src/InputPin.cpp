@@ -4,6 +4,8 @@
  *  published by the Free Software Foundation.
  */
 
+#include <sblib/eib/bcu_base.h>
+
 #include <InputPin.h>
 #include <HelperFunctions.h>
 
@@ -31,6 +33,9 @@ InputPin::InputPin(byte firstComObj, InputPinConfig *config, uint16_t& objRamPoi
    		BCU->comObjects->requestObjectRead(firstComObj + 1);
    	}
 
+   	debouncer.init(100);
+   	debouncer.debounce(100, 0);
+
    	HelperFunctions::setComObjPtr(BCU, firstComIndex, BIT_1, objRamPointer);
 	HelperFunctions::setComObjPtr(BCU, firstComIndex + 1, BIT_1, objRamPointer);
 	HelperFunctions::setComObjPtr(BCU, firstComIndex + 2, BIT_1, objRamPointer);
@@ -38,10 +43,6 @@ InputPin::InputPin(byte firstComObj, InputPinConfig *config, uint16_t& objRamPoi
 
 void InputPin::PutValue(uint32_t now, int val)
 {
-//	if (init)
-//	{
-//		debouncer->debouncer.init(val);
-//	}
 	int lastValue = debouncer.value();
 	int value = debouncer.debounce(val, config->DebounceTime);
 	if (value != lastValue /*|| init*/)

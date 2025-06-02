@@ -4,32 +4,34 @@
  *  published by the Free Software Foundation.
  */
 
-#ifndef DHTITEM_H_
-#define DHTITEM_H_
+#ifndef DHTPIN_H_
+#define DHTPIN_H_
 
 #include <sblib/eib/bcu_base.h>
 #include <sblib/sensors/dht.h>
+#include <sblib/digital_pin.h>
+
 #include <GenericPin.h>
-#include <TempHumSensorConfig.h>
+#include <DHTConfig.h>
 
 class DHTPin : public GenericPin
 {
 public:
-	DHTPin(int port, byte firstComIndex, TempHumSensorConfig* config, bool dht11, uint16_t& objRamPointer);
+	DHTPin(int port, byte firstComIndex, DHTConfig* config, bool dht11, uint16_t& objRamPointer);
 	~DHTPin() = default;
 
 	byte GetState(uint32_t now, byte updatedObjectNo);
 
-	int ConfigLength() { return sizeof(TempHumSensorConfig); }
+	int ConfigLength() { return sizeof(DHTConfig); }
 	int ComObjCount() { return 4; }
 
 protected:
 	uint32_t nextAction = 0;
 	byte state = 0;
 	DHT dht;
-	TempHumSensorConfig* config;
+	DHTConfig* config;
 	byte retries;
 };
 
 
-#endif /* DHTITEM_H_ */
+#endif /* DHTPIN_H_ */

@@ -9,9 +9,10 @@
 
 #include <sblib/eib/bcu_base.h>
 #include <sblib/debounce.h>
+#include <sblib/i2c/CCS811.h>
+
 #include <GenericItem.h>
 #include <CCS811Config.h>
-#include <sblib/i2c/CCS811.h>
 
 class CCS811Item : public GenericItem
 {

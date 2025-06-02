@@ -4,11 +4,21 @@
  *  published by the Free Software Foundation.
  */
 
+#include <sblib/eib/bcu_base.h>
+
 #include <DHTPin.h>
 #include <HelperFunctions.h>
+#include <ARMPinItem.h>
 
-DHTPin::DHTPin(int port, byte firstComIndex, TempHumSensorConfig *config, bool dht11, uint16_t& objRamPointer) : GenericPin(firstComIndex), dht(DHT()), config(config)
+
+DHTPin::DHTPin(int port, byte firstComIndex, DHTConfig *config, bool dht11, uint16_t& objRamPointer) : GenericPin(firstComIndex), dht(DHT()), config(config)
 {
+	if (config->PowerPin != 99)
+	{
+		pinMode(ARMPinItem::PortPins[config->PowerPin], OUTPUT);
+		digitalWrite(ARMPinItem::PortPins[config->PowerPin], false);
+	}
+
 	dht.DHTInit(port, dht11 ? DHT11 : DHT22);
 
 	HelperFunctions::setComObjPtr(BCU, firstComIndex, BIT_1, objRamPointer);
@@ -49,10 +59,18 @@ byte DHTPin::GetState(uint32_t now, byte updatedOjectNo)
 			}
 			state++;
 			break;
+		case 2:
+			if (config->PowerPin != 99)
+			{
+				digitalWrite(ARMPinItem::PortPins[config->PowerPin], true);
+			}
+			nextAction = now + 2000;
+			state++;
+			break;
 		default:
 			if (dht.readData(true))
 			{
-				float ftemp = dht.ConvertTemperature(CELCIUS) + config->Offset * 0.01f;
+				float ftemp = dht.ConvertTemperature(CELCIUS) + dpt9ToFloat(config->Offset) * 0.01f;
 				int16_t temp = (int16_t)(ftemp * 100);
 				uint16_t hum = (uint16_t)(dht._lastHumidity * 100);
 
@@ -83,8 +101,12 @@ byte DHTPin::GetState(uint32_t now, byte updatedOjectNo)
 					retries++;
 				}
 			}
+			if (config->PowerPin != 99)
+			{
+				digitalWrite(ARMPinItem::PortPins[config->PowerPin], false);
+			}
 
-			nextAction = now + (config->Delay * 1000);
+			nextAction = now + (config->Delay * 1000) - 2000;
 			state = 0;
 			break;
 		}

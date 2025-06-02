@@ -4,9 +4,11 @@
  *  published by the Free Software Foundation.
  */
 
-#include <SHT2xItem.h>
+#include <sblib/eib/bcu_base.h>
 #include <sblib/i2c.h>
 #include <sblib/timer.h>
+
+#include <SHT2xItem.h>
 #include <HelperFunctions.h>
 
 extern int portPins[32];

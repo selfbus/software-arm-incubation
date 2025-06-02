@@ -9,8 +9,9 @@
 #define OUTPUTPIN_H_
 
 #include <sblib/eib/bcu_base.h>
-#include <OutputPinConfig.h>
+
 #include <GenericPin.h>
+#include <OutputPinConfig.h>
 
 class OutputPin : public GenericPin
 {
@@ -33,7 +34,7 @@ protected:
 	bool locked = false;
 	uint32_t blinkActionTime = 0;
 
-	void setType();
+	void setType(uint32_t now);
 };
 
 #endif /* OUTPUTPIN_H_ */

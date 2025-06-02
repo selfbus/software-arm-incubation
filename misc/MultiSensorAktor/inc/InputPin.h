@@ -8,8 +8,9 @@
 #define INPUTPIN_H_
 
 #include <sblib/eib/bcu_base.h>
-#include <InputPinConfig.h>
+
 #include <GenericPin.h>
+#include <InputPinConfig.h>
 
 class InputPin : public GenericPin
 {
