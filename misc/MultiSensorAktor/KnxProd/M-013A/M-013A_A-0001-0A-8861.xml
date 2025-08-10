@@ -996,7 +996,7 @@
                             </when>
                           </choose>
                           <choose ParamRefId="M-013A_A-0001-0A-8861_MD-1_P-31_R-31">
-                            <when test="3 4 5 6">
+                            <when test="4 5 6">
                               <ComObjectRefRef RefId="M-013A_A-0001-0A-8861_MD-1_O-2_R-22" />
                             </when>
                           </choose>
@@ -1405,7 +1405,7 @@
                         <when test="1">
                           <ComObjectRefRef RefId="M-013A_A-0001-0A-8861_MD-4_SM-1_O-41-0_R-1" />
                           <choose ParamRefId="M-013A_A-0001-0A-8861_MD-4_SM-1_P-31_R-31">
-                            <when test=">3">
+                            <when test="4 5 6">
                               <ComObjectRefRef RefId="M-013A_A-0001-0A-8861_MD-4_SM-1_O-41-1_R-11" />
                             </when>
                           </choose>
