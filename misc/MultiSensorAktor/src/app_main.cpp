@@ -22,7 +22,7 @@
 
 #include <HelperFunctions.h>
 
-APP_VERSION("MSA     ", "0", "15"); // Don't forget to also change the build-variable sw_version
+APP_VERSION("MSA     ", "0", "16"); // Don't forget to also change the build-variable sw_version
 #define CONFIG_ADDRESS 0x4800
 
 MASK0701 bcu = MASK0701();
@@ -42,7 +42,7 @@ MemMapper memMapper = MemMapper(0xe000, 0x1000, false);
 BcuBase* setup()
 {
     bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
-    bcu.begin(0x13A, 0x01, 0x0A); // Manufacturer name "Not assigned", app-id 0x01, version 0.10
+    bcu.begin(0x13A, 0x01, 0x0B); // Manufacturer name "Not assigned", app-id 0x01, version 0.10
 
     GenericItem::BCU = &bcu;
     GenericPin::BCU = &bcu;

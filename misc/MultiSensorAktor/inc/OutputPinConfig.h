@@ -11,14 +11,10 @@
 
 enum class PortOutLockAction : byte
 {
-	PosNothing = 0,
-	PosOff = 1,
-	PosOn = 2,
-	PosToggle = 3,
-	NegNothing = 128,
-	NegOff = 129,
-	NegOn = 130,
-	NegToggle = 131,
+	Nothing = 0,
+	Off = 1,
+	On = 2,
+	Toggle = 3,
 };
 
 enum PortOutBlink : byte
@@ -40,7 +36,7 @@ struct OutputPinConfig
 	PortOutBlink Blink;
 	uint16_t BlinkOnTime;
 	uint16_t BlinkOffTime;
-	PortOutLockAction lockFlags;
+	uint8_t lockFlags;
 };
 #pragma pack()
 

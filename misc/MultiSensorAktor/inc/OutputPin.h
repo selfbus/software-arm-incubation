@@ -27,12 +27,19 @@ public:
 protected:
 	OutputPinConfig* config;
 	bool sw = false;
+	bool stateDuringLock = false;
 	bool blinkObjState = false;
 	bool blinkState = false;
+	bool blinkStateDuringLock = false;
 	bool blink = false;
 	bool lastState = false;
 	bool locked = false;
 	uint32_t blinkActionTime = 0;
+
+	PortOutLockAction lockAction;
+	PortOutLockAction lockBlinkAction;
+	bool lockInvert;
+	bool lockResume;
 
 	void setType(uint32_t now);
 };
