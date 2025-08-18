@@ -174,9 +174,9 @@ void OutputPin::setType(uint32_t now)
 		break;
 	case PortOutPulse:
 		blink = false;
-		if (sw)
+		if (sw && blinkActionTime == 0xFFFFFFFF)
 		{
-			blinkActionTime = millis() + config->BlinkOnTime;
+			blinkActionTime = now + config->BlinkOnTime;
 		}
 		return;
 	}
