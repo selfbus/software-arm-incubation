@@ -7,6 +7,8 @@
 #ifndef INPUTPINCONFIG_H_
 #define INPUTPINCONFIG_H_
 
+#include <sblib/eib/bcu_base.h>
+
 enum PortInAction : byte
 {
 	PortInNothing,

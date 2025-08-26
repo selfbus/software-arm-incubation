@@ -4,16 +4,18 @@
  *  published by the Free Software Foundation.
  */
 
-#include <ARMPinItem.h>
+#include <sblib/eib/bcu_base.h>
 #include <sblib/digital_pin.h>
+
+#include <ARMPinItem.h>
+#include <DHTPin.h>
 #include <InputPin.h>
 #include <OutputPin.h>
 #include <CounterPin.h>
 #include <PWMPin.h>
-#include <DHTPin.h>
 #include <DummyPin.h>
 
-const constexpr int ARMPinItem::PortPins[32];
+const constexpr int ARMPinItem::PortPins[36];
 
 ARMPinItem::ARMPinItem(byte firstComIndex, byte portNumber, ARMPinConfig *config, GenericItem* nextItem, uint16_t& objRamPointer) : GenericItem(firstComIndex, nextItem), config(config)
 {
@@ -81,12 +83,12 @@ void ARMPinItem::Loop(uint32_t now, int updatedObjectNo)
 
 int ARMPinItem::ConfigLength()
 {
-	return sizeof(config->BaseConfig) + pin->ConfigLength();
+	return sizeof(ARMPinConfig);
 }
 
 int ARMPinItem::ComObjCount()
 {
-	return pin->ComObjCount();
+	return 4;
 }
 
 /*void ARMPinItem::Irq(void* item, byte value)

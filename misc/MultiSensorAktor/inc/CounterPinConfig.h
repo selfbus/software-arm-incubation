@@ -7,6 +7,8 @@
 #ifndef COUNTERPINCONFIG_H_
 #define COUNTERPINCONFIG_H_
 
+#include <sblib/eib/bcu_base.h>
+
 #pragma pack(1)
 
 struct CounterPinConfig

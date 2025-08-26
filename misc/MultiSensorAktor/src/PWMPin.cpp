@@ -4,6 +4,8 @@
  *  published by the Free Software Foundation.
  */
 
+#include <sblib/eib/bcu_base.h>
+
 #include <PWMPin.h>
 #include <HelperFunctions.h>
 

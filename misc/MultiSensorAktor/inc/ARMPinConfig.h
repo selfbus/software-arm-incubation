@@ -7,7 +7,7 @@
 #ifndef PORTCONFIG_H_
 #define PORTCONFIG_H_
 
-#include <TempHumSensorConfig.h>
+#include <DHTConfig.h>
 #include <InputPinConfig.h>
 #include <OutputPinConfig.h>
 #include <PWMPinConfig.h>
@@ -33,7 +33,7 @@ struct ARMPinConfig
 	} BaseConfig;
 
 	union {
-		TempHumSensorConfig DHT;
+		DHTConfig DHT;
 		InputPinConfig Input;
 		OutputPinConfig Output;
 		PWMPinConfig PWM;

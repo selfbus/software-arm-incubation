@@ -4,14 +4,18 @@
  *  published by the Free Software Foundation.
  */
 
+#include <sblib/eib/bcu_base.h>
+#include <sblib/i2c.h>
+
 #include <PCA9555DItem.h>
 #include <DummyPin.h>
-#include <sblib/i2c.h>
 #include <ARMPinItem.h>
+#include <InputPin.h>
+#include <OutputPin.h>
+#include <PWMPin.h>
 
 PCA9555DItem::PCA9555DItem(byte firstComIndex, PCA9555DConfig *config, GenericItem* nextItem, uint16_t& objRamPointer) : GenericItem(firstComIndex, nextItem), config(config)
 {
-//	IRQItem *lastIRQItem = nullptr;
 	byte* currentConfig = (byte*)config + sizeof(PCA9555DConfig);
 	byte nextComObj = firstComIndex;
 
@@ -20,11 +24,6 @@ PCA9555DItem::PCA9555DItem(byte firstComIndex, PCA9555DConfig *config, GenericIt
 	inOutConfig = 0;
 	checkTime = 0;
 	forceCheckTill = 0;
-
-	if (config->IntPin != 99 && config->IntPin >= 0 && config->IntPin < 32)
-	{
-		pinMode(ARMPinItem::PortPins[config->IntPin], INPUT | PULL_UP);
-	}
 
 	for (byte i = 0; i < 16; i++)
 	{
@@ -54,7 +53,6 @@ PCA9555DItem::PCA9555DItem(byte firstComIndex, PCA9555DConfig *config, GenericIt
 			case PCA9555DPinTypePWM:
 				{
 					PWMPin* pwmPin = new PWMPin(nextComObj, &pinConfig->PWM, this, objRamPointer);
-//					lastIRQItem = pwmPin;
 					pins[i] = pwmPin;
 				}
 				break;
@@ -79,12 +77,6 @@ PCA9555DItem::PCA9555DItem(byte firstComIndex, PCA9555DConfig *config, GenericIt
 	{
 		initPCA();
 		forceCheckTill = millis() + checkTime;
-/*		if (lastIRQItem != nullptr)
-		{
-			this->nextPin = lastIRQItem->nextPin;
-			lastIRQItem->nextPin = this;
-			useIRQ = true;
-		}*/
 	}
 
 	configLength = currentConfig - (byte*)config;
@@ -123,10 +115,10 @@ void PCA9555DItem::Loop(uint32_t now, int updatedObjectNo)
 			newState |= pins[i]->GetState(now, updatedObjectNo) << i;
 		}
 	}
-	if (newState != outFlag /*&& !useIRQ*/)
+	if (newState != outFlag)
 	{
 		outFlag = newState;
-		uint16_t output = outFlag /*| irqStatus*/;
+		uint16_t output = outFlag;
 		unsigned char tempBytes1[] = { 0x02, (byte)(output), (byte)(output >> 8) };
 		Chip_I2C_MasterSend(I2C0, 0x20 + config->Address, tempBytes1 , 3);
 	}
@@ -139,12 +131,9 @@ void PCA9555DItem::Loop(uint32_t now, int updatedObjectNo)
 	if (forceCheckTill > now)
 	{
 		uint16_t inputStatus = 0;
-//		if (!useIRQ)
+		if (Chip_I2C_MasterCmdRead(I2C0, 0x20 | config->Address, 0, (byte*)&inputStatus, 2) != 2)
 		{
-			if (Chip_I2C_MasterCmdRead(I2C0, 0x20 | config->Address, 0, (byte*)&inputStatus, 2) != 2)
-			{
-				return;
-			}
+			return;
 		}
 
 		for (int i = 0; i < 16; i++)
@@ -156,27 +145,3 @@ void PCA9555DItem::Loop(uint32_t now, int updatedObjectNo)
 		}
 	}
 }
-
-/*void PCA9555DItem::Irq(void* item, byte newValue)
-{
-	for (int i = 0; i < 16; i++)
-	{
-		if (pins[i] == item)
-		{
-			irqStatus &= ~(1 << i);
-			irqStatus |= newValue << i;
-		}
-	}
-}*/
-
-/*
-void PCA9555DItem::Irq(uint32_t now, uint16_t timerVal)
-{
-	uint16_t output = outFlag | irqStatus;
-	unsigned char tempBytes1[] = { 0x02, (byte)(output), (byte)(output >> 8) };
-	Chip_I2C_MasterSend(I2C0, 0x20 + config->Address, tempBytes1 , 3);
-	if (!timerVal)
-	{
-		Chip_I2C_MasterCmdRead(I2C0, 0x20 | config->Address, 0, (byte*)&inputStatus, 2);
-	}
-}*/

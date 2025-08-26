@@ -8,8 +8,9 @@
 #define COUNTERPIN_H_
 
 #include <sblib/eib/bcu_base.h>
-#include <CounterPinConfig.h>
+
 #include <GenericPin.h>
+#include <CounterPinConfig.h>
 
 class CounterPin : public GenericPin
 {

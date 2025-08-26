@@ -7,6 +7,8 @@
 #ifndef TEMPHUMSENSORCONFIG_H_
 #define TEMPHUMSENSORCONFIG_H_
 
+#include <sblib/eib/bcu_base.h>
+
 #pragma pack(1)
 struct TempHumSensorConfig
 {

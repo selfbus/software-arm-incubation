@@ -4,9 +4,11 @@
  *  published by the Free Software Foundation.
  */
 
-#include <SHT2xItem.h>
+#include <sblib/eib/bcu_base.h>
 #include <sblib/i2c.h>
 #include <sblib/timer.h>
+
+#include <SHT2xItem.h>
 #include <HelperFunctions.h>
 
 extern int portPins[32];
@@ -14,7 +16,7 @@ extern int portPins[32];
 SHT2xItem::SHT2xItem(byte firstComIndex, TempHumSensorConfig *config, GenericItem* nextItem, uint16_t& objRamPointer) : GenericItem(firstComIndex, nextItem), config(config), sht2x(SHT2xClass()), nextAction(0)
 {
 	sht2x.Init();
-	offset = config->Offset * 0.01f;
+	offset = dpt9ToFloat(config->Offset) * 0.01f;
 
 	HelperFunctions::setComObjPtr(BCU, firstComIndex, BIT_1, objRamPointer);
 	HelperFunctions::setComObjPtr(BCU, firstComIndex + 1, BYTE_2, objRamPointer);

@@ -7,6 +7,8 @@
 #ifndef PWMPINCONFIG_H_
 #define PWMPINCONFIG_H_
 
+#include <sblib/eib/bcu_base.h>
+
 enum PortFixedPwmValue : byte
 {
 	PortFixedPwmValueNever,

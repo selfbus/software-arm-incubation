@@ -7,6 +7,16 @@
 #ifndef OUTPUTPINCONFIG_H_
 #define OUTPUTPINCONFIG_H_
 
+#include <sblib/eib/bcu_base.h>
+
+enum class PortOutLockAction : byte
+{
+	Nothing = 0,
+	Off = 1,
+	On = 2,
+	Toggle = 3,
+};
+
 enum PortOutBlink : byte
 {
 	PortOutBlinkNever,
@@ -15,7 +25,8 @@ enum PortOutBlink : byte
 	PortOutBlinkAlways,
 	PortOutBlinkObj,
 	PortOutBlinkObjAndOff,
-	PortOutBlinkObjAndOn
+	PortOutBlinkObjAndOn,
+	PortOutPulse,
 };
 
 #pragma pack(1)
@@ -25,7 +36,7 @@ struct OutputPinConfig
 	PortOutBlink Blink;
 	uint16_t BlinkOnTime;
 	uint16_t BlinkOffTime;
-	byte lockFlags;
+	uint8_t lockFlags;
 };
 #pragma pack()
 
