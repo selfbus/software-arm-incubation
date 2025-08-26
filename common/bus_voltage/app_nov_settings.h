@@ -19,6 +19,7 @@
 class NonVolatileSetting
 {
     public:
+        NonVolatileSetting() = delete;
         NonVolatileSetting(unsigned int flashBase, unsigned int flashSize);
         MemMapper* GetMemMapper();
         bool RecallAppData(unsigned char *appdata, unsigned int size);
@@ -27,7 +28,6 @@ class NonVolatileSetting
 
     private:
         MemMapper memMapper_;
-        NonVolatileSetting(){};
         unsigned char crc8(unsigned char *data, unsigned int size);
 };
 

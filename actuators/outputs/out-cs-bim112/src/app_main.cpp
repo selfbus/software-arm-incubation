@@ -73,7 +73,7 @@ bool NoAppWasRunning = false;
  */
 MemMapperMod memMapper(0xea00, 0x400);
 
-APP_VERSION("SBout_cs", "1", "20")
+APP_VERSION("SBout_cs", "1", "21") // Don't forget to also change the build-variable sw_version
 
 AppUsrCallback usrCallback;
 
@@ -104,7 +104,6 @@ BcuBase* setup()
  AppOperatingState = AppOperatingStates::Startup;
  // //RelTestEnqueue();
  bcu.setProgPin(PIOPROGBTN);
- bcu.setProgPinInverted(true);
 
  // das Ding ist ein BIM112 "Maskenversion 0701"
  bcu.begin(MANUFACTURER, DEVICETYPE, APPVERSION, 0x4400); // statisch setzen, da die ETS5.6 merkwürdigerweise eine ganz andere Adresse programmiert
@@ -378,8 +377,8 @@ void MainProcessingRoutine(bool AppValid)
  //============
  LedProcessing();
 
- //if (bus.idle()) // alle 10µs kommt ein INT, also ist das Sleep hier eher theoretischer Natur.
-   waitForInterrupt();
+ // alle 10µs kommt ein INT, also ist das Sleep hier eher theoretischer Natur.
+ waitForInterrupt();
 }
 
 /*

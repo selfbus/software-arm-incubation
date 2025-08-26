@@ -5,8 +5,10 @@ Ensure correct handling of alarms when smoke alarm devices are networked using b
 
 | Test case | Tester | Date | Commit | Result |
 | --- | --- | --- | --- | :---: |
-| C.2.a | @dallmair | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
-| C.2.b | @dallmair | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+| C.2.a | @dallmair  | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-22 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
+| C.2.b | @dallmair  | 2023-12-22 | a870a7c5b946b9443e7fba81ecee02e796dd77a9 | :ok: |
+|       | @Darthyson | 2024-11-22 | bd820b81e9b31380050ef2a95776e714b3d819a8 | :ok: |
 
 # Setup
 Hardware setup per [Tests C.1](tests_C_1.md).

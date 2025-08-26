@@ -15,7 +15,6 @@
 
 //#define _DEBUG__
 
-#define LEDS 18 // total number of LEDs (a RGB led has 3 LEDs inside) -> 6xRGB LED = 18 LEDs
 #define TIMER32_0_STEP 10 //unit: ms Schrittweite der Dimmung (1..100)
 #define SENSOR_TIMER_100MS 100/TIMER32_0_STEP //100ms/Timerschritte
 #define LED_DIMM_TIME 500 //unit: ms Gesamtzeit der Dimmung
@@ -43,8 +42,6 @@ bool led_blink_state[6];
 bool any_blink_led_active;
 volatile int actual_period_time = 0;
 volatile bool actual_blink_leds_on;
-
-uint8_t led_lookup_table[LEDS/3] = {1,3,5,4,2,0};
 
 struct dimmrampe {
 	int16_t steigung;
@@ -198,14 +195,16 @@ void set_nightlight_state(int state) {
 
 void set_blink_mode(int channel, int state) {
 
+	uint8_t LEDnumber = switch_to_led_channel_table[channel];
+
 	// setting the information for timer interrupt
-	led_blink_state[channel] = state;
+	led_blink_state[LEDnumber] = state;
 
 	// avoid staying LED on at switch off blink mode
 	if(state == 0){
-		rgb_buffer_ist[rgb_leds[channel].blau]  = rgb_buffer_soll[rgb_leds[channel].blau];
-		rgb_buffer_ist[rgb_leds[channel].rot]   = rgb_buffer_soll[rgb_leds[channel].rot];
-		rgb_buffer_ist[rgb_leds[channel].gruen] = rgb_buffer_soll[rgb_leds[channel].gruen];
+		rgb_buffer_ist[rgb_leds[LEDnumber].blau]  = rgb_buffer_soll[rgb_leds[LEDnumber].blau];
+		rgb_buffer_ist[rgb_leds[LEDnumber].rot]   = rgb_buffer_soll[rgb_leds[LEDnumber].rot];
+		rgb_buffer_ist[rgb_leds[LEDnumber].gruen] = rgb_buffer_soll[rgb_leds[LEDnumber].gruen];
 	}
 
 	//set flag if any blinking led is active
@@ -313,7 +312,7 @@ void initLEDs() {
 
 		for (uint8_t i = 0; i < LEDS / 3; i++) {
 
-			LEDnumber = led_lookup_table[i];
+			LEDnumber = led_channel_to_switch_table[i];
 
 			if (LEDnumber % 2 == 0) {  //gerade Zahlen
 				led_color_param = LEDparams[2 + ((LEDnumber + 1) / 2)] & 0x0F;

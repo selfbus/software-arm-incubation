@@ -13,20 +13,20 @@
 #include "app_in.h"
 
 //Input logic level (moved to project build variable "inverted")
-//#define INVERT 			    //  ifndef: 0-->1 steigende Flanke ; pull_down
-							    //  ifdef:  0-->1 fallende Flanke ; pull_up
+//#define INVERT                //  ifndef: 0-->1 steigende Flanke ; pull_down
+                                //  ifdef:  0-->1 fallende Flanke ; pull_up
 
-#define MANUFACTURER 0x83		// MDT
-//#define DEVICETYPE   0x0030	// Binäreingang
-//#define APPVERSION   0x20		// Version 2.0
-//#define DEVICETYPE   0x002E	// Tasterschnittstelle
-//#define APPVERSION   0x16		// Version 1.6
+#define MANUFACTURER 0x83       // MDT
+//#define DEVICETYPE   0x0030   // Binäreingang
+//#define APPVERSION   0x20     // Version 2.0
+//#define DEVICETYPE   0x002E   // Tasterschnittstelle
+//#define APPVERSION   0x16     // Version 1.6
 
 
 typedef struct
 {
     unsigned int noOfChannels;  //!> how many channels are supported with this hardware
-    bool ledOutputFunction;		//!> LED output for device "Tasterschnittstelle"
+    bool ledOutputFunction;     //!> LED output for device "Tasterschnittstelle"
     unsigned short deviceType;  //!> bcu.begin devicetype
     unsigned short appVersion;  //!> application version
     unsigned short baseAddress; //!> Base address of the config parameters (0x4400 + Offset first param.(debounce-Time))
@@ -85,34 +85,9 @@ const HardwareVersion hardwareVersion[7] =
 // Input pins
 const int inputPins[] =
 {
-#ifdef __LPC11UXX__
-  PIN_PWM
-, PIN_APRG
-#   if (NUM_INPUTS > 2)
-        , PIN_IO1
-        , PIN_IO2
-#   endif
-#   if (NUM_INPUTS > 4)
-        , PIN_IO3
-        , PIN_IO4
-#   endif
-#   if (NUM_INPUTS > 6)
-        , PIO_SDA
-        , PIN_IO5
-#   endif
-#   if (NUM_INPUTS > 8)
-        , PIN_IO14
-        , PIN_IO15
-        , PIN_IO13
-        , PIN_IO11
-        , PIN_IO9
-        , PIN_IO10
-        , PIN_TX
-        , PIN_RX
-#   endif
-#elif defined TS_ARM
+#if defined TS_ARM
     PIO2_2,  //  A ; IO2
-	PIO0_9,  //  B ; IO3
+    PIO0_9,  //  B ; IO3
 #   if (NUM_INPUTS > 2)
         PIO2_11, //  C ; IO4
         PIO1_1,  //  D ; IO5
@@ -137,9 +112,41 @@ const int inputPins[] =
         PIO2_3,  //  O ; IO15
         PIO1_5,  //  P ; IO16
 #   endif
+#elif defined TE2_V103
+    PIO2_11,  //  A ; 2MU controller version <= v1.03
+    PIO2_9,   //  B ; 2MU controller version <= v1.03
+#elif defined TE2_V104
+    PIO0_2,   //  A ; 2MU controller version >= v1.04
+    PIO0_9,   //  B ; 2MU controller version >= v1.04
+#elif defined FUSED_IO ///\todo verify io ports with actual pins
+    PIN_IO1,  //  A ; IO1
+    PIN_IO2,  //  B ; IO2
+#   if (NUM_INPUTS > 2)
+        PIN_IO3,  //  C ; IO3
+        PIN_IO4,  //  D ; IO4
+#   endif
+#   if (NUM_INPUTS > 4)
+        PIN_IO5,  //  E ; IO5
+        PIN_IO6,  //  F ; IO6
+#   endif
+#   if (NUM_INPUTS > 6)
+        PIN_IO7,  //  G ; IO7
+        PIN_IO8,  //  H ; IO8
+#   endif
+#   if (NUM_INPUTS > 8)
+        PIN_IO9,  //  I ; IO9
+        PIN_IO10, //  J ; IO10
+        PIN_IO11, //  K ; IO11
+        PIN_IO12, //  L ; IO12
+
+        PIN_IO13, //  M ; IO13
+        PIN_IO14, //  N ; IO14
+        PIN_IO15, //  O ; IO15
+        PIN_IO16, //  P ; IO16
+#   endif
 #else
-	PIN_IO1,  //  A ; IO1
-	PIN_IO2,  //  B ; IO2
+    PIN_IO1,  //  A ; IO1
+    PIN_IO2,  //  B ; IO2
 #   if (NUM_INPUTS > 2)
         PIN_IO3,  //  C ; IO3
         PIN_IO4,  //  D ; IO4

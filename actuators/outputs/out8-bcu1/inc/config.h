@@ -48,9 +48,37 @@
 // #define BI_STABLE // replaced by build-variable ${relay_type}
 // #define HAND_ACTUATION // replaced by build-variable ${hand_actuation}
 
-// #define ZERO_DETECT // no more supported? at least it's mentioned in a comment from 2014
-                       // https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_16A_4TE
+// #define ZERO_DETECT // only for mono-stable relays supported
+                       // comment from old xwiki 2014/09/09
+                       // "Zerodetect haben wir jetzt für den bistabilen Aktor wieder abgeschafft,es war eh nur ein versuch."
+                       // https://selfbus.myxwiki.org/xwiki/bin/view/Geräte/Ausgänge/Binärausgang_8x230_16A_4TE
                        // PIO_SDA is used for zero-detect
+
+/**
+ * @def APP_OUT_8X_16A_BISTAB_SEPERATED_4MU
+ * If the application hardware is app_out_8x_16A_bistab_seperated_4MU comment this define out
+ * @note PCB:<br>
+ *       https://github.com/selfbus/hardware-merged/tree/main/applications_din/out_8x_16A_bistab_seperated_4MU
+ */
+//#define APP_OUT_8X_16A_BISTAB_SEPERATED_4MU
+
+/**
+ * @def MU2_V103
+ * For the 2 non-stable relays of an 2in2out PCB + 2MU controller version <= v1.03
+ * @note PCBs:<br>
+ *       https://github.com/selfbus/hardware-merged/tree/main/applications_din/in-out_2x-2x_2MU<br>
+ *       https://github.com/selfbus/hardware-merged/tree/main/controller_lpc1115/lpc1115_2MU_MID
+ */
+//#define MU2_V103
+
+/**
+ * @def MU_V1XX
+ * For the 2 non-stable relays of an 2in2out PCB + 2MU controller version >= v1.04
+ * @note PCBs:<br>
+ *       https://github.com/selfbus/hardware-merged/tree/main/applications_din/in-out_2x-2x_2MU<br>
+ *       https://github.com/selfbus/hardware-merged/tree/main/controller_lpc1115/lpc1115_2MU_MID
+ */
+//#define MU_V1XX
 
 /*
  *  hand actuation pin configuration
@@ -130,21 +158,24 @@
 
 #ifdef BI_STABLE
 #   define NO_OF_OUTPUTS (NO_OF_CHANNELS * 2)
-#   define BETWEEN_CHANNEL_DELAY_MS 100 // pause in ms between to channels relais switching, to avoid bus drainage
+#   define BETWEEN_CHANNEL_DELAY_MS 100 // pause in ms between to channels relay switching, to avoid bus drainage
 #else
 #   define NO_OF_OUTPUTS (NO_OF_CHANNELS)
-#   define BETWEEN_CHANNEL_DELAY_MS 100 // pause in ms between to channels relais switching, to avoid bus drainage
+#   define BETWEEN_CHANNEL_DELAY_MS 100 // pause in ms between to channels relay switching, to avoid bus drainage
+#endif
+
+#if (defined(ZERO_DETECT) || defined(BI_STABLE)) && (defined(MU2_V103) || defined(MU_V1XX))
+#   error "ZERO_DETECT or BI_STABLE with MU2_V103 or MU_V1XX is not possible!"
 #endif
 
 /*
  *  output pins configuration
  */
-
 #ifdef OUT8
 #    ifdef BI_STABLE
         // 4TE-ARM Controller + out8_16A (bi-stable relays)
-        // PCB: https://github.com/selfbus/hardware/tree/master/Apps/out8_16A_1.0
-        // Wiki: https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/8fach%20Bin%C3%A4rausgang%20230V%2016A%20f%C3%BCr%20LPC1115%20Controller
+        // PCB: https://github.com/selfbus/hardware-merged/tree/main/applications_din/out_8x_16A_bistab_4MU
+        // Wiki: https://selfbus.org/wiki/devices/outputs/25-switching-actuator-8x-230v-16a-4module-units
         const int outputPins[NO_OF_OUTPUTS] =
         {
             /*
@@ -152,7 +183,7 @@
              * see LPC user manual page 79 chapter 7.4.12 IOCON_PIO0_5.
              * better solution would be to use IO7 instead.
              */
-
+#            ifndef APP_OUT_8X_16A_BISTAB_SEPERATED_4MU
             // K1 -> K4
             PIN_IO2,  PIN_IO3,  //  1,  2 => K1 reset/set
             PIN_IO5,  PIO_SDA,  //  3,  4 => K2 reset/set // PIO_SDA-> pull-up resistor!
@@ -164,40 +195,26 @@
             PIN_IO10, PIN_RX,   // 13, 14 => K7 reset/set
             PIN_IO14, PIN_IO15, // 11, 12 => K6 reset/set
             PIN_IO9,  PIN_IO13  //  9, 10 => K5 reset/set
+
+#            else
+            /*
+            * PIN configuration for application hardware "out_8x_16A_bistab_seperated_4MU"
+            * (this hardware was named before as "out8_16A_V2.3")
+            */
+
+         // RESET Pin,SET Pin
+            PIN_IO5,  PIN_IO7,  // Kanal 1
+            PIN_IO4,  PIN_IO3,  // Kanal 2
+            PIN_PWM,  PIN_APRG, // Kanal 3
+            PIN_IO2,  PIN_IO1,  // Kanal 4
+
+            PIN_IO10, PIN_RX,   // Kanal 5
+            PIN_TX,   PIN_IO11, // Kanal 6
+            PIN_IO14, PIN_IO15, // Kanal 7
+            PIN_IO9,  PIN_IO13  // Kanal 8
+
+#       endif
         };
-
-#       if 0
-            // moved from app_main.cpp to resolve merge conflict from oltarion commit "added Hardware Pin descriptions, old pin assignments were not deleted 5787a7b3ed10097856df5ba29c415c7f039d5a85"
-            // Pinbelegung für out8_16A-V2.3 (bistabile Relais, separate Kanäle ohne Zusammenlegung von Kontakten)
-            const int outputPins[NO_OF_OUTPUTS] =
-            {// RESET Pin,SET Pin
-                PIN_IO5,  PIN_IO7,  // Kanal 1
-                PIN_IO4,  PIN_IO3,  // Kanal 2
-                PIN_PWM,  PIN_APRG, // Kanal 3
-                PIN_IO2,  PIN_IO1,  // Kanal 4
-
-                PIN_IO10, PIN_RX,   // Kanal 5
-                PIN_TX,   PIN_IO11, // Kanal 6
-                PIN_IO14, PIN_IO15, // Kanal 7
-                PIN_IO9,  PIN_IO13  // Kanal 8
-            };
-#       endif
-
-#       if 0
-            // moved from app_main.cpp to resolve merge conflict from oltarion commit "added Hardware Pin descriptions, old pin assignments were not deleted 5787a7b3ed10097856df5ba29c415c7f039d5a85"
-            // Pinbelegung für out8_16A-V2.2 (bistabile Relais, Eingänge von jeweils 2 Kanälen zusammen)
-            const int outputPins[NO_OF_OUTPUTS] =
-            {// RESET Pin,SET Pin
-                PIN_IO1,  PIN_IO4,  // Kanal 1
-                PIN_PWM,  PIN_APRG, // Kanal 2
-                PIN_IO5,  PIN_IO7,  // Kanal 3
-                PIN_IO2,  PIN_IO3,  // Kanal 4
-                PIN_TX,   PIN_IO11, // Kanal 5
-                PIN_IO10, PIN_RX,   // Kanal 6
-                PIN_IO14, PIN_IO15, // Kanal 7
-                PIN_IO9,  PIN_IO13  // Kanal 8
-            };
-#       endif
 
         /*
          * DONE check which bi-stable configuration this should be?
@@ -219,10 +236,27 @@
                 PIN_IO11, PIN_TX    // 15, 16 K8 inverted
             };
 #       endif // INVERT
+#   elif defined(MU2_V103) || defined(MU_V1XX)
+        // 2MU Controller + 2in2out10A (non-stable relays)
+        const int outputPins[NO_OF_OUTPUTS] =
+        {
+            PIO0_6, // REL1
+#       ifdef MU2_V103
+            PIO0_9, // REL2
+#       else
+            PIO0_8, // REL2
+#       endif
+            PIO2_6, // REL3 not available, set to not connected mcu pin
+            PIO2_6, // REL4 not available, set to not connected mcu pin
+            PIO2_6, // REL5 not available, set to not connected mcu pin
+            PIO2_6, // REL6 not available, set to not connected mcu pin
+            PIO2_6, // REL7 not available, set to not connected mcu pin
+            PIO2_6  // REL8 not available, set to not connected mcu pin
+        };
 #   else
         // 4TE-ARM Controller + out8_16A (non-stable relays)
-        // PCB: https://github.com/selfbus/hardware/tree/master/Apps/relais8_4te
-        // Wiki: https://selfbus.myxwiki.org/xwiki/bin/view/Ger%C3%A4te/Ausg%C3%A4nge/Bin%C3%A4rausgang_8x230_4TE
+        // PCB: https://github.com/selfbus/hardware-merged/tree/main/applications_din/out_8x_10A_4MU
+        // Wiki: https://selfbus.org/wiki/devices/outputs/23-switching-actuator-8x-230v-10a-4mount-units
         const int outputPins[NO_OF_OUTPUTS] =
         {
             PIN_IO1, // REL1

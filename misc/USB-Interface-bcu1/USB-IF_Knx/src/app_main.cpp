@@ -11,6 +11,7 @@
 #include <sblib/eibBCU1.h>
 #include <sblib/io_pin_names.h>
 #include <sblib/timeout.h>
+#include "config.h"
 #include "GenFifo.h"
 #include "BufferMgr.h"
 #include "UartIf.h"
@@ -18,12 +19,9 @@
 #include "device_mgnt.h"
 #include "prog_uart.h"
 
-// Code Protection deaktiviert
-__attribute__ ((used,section(".crp"))) const unsigned int CRP_WORD = 0xFFFFFFFF;
-
 BCU1 bcu = BCU1();
 
-APP_VERSION("SBif_knx", "1", "10")
+APP_VERSION("SBif_knx", "1", "10") // Don't forget to also change the build-variable sw_version
 
 BcuBase* setup()
 {
@@ -35,15 +33,7 @@ BcuBase* setup()
     digitalWrite(PIN_PROG, true);
     digitalWrite(PIO1_5, true);
     bcu.begin(2, 1, 1); // ABB, dummy something device
-
-    /* ///\todo why? bcu.begin checks for 0 and sets to default KNX address 15.15.255, 1.1.1 will most likely already be used
-    int addr = bcu.ownAddress();
-    if ((addr == 0) || (addr == 0xffff))
-    {
-        bcu.setOwnAddress(0x1101); // default 1.1.1
-    }
-     */
-    uart.Init(115200, false);
+    uart.Init(115200, false, PinSerialTx, PinSerialRx);
     return (&bcu);
 }
 
@@ -66,7 +56,7 @@ BcuBase* setup()
 void loop()
 {
   uart.SerIf_Tasks();
-  // emiknxif.SetCdcMonMode(true); //only for debug to "hard" activate busmonitor mode
+  // emiknxif.SetCdcMonMode(true); //only for debugging to "hard" activate serial busmonitor mode
   emiknxif.EmiIf_Tasks();
   proguart.SerIf_Tasks();
   devicemgnt.DevMgnt_Tasks();

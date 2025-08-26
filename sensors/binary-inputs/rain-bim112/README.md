@@ -1,8 +1,8 @@
 # rain
 
 ## Rain sensor SCN-RS1R1.01 info
-[Manual](https://www.mdt.de/fileadmin/user_upload/user_upload/MDT_THB_Technische_Handbuecher/MDT_THB_Regensensor.pdf)  
-[KNX product database](https://www.mdt.de/fileadmin/user_upload/user_upload/MDT_Datenbank/MDT_KP_SCN_01_Rain_Sensor_V11.knxprod)  
+[Manual](https://www.mdt.de/download/MDT_THB_Regensensor.pdf)  
+[KNX product database](https://www.mdt.de/fileadmin/user_upload/user_upload/download/MDT_KP_SCN_01_Rain_Sensor_V11.knxprod)  
 
 ## Building
 Use cmake for building, but a sparsely maintained MCUxpresso project is there

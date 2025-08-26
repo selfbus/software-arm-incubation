@@ -9,7 +9,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value="BI_STABLE"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -155,7 +155,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -301,7 +301,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value=""/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -446,7 +446,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value=""/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -592,7 +592,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value="BI_STABLE"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -737,7 +737,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -878,7 +878,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1023,7 +1023,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1168,7 +1168,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1273,7 +1273,7 @@
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.1480741933" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/Debug}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib/Release}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.link.cpp.crpenable.1161419309" name="Enable automatic placement of Code Read Protection field in image" superClass="com.crt.advproject.link.cpp.crpenable" useByScannerDiscovery="false" value="false" valueType="boolean"/>
 								<option id="com.crt.advproject.link.cpp.multicore.slave.343041730" name="Multicore configuration" superClass="com.crt.advproject.link.cpp.multicore.slave" useByScannerDiscovery="false"/>
@@ -1314,7 +1314,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value="BI_STABLE"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value=""/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1459,7 +1459,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1604,7 +1604,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value=""/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1749,7 +1749,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value=""/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -1894,7 +1894,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value="BI_STABLE"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -2039,7 +2039,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value="BI_STABLE"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value=""/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -2184,7 +2184,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value="BI_STABLE"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -2329,7 +2329,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value=""/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -2474,7 +2474,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value=""/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -2619,7 +2619,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -2764,7 +2764,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value="BI_STABLE"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -2909,7 +2909,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value="BI_STABLE"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value=""/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -3054,7 +3054,7 @@
 					<stringMacro name="relay_type" type="VALUE_TEXT" value="BI_STABLE"/>
 					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
 					<stringMacro name="bus_fail" type="VALUE_TEXT" value=""/>
-					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.10"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -3191,6 +3191,442 @@
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 		</cconfiguration>
+		<cconfiguration id="com.crt.advproject.config.exe.debug.29419348.984667403.2034783651.1154671112">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.29419348.984667403.2034783651.1154671112" moduleId="org.eclipse.cdt.core.settings" name="Flashstart 0x3000 Release o8 2t v103 bf ha">
+				<macros>
+					<stringMacro name="controller_type" type="VALUE_TEXT" value="MU2_V103"/>
+					<stringMacro name="num_outputs" type="VALUE_TEXT" value="OUT8"/>
+					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
+					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
+					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
+				</macros>
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactExtension="axf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Flashstart 0x3000 Release out8 2MU v103 busfail hand Build" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.29419348.984667403.2034783651.1154671112" name="Flashstart 0x3000 Release o8 2t v103 bf ha" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Post-build-steps: checking size, creating *.hex, *.bin files..." postbuildStep="&quot;${ProjDirPath}/../../../script/build-script/post-build-steps.sh&quot; &quot;${CWD}&quot; &quot;${TargetChip}&quot; &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}&quot; &quot;${ConfigName}&quot; &quot;${sw_version}&quot; &quot;${hexDir}&quot;">
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.984667403.2034783651.1154671112." name="/" resourcePath="">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.2051217520" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
+							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1974570712" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.143174824" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<tool id="com.crt.advproject.cpp.exe.debug.2136378748" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
+								<option id="com.crt.advproject.cpp.arch.597899872" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
+								<option id="com.crt.advproject.cpp.thumb.1889452949" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="com.crt.advproject.cpp.hdrlib.955038472" name="Library headers" superClass="com.crt.advproject.cpp.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.cpp.hdrlib.newlibnano" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.1503397600" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="__NEWLIB__"/>
+									<listOptionValue builtIn="false" value="NDEBUG"/>
+									<listOptionValue builtIn="false" value="CORE_M0"/>
+									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
+									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
+									<listOptionValue builtIn="false" value="__LPC11XX__"/>
+									<listOptionValue builtIn="false" value="${controller_type}"/>
+									<listOptionValue builtIn="false" value="${num_outputs}"/>
+									<listOptionValue builtIn="false" value="${relay_type}"/>
+									<listOptionValue builtIn="false" value="${hand_actuation}"/>
+									<listOptionValue builtIn="false" value="${inverted}"/>
+									<listOptionValue builtIn="false" value="${bus_fail}"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.other.other.1013887778" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions" valueType="string"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.836320953" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/hand-actuation}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/bus_voltage}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib/inc}&quot;"/>
+								</option>
+								<option id="com.crt.advproject.cpp.exe.debug.option.optimization.level.186689541" name="Optimization Level" superClass="com.crt.advproject.cpp.exe.debug.option.optimization.level" useByScannerDiscovery="true" value="gnu.cpp.compiler.optimization.level.size" valueType="enumerated"/>
+								<option id="com.crt.advproject.cpp.misc.dialect.742474539" name="Language standard" superClass="com.crt.advproject.cpp.misc.dialect" useByScannerDiscovery="true" value="com.crt.advproject.misc.dialect.cppdefault" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.warnings.pedantic.734435415" name="Pedantic (-pedantic)" superClass="gnu.cpp.compiler.option.warnings.pedantic" useByScannerDiscovery="false" value="false" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.warnings.allwarn.1251999578" name="All warnings (-Wall)" superClass="gnu.cpp.compiler.option.warnings.allwarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.compiler.option.include.files.1521142092" name="Include files (-include)" superClass="gnu.cpp.compiler.option.include.files" useByScannerDiscovery="false" valueType="includeFiles"/>
+								<option id="gnu.cpp.compiler.option.warnings.extrawarn.2019662317" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.warnings.toerrors.468472719" name="Warnings as errors (-Werror)" superClass="gnu.cpp.compiler.option.warnings.toerrors" useByScannerDiscovery="false" value="false" valueType="boolean"/>
+								<option id="com.crt.advproject.cpp.exe.debug.option.debugging.level.1231440352" name="Debug Level" superClass="com.crt.advproject.cpp.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.default" valueType="enumerated"/>
+								<option id="com.crt.advproject.cpp.fpu.1477927741" name="Floating point" superClass="com.crt.advproject.cpp.fpu" useByScannerDiscovery="true"/>
+								<option id="com.crt.advproject.cpp.specs.2091433605" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
+								<option id="com.crt.advproject.cpp.lto.831605255" name="Enable Link-time optimization (-flto)" superClass="com.crt.advproject.cpp.lto" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<inputType id="com.crt.advproject.compiler.cpp.input.421717363" superClass="com.crt.advproject.compiler.cpp.input"/>
+							</tool>
+							<tool id="com.crt.advproject.gcc.exe.debug.309995207" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug">
+								<option id="com.crt.advproject.gcc.arch.1307417643" name="Architecture" superClass="com.crt.advproject.gcc.arch" useByScannerDiscovery="true" value="com.crt.advproject.gcc.target.cm0" valueType="enumerated"/>
+								<option id="com.crt.advproject.gcc.thumb.530433486" name="Thumb mode" superClass="com.crt.advproject.gcc.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="com.crt.advproject.gcc.hdrlib.1872724313" name="Library headers" superClass="com.crt.advproject.gcc.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.gcc.hdrlib.newlibnano" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.preprocessor.def.symbols.590968810" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="__NEWLIB__"/>
+									<listOptionValue builtIn="false" value="NDEBUG"/>
+									<listOptionValue builtIn="false" value="CORE_M0"/>
+									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
+									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
+									<listOptionValue builtIn="false" value="__LPC11XX__"/>
+								</option>
+								<option id="gnu.c.compiler.option.misc.other.309639597" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
+								<option id="gnu.c.compiler.option.include.paths.247074049" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false"/>
+								<option id="com.crt.advproject.gcc.exe.debug.option.optimization.level.497835591" name="Optimization Level" superClass="com.crt.advproject.gcc.exe.debug.option.optimization.level" useByScannerDiscovery="true" value="gnu.c.optimization.level.size" valueType="enumerated"/>
+								<option id="com.crt.advproject.gcc.specs.940633627" name="Specs" superClass="com.crt.advproject.gcc.specs" useByScannerDiscovery="false" value="com.crt.advproject.gcc.specs.newlibnano" valueType="enumerated"/>
+								<option id="com.crt.advproject.gcc.exe.debug.option.debugging.level.288500488" name="Debug Level" superClass="com.crt.advproject.gcc.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.default" valueType="enumerated"/>
+								<option id="com.crt.advproject.gcc.lto.828698639" name="Enable Link-time optimization (-flto)" superClass="com.crt.advproject.gcc.lto" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<inputType id="com.crt.advproject.compiler.input.76431253" superClass="com.crt.advproject.compiler.input"/>
+							</tool>
+							<tool id="com.crt.advproject.gas.exe.debug.939210526" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug">
+								<option id="com.crt.advproject.gas.arch.1067445928" name="Architecture" superClass="com.crt.advproject.gas.arch" useByScannerDiscovery="false" value="com.crt.advproject.gas.target.cm0" valueType="enumerated"/>
+								<option id="com.crt.advproject.gas.thumb.55833498" name="Thumb mode" superClass="com.crt.advproject.gas.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="gnu.both.asm.option.flags.crt.20641334" name="Assembler flags" superClass="gnu.both.asm.option.flags.crt" useByScannerDiscovery="false" value="-c -x assembler-with-cpp -D__NEWLIB__ -DNDEBUG" valueType="string"/>
+								<option id="com.crt.advproject.gas.hdrlib.809985198" name="Library headers" superClass="com.crt.advproject.gas.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.gas.hdrlib.newlibnano" valueType="enumerated"/>
+								<option id="com.crt.advproject.gas.specs.1157946013" name="Specs" superClass="com.crt.advproject.gas.specs" useByScannerDiscovery="false" value="com.crt.advproject.gas.specs.newlibnano" valueType="enumerated"/>
+								<option id="gnu.both.asm.option.include.paths.638914389" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false"/>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1132953578" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+								<inputType id="com.crt.advproject.assembler.input.2056407905" name="Additional Assembly Source Files" superClass="com.crt.advproject.assembler.input"/>
+							</tool>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.663891434" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
+								<option id="com.crt.advproject.link.cpp.arch.695187227" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
+								<option id="com.crt.advproject.link.cpp.thumb.303324185" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="com.crt.advproject.link.cpp.script.506996703" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="out8-bcu1_Flashstart_0x3000_Release_o8_2t_v103_bf_ha.ld" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.manage.354557517" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="gnu.cpp.link.option.nostdlibs.2076577607" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.336755637" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
+									<listOptionValue builtIn="false" value="-Map=&quot;${BuildArtifactFileBaseName}.map&quot;"/>
+									<listOptionValue builtIn="false" value="--gc-sections"/>
+								</option>
+								<option id="com.crt.advproject.link.cpp.hdrlib.1924472520" name="Library" superClass="com.crt.advproject.link.cpp.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.cpp.link.hdrlib.newlibnano.nohost" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.11780143" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+									<listOptionValue builtIn="false" value="CMSIS_CORE_LPC11xx"/>
+									<listOptionValue builtIn="false" value="sblib"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.1218422671" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib/Release}&quot;"/>
+								</option>
+								<option id="com.crt.advproject.link.cpp.crpenable.667436496" name="Enable automatic placement of Code Read Protection field in image" superClass="com.crt.advproject.link.cpp.crpenable" useByScannerDiscovery="false" value="false" valueType="boolean"/>
+								<option id="com.crt.advproject.link.cpp.multicore.slave.1190355908" name="Multicore configuration" superClass="com.crt.advproject.link.cpp.multicore.slave" useByScannerDiscovery="false"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="com.crt.advproject.link.cpp.multicore.master.userobjs.998478748" name="Slave Objects (not visible)" superClass="com.crt.advproject.link.cpp.multicore.master.userobjs" useByScannerDiscovery="false" valueType="userObjs"/>
+								<option id="com.crt.advproject.link.memory.load.image.cpp.414724704" name="Plain load image" superClass="com.crt.advproject.link.memory.load.image.cpp" useByScannerDiscovery="false" value="false;" valueType="string"/>
+								<option defaultValue="com.crt.advproject.heapAndStack.lpcXpressoStyle.cpp" id="com.crt.advproject.link.memory.heapAndStack.style.cpp.2028697545" name="Heap and Stack placement" superClass="com.crt.advproject.link.memory.heapAndStack.style.cpp" useByScannerDiscovery="false" value="com.crt.advproject.heapAndStack.lpcXpressoStyle.cpp" valueType="enumerated"/>
+								<option id="com.crt.advproject.link.memory.heapAndStack.cpp.2018648175" name="Heap and Stack options" superClass="com.crt.advproject.link.memory.heapAndStack.cpp" useByScannerDiscovery="false" value="&amp;Heap:Default;Post Data;Default&amp;Stack:Default;End;Default" valueType="string"/>
+								<option id="com.crt.advproject.link.memory.data.cpp.1415678426" name="Global data placement" superClass="com.crt.advproject.link.memory.data.cpp" useByScannerDiscovery="false" value="Default" valueType="string"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="com.crt.advproject.link.memory.sections.cpp.1237646547" name="Extra linker script input sections" superClass="com.crt.advproject.link.memory.sections.cpp" useByScannerDiscovery="false" valueType="stringList"/>
+								<option id="com.crt.advproject.link.cpp.multicore.master.1562882125" name="Multicore master" superClass="com.crt.advproject.link.cpp.multicore.master"/>
+								<option id="com.crt.advproject.link.cpp.lto.714790040" name="Enable Link-time optimization (-flto)" superClass="com.crt.advproject.link.cpp.lto" value="true" valueType="boolean"/>
+								<option id="com.crt.advproject.link.cpp.lto.optmization.level.273183392" name="Link-time optimization level" superClass="com.crt.advproject.link.cpp.lto.optmization.level" value="link.cpp.optimization.level.size" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.940834606" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="com.crt.advproject.link.exe.debug.2111674343" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug">
+								<option id="com.crt.advproject.link.gcc.hdrlib.1921381390" name="Library" superClass="com.crt.advproject.link.gcc.hdrlib"/>
+							</tool>
+							<tool id="com.crt.advproject.tool.debug.debug.1844449887" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug"/>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+		<cconfiguration id="com.crt.advproject.config.exe.debug.29419348.984667403.2034783651.1154671112.1538139844">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.29419348.984667403.2034783651.1154671112.1538139844" moduleId="org.eclipse.cdt.core.settings" name="Release o8 2t v103 bf ha">
+				<macros>
+					<stringMacro name="controller_type" type="VALUE_TEXT" value="MU2_V103"/>
+					<stringMacro name="num_outputs" type="VALUE_TEXT" value="OUT8"/>
+					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
+					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
+					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
+				</macros>
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactExtension="axf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Release out8 2MU v103 busfail hand Build" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.29419348.984667403.2034783651.1154671112.1538139844" name="Release o8 2t v103 bf ha" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Post-build-steps: checking size, creating *.hex, *.bin files..." postbuildStep="&quot;${ProjDirPath}/../../../script/build-script/post-build-steps.sh&quot; &quot;${CWD}&quot; &quot;${TargetChip}&quot; &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}&quot; &quot;${ConfigName}&quot; &quot;${sw_version}&quot; &quot;${hexDir}&quot;">
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.984667403.2034783651.1154671112.1538139844." name="/" resourcePath="">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.1147475946" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
+							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1018786028" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.1343389788" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<tool id="com.crt.advproject.cpp.exe.debug.1691226087" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
+								<option id="com.crt.advproject.cpp.arch.271402549" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
+								<option id="com.crt.advproject.cpp.thumb.464253563" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="com.crt.advproject.cpp.hdrlib.1034234123" name="Library headers" superClass="com.crt.advproject.cpp.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.cpp.hdrlib.newlibnano" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.1417830605" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="__NEWLIB__"/>
+									<listOptionValue builtIn="false" value="NDEBUG"/>
+									<listOptionValue builtIn="false" value="CORE_M0"/>
+									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
+									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
+									<listOptionValue builtIn="false" value="__LPC11XX__"/>
+									<listOptionValue builtIn="false" value="${controller_type}"/>
+									<listOptionValue builtIn="false" value="${num_outputs}"/>
+									<listOptionValue builtIn="false" value="${relay_type}"/>
+									<listOptionValue builtIn="false" value="${hand_actuation}"/>
+									<listOptionValue builtIn="false" value="${inverted}"/>
+									<listOptionValue builtIn="false" value="${bus_fail}"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.other.other.1097933840" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions" valueType="string"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.1127685134" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/hand-actuation}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/bus_voltage}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib/inc}&quot;"/>
+								</option>
+								<option id="com.crt.advproject.cpp.exe.debug.option.optimization.level.2027888216" name="Optimization Level" superClass="com.crt.advproject.cpp.exe.debug.option.optimization.level" useByScannerDiscovery="true" value="gnu.cpp.compiler.optimization.level.size" valueType="enumerated"/>
+								<option id="com.crt.advproject.cpp.misc.dialect.2096604790" name="Language standard" superClass="com.crt.advproject.cpp.misc.dialect" useByScannerDiscovery="true" value="com.crt.advproject.misc.dialect.cppdefault" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.warnings.pedantic.1845236723" name="Pedantic (-pedantic)" superClass="gnu.cpp.compiler.option.warnings.pedantic" useByScannerDiscovery="false" value="false" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.warnings.allwarn.1215356865" name="All warnings (-Wall)" superClass="gnu.cpp.compiler.option.warnings.allwarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.compiler.option.include.files.2051118167" name="Include files (-include)" superClass="gnu.cpp.compiler.option.include.files" useByScannerDiscovery="false" valueType="includeFiles"/>
+								<option id="gnu.cpp.compiler.option.warnings.extrawarn.2002806149" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.warnings.toerrors.1294869179" name="Warnings as errors (-Werror)" superClass="gnu.cpp.compiler.option.warnings.toerrors" useByScannerDiscovery="false" value="false" valueType="boolean"/>
+								<option id="com.crt.advproject.cpp.exe.debug.option.debugging.level.1366726636" name="Debug Level" superClass="com.crt.advproject.cpp.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.default" valueType="enumerated"/>
+								<option id="com.crt.advproject.cpp.fpu.15126249" name="Floating point" superClass="com.crt.advproject.cpp.fpu" useByScannerDiscovery="true"/>
+								<option id="com.crt.advproject.cpp.specs.330089169" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
+								<option id="com.crt.advproject.cpp.lto.1221538003" name="Enable Link-time optimization (-flto)" superClass="com.crt.advproject.cpp.lto" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<inputType id="com.crt.advproject.compiler.cpp.input.561166069" superClass="com.crt.advproject.compiler.cpp.input"/>
+							</tool>
+							<tool id="com.crt.advproject.gcc.exe.debug.1697553661" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug">
+								<option id="com.crt.advproject.gcc.arch.552732940" name="Architecture" superClass="com.crt.advproject.gcc.arch" useByScannerDiscovery="true" value="com.crt.advproject.gcc.target.cm0" valueType="enumerated"/>
+								<option id="com.crt.advproject.gcc.thumb.2116259194" name="Thumb mode" superClass="com.crt.advproject.gcc.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="com.crt.advproject.gcc.hdrlib.39503510" name="Library headers" superClass="com.crt.advproject.gcc.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.gcc.hdrlib.newlibnano" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.preprocessor.def.symbols.2133451222" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="__NEWLIB__"/>
+									<listOptionValue builtIn="false" value="NDEBUG"/>
+									<listOptionValue builtIn="false" value="CORE_M0"/>
+									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
+									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
+									<listOptionValue builtIn="false" value="__LPC11XX__"/>
+								</option>
+								<option id="gnu.c.compiler.option.misc.other.1544149156" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
+								<option id="gnu.c.compiler.option.include.paths.1614073647" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false"/>
+								<option id="com.crt.advproject.gcc.exe.debug.option.optimization.level.2120094734" name="Optimization Level" superClass="com.crt.advproject.gcc.exe.debug.option.optimization.level" useByScannerDiscovery="true" value="gnu.c.optimization.level.size" valueType="enumerated"/>
+								<option id="com.crt.advproject.gcc.specs.34745615" name="Specs" superClass="com.crt.advproject.gcc.specs" useByScannerDiscovery="false" value="com.crt.advproject.gcc.specs.newlibnano" valueType="enumerated"/>
+								<option id="com.crt.advproject.gcc.exe.debug.option.debugging.level.944792480" name="Debug Level" superClass="com.crt.advproject.gcc.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.default" valueType="enumerated"/>
+								<option id="com.crt.advproject.gcc.lto.1695991802" name="Enable Link-time optimization (-flto)" superClass="com.crt.advproject.gcc.lto" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<inputType id="com.crt.advproject.compiler.input.361769515" superClass="com.crt.advproject.compiler.input"/>
+							</tool>
+							<tool id="com.crt.advproject.gas.exe.debug.2012105830" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug">
+								<option id="com.crt.advproject.gas.arch.250978909" name="Architecture" superClass="com.crt.advproject.gas.arch" useByScannerDiscovery="false" value="com.crt.advproject.gas.target.cm0" valueType="enumerated"/>
+								<option id="com.crt.advproject.gas.thumb.249049917" name="Thumb mode" superClass="com.crt.advproject.gas.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="gnu.both.asm.option.flags.crt.1926424796" name="Assembler flags" superClass="gnu.both.asm.option.flags.crt" useByScannerDiscovery="false" value="-c -x assembler-with-cpp -D__NEWLIB__ -DNDEBUG" valueType="string"/>
+								<option id="com.crt.advproject.gas.hdrlib.2133284200" name="Library headers" superClass="com.crt.advproject.gas.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.gas.hdrlib.newlibnano" valueType="enumerated"/>
+								<option id="com.crt.advproject.gas.specs.853804319" name="Specs" superClass="com.crt.advproject.gas.specs" useByScannerDiscovery="false" value="com.crt.advproject.gas.specs.newlibnano" valueType="enumerated"/>
+								<option id="gnu.both.asm.option.include.paths.296248916" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false"/>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1027337696" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+								<inputType id="com.crt.advproject.assembler.input.170322491" name="Additional Assembly Source Files" superClass="com.crt.advproject.assembler.input"/>
+							</tool>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.1433941312" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
+								<option id="com.crt.advproject.link.cpp.arch.1011434586" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
+								<option id="com.crt.advproject.link.cpp.thumb.1939401369" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="com.crt.advproject.link.cpp.script.815275583" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="out8-bcu1_Release_o8_2t_v103_bf_ha.ld" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.manage.1180135402" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="gnu.cpp.link.option.nostdlibs.1842487918" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.1637167968" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
+									<listOptionValue builtIn="false" value="-Map=&quot;${BuildArtifactFileBaseName}.map&quot;"/>
+									<listOptionValue builtIn="false" value="--gc-sections"/>
+								</option>
+								<option id="com.crt.advproject.link.cpp.hdrlib.1328894180" name="Library" superClass="com.crt.advproject.link.cpp.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.cpp.link.hdrlib.newlibnano.nohost" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.1005769689" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+									<listOptionValue builtIn="false" value="CMSIS_CORE_LPC11xx"/>
+									<listOptionValue builtIn="false" value="sblib"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.1735286599" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib/Release}&quot;"/>
+								</option>
+								<option id="com.crt.advproject.link.cpp.crpenable.613606921" name="Enable automatic placement of Code Read Protection field in image" superClass="com.crt.advproject.link.cpp.crpenable" useByScannerDiscovery="false" value="false" valueType="boolean"/>
+								<option id="com.crt.advproject.link.cpp.multicore.slave.1935605664" name="Multicore configuration" superClass="com.crt.advproject.link.cpp.multicore.slave" useByScannerDiscovery="false"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="com.crt.advproject.link.cpp.multicore.master.userobjs.1871275365" name="Slave Objects (not visible)" superClass="com.crt.advproject.link.cpp.multicore.master.userobjs" useByScannerDiscovery="false" valueType="userObjs"/>
+								<option id="com.crt.advproject.link.memory.load.image.cpp.302074233" name="Plain load image" superClass="com.crt.advproject.link.memory.load.image.cpp" useByScannerDiscovery="false" value="false;" valueType="string"/>
+								<option defaultValue="com.crt.advproject.heapAndStack.lpcXpressoStyle.cpp" id="com.crt.advproject.link.memory.heapAndStack.style.cpp.767918256" name="Heap and Stack placement" superClass="com.crt.advproject.link.memory.heapAndStack.style.cpp" useByScannerDiscovery="false" value="com.crt.advproject.heapAndStack.lpcXpressoStyle.cpp" valueType="enumerated"/>
+								<option id="com.crt.advproject.link.memory.heapAndStack.cpp.480227179" name="Heap and Stack options" superClass="com.crt.advproject.link.memory.heapAndStack.cpp" useByScannerDiscovery="false" value="&amp;Heap:Default;Post Data;Default&amp;Stack:Default;End;Default" valueType="string"/>
+								<option id="com.crt.advproject.link.memory.data.cpp.687367105" name="Global data placement" superClass="com.crt.advproject.link.memory.data.cpp" useByScannerDiscovery="false" value="Default" valueType="string"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="com.crt.advproject.link.memory.sections.cpp.16978181" name="Extra linker script input sections" superClass="com.crt.advproject.link.memory.sections.cpp" useByScannerDiscovery="false" valueType="stringList"/>
+								<option id="com.crt.advproject.link.cpp.multicore.master.1071615485" name="Multicore master" superClass="com.crt.advproject.link.cpp.multicore.master"/>
+								<option id="com.crt.advproject.link.cpp.lto.395114850" name="Enable Link-time optimization (-flto)" superClass="com.crt.advproject.link.cpp.lto" value="true" valueType="boolean"/>
+								<option id="com.crt.advproject.link.cpp.lto.optmization.level.1674330746" name="Link-time optimization level" superClass="com.crt.advproject.link.cpp.lto.optmization.level" value="link.cpp.optimization.level.size" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1510037874" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="com.crt.advproject.link.exe.debug.1829317838" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug">
+								<option id="com.crt.advproject.link.gcc.hdrlib.960407903" name="Library" superClass="com.crt.advproject.link.gcc.hdrlib"/>
+							</tool>
+							<tool id="com.crt.advproject.tool.debug.debug.861253043" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug"/>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+		<cconfiguration id="com.crt.advproject.config.exe.debug.29419348.2117716744">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.crt.advproject.config.exe.debug.29419348.2117716744" moduleId="org.eclipse.cdt.core.settings" name="Debug o8 2t v103 bf ha">
+				<macros>
+					<stringMacro name="controller_type" type="VALUE_TEXT" value="MU2_V103"/>
+					<stringMacro name="num_outputs" type="VALUE_TEXT" value="OUT8"/>
+					<stringMacro name="relay_type" type="VALUE_TEXT" value=""/>
+					<stringMacro name="hand_actuation" type="VALUE_TEXT" value="HAND_ACTUATION"/>
+					<stringMacro name="bus_fail" type="VALUE_TEXT" value="BUSFAIL"/>
+					<stringMacro name="sw_version" type="VALUE_TEXT" value="5.12"/>
+				</macros>
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactExtension="axf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Debug out8 2MU v103 busfail hand Build" errorParsers="org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="com.crt.advproject.config.exe.debug.29419348.2117716744" name="Debug o8 2t v103 bf ha" parent="com.crt.advproject.config.exe.debug" postannouncebuildStep="Post-build-steps: checking size, creating *.hex, *.bin files..." postbuildStep="&quot;${ProjDirPath}/../../../script/build-script/post-build-steps.sh&quot; &quot;${CWD}&quot; &quot;${TargetChip}&quot; &quot;${BuildArtifactFileName}&quot; &quot;${BuildArtifactFileBaseName}&quot; &quot;${ConfigName}&quot; &quot;${sw_version}&quot; &quot;${hexDir}&quot;">
+					<folderInfo id="com.crt.advproject.config.exe.debug.29419348.2117716744." name="/" resourcePath="">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.1009773375" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
+							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1485411623" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
+							<builder buildPath="${workspace_loc:/out8-bcu1}/Debug" id="com.crt.advproject.builder.exe.debug.1023333691" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<tool id="com.crt.advproject.cpp.exe.debug.347393772" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug">
+								<option id="com.crt.advproject.cpp.arch.149293649" name="Architecture" superClass="com.crt.advproject.cpp.arch" useByScannerDiscovery="true" value="com.crt.advproject.cpp.target.cm0" valueType="enumerated"/>
+								<option id="com.crt.advproject.cpp.thumb.1026142001" name="Thumb mode" superClass="com.crt.advproject.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="com.crt.advproject.cpp.hdrlib.920025233" name="Library headers" superClass="com.crt.advproject.cpp.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.cpp.hdrlib.newlibnano" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.preprocessor.def.889949716" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="__NEWLIB__"/>
+									<listOptionValue builtIn="false" value="DEBUG"/>
+									<listOptionValue builtIn="false" value="CORE_M0"/>
+									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
+									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
+									<listOptionValue builtIn="false" value="__LPC11XX__"/>
+									<listOptionValue builtIn="false" value="${controller_type}"/>
+									<listOptionValue builtIn="false" value="${num_outputs}"/>
+									<listOptionValue builtIn="false" value="${relay_type}"/>
+									<listOptionValue builtIn="false" value="${hand_actuation}"/>
+									<listOptionValue builtIn="false" value="${inverted}"/>
+									<listOptionValue builtIn="false" value="${bus_fail}"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.other.other.1832533851" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections -fno-rtti -fno-exceptions" valueType="string"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.compiler.option.include.paths.499895426" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/hand-actuation}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/bus_voltage}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib/inc}&quot;"/>
+								</option>
+								<option id="com.crt.advproject.cpp.exe.debug.option.optimization.level.1224098239" name="Optimization Level" superClass="com.crt.advproject.cpp.exe.debug.option.optimization.level" useByScannerDiscovery="true"/>
+								<option id="com.crt.advproject.cpp.misc.dialect.412869809" name="Language standard" superClass="com.crt.advproject.cpp.misc.dialect" useByScannerDiscovery="true" value="com.crt.advproject.misc.dialect.cppdefault" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.warnings.pedantic.2140515618" name="Pedantic (-pedantic)" superClass="gnu.cpp.compiler.option.warnings.pedantic" useByScannerDiscovery="false" value="false" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.warnings.allwarn.254228268" name="All warnings (-Wall)" superClass="gnu.cpp.compiler.option.warnings.allwarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.compiler.option.include.files.1788959572" name="Include files (-include)" superClass="gnu.cpp.compiler.option.include.files" useByScannerDiscovery="false" valueType="includeFiles"/>
+								<option id="gnu.cpp.compiler.option.warnings.extrawarn.212969531" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.warnings.toerrors.77933899" name="Warnings as errors (-Werror)" superClass="gnu.cpp.compiler.option.warnings.toerrors" useByScannerDiscovery="false" value="false" valueType="boolean"/>
+								<option id="com.crt.advproject.cpp.fpu.484497007" name="Floating point" superClass="com.crt.advproject.cpp.fpu" useByScannerDiscovery="true"/>
+								<option id="gnu.cpp.compiler.option.warnings.wconversion.243282252" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.cpp.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
+								<option id="com.crt.advproject.cpp.specs.663475520" name="Specs" superClass="com.crt.advproject.cpp.specs" useByScannerDiscovery="false" value="com.crt.advproject.cpp.specs.newlibnano" valueType="enumerated"/>
+								<inputType id="com.crt.advproject.compiler.cpp.input.1880312788" superClass="com.crt.advproject.compiler.cpp.input"/>
+							</tool>
+							<tool id="com.crt.advproject.gcc.exe.debug.408610574" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug">
+								<option id="com.crt.advproject.gcc.arch.1251978793" name="Architecture" superClass="com.crt.advproject.gcc.arch" useByScannerDiscovery="true" value="com.crt.advproject.gcc.target.cm0" valueType="enumerated"/>
+								<option id="com.crt.advproject.gcc.thumb.1301707691" name="Thumb mode" superClass="com.crt.advproject.gcc.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="com.crt.advproject.gcc.hdrlib.1476058112" name="Library headers" superClass="com.crt.advproject.gcc.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.gcc.hdrlib.newlibnano" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.preprocessor.def.symbols.1344957357" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="__NEWLIB__"/>
+									<listOptionValue builtIn="false" value="DEBUG"/>
+									<listOptionValue builtIn="false" value="CORE_M0"/>
+									<listOptionValue builtIn="false" value="__USE_CMSIS=CMSIS_CORE_LPC11xx"/>
+									<listOptionValue builtIn="false" value="CPP_USE_HEAP"/>
+									<listOptionValue builtIn="false" value="__LPC11XX__"/>
+								</option>
+								<option id="gnu.c.compiler.option.misc.other.1556307124" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
+								<option id="gnu.c.compiler.option.include.paths.2044167450" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false"/>
+								<option id="com.crt.advproject.gcc.exe.debug.option.optimization.level.211052894" name="Optimization Level" superClass="com.crt.advproject.gcc.exe.debug.option.optimization.level" useByScannerDiscovery="true"/>
+								<option id="com.crt.advproject.gcc.specs.1625434314" name="Specs" superClass="com.crt.advproject.gcc.specs" useByScannerDiscovery="false" value="com.crt.advproject.gcc.specs.newlibnano" valueType="enumerated"/>
+								<inputType id="com.crt.advproject.compiler.input.1579066538" superClass="com.crt.advproject.compiler.input"/>
+							</tool>
+							<tool id="com.crt.advproject.gas.exe.debug.833901598" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug">
+								<option id="com.crt.advproject.gas.arch.2114862918" name="Architecture" superClass="com.crt.advproject.gas.arch" useByScannerDiscovery="false" value="com.crt.advproject.gas.target.cm0" valueType="enumerated"/>
+								<option id="com.crt.advproject.gas.thumb.2020549079" name="Thumb mode" superClass="com.crt.advproject.gas.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="gnu.both.asm.option.flags.crt.165669926" name="Assembler flags" superClass="gnu.both.asm.option.flags.crt" useByScannerDiscovery="false" value="-c -x assembler-with-cpp -D__NEWLIB__ -DDEBUG" valueType="string"/>
+								<option id="com.crt.advproject.gas.hdrlib.1246995418" name="Library headers" superClass="com.crt.advproject.gas.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.gas.hdrlib.newlibnano" valueType="enumerated"/>
+								<option id="com.crt.advproject.gas.specs.510534748" name="Specs" superClass="com.crt.advproject.gas.specs" useByScannerDiscovery="false" value="com.crt.advproject.gas.specs.newlibnano" valueType="enumerated"/>
+								<option id="gnu.both.asm.option.include.paths.830719015" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false"/>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.903872017" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+								<inputType id="com.crt.advproject.assembler.input.610117531" name="Additional Assembly Source Files" superClass="com.crt.advproject.assembler.input"/>
+							</tool>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.215990815" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug">
+								<option id="com.crt.advproject.link.cpp.arch.1917671861" name="Architecture" superClass="com.crt.advproject.link.cpp.arch" useByScannerDiscovery="false" value="com.crt.advproject.link.cpp.target.cm0" valueType="enumerated"/>
+								<option id="com.crt.advproject.link.cpp.thumb.1948051" name="Thumb mode" superClass="com.crt.advproject.link.cpp.thumb" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="com.crt.advproject.link.cpp.script.229960377" name="Linker script" superClass="com.crt.advproject.link.cpp.script" useByScannerDiscovery="false" value="out8-bcu1_Debug_o8_2t_v103_bf_ha.ld" valueType="string"/>
+								<option id="com.crt.advproject.link.cpp.manage.465546170" name="Manage linker script" superClass="com.crt.advproject.link.cpp.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="gnu.cpp.link.option.nostdlibs.1744505617" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.other.1744462116" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other" useByScannerDiscovery="false" valueType="stringList">
+									<listOptionValue builtIn="false" value="-Map=&quot;${BuildArtifactFileBaseName}.map&quot;"/>
+									<listOptionValue builtIn="false" value="--gc-sections"/>
+								</option>
+								<option id="com.crt.advproject.link.cpp.hdrlib.256121546" name="Library" superClass="com.crt.advproject.link.cpp.hdrlib" useByScannerDiscovery="false" value="com.crt.advproject.cpp.link.hdrlib.newlibnano.nohost" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.libs.967160574" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+									<listOptionValue builtIn="false" value="CMSIS_CORE_LPC11xx"/>
+									<listOptionValue builtIn="false" value="sblib"/>
+								</option>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.cpp.link.option.paths.1734199811" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CMSIS_CORE_LPC11xx/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sblib/Debug}&quot;"/>
+								</option>
+								<option id="com.crt.advproject.link.cpp.crpenable.1079166297" name="Enable automatic placement of Code Read Protection field in image" superClass="com.crt.advproject.link.cpp.crpenable" useByScannerDiscovery="false" value="false" valueType="boolean"/>
+								<option id="com.crt.advproject.link.cpp.multicore.slave.1862874999" name="Multicore configuration" superClass="com.crt.advproject.link.cpp.multicore.slave" useByScannerDiscovery="false"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="com.crt.advproject.link.cpp.multicore.master.userobjs.371724892" name="Slave Objects (not visible)" superClass="com.crt.advproject.link.cpp.multicore.master.userobjs" useByScannerDiscovery="false" valueType="userObjs"/>
+								<option id="com.crt.advproject.link.memory.load.image.cpp.1091183927" name="Plain load image" superClass="com.crt.advproject.link.memory.load.image.cpp" useByScannerDiscovery="false" value="false;" valueType="string"/>
+								<option defaultValue="com.crt.advproject.heapAndStack.lpcXpressoStyle.cpp" id="com.crt.advproject.link.memory.heapAndStack.style.cpp.140996348" name="Heap and Stack placement" superClass="com.crt.advproject.link.memory.heapAndStack.style.cpp" useByScannerDiscovery="false" value="com.crt.advproject.heapAndStack.lpcXpressoStyle.cpp" valueType="enumerated"/>
+								<option id="com.crt.advproject.link.memory.heapAndStack.cpp.569757317" name="Heap and Stack options" superClass="com.crt.advproject.link.memory.heapAndStack.cpp" useByScannerDiscovery="false" value="&amp;Heap:Default;Post Data;Default&amp;Stack:Default;End;Default" valueType="string"/>
+								<option id="com.crt.advproject.link.memory.data.cpp.807353387" name="Global data placement" superClass="com.crt.advproject.link.memory.data.cpp" useByScannerDiscovery="false" value="Default" valueType="string"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="com.crt.advproject.link.memory.sections.cpp.1428787148" name="Extra linker script input sections" superClass="com.crt.advproject.link.memory.sections.cpp" useByScannerDiscovery="false" valueType="stringList"/>
+								<option id="com.crt.advproject.link.cpp.multicore.master.1890789293" name="Multicore master" superClass="com.crt.advproject.link.cpp.multicore.master"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.118980284" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="com.crt.advproject.link.exe.debug.1388712085" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug">
+								<option id="com.crt.advproject.link.gcc.hdrlib.954108575" name="Library" superClass="com.crt.advproject.link.gcc.hdrlib"/>
+							</tool>
+							<tool id="com.crt.advproject.tool.debug.debug.859144226" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug"/>
+						</toolChain>
+					</folderInfo>
+					<fileInfo id="com.crt.advproject.config.exe.debug.29419348.2117716744.src/cr_startup_lpc11xx.cpp" name="cr_startup_lpc11xx.cpp" rcbsApplicability="disable" resourcePath="src/cr_startup_lpc11xx.cpp" toolsToInvoke="com.crt.advproject.cpp.exe.debug.215314657">
+						<tool id="com.crt.advproject.cpp.exe.debug.215314657" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.347393772">
+							<option id="com.crt.advproject.cpp.exe.debug.option.optimization.level.1837847627" name="Optimization Level" superClass="com.crt.advproject.cpp.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.size" valueType="enumerated"/>
+							<inputType id="com.crt.advproject.compiler.cpp.input.1608443442" superClass="com.crt.advproject.compiler.cpp.input"/>
+						</tool>
+					</fileInfo>
+					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="out8-bcu1.com.crt.advproject.projecttype.exe.1181457139" name="Executable" projectType="com.crt.advproject.projecttype.exe"/>
@@ -3280,7 +3716,7 @@
 		<configuration configurationName="Release o8 4t bf ha">
 			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
 		</configuration>
-		<configuration configurationName="Debug_LPC11UXX">
+		<configuration configurationName="Debug o8 2t v103 bf ha">
 			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
 		</configuration>
 		<configuration configurationName="Debug OUT8 4TE HAND BI-STABLE">
@@ -3299,6 +3735,9 @@
 			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
 		</configuration>
 		<configuration configurationName="Debug o8 4t">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Release o8 2t v103 bf ha">
 			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
 		</configuration>
 		<configuration configurationName="Debug o8 4t bf ha">
@@ -3326,6 +3765,9 @@
 			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
 		</configuration>
 		<configuration configurationName="Debug OUT8 4TE HAND">
+			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
+		</configuration>
+		<configuration configurationName="Flashstart 0x3000 Release o8 2t v103 bf ha">
 			<resource resourceType="PROJECT" workspacePath="/out8-bcu1"/>
 		</configuration>
 		<configuration configurationName="Release o8 4t bu ha">

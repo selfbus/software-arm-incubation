@@ -1,27 +1,23 @@
 /*
- *  Copyright (c) 2016 Oliver Stefan <MAIL>
+ *  Copyright (c) 2016-2021 Oliver Stefan
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
  *  published by the Free Software Foundation.
  */
+
 #ifndef SENSORS_H
 #define SENSORS_H
 
-#include <sblib/i2c/SHT2x.h>
 #include <sblib/i2c/CCS811.h>
 
-extern SHT2xClass SHT21;
-
-extern CCS811Class CCS811;
-
 struct air_quality_values{
-	bool functionActive;		//air quality functions are active
 
 	unsigned int sendIntervall;
 
 	unsigned int AirVOC;				//VOC in Air
 	unsigned int AirCO2;				//CO2 equivalent of VOC
+	unsigned int AirCO2Old;
 	uint8_t IAQcondition;	//current status of IAQ (good, neutral, bad)
 };
 
@@ -35,7 +31,6 @@ extern struct air_quality_values air_quality;
 
 
 struct air_humidity_values{
-	bool functionActive;		//air humidity functions are active
 
 	unsigned int sendIntervall;
 
@@ -44,7 +39,7 @@ struct air_humidity_values{
 
 //	unsigned short AirRH;
 	int AirRH;
-
+	int AirRHOld;
 };
 
 extern struct air_humidity_values air_humidity;
@@ -63,9 +58,12 @@ enum connExtTemp {
 };
 
 struct temp_values{
-	unsigned int functionActive;	//temperature functions are active
 
 	unsigned int sendInterval;
+
+	unsigned int sendIntervalTargetTemp;
+
+	unsigned int sendIntervalExternalTemp;
 
 //	unsigned int autoResetTime; 	// Zeit, nach der von Hand- auf Automatik-Temperaturvorgabe zurückgesetzt wird [Minuten]
 
@@ -82,8 +80,12 @@ struct temp_values{
 //	unsigned short tempIntern; 		//DPT9 format, Messwert vom internen Temperatursensor
 	int tempIntern;
 
+	int tempInternOld;	 			// Merker für den Vergleich, ob sich der Messwert verändert hat
+
 //	unsigned short tempExtern;		//DPT9 format, Messwert vom externen Temperatursensor
 	int tempExtern;
+
+	int tempExternOld;				// Merker für den Vergleich, ob sich der Messwert verändert hat
 
 	bool floorTempShow; 			//If the Floor Temp should be showed in the LCD
 
@@ -100,7 +102,7 @@ extern int tempEepromData[TEMP_EEPROM_SIZE];
 
 void initSensors(void);
 void checkTempSensors(void);
-void handleSetTempSourcePeriodic(void);
+void handleTargetTempSourcePeriodic(void);
 void checkAirQuality(void);
 void checkAirHumidity(void);
 void evalIAQ(void);

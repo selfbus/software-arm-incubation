@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016 Oliver Stefan <os252@gmx.de>
+ *  Copyright (c) 2016-2021 Oliver Stefan
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 3 as
@@ -9,39 +9,63 @@
 #ifndef params_h
 #define params_h
 
-//#include <sblib/mem_mapper.h>
-#include "ext_eeprom.h"
+#include <sblib/timeout.h>
+#include <sblib/mem_mapper.h>
 
 // Eeprom address: Start of Function parameters
-#define EE_FUNCTIONS_PARAMS_BASE         0x01f6	//D:502
+#define EE_FUNCTIONS_PARAMS_BASE         		0x01A0
+#define EE_TARGET_TEMP_FUNCTIONS_BASE			0x01A1
+#define EE_EXT_TEMP_DISPLAY_FUNCTIONS_BASE		0x01A2
 
 // Eeprom address: start of timing parameters
-#define EE_TIMING_PARAMS_BASE  0x01f7 //D503
+#define EE_SENDING_PARAMS_BASE  				0x01A3
+
+// 1 Byte Cyclic Faktor and Cyclic Unit + 2 Byte DPT9 Change Value
+#define EE_SIZE_OF_EACH_SENDING_PARAM			0x3
+
+// sequence of parameters for sending conditions (cyclic and after change)
+#define EE_INTERNAL_TEMP_SENDING_PARAM			0
+#define EE_VOC_SENDING_PARAM					1
+#define EE_HUMIDITY_SENDING_PARAM				2
+#define EE_EXTERNAL_TEMP_SENDING_PARAM			3
+#define EE_TARGET_TEMP_SENDING_PARAM			4
 
 
-// parameters in address 502 of VD
-#define TEMPERATURE_FUNCTION_ACTIVE	0x80
-#define AIR_QUALITY_ACTIVE			0x40
-#define AIR_HUMIDITY_ACTIVE			0x20
-#define DISPLAY_WINDOW_OPEN			0x10
-#define DISPLAY_AIR_VENTILATION		0x08
-#define FLOOR_TEMP_SHOW				0x04
-#define CONN_EXT_TEMP_SENS			0x02	//if the external Temp Sensor is connected to the board or the value is provided via KNX
+// Eeprom address: switch debounce time [ms]
+#define EE_SWITCH_DEBOUNCE_TIME 				0x01B2
 
-// Eeprom address: Send  actual temperature cyclically (not send = 0 or value: 1,2,3,4,5,10,15,20,30,40,50,60 min)
-// size: 8 bit
-#define EE_ACTUAL_TEMP_SEND_CYCLIC 361
 
-// Eeprom address: Send actual temperature value after change of (not send = 0, steps 0,1K, range: 0,1K - 2.0K)
-#define EE_ACTUAL_TEMP_SEND_CHANGE 363
+// parameters in address 0x01A0 of knxprod
+#define SEND_INTERNAL_TEMPERATURE_CYCLIC		0x80
+#define SEND_INTERNAL_TEMPERATURE_AFTER_CHANGE 	0x40
+#define SEND_VOC_CYCLIC							0x20
+#define SEND_VOC_AFTER_CHANGE 					0x10
+#define SEND_HUMIDITY_CYCLIC					0x08
+#define SEND_HUMIDITY_AFTER_CHANGE 				0x04
+#define SEND_EXTERNAL_TEMPERATURE_CYCLIC		0x02
+#define SEND_EXTERNAL_TEMPERATURE_AFTER_CHANGE 	0x01
 
-// Eeprom address: Send setpoint at change (no = 0, yes = 1)
-#define EE_SETPOINT_TEMP_SEND 407
+
+// parameters in address 0x1A1 of knxprod
+#define SEND_TARGET_TEMPERATURE_CYCLIC			0x80
+#define SEND_TARGET_TEMPERATURE_AFTER_CHANGE 	0x40
+#define USE_EXTERNAL_TARGET_TEMPERATURE			0x20
+
+// parameters in address 0x01A2 of knxprod
+#define EXT_TEMP_SENSOR_IS_CONNECTED			0x80
+#define CONN_EXT_TEMP_SENSOR					0x40	//if the external Temp Sensor is connected to the board or the value is provided via KNX
+#define DISPLAY_WINDOW_OPEN						0x20
+#define DISPLAY_AIR_VENTILATION					0x10
+#define DISPLAY_HEATING_STATE					0x08
+
+
 
 enum timed_values {
 	SW1_LONG_PRESS,
 	SW2_LONG_PRESS,
 	TEMPERATURES_KO,
+	TARGET_TEMPERATURE_KO,
+	EXTERNAL_TEMPERATURE_KO,
 	TEMPERATURES_LCD,
 	AIR_QUALITY_KO,
 	AIR_QUALITY_LCD,
@@ -57,14 +81,6 @@ extern Timeout timeout[NUM_TIMED_VALUES];
 
 // Enumeration of all COM Objects
 enum comObjects {
-	Dummy0,
-	Dummy1,
-	Dummy2,
-	Dummy3,
-	Dummy4,
-	Dummy5,
-	DUmmy6,
-	Dummy7,
 	SEND_INTERN_TEMP,
 	SEND_SET_TEMP,
 	REC_EXT_SET_TEMP,
@@ -72,21 +88,21 @@ enum comObjects {
 	SEND_AIR_HUMIDITY,
 	REC_WINDOW_STATE,
 	REC_VENTILATION_LEVEL,
-	REC_EXT_TEMP
+	SEND_REC_EXT_TEMP
 };
 
-//extern MemMapper memMapper;
-extern ExtEeprom extEeprom;
+extern MemMapper memMapper;
 
 // User Flash (=UF) Settings for extern EEPROM
 // defined is the start address of the memory space
-
-#define UF_TEMP_AUTO_RESET_TIME		0	// unsigned int
-#define UF_TEMP_SOLL_INTERN			4	// unsigned int
-#define UF_TEMP_SOLL_INTERN_LUFT	8	// unsigned int
-#define UF_TEMP_SOLL_EXTERN			12	// unsigned int
-#define UF_TEMP_SOLL_TEMP_FLAG		16	// unsigned int
-#define UF_LCD_BRIGHTNESS			20	// unsigned int
-#define UF_INITIALIZED				24	// byte
+#define UF_BASE_ADDRESS             0xee00
+#define UF_SIZE                     0x100
+#define UF_TEMP_AUTO_RESET_TIME     (UF_BASE_ADDRESS + 0)  // unsigned int
+#define UF_TEMP_SOLL_INTERN         (UF_BASE_ADDRESS + 4)  // unsigned int
+#define UF_TEMP_SOLL_INTERN_LUFT    (UF_BASE_ADDRESS + 8)  // unsigned int
+#define UF_TEMP_SOLL_EXTERN         (UF_BASE_ADDRESS + 12) // unsigned int
+#define UF_TEMP_SOLL_TEMP_FLAG      (UF_BASE_ADDRESS + 16) // unsigned int
+#define UF_LCD_BRIGHTNESS           (UF_BASE_ADDRESS + 20) // unsigned int
+#define UF_INITIALIZED              (UF_BASE_ADDRESS + 24) // byte
 
 #endif

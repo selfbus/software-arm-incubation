@@ -74,6 +74,8 @@ public:
      */
     void initSerialCom();
 
+    void end();
+
     /**
      * Check whether one of the timeouts expired and act accordingly.
      */

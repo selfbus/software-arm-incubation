@@ -86,7 +86,7 @@ void switchChannelChanged(int channel, int pinValue)
 {
     int cmd, cmdBitOffset;
 
-    if (!pinValue)  // rising edge
+    if (pinValue)  // rising edge
         cmdBitOffset = 2;
     else  // falling edge
         cmdBitOffset = 0;

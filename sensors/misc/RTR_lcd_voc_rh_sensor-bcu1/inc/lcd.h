@@ -1,3 +1,11 @@
+/*
+ *  Copyright (c) 2016-2021 Oliver Stefan
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3 as
+ *  published by the Free Software Foundation.
+ */
+
 #ifndef LCD_H_
 #define LCD_H_
 
@@ -7,6 +15,7 @@ extern u8g_t u8g;
 
 extern uint8_t draw_state;
 
+void init_lcd();
 void u8g_prepare(void);
 void u8g_box_frame(uint8_t a);
 void u8g_string(uint8_t a);
@@ -58,7 +67,9 @@ struct lcd_home_screen {
 	bool window_state;		//0=closed, 1=open
 	bool show_ventilation_state; //0=off, 1=on
 	char ventilation_level; //actual level of room ventilation
+	bool show_heating_state;
 };
+
 
 extern struct lcd_home_screen window_ventilation;
 

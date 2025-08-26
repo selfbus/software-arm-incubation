@@ -52,7 +52,7 @@ SPI spi(SPI_PORT_0);
 
 BCU1 bcu = BCU1();
 
-APP_VERSION("SBdust_s", "1", "10")
+APP_VERSION("SBdust_s", "1", "10") // Don't forget to also change the build-variable sw_version
 
 volatile bool timer_expired=false; // Bool  fuer die IF-Abfrage, wenn true wird gesendet
 
@@ -258,8 +258,7 @@ void loop()
 //    }
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bcu.bus->idle())
-        waitForInterrupt();
+    waitForInterrupt();
 }
 
 /**

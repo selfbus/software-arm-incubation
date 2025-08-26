@@ -3,6 +3,7 @@
 	<name>RTR_lcd_voc_rh_sensor-bcu1</name>
 	<comment></comment>
 	<projects>
+		<project>CMSIS_CORE_LPC11xx</project>
 		<project>sblib</project>
 		<project>u8glib</project>
 	</projects>

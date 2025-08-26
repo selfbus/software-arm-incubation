@@ -13,7 +13,7 @@
 #include <sblib/eibBCU1.h>
 #include <sblib/timeout.h>
 
-APP_VERSION("SBrgb_sw", "1", "10")
+APP_VERSION("SBrgb_sw", "1", "12") // Don't forget to also change the build-variable sw_version
 
 // Digital pin for LED
 #define PIO_LED PIO3_3
@@ -31,15 +31,9 @@ const byte* LEDparams;
 const int inputPins[] =
     { PIO1_7, PIO1_10, PIO0_1, PIO2_4, PIO2_8, PIO2_10 };
 
-void setupIO(void)
+int readIO(int channel)
 {
-    // Configure the input pins and initialize the debouncers with the current
-    // value of the pin.
-    for (int channel = 0; channel < NUM_CHANNELS; ++channel)
-    {
-        pinMode(inputPins[channel], INPUT | HYSTERESIS | PULL_UP);
-        inputDebouncer[channel].init(digitalRead(inputPins[channel]));
-    }
+    return !digitalRead(inputPins[channel]);
 }
 
 void scanIO(void)
@@ -47,9 +41,15 @@ void scanIO(void)
 
 }
 
-int readIO(int channel)
+void setupIO(void)
 {
-    return !digitalRead(inputPins[channel]);
+    // Configure the input pins and initialize the debouncers with the current
+    // value of the pin.
+    for (int channel = 0; channel < NUM_CHANNELS; ++channel)
+    {
+        pinMode(inputPins[channel], INPUT | HYSTERESIS | PULL_UP);
+        inputDebouncer[channel].init(readIO(channel));
+    }
 }
 
 #else
@@ -153,8 +153,7 @@ void loop()
     handlePeriodic();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bcu.bus->idle())
-        waitForInterrupt();
+    waitForInterrupt();
 }
 
 /**

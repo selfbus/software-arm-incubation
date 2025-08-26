@@ -12,6 +12,10 @@
 #include <sblib/types.h>
 #include <sblib/io_pin_names.h>
 
+// we are a MDT shutter/blind actuator, version 2.8
+#define MANUFACTURER 131
+#define APPVERSION   0x28
+
 typedef struct
 {
     unsigned int noOfChannels;  //!> how many channels are supported with this hardware
@@ -26,6 +30,22 @@ extern const HardwareVersion * currentVersion;
 
 //#define USE_DEV_LEDS
 //#define MEM_TEST
+
+/*
+ *  bus power-failure configuration
+ *  Use 1% tolerance or better resistors for the voltage divider R3 & R12 on 4TE controller & TS_ARM
+ *  TODO change resistors R3 & R12 tolerance in schematic to 1%
+ */
+#ifdef BUSFAIL
+#   define VBUS_AD_PIN PIN_VBUS
+#   define VBUS_AD_CHANNEL AD7
+#   define VBUS_VOLTAGE_FAILTIME_MS 20
+#   define VBUS_VOLTAGE_RETURNTIME_MS 1500
+#   define VBUS_ADC_SAMPLE_FREQ 10000 // ADC sampling frequency in Hz
+
+#   define VBUS_THRESHOLD_FAILED 24000 // millivoltage for normal relays
+#   define VBUS_THRESHOLD_RETURN 26000
+#endif
 
 
 /*

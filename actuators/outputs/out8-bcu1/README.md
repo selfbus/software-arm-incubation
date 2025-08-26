@@ -14,11 +14,21 @@ Das simulierte Gerät ist ein Jung 2138 KNX Schaltaktor mit 8 digitalen Ausgäng
 Zur ETS-Konfiguration die [Jung 2138 VD Produktdatenbank](https://downloads.jung.de/public/de/software/produktdatenbanken/ets2_ets3/de_2138_10.vd1) verwenden. Download unter:
 https://downloads.jung.de/public/de/software/produktdatenbanken/ets2_ets3/de_2138_10.vd1
 
+### Build configuration naming (Build-Konfiguration Namen) 
+| Abbreviation<br>Abkürzung | Meaning<br>Bedeutung                                                             |
+|---------------------------|----------------------------------------------------------------------------------|
+| Debug                     | Only for debugging<br>Nur zum debuggen                                           |
+| Flashstart                | For use with the Selfbus bootloader<br>Zur Nutzung mit dem Selfbus Bootloader    |
+| Release                   | Stand alone firmware<br>Lauffähige Firmware ohne Nutzung des Selfbus Bootloaders |
+| o8                        | out8-bcu1<br>                                                                    |
+| 4t                        | 4 mounting units (4TE)<br>Teilungseinheiten (4TE)                                |
+| bf                        | bus-fail / bus voltage detection<br>Busspannungsausfallerkennnung                |
+| ha                        | hand actuation<br>mit Handbedienung                                              |
+| bi                        | bi-stable relays<br>für bi-stabile Relais                                        |
 
-
-## 4MU-ARM Controller ([PCB](https://github.com/selfbus/hardware-merged/tree/main/controller_lpc1115/lpc1115_4MU_MID), [Wiki](https://selfbus.org/wiki/hardware/controller/49-4te-controller-arm-lpc1115)) + out_8x_16A_bistab_4MU (bi-stable relays, bi-stabile relais) ([PCB](https://github.com/selfbus/hardware-merged/tree/main/applications_din/out_8x_16A_bistab_4MU), [Wiki](https://selfbus.org/wiki/devices/outputs/25-8-fold-binary-output-4module-units-lpc1115))
+## 4MU-ARM Controller ([PCB](https://github.com/selfbus/hardware-merged/tree/main/controller_lpc1115/lpc1115_4MU_MID), [Wiki](https://selfbus.org/wiki/hardware/controller/49-4te-controller-arm-lpc1115)) + out_8x_16A_bistab_4MU (bi-stable relays, bi-stabile relays) ([PCB](https://github.com/selfbus/hardware-merged/tree/main/applications_din/out_8x_16A_bistab_4MU), [Wiki](https://selfbus.org/wiki/devices/outputs/25-8-fold-binary-output-4module-units-lpc1115))
 ### used IO Ports (verwendete IO Ports):
-|Relais#|Function|Selfbus IO|Selfbus 26-pol|ARM Port |Description (Beschreibung)               |
+|Relay #|Function|Selfbus IO|Selfbus 26-pol|ARM Port |Description (Beschreibung)               |
 |:-----:|:------:|:--------:|:------------:|---------|-----------------------------------------|
 |K1     |Reset   |IO2       |8             |PIO0_7   |                                         |
 |K1     |Set     |IO3       |9             |PIO2_10  |                                         |
@@ -44,7 +54,7 @@ https://downloads.jung.de/public/de/software/produktdatenbanken/ets2_ets3/de_213
 
 ## 4MU-ARM Controller ([PCB](https://github.com/selfbus/hardware-merged/tree/main/controller_lpc1115/lpc1115_4MU_MID), [Wiki](https://selfbus.org/wiki/hardware/controller/49-4te-controller-arm-lpc1115)) + out_8x_10A_4MU ([PCB](https://github.com/selfbus/hardware-merged/tree/main/applications_din/out_8x_10A_4MU), [Wiki](https://selfbus.org/wiki/devices/outputs/23-switching-actuator-8x-230v-10a-4mount-units))
 ### used IO Ports (verwendete IO Ports):
-|Relais#|Function|Selfbus IO|Selfbus 26-pol|ARM Port |Description (Beschreibung)      |
+|Relay #|Function|Selfbus IO|Selfbus 26-pol|ARM Port |Description (Beschreibung)      |
 |:-----:|:------:|:--------:|:------------:|---------|--------------------------------|
 |REL 1  |        |IO1       |7             |PIO2_2   |                                |
 |REL 2  |        |IO2       |8             |PIO0_7   |                                |

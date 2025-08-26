@@ -1,16 +1,30 @@
 # KNX USB-Interface / Busmonitor / Programmer
 
-For normal operation, connect the connector JP7 (ISP) of the KNX-module (TS_ARM) with a 10pole cable to connector P1 of the USB-interface
+<!-- TOC -->
+* [KNX USB-Interface / Busmonitor / Programmer](#knx-usb-interface--busmonitor--programmer)
+    * [Switch](#switch)
+    * [Jumper](#jumper)
+    * [Connectors](#connectors)
+    * [Firmware](#firmware)
+    * [Hardware / PCB](#hardware--pcb)
+  * [Usage with knxd](#usage-with-knxd)
+    * [Example `knxd.ini`](#example-knxdini)
+    * [Start in terminal](#start-in-terminal)
+    * [Create simple knxd.ini for USB-Interface](#create-simple-knxdini-for-usb-interface)
+    * [udev rule](#udev-rule)
+<!-- TOC -->
+
+For normal operation, connect the connector JP7 (ISP) of the KNX-module (TS_ARM) with a 10pole cable to connector P1 of the USB-interface.
 
 ### Switch
 S1: Change operation modes
 
-| Mode           | Description                                                                                 |
-|----------------|---------------------------------------------------------------------------------------------|
-| KNX-Interface  | USB-HID device which can be used in ETS                                                     |
-| KNX-Busmonitor | KNX traffic is output in readable form on the virtual serial port                           |
-| USB-Monitor    | Packet transfer between ETS and KNX is send to the virtual serial port                      |
-| Programmer     | Serial port for programming a Selfbus ARM device connected to P3 (Prog-If) with Flashmagic. |
+| Mode           | Description                                                                                                                    |
+|----------------|--------------------------------------------------------------------------------------------------------------------------------|
+| KNX-Interface  | USB-HID device which can be used in ETS                                                                                        |
+| KNX-Busmonitor | KNX traffic is output in readable form on the virtual serial port                                                              |
+| USB-Monitor    | Packet transfer between ETS and KNX is send to the virtual serial port                                                         |
+| Programmer     | Serial port for programming a Selfbus ARM device connected to P3 (Prog-If) with [Flashmagic](https://www.flashmagictool.com/). |
 
 Virtual serial port settings: 115200 baud, 8 data bits, no parity, 1 stop bit
 
@@ -45,10 +59,34 @@ Virtual serial port settings: 115200 baud, 8 data bits, no parity, 1 stop bit
 
 ### Firmware
 
-| MCU         | Github                                                                                                          |
-|-------------|-----------------------------------------------------------------------------------------------------------------|
-| P4 (TS_ARM) | [USB-IF_Knx](https://github.com/selfbus/software-arm-incubation/tree/master/misc/USB-Interface-bcu1/USB-IF_Knx) |
-| U1 (11uxx)  | [USB-IF_Usb](https://github.com/selfbus/software-arm-incubation/tree/master/misc/USB-Interface-bcu1/USB-IF_Usb) |
+| MCU         | Github                                                                                                        |
+|-------------|---------------------------------------------------------------------------------------------------------------|
+| P4 (TS_ARM) | [USB-IF_Knx](https://github.com/selfbus/software-arm-incubation/tree/main/misc/USB-Interface-bcu1/USB-IF_Knx) |
+| U1 (11uxx)  | [USB-IF_Usb](https://github.com/selfbus/software-arm-incubation/tree/main/misc/USB-Interface-bcu1/USB-IF_Usb) |
 
 ### Hardware / PCB
-[USB-Interface ARM](https://github.com/selfbus/hardware-incubation/tree/master/misc/USB-Interface%20ARM)
+[USB-Interface ARM](https://github.com/selfbus/hardware-merged/tree/main/misc/usb_knx_interface_lpc1115)
+
+## Usage with knxd
+
+### Example `knxd.ini`
+
+An example `knxd.ini` can be found [here](doc/knxd.ini).
+
+### Start in terminal
+
+`sudo knxd -e 0.0.1 -E 0.0.2:8 -D -T -R -S -f9 -B log -t 1023 -b usb:`
+
+### Create simple knxd.ini for USB-Interface
+`/usr/lib/knxd_args -e 0.0.1 -E 0.0.2:8 -D -T -R -S -f9 -B log -t 1023 -b usb: >> knxd.ini`
+
+### udev rule
+
+In case the USB-Interface is not listed in udev rules installed by knxd `/usr/lib/udev/rules.d/60-knxd.rules`<br>
+create file `/etc/udev/rules.d/70-knxd.rules` and add following line<br>
+`ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="147b", ATTR{idProduct}=="5120", OWNER="knxd", MODE="0600"` to it,<br>
+or run in a terminal<br>
+`echo 'ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="147b", ATTR{idProduct}=="5120", OWNER="knxd", MODE="0600"' | sudo tee --append /etc/udev/rules.d/70-knxd.rules`
+
+
+

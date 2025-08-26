@@ -16,7 +16,7 @@ void jaloChannelChanged(int channel, int pinValue)
     unsigned int ls     = params [3] & 0x08;
     unsigned int value  = bcu.comObjects->objectRead(COMOBJ_SECONDARY1 + channel);
     unsigned int action = (params [3] & 0xF0) >> 4;
-    if (!pinValue)
+    if (pinValue)
     {   // rising edge
         switch (action)
         {

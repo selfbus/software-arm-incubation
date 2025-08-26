@@ -11,7 +11,7 @@
 #include "params.h"
 #include <sblib/timeout.h>
 
-APP_VERSION("SBin8_12", "1", "11")
+APP_VERSION("SBin8_12", "1", "11") // Don't forget to also change the build-variable sw_version
 
 //	WICHTIG!!!
 //Hier muss EINE! Hardware ausgewählt werden (in8 4TE 230V und 24V werden identisch behandelt)
@@ -157,13 +157,13 @@ BcuBase* setup()
     int debounceTime = bcu.userEeprom->getUInt8(EE_INPUT_DEBOUNCE_TIME) >> 1;
     delay.start(startupTimeout);
     while (delay.started() && !delay.expired())
-    {   // while we wait for the power on delay to expire we debounce the input channels
-        scanIO();
-        for (int channel = 0; channel < NUM_CHANNELS; ++channel)
-        {
-            inputDebouncer[channel].debounce(readIO(channel), debounceTime);
-        }
+    {
         waitForInterrupt();
+    }
+    scanIO();
+    for (int channel = 0; channel < NUM_CHANNELS; ++channel)
+    {
+        inputDebouncer[channel].debounce(readIO(channel), debounceTime);
     }
     initApplication();
     return (&bcu);
@@ -202,8 +202,7 @@ void loop()
     handlePeriodic();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bcu.bus->idle())
-        waitForInterrupt();
+    waitForInterrupt();
 }
 
 /**

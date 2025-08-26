@@ -18,9 +18,10 @@
  *  published by the Free Software Foundation.
  */
 
+#include "app_main.h"
 #include "sd_app.h"
 
-APP_VERSION("S_RM_H6 ", "3", "00")
+APP_VERSION("S_RM_H6 ", "3", "10") // Don't forget to also change the build-variable sw_version
 
 SmokeDetectorApp *app = nullptr;
 
@@ -47,4 +48,17 @@ void loop()
 void loop_noapp()
 {
     app->loopNoApp();
+}
+
+void SmokeDetectorUsrCallback::Notify(UsrCallbackType type)
+{
+    switch (type)
+    {
+        case UsrCallbackType::reset : // Reset after an ETS-application download or simple @ref APCI_BASIC_RESTART_PDU
+            app->end();
+            break;
+
+        default :
+            break;
+    }
 }

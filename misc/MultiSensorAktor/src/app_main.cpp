@@ -160,7 +160,7 @@ void loop()
     while ((objNo = bcu.comObjects->nextUpdatedObject()) >= 0);
 
     // Sleep up to 1 millisecond if there is nothing to do
-	waitForInterrupt();
+    waitForInterrupt();
 }
 
 /**

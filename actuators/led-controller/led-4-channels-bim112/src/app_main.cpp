@@ -15,7 +15,7 @@
 #include "individual_channel.h"
 #include "led-controller.h"
 
-APP_VERSION("SBLED   ", "0", "01")
+APP_VERSION("SBLED   ", "0", "01") // Don't forget to also change the build-variable sw_version
 
 // Hardware version. Must match the product_serial_number in the VD's table hw_product
 const unsigned char hardwareVersion[] =
@@ -68,8 +68,7 @@ void loop()
     checkPeriodicFuntions();
 
     // Sleep up to 1 millisecond if there is nothing to do
-    if (bcu.bus->idle())
-        waitForInterrupt();
+    waitForInterrupt();
 }
 
 void initApplication(void)

@@ -13,7 +13,7 @@
 
 #include <stdint.h>
 
-#define BUFF_CNT 6
+#define BUFF_CNT 8
 #define BUFF_SIZE 68
 /*
  * Aufbau eines Pakets:
@@ -37,8 +37,8 @@ public:
 	int FreeBuffer(int no);
 	uint8_t* buffptr(int no);
 protected:
-	uint8_t data[BUFF_CNT][BUFF_SIZE];
-	bool alloctable[BUFF_CNT];
+	uint8_t data[BUFF_CNT][BUFF_SIZE] = {0};
+	bool alloctable[BUFF_CNT] = {false};
 };
 
 extern BufferMgr buffmgr;

@@ -292,11 +292,11 @@ ALIGNED(4) uint8_t USBSngl_FsConfigDescriptor[] = {
  */
 const uint8_t USB_StringDescriptor[] = {
 	/* Index 0x00: LANGID Codes */
-	0x04,							/* bLength */
+	0x04,							/* bLength (2 Byte (wLANGID) + Type + length) */
 	USB_STRING_DESCRIPTOR_TYPE,		/* bDescriptorType */
 	WBVAL(0x0409),					/* wLANGID : US English */
 	/* Index 0x01: Manufacturer */
-	(7 * 2 + 2),					/* bLength (7 Char + Type + lenght) */
+	(7 * 2 + 2),					/* bLength (7 Char + Type + length) */
 	USB_STRING_DESCRIPTOR_TYPE,		/* bDescriptorType */
 	'S', 0,
 	'e', 0,
@@ -306,7 +306,7 @@ const uint8_t USB_StringDescriptor[] = {
 	'u', 0,
 	's', 0,
 	/* Index 0x02: Product */
-	(13 * 2 + 2),					/* bLength (13 Char + Type + lenght) */
+	(13 * 2 + 2),					/* bLength (13 Char + Type + length) */
 	USB_STRING_DESCRIPTOR_TYPE,		/* bDescriptorType */
 	'K', 0,
 	'N', 0,
@@ -322,14 +322,14 @@ const uint8_t USB_StringDescriptor[] = {
 	'c', 0,
 	'e', 0,
 	/* Index 0x03: Serial Number */
-	(4 * 2 + 2),					/* bLength (4 Char + Type + lenght) */
+	(4 * 2 + 2),					/* bLength (4 Char + Type + length) */
 	USB_STRING_DESCRIPTOR_TYPE,		/* bDescriptorType */
 	'A', 0,
 	'0', 0,
 	'0', 0,
 	'0', 0,
 	/* Index 0x04: Interface 0, Alternate Setting 0 */
-	(13 * 2 + 2),					/* bLength (13 Char + Type + lenght) */
+	(13 * 2 + 2),					/* bLength (13 Char + Type + length) */
 	USB_STRING_DESCRIPTOR_TYPE,		/* bDescriptorType */
 	'K', 0,
 	'N', 0,
@@ -345,7 +345,7 @@ const uint8_t USB_StringDescriptor[] = {
 	'c', 0,
 	'e', 0,
 	/* Index 0x05: Interface 1, Alternate Setting 0 */
-	( 11 * 2 + 2),						/* bLength (11 Char + Type + lenght) */
+	(11 * 2 + 2),						/* bLength (11 Char + Type + length) */
 	USB_STRING_DESCRIPTOR_TYPE,			/* bDescriptorType */
 	'B', 0,
 	'u', 0,
