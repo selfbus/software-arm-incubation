@@ -27,7 +27,7 @@ void OneWireChannel::cyclicSend() {
 		// wenn der Wert zyklisch gesendet werden soll
 		if (cyclicObjectSend[appDeviceCount] == true) {
 			cyclicObjectSend[appDeviceCount] = false;
-			// alle gefundenen OneWire geräte durchgehen
+			// alle gefundenen OneWire Geräte durchgehen
 			for (uint8_t onewireDeviceCount = 0; onewireDeviceCount < ds18x20.m_foundDevices; onewireDeviceCount++) {
 				if (oneWireAssociationTable[onewireDeviceCount] == appDeviceCount) {
 					sendTemperatureObject(onewireDeviceCount);
@@ -37,17 +37,13 @@ void OneWireChannel::cyclicSend() {
 	}
 }
 
+
 void OneWireChannel::checkPeriodic() {
-
-	ds18x20.Search(MAX_NUMBER_OF_ONEWIRE_DEVICES);
-
-	// neue Geräte suchen und zu den in der App eingestellten Adressen zuordnen
-	searchForNewOneWireDevices();
 
 	// alle DS18X20 Temperatursensoren lesen
 	ds18x20.readTemperatureAll();
 
-	// alle gefundenen OneWire geräte durchgehen
+	// alle gefundenen OneWire Geräte durchgehen
 	for (uint8_t onewireDeviceCount = 0; onewireDeviceCount < ds18x20.m_foundDevices; onewireDeviceCount++) {
 		if (oneWireAssociationTable[onewireDeviceCount] != 0xFF) {
 			updateComObjectValue(onewireDeviceCount);
@@ -110,23 +106,21 @@ void OneWireChannel::checkTimeToCyclicSend(uint8_t minuteCounter) {
 	}
 }
 
-// Es werden neue Geräte gesucht und zu den in der App eingestellten Adressen zugeordnet
-// Falls eine gefundene Adresse nciht in den Paametern gefunden werden kann, wird sie mit dem entprechenden ComObject versendet
-void OneWireChannel::searchForNewOneWireDevices() {
+void OneWireChannel::associateFoundOneWireDevices(){
 	for (uint8_t onewireDeviceCount = 0; onewireDeviceCount < MAX_DS_DEVICES; onewireDeviceCount++) {
 		oneWireAssociationTable[onewireDeviceCount] = 0xFF; // Initialisieren aller Felder
 	}
 
 	// alle in der App eingestellten OneWire Geräte durchgehen
-	for (uint8_t appDeviceCount = 0; appDeviceCount < MAX_NUMBER_OF_ONEWIRE_DEVICES; appDeviceCount++) {
+	for (uint8_t appDeviceNumber = 0; appDeviceNumber < MAX_NUMBER_OF_ONEWIRE_DEVICES; appDeviceNumber++) {
 
 		uint8_t appDeviceAddress[8];
-		getOneWireAddress(appDeviceAddress, channelNumber, appDeviceCount);
+		getOneWireAddress(appDeviceAddress, channelNumber, appDeviceNumber);
 
 		// alle gefundenen OneWire geräte durchgehen
-		for (uint8_t onewireDeviceCount = 0; onewireDeviceCount < ds18x20.m_foundDevices; onewireDeviceCount++) {
+		for (uint8_t onewireDeviceNumber = 0; onewireDeviceNumber < ds18x20.m_foundDevices; onewireDeviceNumber++) {
 
-			uint8_t *onewireDeviceAddress = ds18x20.m_dsDev[onewireDeviceCount].addr;
+			uint8_t *onewireDeviceAddress = ds18x20.m_dsDev[onewireDeviceNumber].addr;
 
 			// Vergleichen, ob Adressen übereinstimmen
 			bool equalAddress = true;
@@ -141,8 +135,10 @@ void OneWireChannel::searchForNewOneWireDevices() {
 				}
 			}
 
+			// Wenn am Bus gefundene Adresse mit der parametrierten Adresse übereinstimmt,
+			// wird diese in der Tabelle verknüpft
 			if (equalAddress) {
-				oneWireAssociationTable[onewireDeviceCount] = appDeviceCount;
+				oneWireAssociationTable[onewireDeviceNumber] = appDeviceNumber;
 				break;
 			}
 		}
@@ -150,34 +146,16 @@ void OneWireChannel::searchForNewOneWireDevices() {
 
 	bool unknownDeviceFound = false;
 	// wenn zu einem am Bus gefundenen Objekt keine passende Adresse aus der ETS gefunden wurde, wird diese versendet
-	for (uint8_t onewireDeviceCount = 0; onewireDeviceCount < ds18x20.m_foundDevices; onewireDeviceCount++) {
-		if (oneWireAssociationTable[onewireDeviceCount] == 0xFF) {
+	for (uint8_t onewireDeviceNumber = 0; onewireDeviceNumber < ds18x20.m_foundDevices; onewireDeviceNumber++) {
+		if (oneWireAssociationTable[onewireDeviceNumber] == 0xFF) {
 			unknownDeviceFound = true;
 
-			uint8_t *actualAddress = ds18x20.m_dsDev[onewireDeviceCount].addr;
-			bool addressIsToSend = true;
+			uint8_t *actualAddress = ds18x20.m_dsDev[onewireDeviceNumber].addr;
 
-			// wenn die Adresse nicht zyklisch gesendet werden soll, soll sie nur einmal versendet werden
-			// dazu wird verglichen, ob die Adresse breits versendet wurde
-			if (!getUnknownAddressCyclicSend(channelNumber)) {
-				addressIsToSend = false;
-				for (uint8_t byteCounter = 0; byteCounter < 8; byteCounter++) {
-					if (actualAddress[byteCounter] != lastSendUnknownAddr[byteCounter]) {
-						addressIsToSend = true;
-						break;
-					}
-				}
-			}
-
-			if (addressIsToSend) {
-				// die Adresse muss umgedreht werden, damit Sie korrekt in der ETS dargestellt wird
-				uint8_t turnedAddress[8];
-				turnOneWireAddress(actualAddress, turnedAddress);
-				bcu.comObjects->objectWrite(channelNumber, turnedAddress);
-				for (uint8_t byteCounter = 0; byteCounter < 8; byteCounter++) {
-					lastSendUnknownAddr[byteCounter] = actualAddress[byteCounter];
-				}
-			}
+			// die Adresse muss umgedreht werden, damit Sie korrekt in der ETS dargestellt wird
+			uint8_t turnedAddress[8];
+			turnOneWireAddress(actualAddress, turnedAddress);
+			bcu.comObjects->objectWrite(channelNumber, turnedAddress);
 			break;
 		}
 	}
@@ -188,4 +166,33 @@ void OneWireChannel::searchForNewOneWireDevices() {
 		uint8_t nullAddress[8] = {0,0,0,0,0,0,0,0};
 		bcu.comObjects->objectUpdate(channelNumber, nullAddress);
 	}
+}
+
+// Initial muss beim Start des Gerätes der Bus nach vorhandenen Geräten gesucht werden
+// damit diese in die Tabellen eingetragen werden können
+void OneWireChannel::searchInitialForOneWireDevices(){
+	ds18x20.Search(MAX_NUMBER_OF_ONEWIRE_DEVICES);
+	associateFoundOneWireDevices();
+}
+
+// Es werden neue Geräte gesucht und zu den in der App eingestellten Adressen zugeordnet
+// Falls eine gefundene Adresse nicht in den Parametern gefunden werden kann, wird sie mit dem entsprechenden ComObject versendet
+bool OneWireChannel::searchForNewOneWireDevices() {
+
+	// wenn die unbekannte Adresse nicht versendt werden soll, soll die Funktion übersprungen werden
+	if(!getUnknownAddressSearchSend(channelNumber)){
+		return true;
+	}
+
+	// wenn die SearchSeq Funktion false zurückgibt, sind noch nicht alle Suchdurchläufe beendet
+	// Dann wird hier vorerst abgebrochen und ein neuer Durchgang abgewartet
+	// Nötig, da zyklisch in die Hauptschleife zurückgesprungen werden muss
+	// Die Abfrage aller am Bus befindlichen Teilnehmer nimmt sehr viel Zeit in Anspruch
+	if(!ds18x20.SearchSeq(MAX_NUMBER_OF_ONEWIRE_DEVICES)){
+		return false;
+	}
+
+	associateFoundOneWireDevices();
+
+	return true;
 }

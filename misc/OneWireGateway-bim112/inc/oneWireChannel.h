@@ -23,21 +23,22 @@ public:
 	void checkPeriodic();
 	void cyclicSend();
 	void checkTimeToCyclicSend(uint8_t minuteCounter);
-
+	bool searchForNewOneWireDevices();
+	void searchInitialForOneWireDevices();
 
 private:
 	void sendTemperatureObject(uint8_t onewireDeviceCount);
 	void updateComObjectValue(uint8_t onewireDeviceCount);
+	void associateFoundOneWireDevices();
 
 	DS18x20_OneWireDS2482 ds18x20;
-
-	void searchForNewOneWireDevices();
 
 	// die Kanal Nummer (ist auch gleich der I2C Adresse des DS2482)
 	uint8_t channelNumber;
 
 	// in dieserVariablen wird die Zuordnung der gefundenen OneWire Geräte zu den in der App eingestellten Geräten gespeichert
 	// Der Index des Feldes bezieht sich auf den Index der am Bus gefundenen Geräte, der Inhalt des Feldes stellt die in der App verwendete Gerätenummer dar.
+	// Der Inhalt 0xFF wird dann eingetragen, wenn die Adresse nicht in der ETS konfiguriert wurde
 	uint8_t oneWireAssociationTable[MAX_DS_DEVICES];
 
 	// in diesem Feld wird die Anforderung zur Versendung eines Wertes abgelegt. Die Anforderung wird durch den Ablauf der Zykluszeit bestimmt.
@@ -49,9 +50,6 @@ private:
 	// die letzten gesendeten Werte werden für Vergleiche hier gespeichert. Es wird nach den in der App eingestellten Devices indiziert
 	// der Grund für diese Indizierung ist die Möglichkeit einer anderen Reihenfolge der gefundenen Geräte, nachdem ein Gerät im Beriteb hinzugefügt wurde
 	float lastSendedValue[MAX_NUMBER_OF_ONEWIRE_DEVICES];
-
-	// die letzte
-	byte lastSendUnknownAddr[8];
 };
 
 #endif /* __ONEWIRECHANNELS_H__ */

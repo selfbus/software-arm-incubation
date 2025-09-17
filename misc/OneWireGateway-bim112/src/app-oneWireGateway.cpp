@@ -19,8 +19,12 @@
 #include "ds18x20_onewire_ds2482.h"
 
 bool readAllSensors = false;
+bool searchNewSensors = false;
 uint8_t minuteCounter = 0;
 uint8_t secondCounter = 0;
+
+uint8_t seqChannelCheck = 0;
+uint8_t seqChannelSearch = 0;
 
 OneWireChannel oneWireChannelA;
 OneWireChannel oneWireChannelB;
@@ -34,15 +38,73 @@ void objectUpdated(int objno) {
 }
 
 void checkPeriodicFuntions(void) {
-	// alle 10 Sekunden sollen alle Werte geholt und nach neuen OneWire Geräten gesucht werden
+	// Alle Sensorwerte abgefragt werden
+	// Die Kanäle werden sequentiell bei jedem Funktionsaufruf abgefragt,
+	// um nach kurzer Zeit wieder in die Hauptfunktion zu gelangen.
 	if (readAllSensors) {
-		readAllSensors = false;
-		oneWireChannelA.checkPeriodic();
-		oneWireChannelB.checkPeriodic();
-#if NUMBER_OF_ONEWIRE_CHANNELS == 4
-		oneWireChannelC.checkPeriodic();
-		oneWireChannelD.checkPeriodic();
+
+		switch(seqChannelCheck){
+		case 0:
+			oneWireChannelA.checkPeriodic();
+			seqChannelCheck = 1;
+			break;
+		case 1:
+			oneWireChannelB.checkPeriodic();
+#if NUMBER_OF_ONEWIRE_CHANNELS == 2
+			seqChannelCheck = 0;
+			readAllSensors = false;
+			searchNewSensors = true;
+			break;
+#else
+			seqChannelCheck = 2;
+			break;
+		case 2:
+			oneWireChannelC.checkPeriodic();
+			seqChannelCheck = 3;
+			break;
+		case 3:
+			oneWireChannelD.checkPeriodic();
+			seqChannelCheck = 0;
+			readAllSensors = false;
+			searchNewSensors = true;
+			break;
 #endif
+		}
+
+	}
+
+	if(searchNewSensors) {
+		switch(seqChannelSearch){
+		case 0:
+			if(oneWireChannelA.searchForNewOneWireDevices()){
+				seqChannelSearch = 1;
+			}
+			break;
+		case 1:
+#if NUMBER_OF_ONEWIRE_CHANNELS == 2
+			if(oneWireChannelB.searchForNewOneWireDevices()){
+				seqChannelSearch = 0;
+				searchNewSensors = false;
+			}
+			break;
+#else
+			if(oneWireChannelB.searchForNewOneWireDevices()){
+				seqChannelSearch = 2;
+			}
+			break;
+		case 2:
+			if(oneWireChannelC.searchForNewOneWireDevices()){
+				seqChannelSearch = 3;
+				break;
+			}
+		case 3:
+			if(oneWireChannelD.searchForNewOneWireDevices()){
+				seqChannelSearch = 0;
+				searchNewSensors = false;
+			}
+			break;
+#endif
+		}
 	}
 
 	oneWireChannelA.cyclicSend();
@@ -57,10 +119,14 @@ void initApplication(void) {
 
 	// Initialize DS2482 Onewire Channels
 	oneWireChannelA.init(0b00);
+	oneWireChannelA.searchInitialForOneWireDevices();
 	oneWireChannelB.init(0b01);
+	oneWireChannelB.searchInitialForOneWireDevices();
 #if NUMBER_OF_ONEWIRE_CHANNELS == 4
 	oneWireChannelC.init(0b10);
+	oneWireChannelC.searchInitialForOneWireDevices();
 	oneWireChannelD.init(0b11);
+	oneWireChannelD.searchInitialForOneWireDevices();
 #endif
 
 	// generellen Timer stellen, um alle 10 Sekunden alle Sensoren abzufragen
@@ -103,6 +169,10 @@ extern "C" void TIMER32_0_IRQHandler() {
 	if (secondCounter == 0) {
 		oneWireChannelA.checkTimeToCyclicSend(minuteCounter);
 		oneWireChannelB.checkTimeToCyclicSend(minuteCounter);
+#if NUMBER_OF_ONEWIRE_CHANNELS == 4
+		oneWireChannelC.checkTimeToCyclicSend(minuteCounter);
+		oneWireChannelD.checkTimeToCyclicSend(minuteCounter);
+#endif
 	}
 
 	readAllSensors = true;

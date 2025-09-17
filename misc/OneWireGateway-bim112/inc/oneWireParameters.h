@@ -15,7 +15,7 @@
 #include <sblib/core.h>
 
 bool getParasiteMode(uint8_t channel);
-bool getUnknownAddressCyclicSend(uint8_t channel);
+bool getUnknownAddressSearchSend(uint8_t channel);
 void getOneWireAddress(uint8_t oneWireAddress[], uint8_t channel, uint8_t deviceNumber);
 bool checkCyclicSend(uint8_t channel, uint8_t deviceNumber);
 bool checkValueChangeSend(uint8_t channel, uint8_t deviceNumber);

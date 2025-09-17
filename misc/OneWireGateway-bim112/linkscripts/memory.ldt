@@ -1,0 +1,91 @@
+<#--
+This linker script will, depending on the MCUxpresso build configuration name
+move the memory position of the application start in flash, reduce the flash size accordingly,
+change the RAM location and RAM size so that the resulting *.hex file
+can be used with the Selfbus-Updater.
+(https://github.com/selfbus/software-arm-lib/tree/main/firmware_updater/updater)
+
+If the build configuration name starts with "Flashstart 0xWXYZ"
+it changes flash start to 0xWXYZ (WXYZ application start address in hexadecimal),
+moves RAM start to 0x100000c0 and reduzes RAM size by 0xc0.
+
+E.g. from build configuration name 'Flashstart 0x3000 Debug o8 4t' 0x3000 will be extracted.
+On a LPC1115 MFlash64 flash start will be changed to 0x3000 and flashsize reduzed to 0xD000.
+RamLoc8 start will be changed to 0x100000c0 and size reduced to 0x1f40
+
+This file must be placed into a subfolder named "linkscripts" of your project (application).
+The subfolder MUST be named "linkscripts", otherwise MCUxpresso won't find the file and build the project
+as normal.
+-->
+<#include "user.ldt" >
+<#include "user_memory.ldt" ignore_missing=true>
+<#include "header.ldt" >
+
+<#assign selfbus_custom_memory_layout = false>  <#-- set no offsets by default-->
+
+<#-- check if build config starts with FLASHSTART and we have a custom memory configuration (like in MCUxpresso) -->
+<#if buildConfig?upper_case?starts_with("FLASHSTART ") && configMemory?has_content>
+    <#assign splittedName = buildConfig?split(" ")>     <#-- spilt buildConfig name at spaces -->
+    <#assign application_start = splittedName[1]>       <#-- the second split is our offset in hex (count starts from 0) -->
+    <#assign ram_start = "0x100000c0">                  <#-- change this in case bus-updater copies more bytes in "void jumpToApplication(unsigned int start)" -->
+    <#assign ram_offset = "0xc0">                       <#-- change this in case bus-updater copies more bytes in "void jumpToApplication(unsigned int start)" -->
+    <#assign selfbus_custom_memory_layout = true>
+</#if>
+
+<#--
+All lines below are mostly a "copy and paste" of [MCUxpresso-Installdir]/MCUXpressoIDE[VERSION]/ide/Wizards/linker/memory.ldt
+adding our application_start and ram_start to modify memory layouts.
+-->
+MEMORY
+{
+    /* Define each memory region */
+<#-- loop all memory configurations -->
+<#list configMemory as memory>
+  <#if selfbus_custom_memory_layout && memory.flash && memory.defaultFlash>
+    <#-- add custom selfbus memory configuration for default flash -->
+    /******************************************************************
+     * Selfbus Flash configuration using build config: ${buildConfig} *
+    /******************************************************************/
+    <#assign flash_length = "${memory.size} - ${application_start}" >
+    ${memory.name} (${memory.linkerMemoryAttributes}) : ORIGIN = ${application_start}, LENGTH = ${flash_length}
+  <#elseif selfbus_custom_memory_layout && memory.RAM && memory.defaultRAM>
+    <#-- add custom selfbus memory configuration for default RAM -->
+    /****************************************************************
+     * Selfbus RAM configuration using build config: ${buildConfig} *
+    /****************************************************************/
+    <#assign ram_length = "${memory.size} - ${ram_offset}" >
+    ${memory.name} (${memory.linkerMemoryAttributes}) : ORIGIN = ${ram_start}, LENGTH = ${ram_length}
+  <#else>
+    <#-- no change of memory settings -->
+    ${memory.name} (${memory.linkerMemoryAttributes}) : ORIGIN = ${memory.location}, LENGTH = ${memory.size}
+  </#if>
+</#list>
+}
+
+      /* Define a symbol for the top of each memory region */
+<#list configMemory as memory>
+  <#if selfbus_custom_memory_layout && memory.flash && memory.defaultFlash>
+      <#-- put some comments in the resulting .ld linker file -->
+      /******************************************************************
+       * Selfbus Flash configuration using build config: ${buildConfig} *
+      /******************************************************************/
+      __base_${memory.name} = ${application_start}; /* ${memory.name} */
+      __base_${memory.alias} = ${application_start}; /* ${memory.alias} */
+      __top_${memory.name} = ${flash_length};
+      __top_${memory.alias} = ${flash_length};
+  <#elseif selfbus_custom_memory_layout && memory.RAM && memory.defaultRAM>
+      <#-- put some comments in the resulting .ld linker file -->
+      /****************************************************************
+       * Selfbus RAM configuration using build config: ${buildConfig} *
+      /****************************************************************/
+      __base_${memory.name} = ${ram_start}; /* ${memory.name} */
+      __base_${memory.alias} = ${ram_start}; /* ${memory.alias} */
+      __top_${memory.name} = ${ram_start} + ${ram_length};
+      __top_${memory.alias} = ${ram_start} + ${ram_length};
+  <#else>
+      __base_${memory.name} = ${memory.location}; /* ${memory.name} */
+      __base_${memory.alias} = ${memory.location}; /* ${memory.alias} */
+      __top_${memory.name} = ${memory.location} + ${memory.size}; /* ${memory.sizek} */
+      __top_${memory.alias} = ${memory.location} + ${memory.size}; /* ${memory.sizek} */
+  </#if>
+</#list>

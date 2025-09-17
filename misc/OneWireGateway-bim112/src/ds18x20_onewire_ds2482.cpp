@@ -86,11 +86,55 @@ bool DS18x20_OneWireDS2482::Search(uint8_t uMaxDeviceSearch) {
 				sDevTmp.res_type = (sDevTmp.type == DS18S20) ? 1 : 0;
 				this->m_dsDev[j] = sDevTmp;
 				this->m_foundDevices++;
-				bRet = true; // Found on or more devices! set bRet to true!
+				bRet = true; // Found one or more devices! set bRet to true!
 			}
 		}
 	}
 	return bRet;
+}
+
+bool DS18x20_OneWireDS2482::SearchSeq(uint8_t uMaxDeviceSearch) {
+
+	// wenn die searchBusy Variable nicht gesetzt ist, sollen alle vorherigen Suchergebnisse gelöscht werden
+	if(!searchBusy) {
+		this->m_foundDevices = 0;
+		this->_OWDS2482_DS18x->wireResetSearch(); // do a reset to start the search
+		searchBusy = true;
+	}
+
+	sDS18x20 sDevTmp;
+
+	uint8_t searchResult = this->_OWDS2482_DS18x->wireSearch(sDevTmp.addr);
+	sDevTmp.crcOK = (this->_OWDS2482_DS18x->crc8(sDevTmp.addr, 7) == sDevTmp.addr[7]);
+		if (sDevTmp.crcOK) {
+			switch (sDevTmp.addr[0]) {
+			case DS18S20:
+				sDevTmp.type = DS18S20;
+				break;
+			case DS18B20:
+				sDevTmp.type = DS18B20;
+				break;
+			case DS1822:
+				sDevTmp.type = DS1822;
+				break;
+			default:
+				sDevTmp.type = DS_UNKNOWN;
+				break;
+			}
+			if (sDevTmp.type != DS_UNKNOWN) {
+				sDevTmp.res_type = (sDevTmp.type == DS18S20) ? 1 : 0;
+				this->m_dsDev[m_foundDevices] = sDevTmp;
+				this->m_foundDevices++;
+			}
+		}
+
+	if(searchResult > 0 && m_foundDevices < uMaxDeviceSearch){
+		return false;
+	}
+	else{
+		searchBusy = false;
+		return true;
+	}
 }
 #endif
 

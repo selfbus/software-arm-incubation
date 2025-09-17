@@ -25,7 +25,7 @@ bool getParasiteMode(uint8_t channel) {
 	return false;
 }
 
-bool getUnknownAddressCyclicSend(uint8_t channel) {
+bool getUnknownAddressSearchSend(uint8_t channel) {
 	unsigned char configByte = bcu.userEeprom->getUInt8(EE_GENERAL_SETTINGS);
 
 	if ((configByte >> (channel + NUMBER_OF_ONEWIRE_CHANNELS)) & 1) {

@@ -58,7 +58,7 @@ typedef enum {
 class DS18x20_OneWireDS2482 {
 private:
 	OneWireDS2482 *_OWDS2482_DS18x;
-
+	bool searchBusy = false;
 public:
 	uint8_t m_foundDevices;           // Number of found devices
 	sDS18x20 m_dsDev[MAX_DS_DEVICES]; // Object list and informations of the found devices
@@ -94,6 +94,7 @@ public:
 	 */
 #if DS18X20_SEARCH
 	bool Search(uint8_t uMaxDeviceSearch = MAX_DS_DEVICES);
+	bool SearchSeq(uint8_t uMaxDeviceSearch = MAX_DS_DEVICES);
 #endif
 
 	/*
