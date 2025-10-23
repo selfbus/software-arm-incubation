@@ -25,6 +25,8 @@
     ApplicationData AppData;
     AppCallback callback;
     AppUsrCallback usrCallback;
+    ///\todo delete bcuBeginCalled then issue #110 of the sblib is fixed, see https://github.com/selfbus/software-arm-lib/issues/110
+    bool bcuBeginCalled = false;
 #endif
 
 APP_VERSION("SBrol   ", "1", "11") // Don't forget to also change the build-variable sw_version
@@ -130,6 +132,9 @@ BcuBase* setup()
 #endif
 
     bcu.begin(MANUFACTURER, currentVersion.hardwareVersion[5], APPVERSION);  // we are a MDT shutter/blind actuator, version 2.8
+#ifdef BUSFAIL
+    bcuBeginCalled = true;
+#endif
     return (&bcu);
 }
 
@@ -193,7 +198,10 @@ void AppCallback::BusVoltageFail()
     digitalWrite(PIN_INFO, 1);
     // write application settings to flash
     digitalWrite(PIN_INFO, !saveChannelPositions());
-    stopApplication();
+    if (bcuBeginCalled)
+    {
+        stopApplication();
+    }
 
 #ifdef DEBUG
     digitalWrite(PIN_RUN, 0); // switch RUN-LED off, to save some power
