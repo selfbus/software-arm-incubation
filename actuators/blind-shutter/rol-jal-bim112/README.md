@@ -90,3 +90,10 @@ Zur ETS-Konfiguration die [MDT_KP_Jalousieaktor_V28.knxprod](https://www.mdt.de/
 |    Readback    |  PIN_LT9   |     9      | PIO2_3   |                            |
 
 ## See [config.h](inc/config.h) for additional information.
+
+# ToDo for Blind/Shutter
+
+- implement correct handling of upper/lower limit
+- implement bus return/bus down handling
+- check the meaning of LOCK ABS Positioning
+- create 8-fold PCB

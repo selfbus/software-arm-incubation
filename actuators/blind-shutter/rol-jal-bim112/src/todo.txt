@@ -1,6 +1,0 @@
-ToDo for Blind/Shutter
-======================
-
-- implement correct handling of upper/lower limit
-- implement bus return/bus down handling
-- check the meaning of LOCK ABS Positioning
