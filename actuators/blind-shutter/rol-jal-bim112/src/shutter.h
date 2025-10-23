@@ -18,6 +18,7 @@ class Shutter: public Channel
 public:
     Shutter() = delete;
     Shutter(unsigned int number, unsigned int address, short position);
+    virtual ~Shutter() = default;
 };
 
 #endif /* ROL_JAL_BIM112_SRC_SHUTTER_H_ */

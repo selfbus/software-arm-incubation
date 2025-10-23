@@ -24,7 +24,7 @@
     HandActuation* handAct = new HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
 #endif
 
-Channel * channels[CHANNEL_COUNT];
+Channel * channels[CHANNEL_COUNT] = {};
 
 uint8_t channelCount()
 {
@@ -185,12 +185,23 @@ void initApplication(short channelPositions[], short channelSlatPositions[])
             slatPosition = 0;
         }
 
+        if (channels[i] != nullptr)
+        {
+            delete channels[i];
+        }
+
         switch (bcu.userEeprom->getUInt8(address))
         {
-        case 0: channels [i] = new Blind(i, address, position, slatPosition); break;
-        case 1: channels [i] = new Shutter(i, address, position); break;
-        default :
-            channels [i] = 0;
+            case 0:
+                channels[i] = new Blind(i, address, position, slatPosition);
+                break;
+
+            case 1:
+                channels[i] = new Shutter(i, address, position);
+                break;
+
+            default :
+                channels[i] = nullptr;
         }
 
         if (channels[i] != nullptr)

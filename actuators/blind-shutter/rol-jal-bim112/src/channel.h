@@ -148,6 +148,7 @@ public:
     static void setPWMtoMaxDuty();
     Channel() = delete;
     Channel(unsigned int number, unsigned int address, short position);
+    virtual ~Channel() = default;
     virtual unsigned int channelType(void);
 
     unsigned int isRunning(void);

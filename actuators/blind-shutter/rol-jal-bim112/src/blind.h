@@ -18,6 +18,7 @@ class Blind: public Channel
 public:
     Blind() = delete;
     Blind(unsigned int nummber, unsigned int address, short position, short slatPosition);
+    virtual ~Blind() = default;
     virtual unsigned int channelType(void);
     //virtual void periodic(void);
     virtual void moveTo(short position);
