@@ -53,10 +53,10 @@ protected:
     unsigned char  sceneSlatPos[NO_OF_SCENES];    //!< the slat positions for the scenes
 
     // track position of slats
-             short slatPosition;         //!< current channel position
-             short slatStartPosition;    //!< position when the movement started
-             short slatTargetPosition;   //!< requested target position
-             short slatSavedPosition;    //!< position before an automatic commands was triggered
+    short slatPosition;         //!< current channel position
+    short slatStartPosition;    //!< position when the movement started
+    short slatTargetPosition;   //!< requested target position
+    short slatSavedPosition;    //!< position before an automatic commands was triggered
 };
 
 inline unsigned int Blind::channelType(void)
