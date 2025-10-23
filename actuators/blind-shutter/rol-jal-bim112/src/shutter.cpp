@@ -8,11 +8,9 @@
 
 #include <shutter.h>
 
-Shutter::Shutter(unsigned int number, unsigned int address, short position)
-  : Channel(number, address, position)
+Shutter::Shutter(uint8_t newNumber, uint32_t newAddress, uint16_t newPosition)
+  : Channel(newNumber, newAddress, newPosition)
 {
-    if (bcu.userEeprom->getUInt8(address +   65) & 0x40)
-        shortTime = bcu.userEeprom->getUInt16(address +   6);
+    if (bcu.userEeprom->getUInt8(newAddress + 65) & 0x40)
+        shortTime = bcu.userEeprom->getUInt16(newAddress + 6);
 }
-
-

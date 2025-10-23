@@ -54,9 +54,9 @@ void Channel::setPWMtoMaxDuty()
     TIMER_PWM.match(MAT2, PWM_DUTY_MAX);  // match MAT2 when the timer reaches this value
 }
 
-Channel::Channel(unsigned int number, unsigned int address, short position)
+Channel::Channel(uint8_t newNumber, uint32_t newAddress, uint16_t newPosition)
   : shortTime(0)
-  , number(number)
+  , number(newNumber)
   , firstObjNo(13 + number * 20)
   , positionValid(false)
   , features(0)
@@ -67,54 +67,54 @@ Channel::Channel(unsigned int number, unsigned int address, short position)
   , direction(STOP)
   , moveForTime(0)
   , startTime(0)
-  , position(position)
+  , position(newPosition)
   , startPosition(-1)
   , targetPosition(-1)
   , savedPosition(-1)
   , handAct_(nullptr)
 {
-    for (unsigned int i = number * 2 ;i <= (number * 2 + 1); i++)
+    for (uint8_t i = number * 2; i <= (number * 2 + 1); i++)
     {
         pinMode(outputPins [i], OUTPUT);
         switchOutputPin(outputPins [i], OUTPUT_LOW);
     }
 
-    pauseChangeDir = bcu.userEeprom->getUInt16 (address +   2);
-    openTime       = bcu.userEeprom->getUInt16 (address +   4) * 1000;
-    minMoveTime    = bcu.userEeprom->getUInt8  (address +  10);
+    pauseChangeDir = bcu.userEeprom->getUInt16 (newAddress +   2);
+    openTime       = bcu.userEeprom->getUInt16 (newAddress +   4) * 1000;
+    minMoveTime    = bcu.userEeprom->getUInt8  (newAddress +  10);
     for (unsigned int i = 0; i < NO_OF_SCENES; i++)
     {
-        scenePos[i]    = bcu.userEeprom->getUInt8(address + 16 + i);
-        sceneNumber[i] = bcu.userEeprom->getUInt8(address + 32 + i);
+        scenePos[i]    = bcu.userEeprom->getUInt8(newAddress + 16 + i);
+        sceneNumber[i] = bcu.userEeprom->getUInt8(newAddress + 32 + i);
     }
     for (unsigned int i = 0; i < NO_OF_AUTOMATIC; i++)
     {
-        automaticPos[i] = bcu.userEeprom->getUInt8(address + 40 + i);
+        automaticPos[i] = bcu.userEeprom->getUInt8(newAddress + 40 + i);
     }
-    _enableFeature(address + 48,                FEATURE_STORE_SCENE);
-    //_enableFeature(address + 49,                FEATURE_AUTOMATIK);
-    //_enableFeature(address + 50,                FEATURE_MANUELL);
-    //_enableFeature(address + 51,                FEATURE_ABS_POSITION, 0x04);
-    lockConfig     = bcu.userEeprom->getUInt8  (address +  52);
-    topLimitPos    = bcu.userEeprom->getUInt8  (address +  53);
-    botLimitPos    = bcu.userEeprom->getUInt8  (address +  54);
-    motorOnDelay   = bcu.userEeprom->getUInt8  (address +  55);
-    motorOffDelay  = bcu.userEeprom->getUInt8  (address +  56);
-    // userEeprom.getUInt8  (address +  57); // ?? stop Mode
-    unsigned char extMoveTime    = bcu.userEeprom->getUInt8 (address +  58);
-    _enableFeature(address +  59, FEATURE_RESTORE_AFTER_REF);
-    closeTime      = bcu.userEeprom->getUInt16 (address +  62) * 1000;
+    _enableFeature(newAddress + 48,                FEATURE_STORE_SCENE);
+    //_enableFeature(newAddress + 49,                FEATURE_AUTOMATIK);
+    //_enableFeature(newAddress + 50,                FEATURE_MANUELL);
+    //_enableFeature(newAddress + 51,                FEATURE_ABS_POSITION, 0x04);
+    lockConfig     = bcu.userEeprom->getUInt8  (newAddress +  52);
+    topLimitPos    = bcu.userEeprom->getUInt8  (newAddress +  53);
+    botLimitPos    = bcu.userEeprom->getUInt8  (newAddress +  54);
+    motorOnDelay   = bcu.userEeprom->getUInt8  (newAddress +  55);
+    motorOffDelay  = bcu.userEeprom->getUInt8  (newAddress +  56);
+    // userEeprom.getUInt8  (newAddress +  57); // ?? stop Mode
+    unsigned char extMoveTime    = bcu.userEeprom->getUInt8 (newAddress +  58);
+    _enableFeature(newAddress +  59, FEATURE_RESTORE_AFTER_REF);
+    closeTime      = bcu.userEeprom->getUInt16 (newAddress +  62) * 1000;
     if (closeTime == 0)
         closeTime = openTime;
-    unsigned char lockAbsPos     = bcu.userEeprom->getUInt8  (address +  64);
+    unsigned char lockAbsPos     = bcu.userEeprom->getUInt8  (newAddress +  64);
     if (lockAbsPos & 0x80)
         lockConfig |= LOCK_POS_UP_DOWN;
     if (lockAbsPos & 0x20)
         lockConfig |= LOCK_POS_RELEASE_UP;
-    _enableFeature(address + 65,                FEATURE_STATUS_MOVING,   0x80);
-    _enableFeature(address + 65,                FEATURE_SHORT_OPERATION, 0x40);
-    obj24Config    = bcu.userEeprom->getUInt8(address + 66);
-    oneBitPosition = bcu.userEeprom->getUInt8(address + 67);
+    _enableFeature(newAddress + 65,                FEATURE_STATUS_MOVING,   0x80);
+    _enableFeature(newAddress + 65,                FEATURE_SHORT_OPERATION, 0x40);
+    obj24Config    = bcu.userEeprom->getUInt8(newAddress + 66);
+    oneBitPosition = bcu.userEeprom->getUInt8(newAddress + 67);
 
     if (extMoveTime != 0)
     {

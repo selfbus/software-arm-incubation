@@ -17,7 +17,7 @@ class Shutter: public Channel
 {
 public:
     Shutter() = delete;
-    Shutter(unsigned int number, unsigned int address, short position);
+    Shutter(uint8_t newNumber, uint32_t newAddress, uint16_t newPosition);
     virtual ~Shutter() = default;
 };
 
