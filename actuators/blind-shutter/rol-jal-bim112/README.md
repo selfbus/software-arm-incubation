@@ -40,7 +40,7 @@ Zur ETS-Konfiguration die [MDT_KP_Jalousieaktor_V28.knxprod](https://www.mdt.de/
 |  REL8   | 4         | down/zu  |    IO8     |       16       | PIO2_11  |                            |
 |         |           |          |            |                |          |                            |
 |         |           |   PWM    |  PIN_PWM   |       3        | PIO3_2   | pulse wide modulation      |
-|         |           |   VDD    |            |       6        |          | EIB_DC (R1 680R to VDD)    |
+|         |           |   VDD    |            |       6        |          | EIB_DC                     |
 
 -------------
 
@@ -73,7 +73,7 @@ Zur ETS-Konfiguration die [MDT_KP_Jalousieaktor_V28.knxprod](https://www.mdt.de/
 |  REL16  |     8     | down/zu  |    IO15    |       26       | PIO1_6   |                            |
 |         |           |          |            |                |          |                            |
 |         |           |   PWM    |  PIN_PWM   |       3        | PIO3_2   | pulse wide modulation      |
-|         |           |   VDD    |            |       6        |          | EIB_DC (R1 680R to VDD)    |
+|         |           |   VDD    |            |       6        |          | EIB_DC                     |
 
 ## optional hand actuation LedTaster_4TE ([PCB](https://github.com/selfbus/hardware-merged/tree/main/addons/leds_buttons_lpc922ctrl_4MU), [Wiki (legacy)](https://selfbus.myxwiki.org/xwiki/bin/view/Technik/LedTasterBoard_4TE))
 ### used IO Ports (verwendete IO Ports):
