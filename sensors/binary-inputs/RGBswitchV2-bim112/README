@@ -1,0 +1,10 @@
+﻿RGB Switch V2 bim112
+============
+
+This is a modification of in16-bim112 for special Hardware RGBswitch with 6 buttons
+
+The knxprod can be created with KAENX Creator.
+Load RGBswitchV2_bim112.ae-manu and create the knxprod
+
+Github KAENX Creator:
+https://github.com/OpenKNX/Kaenx-Creator
