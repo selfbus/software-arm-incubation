@@ -30,6 +30,19 @@
 #define FIXED_FRAME_LENGTH (4)            //!< Length of a fixed ft12 frame
 #define VARIABLE_FRAME_HEADER_LENGTH (6)  //!< Header length of a variable ft12 frame
 
+constexpr int16_t InvalidCheckSum = -1;  //!< Invalid checksum
+
+enum class FtError
+{
+    FT_NO_ERROR = 0,
+    FT_TOO_SHORT = 1,
+    FT_TOO_LONG = 2,
+    FT_INVALID_START = 3,
+    FT_INVALID_END = 4,
+    FT_INVALID_CHECKSUM = 5,
+    FT_INVALID_LENGTH = 6
+};
+
 /**
  * FT frame type
  * @note KNX Spec. 2.1 3/6/2 6.4.3.2 p.23ff
@@ -198,6 +211,20 @@ enum EmiCode
 };
 
 /**
+ * Converts a @ref FtControlField struct to its corresponding byte representation.
+ *
+ * @param cf A `FtControlField` structure representing the control field to convert.
+ *         - `cf.fromBCUtoDevice`: Sets bit 7 (DIR), representing the physical transmission direction.
+ *         - `cf.isRequest`:       Sets bit 6 (PRM), indicating a primary message.
+ *         - `cf.frameCountBitValid`: Sets bit 4 (FCV), indicating if the frame count bit is valid.
+ *         - `cf.frameCountBit`:  If `frameCountBitValid` is true, sets bit 5 (FCB), the frame count bit.
+ *         - `cf.functionCode`:   Sets bits 0-3, representing the function code.
+ *
+ * @return The resulting byte value.
+ */
+uint8_t controlFieldToByte(const FtControlField& cf);
+
+/**
  * Converts a byte into a @ref FtControlField
  *
  * @param controlByte - The byte to convert into a @ref FtControlField
@@ -205,8 +232,8 @@ enum EmiCode
  */
 FtControlField controlFieldFromByte(const uint8_t& controlByte);
 
-bool isValidFixedFrameHeader(const uint8_t* frame, uint8_t frameLength);
-bool isValidVariableFrameHeader(const uint8_t* frame, uint8_t frameLength);
+FtError isValidFixedFrameHeader(const uint8_t* frame, uint8_t frameLength);
+FtError isValidVariableFrameHeader(const uint8_t* frame, uint8_t frameLength);
 uint8_t calcCheckSum(const uint8_t* frame, const uint8_t& userDataLength);
 
 #endif /* FT12_PROTOCOL_H_ */
