@@ -57,22 +57,28 @@ const HardwareVersion hardwareVersion[7] =
 #   error "NUM_INPUTS must be defined and can only have a value of 2, 4, 6, 8 or 16"
 #endif
 
-#if (NUM_INPUTS == 16)
-#   define HARDWARE_ID 0
-#elif (NUM_INPUTS == 8)
-#   define HARDWARE_ID 1
-#elif (NUM_INPUTS == 4)
-#   define HARDWARE_ID 2
-#elif (NUM_INPUTS == 6) && defined(LED)
-#   define HARDWARE_ID 3
-#elif (NUM_INPUTS == 4) && defined(LED)
-#   define HARDWARE_ID 4
-#elif (NUM_INPUTS == 2) && defined(LED)
-#   define HARDWARE_ID 5
-#elif (NUM_INPUTS == 2) && (!defined(LED))
-#   define HARDWARE_ID 6
+#ifndef LED
+#   if (NUM_INPUTS == 16)
+#       define HARDWARE_ID 0
+#   elif (NUM_INPUTS == 8)
+#       define HARDWARE_ID 1
+#   elif (NUM_INPUTS == 4)
+#       define HARDWARE_ID 2
+#   elif (NUM_INPUTS == 2)
+#       define HARDWARE_ID 6
+#   else
+#       error "This Binary Input configuration is not supported."
+#   endif
 #else
-#   error "Configuration is not supported."
+#   if (NUM_INPUTS == 6)
+#       define HARDWARE_ID 3
+#   elif (NUM_INPUTS == 4)
+#       define HARDWARE_ID 4
+#   elif (NUM_INPUTS == 2)
+#       define HARDWARE_ID 5
+#   else
+#       error "This Universal Interface configuration is not supported."
+#   endif
 #endif
 
 //LED output pulse/blink time in ms
@@ -118,20 +124,20 @@ const int inputPins[] =
 #elif defined TE2_V104
     PIO0_2,   //  A ; 2MU controller version >= v1.04
     PIO0_9,   //  B ; 2MU controller version >= v1.04
-#elif defined FUSED_IO ///\todo verify io ports with actual pins
-    PIN_IO1,  //  A ; IO1
-    PIN_IO2,  //  B ; IO2
+#elif defined FUSED_IO
+    PIN_IO1,  //  A ; IO1 ; io-8x-fused => X3-3 (micromatch)
+    PIN_IO2,  //  B ; IO2 ; io-8x-fused => X3-4 (micromatch)
 #   if (NUM_INPUTS > 2)
-        PIN_IO3,  //  C ; IO3
-        PIN_IO4,  //  D ; IO4
+        PIN_IO3,  //  C ; IO3 ; io-8x-fused => X3-5 (micromatch)
+        PIN_IO4,  //  D ; IO4 ; io-8x-fused => X3-6 (micromatch)
 #   endif
 #   if (NUM_INPUTS > 4)
-        PIN_IO5,  //  E ; IO5
-        PIN_IO6,  //  F ; IO6
+        PIN_IO5,  //  E ; IO5 ; io-8x-fused => X3-7 (micromatch)
+        PIN_IO6,  //  F ; IO6 ; io-8x-fused => X3-8 (micromatch)
 #   endif
 #   if (NUM_INPUTS > 6)
-        PIN_IO7,  //  G ; IO7
-        PIN_IO8,  //  H ; IO8
+        PIN_IO7,  //  G ; IO7 ; io-8x-fused => X3-9 (micromatch)
+        PIN_IO8,  //  H ; IO8 ; io-8x-fused => X3-10 (micromatch)
 #   endif
 #   if (NUM_INPUTS > 8)
         PIN_IO9,  //  I ; IO9
