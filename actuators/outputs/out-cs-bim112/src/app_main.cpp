@@ -78,6 +78,28 @@ APP_VERSION("SBout_cs", "1", "21") // Don't forget to also change the build-vari
 AppUsrCallback usrCallback;
 
 /**
+ * Set the application load state.
+ *
+ * @param newLoadState  The new @ref LoadState to set, usually @ref LS_LOADED
+ *
+ * @note Set the application load state to @ref LS_LOADED
+ *       before exiting @ref setup and on @ref UsrCallbackType::flash
+ *       so the ETS will not download the original manufacturer firmware.
+ *       This saves ~2min 17s programming time on first ETS application programming.
+ */
+void setApplicationLoadState(LoadState newLoadState)
+{
+    byte* currentLoadState = bcu.userEeprom->loadState() + OT_APPLICATION;
+    if (*currentLoadState == newLoadState)
+    {
+        return;
+    }
+
+    *currentLoadState = newLoadState;
+    bcu.userEeprom->modified(true);
+}
+
+/**
  * Initialize the application.
  */
 BcuBase* setup()
@@ -126,6 +148,7 @@ BcuBase* setup()
  pinMode(REL2ON, OUTPUT);
  pinMode(REL2OFF, OUTPUT);
 #endif
+ setApplicationLoadState(LS_LOADED); // This saves ~2min 17s programming time on first ETS programming
  return (&bcu);
 }
 
@@ -423,6 +446,7 @@ void AppUsrCallback::Notify(UsrCallbackType type)
         case UsrCallbackType::flash :
         case UsrCallbackType::bcu_end:
             relay.Stop();
+            setApplicationLoadState(LS_LOADED); // This saves ~2min 17s programming time on first ETS programming
             while (relay.IsOperating())
             {
                 RelayAndSpiProcessing();
