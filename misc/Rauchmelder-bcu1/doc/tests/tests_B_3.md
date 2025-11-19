@@ -110,7 +110,7 @@ Setup per finished [Tests B.1](tests_B_1.md), i.e. fully configured module mount
 ## B.3.e
 
 **Steps:**
-* In ETS, set parameters on Status Informations page as follows (same as B.3.d, but with periodic sending turned off)
+* In ETS, set parameters on Status Informations page as follows (same as B.3.d, periodic sending turned on)
   - Send status informations periodically: Yes
   - Interval [min]: 1
   - Serial number: **Yes**
