@@ -124,20 +124,20 @@ const int inputPins[] =
 #elif defined TE2_V104
     PIO0_2,   //  A ; 2MU controller version >= v1.04
     PIO0_9,   //  B ; 2MU controller version >= v1.04
-#elif defined FUSED_IO ///\todo verify io ports with actual pins
-    PIN_IO1,  //  A ; IO1
-    PIN_IO2,  //  B ; IO2
+#elif defined FUSED_IO
+    PIN_IO1,  //  A ; IO1 ; io-8x-fused => X3-3 (micromatch)
+    PIN_IO2,  //  B ; IO2 ; io-8x-fused => X3-4 (micromatch)
 #   if (NUM_INPUTS > 2)
-        PIN_IO3,  //  C ; IO3
-        PIN_IO4,  //  D ; IO4
+        PIN_IO3,  //  C ; IO3 ; io-8x-fused => X3-5 (micromatch)
+        PIN_IO4,  //  D ; IO4 ; io-8x-fused => X3-6 (micromatch)
 #   endif
 #   if (NUM_INPUTS > 4)
-        PIN_IO5,  //  E ; IO5
-        PIN_IO6,  //  F ; IO6
+        PIN_IO5,  //  E ; IO5 ; io-8x-fused => X3-7 (micromatch)
+        PIN_IO6,  //  F ; IO6 ; io-8x-fused => X3-8 (micromatch)
 #   endif
 #   if (NUM_INPUTS > 6)
-        PIN_IO7,  //  G ; IO7
-        PIN_IO8,  //  H ; IO8
+        PIN_IO7,  //  G ; IO7 ; io-8x-fused => X3-9 (micromatch)
+        PIN_IO8,  //  H ; IO8 ; io-8x-fused => X3-10 (micromatch)
 #   endif
 #   if (NUM_INPUTS > 8)
         PIN_IO9,  //  I ; IO9
