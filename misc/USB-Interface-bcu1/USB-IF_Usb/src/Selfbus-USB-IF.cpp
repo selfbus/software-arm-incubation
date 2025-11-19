@@ -8,8 +8,6 @@
  *  published by the Free Software Foundation.
  */
 
-#include <cr_section_macros.h>
-
 #include "chip.h"
 #include <stdio.h>
 #include <string.h>
@@ -20,106 +18,119 @@
 #include "busdevice_if.h"
 #include "cdc_dbg.h"
 #include "device_mgnt.h"
+#include "device_mgnt_const.h"
 #include "UartIf.h"
 #include "ModeSelect.h"
+#include "error_handler.h"
 
-// Code Protection deaktiviert
-__attribute__ ((used,section(".crp"))) const unsigned int CRP_WORD = 0xFFFFFFFF;
 
 const uint32_t OscRateIn = 12000000;
 const uint32_t ExtRateIn = 0;
 
+static USBD_HANDLE_T g_hUsb;
+volatile uint32_t usbHeartbeatCounter;
+
 extern "C" void SystemInit(void)
 {
-	deviceIf.SystemInit();
+    deviceIf.SystemInit();
 }
-
-static USBD_HANDLE_T g_hUsb;
-
-volatile unsigned alive_cnt;
-bool usb_alive;
-
 
 extern "C" void USB_IRQHandler(void)
 {
-  USBD_API->hw->EnableEvent(g_hUsb, 0, USB_EVT_SOF, 1);
-	USBD_API->hw->ISR(g_hUsb);
+    USBD_API->hw->EnableEvent(g_hUsb, 0, USB_EVT_SOF, 1);
+    USBD_API->hw->EnableEvent(g_hUsb, 0, USB_EVT_DEV_ERROR, 1);
+
+    USBD_API->hw->ISR(g_hUsb);
 }
 
-extern "C" ErrorCode_t USB_sof_event(USBD_HANDLE_T hUsb)
+extern "C" ErrorCode_t USB_sof_event(USBD_HANDLE_T hUsb) // Start of Frame event
 {
-  alive_cnt++;
-  return LPC_OK;
+    usbHeartbeatCounter++;
+    return LPC_OK;
+}
+
+void systemReset()
+{
+    USBD_API->hw->Connect(g_hUsb, 0);
+    uint32_t lastSysTick = systemTime;
+    while ((systemTime - lastSysTick) <= 500)
+    {
+        ; // 0,5s warten, damit der PC das Disconnect bemerkt
+    }
+    NVIC_SystemReset();
 }
 
 int main(void) {
-	ErrorCode_t ret = LPC_OK;
-	unsigned Last10msTime = 0;
-  usb_alive = false;
+    currentDeviceMode = DeviceMode::Halt;
+    SystemCoreClockUpdate();
 
-	CdcDeviceMode = TCdcDeviceMode::Halt;
-	SystemCoreClockUpdate();
+    deviceIf.PioInit();
+    if (deviceIf.KnxSideProgMode())
+    {
+        // jumper JP 5 is closed (PIO 1_19 connected to ground)
+        currentDeviceMode = DeviceMode::ProgBusChip;
+        modeSelect.setAllLeds(true);
+        uart.Init(C_Dev_Baurate, true);
+    }
+    else
+    {
+        // wenn nicht "ProgBusChip"
+        modeSelect.StartModeSelect();
+        currentDeviceMode = modeSelect.getDeviceMode();
+        uart.Init(C_Dev_Baurate, false);
+    }
 
-	deviceIf.PioInit();
-	if (deviceIf.KnxSideProgMode())
-	{
-	  CdcDeviceMode = TCdcDeviceMode::ProgBusChip;
-      modeSelect.SetLeds();
-	} else	{ // wenn nicht "ProgBusChip"
-	  modeSelect.StartModeSelect();
-	  CdcDeviceMode = modeSelect.DeviceMode();
-	}
+    ErrorCode_t ret = usb_init(&g_hUsb, currentDeviceMode == DeviceMode::HidOnly);
+    if (ret != LPC_OK)
+    {
+        fatalError();
+    }
 
-	if (CdcDeviceMode == TCdcDeviceMode::ProgBusChip) // ISP enable for KNX module is set (JP5=on)
-	{
-	    uart.Init(9200, true); ///\todo check why 9200 and not at least 9600 isn't this the ISP-speed to the knx module?
-	}
-	else
-	{
-	    uart.Init(115200, false);
-	}
+    uint32_t last10msTime = 0;
+    while (1)
+    {
+        devicemgnt.SysIf_Tasks(knxhidif.UsbIsConfigured());
+        knxhidif.KnxIf_Tasks();
+        if (currentDeviceMode != DeviceMode::HidOnly)
+        {
+            cdcdbgif.DbgIf_Tasks(); // virtual serial port (cdc = communication class device, dbgif = debugInterface ?)
+        }
 
-	ret = usb_init(&g_hUsb, CdcDeviceMode == TCdcDeviceMode::HidOnly);
+        if (uart.SerIf_Tasks())
+        {
+            if (currentDeviceMode == DeviceMode::ProgBusChip)
+            {
+                cdcdbgif.reEnableReceive();
+            }
+        }
 
-	while (1) {
-		if (ret == LPC_OK) {
 
-			devicemgnt.SysIf_Tasks(knxhidif.UsbIsConfigured());
-			knxhidif.KnxIf_Tasks();
-			if (CdcDeviceMode != TCdcDeviceMode::HidOnly) {
-				cdcdbgif.DbgIf_Tasks();
-			}
+        // Every 10ms checks
+        if ((systemTime - last10msTime) < 10)
+        {
+            continue;
+        }
 
-			if (uart.SerIf_Tasks())
-				if (CdcDeviceMode == TCdcDeviceMode::ProgBusChip)
-					cdcdbgif.ReenableRec();
+        // below code runs only every 10ms
+        last10msTime = systemTime;
+        bool usb_alive = (usbHeartbeatCounter != 0);
+        usbHeartbeatCounter = 0;
+        deviceIf.DoActivityLed(usb_alive);
 
-			if ((systemTime - Last10msTime) >= 10)
-			{
-			  Last10msTime = systemTime;
-			  usb_alive = (alive_cnt != 0);
-			  alive_cnt = 0;
-			  deviceIf.DoActivityLed(usb_alive);
-			  if (deviceIf.Hid2Knx_Ena()) // Folgendes nur, wenn nicht Prog-Bus-Chip aktiv ist
-			  {
-			    if (modeSelect.DoModeSelect())
-			    {
-			      bool restart = false;
-			      if (CdcDeviceMode == TCdcDeviceMode::HidOnly)
-			        restart = true;
-			      CdcDeviceMode = modeSelect.DeviceMode();
-			      if (CdcDeviceMode == TCdcDeviceMode::HidOnly)
-			        restart = true;
-			      if (restart)
-			      {
-			        USBD_API->hw->Connect(g_hUsb, 0);
-			        while ((systemTime - Last10msTime) <= 500); // 0,5s warten, damit der PC das Disconnect bemerkt
-			        NVIC_SystemReset();
-			      }
-			    }
-			  }
-			}
+        if (!deviceIf.Hid2Knx_Ena())
+        {
+            continue;
+        }
 
-		}
-	}
+        // Folgendes nur, wenn nicht Prog-Bus-Chip aktiv ist
+        if (modeSelect.DoModeSelect())
+        {
+            if (currentDeviceMode == DeviceMode::HidOnly)
+                systemReset();
+
+            currentDeviceMode = modeSelect.getDeviceMode();
+            if (currentDeviceMode == DeviceMode::HidOnly)
+                systemReset();
+        }
+    } // while (1)
 }

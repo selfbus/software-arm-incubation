@@ -15,28 +15,28 @@
 
 enum class TFifoErr
 {
-	Ok,
-	Error,
-	Full,
-	Empty
+    Ok,
+    Error,
+    Full,
+    Empty
 };
 
 template <class T, int depth=FIFO_DEPTH>
 class GenFifo
 {
 public:
-	GenFifo(void);
-	void Purge(void);
-	TFifoErr Push(T val);
-	TFifoErr Pop(T &val);
-	TFifoErr Empty(void);
-	TFifoErr Full(void);
-	int Level(void);
+    GenFifo(void);
+    void Purge(void);
+    TFifoErr Push(T val);
+    TFifoErr Pop(T &val);
+    TFifoErr Empty(void);
+    TFifoErr Full(void);
+    int Level(void);
 protected:
-	int data[depth+1] = {0};
-	int rdptr;
-	int wrptr;
-	int NextPtr(int ptr);
+    int data[depth+1] = {0};
+    int rdptr;
+    int wrptr;
+    int NextPtr(int ptr);
 };
 
 extern GenFifo<int> ser_txfifo;

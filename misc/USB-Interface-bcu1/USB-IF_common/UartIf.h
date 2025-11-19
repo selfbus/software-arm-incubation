@@ -43,34 +43,34 @@
 
 enum class TUartIfErr
 {
-	Ok,
-	Error,
-	Busy
+    Ok,
+    Error,
+    Busy
 };
 
 class UartIf
 {
 public:
 #ifndef __USE_LPCOPEN
-	void Init(int baudRate, bool rawMode, uint32_t pinTx, uint32_t pinRx);
+    void Init(int baudRate, bool rawMode, uint32_t pinTx, uint32_t pinRx);
 #else
-	void Init(int baudRate, bool rawMode);
+    void Init(int baudRate, bool rawMode);
 #endif
-	TUartIfErr TransmitBuffer(int buffno);
-	bool TxBusy(void);
-	void interruptHandler(void);
-	bool SerIf_Tasks(void);
+    TUartIfErr TransmitBuffer(int buffno);
+    bool TxBusy(void);
+    void interruptHandler(void);
+    bool SerIf_Tasks(void);
 protected:
-	uint8_t *txbuffptr;
-	uint8_t *rxbuffptr;
-	uint8_t chksum;
-	bool rawmode;
-	bool discard;
-	int txlen;
-	int rxlen;
-	int txbuffno;
-	int ser_buffno;
-	int rxbuffno;
+    uint8_t *txbuffptr;
+    uint8_t *rxbuffptr;
+    uint8_t chksum;
+    bool rawmode;
+    bool discard;
+    int txlen;
+    int rxlen;
+    int txbuffno;
+    int ser_buffno;
+    int rxbuffno;
 };
 
 extern UartIf uart;

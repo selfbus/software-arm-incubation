@@ -222,7 +222,7 @@ ErrorCode_t usb_init(USBD_HANDLE_T *g_hUsb, bool use_singledevonly)
         }
       }
       if (ret == LPC_OK) {
-        /*  enable USB interrrupts */
+        /*  enable USB interrupts */
         NVIC_EnableIRQ(USB0_IRQn);
         /* now connect */
         USBD_API->hw->Connect(*g_hUsb, 1);
@@ -300,8 +300,9 @@ ErrorCode_t HidIf_Init(USBD_HANDLE_T hUsb,
   /* user defined functions */
   hid_param.HID_GetReport = HidIf_GetReport;
   hid_param.HID_SetReport = HidIf_SetReport;
-  hid_param.HID_EpIn_Hdlr  = HidIf_Ep_Hdlr;
-  hid_param.HID_EpOut_Hdlr  = HidIf_Ep_Hdlr;
+  hid_param.HID_EpIn_Hdlr = HidIf_Ep_Hdlr;
+  hid_param.HID_EpOut_Hdlr = HidIf_Ep_Hdlr;
+  hid_param.HID_Ep0_Hdlr = HidIf_Ep_Hdlr;
   /* Init reports_data */
   reports_data[0].len = HidIf_ReportDescSize;
   reports_data[0].idle_time = 0;

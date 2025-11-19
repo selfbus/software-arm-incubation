@@ -11,19 +11,11 @@
 #ifndef BUSDEVICE_IF_H_
 #define BUSDEVICE_IF_H_
 
+#include "device_mgnt_const.h"
+
 extern volatile unsigned int systemTime;
 
-enum class TCdcDeviceMode
-{
-	Halt, //!< Initialization or USB stopped working
-	HidOnly,
-	UsbMon,
-	BusMon,
-	ProgBusChip,
-	ProgUserChip
-};
-
-extern TCdcDeviceMode CdcDeviceMode;
+extern DeviceMode currentDeviceMode;
 
 class DeviceIf;
 
@@ -31,20 +23,20 @@ extern DeviceIf deviceIf;
 
 class DeviceIf {
 public:
-  DeviceIf();
-  bool Hid2Knx_Ena(void);
+    DeviceIf();
+    bool Hid2Knx_Ena(void);
 
-  void SystemInit(void);
-  void PioInit(void);
+    void SystemInit(void);
+    void PioInit(void);
 
-  bool KnxSideProgMode(void);
-  void DoActivityLed(bool LedEnabled);
-  void BlinkActivityLed(void);
+    bool KnxSideProgMode(void);
+    void DoActivityLed(bool LedEnabled);
+    void BlinkActivityLed(void);
 private:
-  void SetActivityLed(bool onoff);
-  bool enabled;
-  int blinkcnt;
-  int timecnt;
+    void SetActivityLed(bool onoff);
+    bool enabled;
+    int blinkcnt;
+    int timecnt;
 };
 
 #endif /* BUSDEVICE_IF_H_ */

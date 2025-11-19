@@ -1,10 +1,15 @@
-# KNX USB-Interface / Busmonitor / Programmer
+# KNX USB-Interface / Busmonitor / ISP Programmer
 
 <!-- TOC -->
-* [KNX USB-Interface / Busmonitor / Programmer](#knx-usb-interface--busmonitor--programmer)
+* [KNX USB-Interface / Busmonitor / ISP Programmer](#knx-usb-interface--busmonitor--isp-programmer)
+    * [Normal operation](#normal-operation)
     * [Switch](#switch)
     * [Jumper](#jumper)
     * [Connectors](#connectors)
+    * [ISP programming / flashing / updates](#isp-programming--flashing--updates)
+      * [Selfbus ARM device/controller](#selfbus-arm-devicecontroller)
+      * [KNX bus access controller (TS_ARM) firmware](#knx-bus-access-controller-ts_arm-firmware)
+      * [USB mcu/controller U1 (LPC11U24/401)](#usb-mcucontroller-u1-lpc11u24401)
     * [Firmware](#firmware)
     * [Hardware / PCB](#hardware--pcb)
   * [Usage with knxd](#usage-with-knxd)
@@ -12,49 +17,84 @@
     * [Start in terminal](#start-in-terminal)
     * [Create simple knxd.ini for USB-Interface](#create-simple-knxdini-for-usb-interface)
     * [udev rule](#udev-rule)
+  * [Known Issues](#known-issues)
+    * [ISP programming issues](#isp-programming-issues)
+  * [Forum](#forum)
 <!-- TOC -->
 
-For normal operation, connect the connector JP7 (ISP) of the KNX-module (TS_ARM) with a 10pole cable to connector P1 of the USB-interface.
+### Normal operation
+- Remove all jumpers
+- Plug TS_ARM into connector P4
+- Connect P1 with a 10pole cable to the ISP connector of the TS_ARM (JP7 ISP)
+- Connect USB and KNX-supply
+- Select Operation mode with switch S1
 
 ### Switch
 S1: Change operation modes
 
-| Mode           | Description                                                                                                                    |
-|----------------|--------------------------------------------------------------------------------------------------------------------------------|
-| KNX-Interface  | USB-HID device which can be used in ETS                                                                                        |
-| KNX-Busmonitor | KNX traffic is output in readable form on the virtual serial port                                                              |
-| USB-Monitor    | Packet transfer between ETS and KNX is send to the virtual serial port                                                         |
-| Programmer     | Serial port for programming a Selfbus ARM device connected to P3 (Prog-If) with [Flashmagic](https://www.flashmagictool.com/). |
+| Mode           | Color (#Led) | Description                                                                                                                                       |
+|----------------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| KNX-Interface  | yellow (1)   | USB-HID device which can be used in ETS, knxd, Selfbus Updater.<br>May require [Zadig USB drivers](https://zadig.akeo.ie/) (winUSB) under Windows |
+| KNX-Busmonitor | red (2)      | KNX traffic/telegrams are send in readable form to the virtual serial port                                                                        |
+| USB-Monitor    | green (3)    | EMI 1 packets between USB host (ETS) and KNX bus access controller (TS_ARM) are send to the virtual serial port                                   |
+| ISP-Programmer | blue (4)     | Serial port for programming a Selfbus ARM device connected to P3 (Prog-If) with e.g. [Flashmagic](https://www.flashmagictool.com/).               |
 
 Virtual serial port settings: 115200 baud, 8 data bits, no parity, 1 stop bit
 
-[Thread in Selfbus forum](https://selfbus.org/forum/viewtopic.php?f=6&t=487)
-
 ### Jumper
 
-| Jumper | Function   | Description                  |
-|:------:|------------|------------------------------|
-|  JP1   | USB ISP    | enable ISP 11uxx             |
-|  JP2   | ISP UART   | off=ISP USB, on=ISP UART     |
-|        |            |                              |
-|  JP4   | KNX ISP    | KNX module KNX-uC ISP enable |
-|  JP5   | KNX ISP    | KNX-Side ISP enable          |
-|  JP6   | ISP USR-uC | VCC enable for KNX module    |
-
-- To update the KNX-module (P4, TS_ARM) firmware disconnect USB and KNX-supply,  
-  set jumpers JP4 and JP5,  
-  connect USB and KNX-supply,   
-  all mode LEDs should be off, indicating the firmware update mode. 
-
-- To program/flash the MCU U1 (11uxx ,USB) via ISP set JP1 & JP2.
+| Jumper | Function           | Description                                                                                               |
+|:------:|--------------------|-----------------------------------------------------------------------------------------------------------|
+|  JP1   | ISP enable USB-mcu | Enable ISP for USB-mcu U1 (11U24/401)                                                                     |
+|  JP2   | ISP select USB-mcu | Select ISP mode for USB-mcu U1, off=ISP over USB (X3), on=ISP over UART (P2)                              |
+|        |                    |                                                                                                           |
+|  JP4   | ISP enable KNX-mcu | Enable ISP for KNX-mcu P4 (TS_ARM)                                                                        |
+|  JP5   | ISP enable KNX-mcu | Enable ISP mode for KNX-mcu P4 (TS_ARM)                                                                   |
+|  JP6   | VCC USER-mcu       | VCC +3.3V for Prog-If (P3) ISP connector<br>generated by TS_ARM from the KNX bus which must be powered on |
 
 ### Connectors
 
-| Conn. | Function   | Description |
-|-------|------------|-------------|
-| P1    | ISP KNX-uC | ISP TS_ARM  |
-| P2    | ISP USB-uc | ISP 11uxx   |
-| P3    | Prog-If    | ISP USR-uC  |
+| Conn. | Function      | Description                                              |
+|-------|---------------|----------------------------------------------------------|
+| P1    | ISP / KNX-mcu | normal operation and ISP programming of KNX-mcu (TS_ARM) |
+| P2    | ISP USB-mcu   | ISP over UART for USB-mcu U1 (11U24/401)                 |
+| P3    | Prog-If       | ISP User-mcu                                             |
+| P4    | KNX-mcu       | KNX Bus access controller (TS_ARM)                       |
+
+### ISP programming / flashing / updates
+
+#### Selfbus ARM device/controller
+- Disconnect USB and KNX-supply
+- Close jumper JP2 and JP6 (+3.3V)  
+  <img alt="jumper ISP User mcu" src="resources/jumper/usb_if_user_mcu_isp.png" title="jumper ISP User mcu" height="100"/>
+- Connect the ARM controller´s ISP connector with a 10pole cable to the Prog-If connector (P3)  
+- Connect USB and KNX-supply
+- Select mode Prog-If (LED4 on) with switch S1
+- Flash ARM controller with e.g. [Flashmagic](https://www.flashmagictool.com)
+- Virtual serial port settings: 115200 baud, 8 data bits, no parity, 1 stop bit
+
+#### KNX bus access controller (TS_ARM) firmware
+- Disconnect USB and KNX-supply
+- Close jumpers JP4 and JP5  
+  <img alt="jumper KNX mcu (TS_ARM)" src="resources/jumper/usb_if_knx_mcu_isp.png" title="jumper KNX mcu (TS_ARM)" height="100"/>
+- Connect USB and KNX-supply
+- All mode LEDs (LED1-4) should be on, indicating the ISP firmware update mode
+- Flash the TS_ARM with e.g. [Flashmagic](https://www.flashmagictool.com)
+- Virtual serial port settings: 9600 baud, 8 data bits, no parity, 1 stop bit
+
+#### USB mcu/controller U1 (LPC11U24/401)
+- ISP programming over USB (X1)
+  * Disconnect USB and KNX-supply
+  * Close jumper JP1  
+    <img alt="jumper USB mcu ISP over USB" src="resources/jumper/usb_if_usb_mcu_isp_over_usb.png" title="jumper USB mcu ISP over USB" height="100"/>
+  * Connect USB
+  * Copy binary `*.bin` [usb-if_usb_release_vx.xx_libvx.xx.bin](https://github.com/selfbus/software-releases/tree/main/misc/USB-Interface-bcu1) to removable drive **LPC1XXX IFLASH**
+- ISP programming over UART (P2)
+  * Disconnect USB and KNX-supply
+  * Close jumpers JP1 and JP2  
+    <img alt="jumper USB mcu ISP over UART" src="resources/jumper/usb_if_usb_mcu_isp_over_uart.png" title="jumper USB mcu ISP over UART" height="100"/>
+  * Connect ISP-Programmer to P2
+  * Flash `*.hex` [usb-if_usb_release_vx.xx_libvx.xx.hex](https://github.com/selfbus/software-releases/tree/main/misc/USB-Interface-bcu1) with e.g. [Flashmagic](https://www.flashmagictool.com)
 
 
 ### Firmware
@@ -88,5 +128,16 @@ create file `/etc/udev/rules.d/70-knxd.rules` and add following line<br>
 or run in a terminal<br>
 `echo 'ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="147b", ATTR{idProduct}=="5120", OWNER="knxd", MODE="0600"' | sudo tee --append /etc/udev/rules.d/70-knxd.rules`
 
+## Known Issues
 
+### ISP programming issues
+- Since Flashmagic version 12.85 the checkbox *No echo* (menu *View->Preferences->Communications*) must be **unchecked**.  
+  <img alt="Flashmagic no echo option" src="resources/flashmagic_no_echo_off.png" title="Flashmagic no echo option" height="120"/>
+- Very slow ISP programming (Prog-If mode) of an User-mcu connected to P3 (9600 baud, half-duplex).  
+  The checkbox *Half-duplex* (menu *View->Preferences->Communications*) must be **checked**.  
+  <img alt="Flashmagic half-duplex option" src="resources/flashmagic_half_duplex_on.png" title="Flashmagic no echo option" height="120"/>
+
+## Forum
+
+[Thread in Selfbus forum](https://selfbus.org/forum/viewtopic.php?f=6&t=487)
 

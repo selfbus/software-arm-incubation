@@ -20,68 +20,68 @@ GenFifo<int> dev_rxfifo;
 
 template <class T, int depth> GenFifo<T, depth>::GenFifo(void)
 {
-	rdptr = 0;
-	wrptr = 0;
+    rdptr = 0;
+    wrptr = 0;
 }
 
 template <class T, int depth> void GenFifo<T, depth>::Purge(void)
 {
-	rdptr = 0;
-	wrptr = 0;
+    rdptr = 0;
+    wrptr = 0;
 }
 
 template <class T, int depth> TFifoErr GenFifo<T, depth>::Empty(void)
 {
-	if (rdptr == wrptr)
-		return TFifoErr::Empty;
-	else
-		return TFifoErr::Ok;
+    if (rdptr == wrptr)
+        return TFifoErr::Empty;
+    else
+        return TFifoErr::Ok;
 }
 
 template <class T, int depth> TFifoErr GenFifo<T, depth>::Full(void)
 {
-	if (NextPtr(wrptr) == rdptr)
-		return TFifoErr::Full;
-	else
-		return TFifoErr::Ok;
+    if (NextPtr(wrptr) == rdptr)
+        return TFifoErr::Full;
+    else
+        return TFifoErr::Ok;
 }
 
 template <class T, int depth> TFifoErr GenFifo<T, depth>::Push(T val)
 {
-	if (Full() == TFifoErr::Full)
-		return TFifoErr::Full;
-	data[wrptr] = val;
-	wrptr = NextPtr(wrptr);
-	return TFifoErr::Ok;
+    if (Full() == TFifoErr::Full)
+        return TFifoErr::Full;
+    data[wrptr] = val;
+    wrptr = NextPtr(wrptr);
+    return TFifoErr::Ok;
 }
 
 template <class T, int depth> TFifoErr GenFifo<T, depth>::Pop(T &val)
 {
-	if (Empty() == TFifoErr::Empty)
-		return TFifoErr::Empty;
-	val = data[rdptr];
-	rdptr = NextPtr(rdptr);
-	return TFifoErr::Ok;
+    if (Empty() == TFifoErr::Empty)
+        return TFifoErr::Empty;
+    val = data[rdptr];
+    rdptr = NextPtr(rdptr);
+    return TFifoErr::Ok;
 }
 
 template <class T, int depth> int GenFifo<T, depth>::Level(void)
 {
-	int i;
-	i = wrptr - rdptr;
-	if (i < 0)
-	{
-		i += depth+1;
-	}
-	return i;
+    int i;
+    i = wrptr - rdptr;
+    if (i < 0)
+    {
+        i += depth+1;
+    }
+    return i;
 }
 
 template <class T, int depth> int GenFifo<T, depth>::NextPtr(int ptr)
 {
-	ptr++;
-	if (ptr > depth)
-		return 0;
-	else
-		return ptr;
+    ptr++;
+    if (ptr > depth)
+        return 0;
+    else
+        return ptr;
 }
 
 template class GenFifo<int>;

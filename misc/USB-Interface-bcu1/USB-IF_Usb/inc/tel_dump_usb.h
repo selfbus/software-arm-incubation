@@ -16,7 +16,7 @@
 class TelDumpUsb: public TelDump
 {
 protected:
-	virtual void OutputFunction(char *line, unsigned int len);
+    virtual void OutputFunction(char *line, unsigned int len);
 };
 
 extern TelDumpUsb teldump;

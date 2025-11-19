@@ -13,6 +13,8 @@
 
 #include <stdint.h>
 
+#define HID_REPORT_SIZE 64
+
 /**
  * HID Report header report id
  * @details report id is always 1
@@ -110,7 +112,7 @@ constexpr uint8_t TPH_ManufacturerCode_V0_LOW_BYTE = 0x00;
 
 // Transfer Protocol Body - TPB
 #define IDX_TPB_FeatureId   0
-//#define IDX_TPB_FeatureData 1
+#define IDX_TPB_FeatureData 1
 #define IDX_TPB_MCode       0
 #define IDX_TPB_Data        1 //!< wenn KNX-Frame
 #define IDX_TPB_EMI_Len     1 //!< wenn EMI service
@@ -118,16 +120,30 @@ constexpr uint8_t TPH_ManufacturerCode_V0_LOW_BYTE = 0x00;
 #define IDX_TPB_EMI_Addr_l  3
 #define IDX_TPB_EMI_Data    4
 
-// Bus Access Server - BAS
-#define BAS_ServiceId_FeatureGet  1
-#define BAS_ServiceId_FeatureResp 2
-#define BAS_ServiceId_FeatureSet  3
-//#define BAS_ServiceId_FeatureInfo 4
-#define BAS_FeatureId_SuppEmiType 1
-#define BAS_FeatureId_DescrType0  2
-#define BAS_FeatureId_BusConnStat 3
-#define BAS_FeatureId_KnxManCode  4
-#define BAS_FeatureId_ActiveEmi   5
+/**
+ * Device Feature Service of the KNX Bus Access Server - BAS
+ * @note KNX Spec 2.1 9/3 3.5.3.2.1
+ */
+enum class BAS_ServiceId
+{
+    FeatureGet  = 1, //!> Device Feature Get
+    FeatureResp = 2, //!> Device Feature Response
+    FeatureSet  = 3, //!> Device Feature Set
+    FeatureInfo = 4  //!> Device Feature Info
+};
+
+/**
+ * Device Feature of the KNX Bus Access Server - BAS
+ * @note KNX Spec 2.1 9/3 3.5.3.3.1
+ */
+enum class BAS_FeatureId
+{
+    SuppEmiType = 1, //!> Get supported EMI types
+    DescrType0  = 2, //!> Get the local Device Descriptor Type 0 for possible local device management
+    BusConnStat = 3, //!> Get and inform on the bus connection status
+    KnxManCode  = 4, //!> Get the manufacturer code of the Bus Access Server
+    ActiveEmi   = 5  //!> Get and set the EMI type to use
+};
 
 /**
  * Shall contain the 2 octet KNX manufacturer code<br>
@@ -141,17 +157,22 @@ constexpr uint8_t TPH_ManufacturerCode_V0_LOW_BYTE = 0x00;
  * EMI1 message code field (C_MCode_...)
  * @note KNX Spec 2.1 3/6/3
  */
-//#define C_MCode_DbgTx          0xCE //!< Selfbus specific ?
-//#define C_MCode_DbgRx          0xC9 //!< Selfbus specific ? Ein von KNX empfangenes Telegramm, nur zum Debug-CDC Interface
 #define C_MCode_TxReq           0x11 //!< L_Data.req / Ein Telegramm von USB auf den KNX-Bus übertragen
 #define C_MCode_TxEcho          0x4E //!< L_Data.con / Das Echo vom KNX-IF zurück Richtung USB nach einem TxReq
 #define C_MCode_RxData          0x49 //!< L_Data.ind / Ein von KNX empfangenes Telegramm Richtung USB
 #define C_MCode_GetValue        0x4C //!< PC_Get_Value.req / Einen Emi-Wert abfragen
 #define C_MCode_ResponseValue   0x4B //!< PC_Get_Value.con / Die Antwort auf eine Emi-Wert Abfrage
 #define C_MCode_SetValue        0x46 //!< PC_Set_Value.req / Einen Emi-Wert setzen
-#define C_MCode_ResetResponse   0xA0
-#define C_MCode_MonMask         0x7f //!< Selfbus specific ?
-#define C_MCode_SpecMsk         0x80 //!< Selfbus specific ?
+
+/**
+ * LM_Reset.ind PEI Reset indication
+ *
+ * @details Should be send only once on hard or soft-reset.
+ * @note KNX Spec. 2.1 3/6/2 6.3.2.6 p. 19
+ */
+#define C_MCode_PEI_Reset       0xA0
+
+#define C_MCode_USB_IF_Special   0x80 //!< Selfbus USB-IF specific masked busmonitor EMI 1 telegrams!
 
 #endif /* _KNXUSB_CONST_H */
 

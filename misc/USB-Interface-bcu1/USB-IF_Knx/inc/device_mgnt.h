@@ -1,5 +1,5 @@
 /*
- *  device_mgnt.h - Device management, mode management
+ *  device_mgnt.h - Device management, mode management and mode switching
  *
  *  Copyright (C) 2018 Florian Voelzke <fvoelzke@gmx.de>
  *
@@ -11,28 +11,28 @@
 #ifndef DEVICE_MGNT_H_
 #define DEVICE_MGNT_H_
 
-#define C_Dev_Idle 1
-#define C_Dev_Sys  2
-#define C_DevSys_Disable 1
-#define C_DevSys_Normal 2
-#define C_DevSys_CdcMon 3
-#define C_DevSys_UsrPrg 4
-#define C_Dev_Isp  3
+#include "device_mgnt_const.h"
+#include "prog_uart.h"
+#include "emi_knx.h"
 
-//#define C_TxTimeout 450
-#define C_RxTimeout 450
-#define C_IdlePeriod 200
-
+///todo this class exists also in USB-IF_Usb
 class DeviceManagement
 {
 public:
-  DeviceManagement(void);
-  void DevMgnt_Tasks(void);
+    DeviceManagement(void) = delete;
+    DeviceManagement(ProgUart * softUART, EmiKnxIf * emiKnxIf);
+    void DevMgnt_Tasks(void);
 protected:
-  unsigned int txtimeout;
-  unsigned int rxtimeout;
-  uint8_t LastDevSys;
+    uint32_t txtimeout = 0;
+    uint32_t rxtimeout = 0;
+    DeviceMode deviceMode = DeviceMode::Invalid;
+
+private:
+    ProgUart * softUART = nullptr;
+    EmiKnxIf * emiKnxIf = nullptr;
+    void setDeviceMode(DeviceMode newDeviceMode);
+    void failAndNeverReturn(uint16_t blinkTimeMs);
+
 };
 
-extern DeviceManagement devicemgnt;
 #endif /* DEVICE_MGNT_H_ */
