@@ -25,21 +25,11 @@
     ApplicationData AppData;
     AppCallback callback;
     AppUsrCallback usrCallback;
+    ///\todo delete bcuBeginCalled then issue #110 of the sblib is fixed, see https://github.com/selfbus/software-arm-lib/issues/110
+    bool bcuBeginCalled = false;
 #endif
 
 APP_VERSION("SBrol   ", "1", "11") // Don't forget to also change the build-variable sw_version
-
-// Hardware version. Must match the product_serial_number in the VD's table hw_product
-const HardwareVersion hardwareVersion[] =
-{
-    ///\todo implement missing 1, 2, 8- fold versions
-    {4, 0x4578, { 0, 0, 0, 0, 0x0, 0x29 }} // JAL-0410.01 Shutter Actuator 4-fold, 4TE, 230VAC, 10A
-    // {8, 0x46B8, { 0, 0, 0, 0, 0x0, 0x28 }}  // JAL-0810.01 Shutter Actuator 8-fold, 8TE, 230VAC,10A
-};
-
-const HardwareVersion * currentVersion;
-
-Timeout timeout;
 
 void initSerial()
 {
@@ -118,25 +108,17 @@ bool recallAppData()
  */
 BcuBase* setup()
 {
-    ///\todo read some ID pins to determine which version is attached
+#ifdef DEBUG
+    // Running the controller in a closed housing makes these LEDs useless - they just consume power
+    // additionally at the moment the rol-jal application does not make use of these LEDs.
+    pinMode(PIN_INFO, OUTPUT); // Info LED
+    pinMode(PIN_RUN,  OUTPUT); // Run LED
+#endif
 
-    currentVersion = & hardwareVersion[0];
-    bcu.begin(MANUFACTURER, currentVersion->hardwareVersion[5], APPVERSION);  // we are a MDT shutter/blind actuator, version 2.8
 #ifdef BUSFAIL
     bcu.setUsrCallback((UsrCallback *)&usrCallback);
 #endif
-    bcu.setHardwareType(currentVersion->hardwareVersion, sizeof(currentVersion->hardwareVersion));
-
-    pinMode(PIN_INFO, OUTPUT); // Info LED
-    pinMode(PIN_RUN,  OUTPUT); // Run LED
-
-    // Running the controller in a closed housing makes these LEDs useless - they just consume power
-    // additionally at the moment the rol-jal application does not make use of these LEDs
-    // check config file to toggle the use
-#ifndef USE_DEV_LEDS
-    digitalWrite(PIN_INFO, 0);
-    digitalWrite(PIN_RUN, 0);
-#endif
+    bcu.setHardwareType(currentVersion.hardwareVersion, sizeof(currentVersion.hardwareVersion));
 
     // enable bus voltage monitoring
     startBusVoltageMonitoring();
@@ -149,7 +131,10 @@ BcuBase* setup()
     initApplication();
 #endif
 
-    timeout.start(1);
+    bcu.begin(MANUFACTURER, currentVersion.hardwareVersion[5], APPVERSION);  // we are a MDT shutter/blind actuator, version 2.8
+#ifdef BUSFAIL
+    bcuBeginCalled = true;
+#endif
     return (&bcu);
 }
 
@@ -192,7 +177,7 @@ void loop_noapp()
 void ResetDefaultApplicationData()
 {
 #ifdef BUSFAIL
-    for(int i = 0; i < NO_OF_CHANNELS; i++){
+    for(uint8_t i = 0; i < sizeof(AppData.channelPositions)/sizeof(AppData.channelPositions[0]); i++){
         AppData.channelPositions[i] = 0;
         AppData.channelSlatPositions[i] = 0;
     }
@@ -213,7 +198,10 @@ void AppCallback::BusVoltageFail()
     digitalWrite(PIN_INFO, 1);
     // write application settings to flash
     digitalWrite(PIN_INFO, !saveChannelPositions());
-    stopApplication();
+    if (bcuBeginCalled)
+    {
+        stopApplication();
+    }
 
 #ifdef DEBUG
     digitalWrite(PIN_RUN, 0); // switch RUN-LED off, to save some power
@@ -231,7 +219,7 @@ void AppCallback::BusVoltageReturn()
         // load default values
         ResetDefaultApplicationData();
     }
-    bcu.begin(MANUFACTURER, currentVersion->hardwareVersion[5], APPVERSION);
+    bcu.begin(MANUFACTURER, currentVersion.hardwareVersion[5], APPVERSION);
     initApplication(AppData.channelPositions, AppData.channelSlatPositions);
 }
 

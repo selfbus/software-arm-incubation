@@ -17,7 +17,8 @@ class Blind: public Channel
 {
 public:
     Blind() = delete;
-    Blind(unsigned int nummber, unsigned int address, short position, short slatPosition);
+    Blind(uint8_t newNumber, uint32_t newAddress, uint16_t newPosition, uint16_t newSlatPosition);
+    virtual ~Blind() = default;
     virtual unsigned int channelType(void);
     //virtual void periodic(void);
     virtual void moveTo(short position);
@@ -52,10 +53,10 @@ protected:
     unsigned char  sceneSlatPos[NO_OF_SCENES];    //!< the slat positions for the scenes
 
     // track position of slats
-             short slatPosition;         //!< current channel position
-             short slatStartPosition;    //!< position when the movement started
-             short slatTargetPosition;   //!< requested target position
-             short slatSavedPosition;    //!< position before an automatic commands was triggered
+    short slatPosition;         //!< current channel position
+    short slatStartPosition;    //!< position when the movement started
+    short slatTargetPosition;   //!< requested target position
+    short slatSavedPosition;    //!< position before an automatic commands was triggered
 };
 
 inline unsigned int Blind::channelType(void)

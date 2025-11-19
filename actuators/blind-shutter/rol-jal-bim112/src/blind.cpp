@@ -11,26 +11,26 @@
 #include <sblib/timer.h>
 #include "config.h"
 
-Blind::Blind(unsigned int number, unsigned int address, short position, short slatPosition)
-  : Channel(number, address, position)
+Blind::Blind(uint8_t newNumber, uint32_t newAddress, uint16_t newPosition, uint16_t newSlatPosition)
+  : Channel(newNumber, newAddress, newPosition)
   , slatMoveForTime(0)
-  , slatPosition(slatPosition)
+  , slatPosition(newSlatPosition)
   , slatStartPosition(-1)
   , slatTargetPosition(-1)
   , slatSavedPosition(-1)
 {
-    shortTime = bcu.userEeprom->getUInt16(address +   6);
-    slatTime  = bcu.userEeprom->getUInt16(address +  8);
+    shortTime = bcu.userEeprom->getUInt16(newAddress + 6);
+    slatTime  = bcu.userEeprom->getUInt16(newAddress + 8);
     for (unsigned int i = 0; i < NO_OF_SCENES; i++)
     {
-        sceneSlatPos[i] = bcu.userEeprom->getUInt8(address + 24 + i);
+        sceneSlatPos[i] = bcu.userEeprom->getUInt8(newAddress + 24 + i);
     }
-    slatPosAfterMove = bcu.userEeprom->getUInt8(address + 61);
+    slatPosAfterMove = bcu.userEeprom->getUInt8(newAddress + 61);
     for (unsigned int i = 0; i < NO_OF_AUTOMATIC; i++)
     {
-        automaticSlatPos[i] = bcu.userEeprom->getUInt8(address + 44 + i);
+        automaticSlatPos[i] = bcu.userEeprom->getUInt8(newAddress + 44 + i);
     }
-    oneBitSlatPosition = bcu.userEeprom->getUInt8(address + 68);
+    oneBitSlatPosition = bcu.userEeprom->getUInt8(newAddress + 68);
 
     bcu.comObjects->objectSetValue(firstObjNo + COM_OBJ_SLAT_POSITION, slatPosition);
 }
@@ -152,7 +152,7 @@ void Blind::_startTracking(void)
 bool Blind::_storeScene(unsigned int i)
 {
     bool result = Channel::_storeScene(i);
-    unsigned int address = currentVersion->baseAddress + EE_CHANNEL_CFG_SIZE * number;
+    unsigned int address = currentVersion.baseAddress + EE_CHANNEL_CFG_SIZE * number;
     sceneSlatPos [i] = slatPosition;
     if ((*(bcu.userEeprom))[address + 24 + i] != slatPosition)
     {

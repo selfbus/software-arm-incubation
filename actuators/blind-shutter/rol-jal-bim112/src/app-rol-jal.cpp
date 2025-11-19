@@ -24,13 +24,12 @@
     HandActuation* handAct = new HandActuation(&handPins[0], NO_OF_HAND_PINS, READBACK_PIN, BLINK_TIME);
 #endif
 
-Channel * channels[NO_OF_CHANNELS];
-#ifdef MEM_TEST
-Blind b0 = Blind(0, 0);
-Blind b1 = Blind(1, 1);
-Blind b2 = Blind(2, 2);
-Shutter b3 = Shutter(3, 3);
-#endif
+Channel * channels[CHANNEL_COUNT] = {};
+
+uint8_t channelCount()
+{
+    return sizeof(channels)/sizeof(channels[0]);
+}
 
 void objectUpdated(int objno)
 {
@@ -44,7 +43,7 @@ void objectUpdated(int objno)
     else
     {   // handle global objects
         unsigned char value = bcu.comObjects->objectRead(objno);
-        for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
+        for (uint8_t i = 0; i < channelCount(); i++)
         {
             Channel * chn = channels [i];
             if (chn && (objno <= 4) && chn->centralEnabled())
@@ -124,7 +123,7 @@ void checkHandActuation(void)
 
 void checkPeriodicFuntions(void)
 {
-    for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
+    for (uint8_t i = 0; i < channelCount(); i++)
     {
         Channel * chn = channels[i];
         if (chn)
@@ -140,7 +139,7 @@ void checkPeriodicFuntions(void)
 }
 
 void getChannelPositions(short channelPositions[], short channelSlatPositions[]){
-    for (unsigned int i = 0; i < NO_OF_CHANNELS; i++)
+    for (uint8_t i = 0; i < channelCount(); i++)
     {
         if (channels[i] != nullptr)
         {
@@ -156,15 +155,15 @@ void initApplication(short channelPositions[], short channelSlatPositions[])
 {
     Channel::initPWM(PIN_PWM);  // configure digital pin PIO3_2 (PIN_PWM) and timer16_0 for PWM
 
-    unsigned int address = currentVersion->baseAddress;
+    unsigned int address = currentVersion.baseAddress;
 
-    for (unsigned int i = 0; i < NO_OF_OUTPUTS; i++)
+    for (uint8_t i = 0; i < sizeof(outputPins)/sizeof(outputPins[0]); i++)
     {
         pinMode(outputPins[i], OUTPUT);  // first set pinmode to OUTPUT
         digitalWrite(outputPins[i], Channel::OUTPUT_LOW);  // then set pin to low, otherwise relays for deactivated shutter/blind channels (in ETS) will switch on
     }
 
-    for (unsigned int i = 0; i < NO_OF_CHANNELS; i++, address += EE_CHANNEL_CFG_SIZE)
+    for (uint8_t i = 0; i < channelCount(); i++, address += EE_CHANNEL_CFG_SIZE)
     {
         short position;
         short slatPosition;
@@ -186,12 +185,23 @@ void initApplication(short channelPositions[], short channelSlatPositions[])
             slatPosition = 0;
         }
 
+        if (channels[i] != nullptr)
+        {
+            delete channels[i];
+        }
+
         switch (bcu.userEeprom->getUInt8(address))
         {
-        case 0: channels [i] = new Blind(i, address, position, slatPosition); break;
-        case 1: channels [i] = new Shutter(i, address, position); break;
-        default :
-            channels [i] = 0;
+            case 0:
+                channels[i] = new Blind(i, address, position, slatPosition);
+                break;
+
+            case 1:
+                channels[i] = new Shutter(i, address, position);
+                break;
+
+            default :
+                channels[i] = nullptr;
         }
 
         if (channels[i] != nullptr)

@@ -13,16 +13,14 @@
 #include <sblib/timeout.h>
 #include <sblib/timer.h>
 #include <sblib/eibMASK0701.h>
+#include "config.h"
 #include "hand_actuation.h"
 
-#define NO_OF_CHANNELS 4
-#define NO_OF_OUTPUTS  (NO_OF_CHANNELS * 2)
 #define NO_OF_AUTOMATIC 4
 #define NO_OF_SCENES    8
 #define NO_OF_ALARMS    4
 
 extern MASK0701 bcu;
-extern const int outputPins[NO_OF_OUTPUTS];
 extern Timeout PWMDisabled;
 
 /* old PWM values from rol-jal-bim112
@@ -149,7 +147,8 @@ public:
     static void startPWM();
     static void setPWMtoMaxDuty();
     Channel() = delete;
-    Channel(unsigned int number, unsigned int address, short position);
+    Channel(uint8_t newNumber, uint32_t newAddress, uint16_t newPosition);
+    virtual ~Channel() = default;
     virtual unsigned int channelType(void);
 
     unsigned int isRunning(void);
