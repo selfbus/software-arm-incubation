@@ -26,8 +26,8 @@
 
 
 #define MANUFACTURER 76 //!< Manufacturer ID
-#define DEVICETYPE 16 //!< Device Type
-#define APPVERSION 32 //!< Application Version
+#define DEVICETYPE 0x47e //!< Device Type
+#define APPVERSION 18 //!< Application Version 1.2
 
 
 
