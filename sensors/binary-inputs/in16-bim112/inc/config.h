@@ -57,22 +57,28 @@ const HardwareVersion hardwareVersion[7] =
 #   error "NUM_INPUTS must be defined and can only have a value of 2, 4, 6, 8 or 16"
 #endif
 
-#if (NUM_INPUTS == 16)
-#   define HARDWARE_ID 0
-#elif (NUM_INPUTS == 8)
-#   define HARDWARE_ID 1
-#elif (NUM_INPUTS == 4)
-#   define HARDWARE_ID 2
-#elif (NUM_INPUTS == 6) && defined(LED)
-#   define HARDWARE_ID 3
-#elif (NUM_INPUTS == 4) && defined(LED)
-#   define HARDWARE_ID 4
-#elif (NUM_INPUTS == 2) && defined(LED)
-#   define HARDWARE_ID 5
-#elif (NUM_INPUTS == 2) && (!defined(LED))
-#   define HARDWARE_ID 6
+#ifndef LED
+#   if (NUM_INPUTS == 16)
+#       define HARDWARE_ID 0
+#   elif (NUM_INPUTS == 8)
+#       define HARDWARE_ID 1
+#   elif (NUM_INPUTS == 4)
+#       define HARDWARE_ID 2
+#   elif (NUM_INPUTS == 2)
+#       define HARDWARE_ID 6
+#   else
+#       error "This Binary Input configuration is not supported."
+#   endif
 #else
-#   error "Configuration is not supported."
+#   if (NUM_INPUTS == 6)
+#       define HARDWARE_ID 3
+#   elif (NUM_INPUTS == 4)
+#       define HARDWARE_ID 4
+#   elif (NUM_INPUTS == 2)
+#       define HARDWARE_ID 5
+#   else
+#       error "This Universal Interface configuration is not supported."
+#   endif
 #endif
 
 //LED output pulse/blink time in ms
