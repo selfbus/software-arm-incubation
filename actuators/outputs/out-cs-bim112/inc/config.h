@@ -180,7 +180,7 @@
 //#   define PIOMUXENA0 PIO2_3 // The MUX enable bits can be omitted if the channel number is <= 8
 //#   define PIOMUXENA1 PIO1_5
 #else
-//wird nicht benötigt, unbenutzte Pins
+    //wird nicht benötigt, unbenutzte Pins
 #   define PIOMUXPORT 0
 #   define PIOMUX0 PIO0_0    //
 #   define PIOMUX1 PIO0_1
@@ -202,33 +202,24 @@
 #define RELPWMPRDCH  MAT1      // Relay PWM timer period channel     // DEBUG MAT0
 #define RELPWMDCCH   MAT0      // Relay PWM timer duty cycle channel // DEBUG MAT1
 
-#ifndef HW_2CH_WO_CS
 /*
  * SPI-Interface
  */
-#   define SPI0               // Change to SPI1 if SPI-Interface 1 is needed
+#   define SPI0               // Change to SPI1 if SPI-Interface 0 is needed
 #   define PIOSPISCK  PIO2_11
 #   define PIOSPIMOSI PIO0_9
 #   define PIOSPIMISO PIO0_8  // Can be omitted if there is nothing to read back from the SPI bus
 //#   define SPICSEMULATION     // Define this if the Chip Select/Slave Select pin is not the hardware SS pin
 #   define PIOSPICS   PIO0_2  // This pin can be the hardware Slave-Select pin or any other pin // DEBUG PIO1_10
-#else
-/*
- * SPI-Interface -- wird nicht benutzt, Relais direkt angeschlossen
- */
-#   define SPI0               // Change to SPI1 if SPI-Interface 1 is needed
-#   define PIOSPISCK  PIO2_11
-#   define PIOSPIMOSI PIO0_9
-#   define PIOSPIMISO PIO0_8  // Can be omitted if there is nothing to read back from the SPI bus
-//#   define SPICSEMULATION     // Define this if the Chip Select/Slave Select pin is not the hardware SS pin
-#   define PIOSPICS   PIO0_2 // This pin can be the hardware Slave-Select pin or any other pin // DEBUG PIO1_10
 
-//Relais Ausgänge für   2out_16A_bi_TS-ARM
-#   define REL1ON		PIO2_2
-#   define REL1OFF		PIO0_9
-#   define REL2ON		PIO2_11
-#   define REL2OFF		PIO3_0
-#endif // HW_2CH_WO_CS
+//Relais Ausgänge für 2out_16A_bi_TS-ARM
+#ifdef HW_2CH_WO_CS
+    // SPI-Interface wird nicht benutzt, Relais direkt angeschlossen
+#   define REL1ON   PIO2_2
+#   define REL1OFF  PIO0_9
+#   define REL2ON   PIO2_11
+#   define REL2OFF  PIO3_0
+#endif
 
 /*
  * Definitions for the programming button, manual control and display LEDs
