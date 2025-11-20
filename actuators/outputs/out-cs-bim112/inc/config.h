@@ -235,72 +235,63 @@
 #endif // HW_2CH_WO_CS
 
 /*
- * Definitions for the manual control and display LEDs
+ * Definitions for the programming button, manual control and display LEDs
  * The Spi-Control allows to connect these as shift registers. In this implementation, this is not used and
  * not supported - they are directly connected to the micro controller.
  * Definitionen fuer die Handbedienung und LED Anzeigen
  * Die SPI-Ansteuerung erlaubt es, diese als Schieberegister anzuschliessen. In dieser Implementierung wird
  * das nicht benoetigt und nicht unterstuetzt, sie sind direkt am Mikrocontroller angeschlossen.
  */
-#ifndef HW_2CH_WO_CS
-#   define SPILEDBYTES 0      // Number of the LED driver bytes in the SPI chain
-// Anzahl der LED-Steuerbytes in der SPI-Kette.
-#   define SPIBUTTONBYTES 0   // Number of the button readback bytes in the SPI chain
-// Anzahl der Bytes mit Tasten-Informationen in der SPI-Kette.
+#define SPILEDBYTES 0    // Number of the LED driver bytes in the SPI chain
+                         // Anzahl der LED-Steuerbytes in der SPI-Kette.
+#define SPIBUTTONBYTES 0 // Number of the button readback bytes in the SPI chain
+                         // Anzahl der Bytes mit Tasten-Informationen in der SPI-Kette.
 
 // Pin definitions for the manual control
 // Pin Definitionen fuer die Handbedienung
-#   ifdef HW_6CH
-#       define BUTTONLEDCNT  8 // last 2 LEDs used for status signaling
-#       define BUTTONLEDCH1  PIO0_11
-#       define BUTTONLEDCH2  PIO1_10
-#       define BUTTONLEDCH3  PIO3_4
-#       define BUTTONLEDCH4  PIO2_5
-#       define BUTTONLEDCH5  PIO2_4
-#       define BUTTONLEDCH6  PIO0_3
-#       define BUTTONLEDCH7  PIO3_5
-#       define BUTTONLEDCH8  PIO2_1
-#       define BUTTONLEDCOM  PIO2_3
-#       define PIOPROGBTN    PIO2_8  // Programming button for LPC-4TE-TOP  (PROG2  S10)
-#   endif // HW_6CH
-
-#   ifdef HW_8CH_WO_CS
-#       define BUTTONLEDCNT  8
-#       define BUTTONLEDCH1  PIO0_11
-#       define BUTTONLEDCH2  PIO1_10
-#       define BUTTONLEDCH3  PIO3_4
-#       define BUTTONLEDCH4  PIO3_5
-#       define BUTTONLEDCH5  PIO2_5
-#       define BUTTONLEDCH6  PIO2_4
-#       define BUTTONLEDCH7  PIO0_3
-#       define BUTTONLEDCH8  PIO2_1
-#       define BUTTONLEDCOM  PIO2_3
-#       define PIOPROGBTN    PIO0_6  // Programming button for out8_mid (LPC-4TE-Top APROG)
-//#       define PIOPROGBTN    PIO2_8  // alternative Programming button for LPC-4TE-TOP  (PROG2  S10)
-//#       define PIOPROGBTN    PIO2_0 // dirty hack to debug on a 4TE-controller (PIN_PROG)
-#   endif // HW_8CH_WO_CS
-
-#   ifdef HW_2CH
-#       define BUTTONLEDCNT  0 // last 2 LEDs used for status signaling
-#       define PIOPROGBTN PIO2_0 // Programming button for TS-ARM
-#   endif // HW_2CH
-
-#else // ifndef HW_2CH_WO_CS
-#   define SPILEDBYTES 0      // Number of the LED driver bytes in the SPI chain
-// Anzahl der LED-Steuerbytes in der SPI-Kette.
-#   define SPIBUTTONBYTES 0   // Number of the button readback bytes in the SPI chain
-// Anzahl der Bytes mit Tasten-Informationen in der SPI-Kette.
-
-// Pin definitions for the manual control
-// Pin Definitionen fuer die Handbedienung
-#   define BUTTONLEDCNT  4 // last 2 LEDs used for status signaling
-#   define BUTTONLEDCH1  PIO1_10    // TS-ARM IO11
-#   define BUTTONLEDCH2  PIO0_11    // TS-ARM IO12
+#ifdef HW_6CH
+#   define BUTTONLEDCNT  8 // last 2 LEDs used for status signaling
+#   define BUTTONLEDCH1  PIO0_11
+#   define BUTTONLEDCH2  PIO1_10
 #   define BUTTONLEDCH3  PIO3_4
 #   define BUTTONLEDCH4  PIO2_5
-#   define BUTTONLEDCOM  PIO0_8		// TS-ARM IO10
-#   define PIOPROGBTN PIO2_0        // Programming button for TS-ARM
-#endif // HW_2CH_WO_CS
+#   define BUTTONLEDCH5  PIO2_4
+#   define BUTTONLEDCH6  PIO0_3
+#   define BUTTONLEDCH7  PIO3_5
+#   define BUTTONLEDCH8  PIO2_1
+#   define BUTTONLEDCOM  PIO2_3
+#   define PIOPROGBTN    PIO2_8 // Programming button for LPC-4TE-TOP  (PROG2 S10)
+
+#elif defined(HW_8CH_WO_CS)
+#   define BUTTONLEDCNT  8
+#   define BUTTONLEDCH1  PIO0_11
+#   define BUTTONLEDCH2  PIO1_10
+#   define BUTTONLEDCH3  PIO3_4
+#   define BUTTONLEDCH4  PIO3_5
+#   define BUTTONLEDCH5  PIO2_5
+#   define BUTTONLEDCH6  PIO2_4
+#   define BUTTONLEDCH7  PIO0_3
+#   define BUTTONLEDCH8  PIO2_1
+#   define BUTTONLEDCOM  PIO2_3
+#   define PIOPROGBTN    PIO0_6 // Programming button for out8_mid (LPC-4TE-Top APROG)
+//#   define PIOPROGBTN    PIO2_8 // alternative Programming button for LPC-4TE-TOP  (PROG2 S10)
+//#   define PIOPROGBTN    PIO2_0 // dirty hack to debug on a 4TE-controller (PIN_PROG)
+
+#elif defined(HW_2CH)
+#   define BUTTONLEDCNT  0   // last 2 LEDs used for status signaling
+#   define PIOPROGBTN PIO2_0 // Programming button for TS-ARM
+
+#elif defined(HW_2CH_WO_CS)
+#   define BUTTONLEDCNT  4 // last 2 LEDs used for status signaling
+#   define BUTTONLEDCH1  PIO1_10 // TS-ARM IO11
+#   define BUTTONLEDCH2  PIO0_11 // TS-ARM IO12
+#   define BUTTONLEDCH3  PIO3_4
+#   define BUTTONLEDCH4  PIO2_5
+#   define BUTTONLEDCOM  PIO0_8	 // TS-ARM IO10
+#   define PIOPROGBTN PIO2_0     // Programming button for TS-ARM
+#else
+#   error "Unknown or no hardware defined!"
+#endif
 
 /* ---------------------------------------------------------------
  * Additional internal stuff, change only if you know what you do!
