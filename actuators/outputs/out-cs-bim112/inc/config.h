@@ -260,8 +260,8 @@
 #   define BUTTONLEDCH7  PIO0_3
 #   define BUTTONLEDCH8  PIO2_1
 #   define BUTTONLEDCOM  PIO2_3
-#   define PIOPROGBTN    PIO0_6 // Programming button for out8_mid (LPC-4TE-Top APROG)
-//#   define PIOPROGBTN    PIO2_8 // alternative Programming button for LPC-4TE-TOP  (PROG2 S10)
+//#   define PIOPROGBTN    PIO0_6 // alternative Programming button for out8_mid (LPC-4TE-Top APROG)
+#   define PIOPROGBTN    PIO2_8 // Programming button for LPC-4TE-TOP  (PROG2 S10)
 //#   define PIOPROGBTN    PIO2_0 // dirty hack to debug on a 4TE-controller (PIN_PROG)
 
 #elif defined(HW_2CH)
