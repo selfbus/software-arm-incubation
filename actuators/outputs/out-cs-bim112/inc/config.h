@@ -89,18 +89,14 @@
  */
 #ifdef HW_6CH
 #   define CHANNELCNT 6
-#endif
-
-#ifdef HW_2CH
+#elif defined(HW_2CH)
 #   define CHANNELCNT 2
-#endif
-
-#ifdef HW_2CH_WO_CS
+#elif defined(HW_2CH_WO_CS)
 #   define CHANNELCNT 2
-#endif
-
-#ifdef HW_8CH_WO_CS
+#elif defined(HW_8CH_WO_CS)
 #   define CHANNELCNT 8
+#else
+#   error "Unknown or no hardware defined!"
 #endif
 
 /* Pulse Duration for the bistable Relais
