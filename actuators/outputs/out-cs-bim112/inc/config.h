@@ -88,16 +88,15 @@
  * die letzten zwei sind funktionslos.
  */
 #ifdef HW_6CH
-#define CHANNELCNT 6
-#endif
-#ifdef HW_2CH
-#define CHANNELCNT 2
-#endif
-#ifdef HW_2CH_WO_CS
-#define CHANNELCNT 2
-#endif
-#ifdef HW_8CH_WO_CS
-#define CHANNELCNT 8
+#   define CHANNELCNT 6
+#elif defined(HW_2CH)
+#   define CHANNELCNT 2
+#elif defined(HW_2CH_WO_CS)
+#   define CHANNELCNT 2
+#elif defined(HW_8CH_WO_CS)
+#   define CHANNELCNT 8
+#else
+#   error "Unknown or no hardware defined!"
 #endif
 
 /* Pulse Duration for the bistable Relais
@@ -123,9 +122,9 @@
  * Einheit von RELAYPULSEDURATION ist Millisekunden
 */
 #ifdef HW_2CH
-#define RELAYPULSEDURATION 30
+#   define RELAYPULSEDURATION 30
 #else
-#define RELAYPULSEDURATION 50
+#   define RELAYPULSEDURATION 50
 #endif
 
 //#define RELAYKEEPTASKSTOGETHER // If the switching tasks of one main loop cycle should be executed together
@@ -145,47 +144,47 @@
 // Für das periodische Starten des ADC wird ein eigener Timer benötigt (16 oder 32 bit).
 
 #ifndef HW_2CH_WO_CS
-#define CHANALOWRANGE 2        // ADC Kanal Strommessung kleiner Messbereich / ADC channel // DEBUG vorher 0
-#define PIOANALOWRANGE PIO1_1  // Analog input, current measurement low range              // DEBUG        PIO0_11
+#   define CHANALOWRANGE 2        // ADC Kanal Strommessung kleiner Messbereich / ADC channel // DEBUG vorher 0
+#   define PIOANALOWRANGE PIO1_1  // Analog input, current measurement low range              // DEBUG        PIO0_11
 
-#define CHANAHIGHRANGE 1       // ADC Kanal Strommessung großer Messbereich / ADC channel
-#define PIOANAHIGHRANGE PIO1_0 // Analog input, current measurement high range
+#   define CHANAHIGHRANGE 1       // ADC Kanal Strommessung großer Messbereich / ADC channel
+#   define PIOANAHIGHRANGE PIO1_0 // Analog input, current measurement high range
 
-#define CHANARAILVOLT 3       // ADC Kanal Spannungsmessung Speicherkondensatoren / ADC channel // DEBUG  vorher 2
-#define PIOANARAILVOLT PIO1_2 // Analog input, storage rail voltage                             // DEBUG   PIO1_1
+#   define CHANARAILVOLT 3       // ADC Kanal Spannungsmessung Speicherkondensatoren / ADC channel // DEBUG  vorher 2
+#   define PIOANARAILVOLT PIO1_2 // Analog input, storage rail voltage                             // DEBUG   PIO1_1
 
-#define CHANABUSVOLT 7        // ADC Kanal Spannungsmessung KNX Busspannung / ADC channel
-#define PIOANABUSVOLT PIO1_11 // Analog input, KNX bus voltage
+#   define CHANABUSVOLT 7        // ADC Kanal Spannungsmessung KNX Busspannung / ADC channel
+#   define PIOANABUSVOLT PIO1_11 // Analog input, KNX bus voltage
 #else
-#define CHANALOWRANGE 3        // keine Strommessung, unbenutzte Pins
-#define PIOANALOWRANGE PIO1_2  //
+#   define CHANALOWRANGE 3        // keine Strommessung, unbenutzte Pins
+#   define PIOANALOWRANGE PIO1_2  //
 
-#define CHANAHIGHRANGE 1       // keine Strommessung, unbenutzte Pins
-#define PIOANAHIGHRANGE PIO1_0 //
+#   define CHANAHIGHRANGE 1       // keine Strommessung, unbenutzte Pins
+#   define PIOANAHIGHRANGE PIO1_0 //
 
-#define CHANARAILVOLT 2       // ADC Kanal Spannungsmessung Speicherkondensatoren / ADC channel // DEBUG  vorher 2
-#define PIOANARAILVOLT PIO1_1 // Analog input, storage rail voltage                             // DEBUG   PIO1_1
+#   define CHANARAILVOLT 2       // ADC Kanal Spannungsmessung Speicherkondensatoren / ADC channel // DEBUG  vorher 2
+#   define PIOANARAILVOLT PIO1_1 // Analog input, storage rail voltage                             // DEBUG   PIO1_1
 
-#define CHANABUSVOLT 7        // ADC Kanal Spannungsmessung KNX Busspannung / ADC channel
-#define PIOANABUSVOLT PIO1_11 // Analog input, KNX bus voltage
+#   define CHANABUSVOLT 7        // ADC Kanal Spannungsmessung KNX Busspannung / ADC channel
+#   define PIOANABUSVOLT PIO1_11 // Analog input, KNX bus voltage
 #endif
 /*
  * Multiplexer Control pin configuration
  * Multiplexer Ansteuerung Pinkonfiguration
  */
 #ifndef HW_2CH_WO_CS
-#define PIOMUXPORT 3
-#define PIOMUX0 PIO3_0    // The analog MUX address select signals must start at bit 0 of the selected port
-#define PIOMUX1 PIO3_1
-#define PIOMUX2 PIO3_2    // Bit 2 can be omitted if only 4 channels are selected
-//#define PIOMUXENA0 PIO2_3 // The MUX enable bits can be omitted if the channel number is <= 8
-//#define PIOMUXENA1 PIO1_5
+#   define PIOMUXPORT 3
+#   define PIOMUX0 PIO3_0    // The analog MUX address select signals must start at bit 0 of the selected port
+#   define PIOMUX1 PIO3_1
+#   define PIOMUX2 PIO3_2    // Bit 2 can be omitted if only 4 channels are selected
+//#   define PIOMUXENA0 PIO2_3 // The MUX enable bits can be omitted if the channel number is <= 8
+//#   define PIOMUXENA1 PIO1_5
 #else
-//wird nicht benötigt, unbenutzte Pins
-#define PIOMUXPORT 0
-#define PIOMUX0 PIO0_0    //
-#define PIOMUX1 PIO0_1
-#define PIOMUX2 PIO0_2    //
+    //wird nicht benötigt, unbenutzte Pins
+#   define PIOMUXPORT 0
+#   define PIOMUX0 PIO0_0    //
+#   define PIOMUX1 PIO0_1
+#   define PIOMUX2 PIO0_2    //
 #endif
 /*
  * Relay Driver PWM control configuration
@@ -203,101 +202,83 @@
 #define RELPWMPRDCH  MAT1      // Relay PWM timer period channel     // DEBUG MAT0
 #define RELPWMDCCH   MAT0      // Relay PWM timer duty cycle channel // DEBUG MAT1
 
-#ifndef HW_2CH_WO_CS
 /*
  * SPI-Interface
  */
-#   define SPI0               // Change to SPI1 if SPI-Interface 1 is needed
+#   define SPI0               // Change to SPI1 if SPI-Interface 0 is needed
 #   define PIOSPISCK  PIO2_11
 #   define PIOSPIMOSI PIO0_9
 #   define PIOSPIMISO PIO0_8  // Can be omitted if there is nothing to read back from the SPI bus
 //#   define SPICSEMULATION     // Define this if the Chip Select/Slave Select pin is not the hardware SS pin
-#   define PIOSPICS   PIO0_2 // This pin can be the hardware Slave-Select pin or any other pin // DEBUG PIO1_10
-#else
-/*
- * SPI-Interface -- wird nicht benutzt, Relais direkt angeschlossen
- */
-#   define SPI0               // Change to SPI1 if SPI-Interface 1 is needed
-#   define PIOSPISCK  PIO2_11
-#   define PIOSPIMOSI PIO0_9
-#   define PIOSPIMISO PIO0_8  // Can be omitted if there is nothing to read back from the SPI bus
-//#define SPICSEMULATION     // Define this if the Chip Select/Slave Select pin is not the hardware SS pin
-#   define PIOSPICS   PIO0_2 // This pin can be the hardware Slave-Select pin or any other pin // DEBUG PIO1_10
+#   define PIOSPICS   PIO0_2  // This pin can be the hardware Slave-Select pin or any other pin // DEBUG PIO1_10
 
-//Relais Ausgänge für   2out_16A_bi_TS-ARM
-#   define REL1ON		PIO2_2
-#   define REL1OFF		PIO0_9
-#   define REL2ON		PIO2_11
-#   define REL2OFF		PIO3_0
-#endif // HW_2CH_WO_CS
+//Relais Ausgänge für 2out_16A_bi_TS-ARM
+#ifdef HW_2CH_WO_CS
+    // SPI-Interface wird nicht benutzt, Relais direkt angeschlossen
+#   define REL1ON   PIO2_2
+#   define REL1OFF  PIO0_9
+#   define REL2ON   PIO2_11
+#   define REL2OFF  PIO3_0
+#endif
 
 /*
- * Definitions for the manual control and display LEDs
+ * Definitions for the programming button, manual control and display LEDs
  * The Spi-Control allows to connect these as shift registers. In this implementation, this is not used and
  * not supported - they are directly connected to the micro controller.
  * Definitionen fuer die Handbedienung und LED Anzeigen
  * Die SPI-Ansteuerung erlaubt es, diese als Schieberegister anzuschliessen. In dieser Implementierung wird
  * das nicht benoetigt und nicht unterstuetzt, sie sind direkt am Mikrocontroller angeschlossen.
  */
-#ifndef HW_2CH_WO_CS
-#   define SPILEDBYTES 0      // Number of the LED driver bytes in the SPI chain
-// Anzahl der LED-Steuerbytes in der SPI-Kette.
-#   define SPIBUTTONBYTES 0   // Number of the button readback bytes in the SPI chain
-// Anzahl der Bytes mit Tasten-Informationen in der SPI-Kette.
+#define SPILEDBYTES 0    // Number of the LED driver bytes in the SPI chain
+                         // Anzahl der LED-Steuerbytes in der SPI-Kette.
+#define SPIBUTTONBYTES 0 // Number of the button readback bytes in the SPI chain
+                         // Anzahl der Bytes mit Tasten-Informationen in der SPI-Kette.
 
 // Pin definitions for the manual control
 // Pin Definitionen fuer die Handbedienung
-#   ifdef HW_6CH
-#       define BUTTONLEDCNT  8 // last 2 LEDs used for status signaling
-#       define BUTTONLEDCH1  PIO0_11
-#       define BUTTONLEDCH2  PIO1_10
-#       define BUTTONLEDCH3  PIO3_4
-#       define BUTTONLEDCH4  PIO2_5
-#       define BUTTONLEDCH5  PIO2_4
-#       define BUTTONLEDCH6  PIO0_3
-#       define BUTTONLEDCH7  PIO3_5
-#       define BUTTONLEDCH8  PIO2_1
-#       define BUTTONLEDCOM  PIO2_3
-#       define PIOPROGBTN    PIO2_8  // Programming button for LPC-4TE-TOP  (PROG2  S10)
-#   endif // HW_6CH
-
-#   ifdef HW_8CH_WO_CS
-#       define BUTTONLEDCNT  8
-#       define BUTTONLEDCH1  PIO0_11
-#       define BUTTONLEDCH2  PIO1_10
-#       define BUTTONLEDCH3  PIO3_4
-#       define BUTTONLEDCH4  PIO3_5
-#       define BUTTONLEDCH5  PIO2_5
-#       define BUTTONLEDCH6  PIO2_4
-#       define BUTTONLEDCH7  PIO0_3
-#       define BUTTONLEDCH8  PIO2_1
-#       define BUTTONLEDCOM  PIO2_3
-#       define PIOPROGBTN    PIO0_6  // Programming button for out8_mid (LPC-4TE-Top APROG)
-//#       define PIOPROGBTN    PIO2_8  // alternative Programming button for LPC-4TE-TOP  (PROG2  S10)
-//#       define PIOPROGBTN    PIO2_0 // dirty hack to debug on a 4TE-controller (PIN_PROG)
-#   endif // HW_8CH_WO_CS
-
-#   ifdef HW_2CH
-#       define BUTTONLEDCNT  0 // last 2 LEDs used for status signaling
-#       define PIOPROGBTN PIO2_0 // Programming button for TS-ARM
-#   endif // HW_2CH
-
-#else // ifndef HW_2CH_WO_CS
-#   define SPILEDBYTES 0      // Number of the LED driver bytes in the SPI chain
-// Anzahl der LED-Steuerbytes in der SPI-Kette.
-#   define SPIBUTTONBYTES 0   // Number of the button readback bytes in the SPI chain
-// Anzahl der Bytes mit Tasten-Informationen in der SPI-Kette.
-
-// Pin definitions for the manual control
-// Pin Definitionen fuer die Handbedienung
-#   define BUTTONLEDCNT  4 // last 2 LEDs used for status signaling
-#   define BUTTONLEDCH1  PIO1_10    // TS-ARM IO11
-#   define BUTTONLEDCH2  PIO0_11    // TS-ARM IO12
+#ifdef HW_6CH
+#   define BUTTONLEDCNT  8 // last 2 LEDs used for status signaling
+#   define BUTTONLEDCH1  PIO0_11
+#   define BUTTONLEDCH2  PIO1_10
 #   define BUTTONLEDCH3  PIO3_4
 #   define BUTTONLEDCH4  PIO2_5
-#   define BUTTONLEDCOM  PIO0_8		// TS-ARM IO10
-#   define PIOPROGBTN PIO2_0        // Programming button for TS-ARM
-#endif // HW_2CH_WO_CS
+#   define BUTTONLEDCH5  PIO2_4
+#   define BUTTONLEDCH6  PIO0_3
+#   define BUTTONLEDCH7  PIO3_5
+#   define BUTTONLEDCH8  PIO2_1
+#   define BUTTONLEDCOM  PIO2_3
+#   define PIOPROGBTN    PIO2_8 // Programming button for LPC-4TE-TOP  (PROG2 S10)
+
+#elif defined(HW_8CH_WO_CS)
+#   define BUTTONLEDCNT  8
+#   define BUTTONLEDCH1  PIO0_11
+#   define BUTTONLEDCH2  PIO1_10
+#   define BUTTONLEDCH3  PIO3_4
+#   define BUTTONLEDCH4  PIO3_5
+#   define BUTTONLEDCH5  PIO2_5
+#   define BUTTONLEDCH6  PIO2_4
+#   define BUTTONLEDCH7  PIO0_3
+#   define BUTTONLEDCH8  PIO2_1
+#   define BUTTONLEDCOM  PIO2_3
+//#   define PIOPROGBTN    PIO0_6 // alternative Programming button for out8_mid (LPC-4TE-Top APROG)
+#   define PIOPROGBTN    PIO2_8 // Programming button for LPC-4TE-TOP  (PROG2 S10)
+//#   define PIOPROGBTN    PIO2_0 // dirty hack to debug on a 4TE-controller (PIN_PROG)
+
+#elif defined(HW_2CH)
+#   define BUTTONLEDCNT  0   // last 2 LEDs used for status signaling
+#   define PIOPROGBTN PIO2_0 // Programming button for TS-ARM
+
+#elif defined(HW_2CH_WO_CS)
+#   define BUTTONLEDCNT  4 // last 2 LEDs used for status signaling
+#   define BUTTONLEDCH1  PIO1_10 // TS-ARM IO11
+#   define BUTTONLEDCH2  PIO0_11 // TS-ARM IO12
+#   define BUTTONLEDCH3  PIO3_4
+#   define BUTTONLEDCH4  PIO2_5
+#   define BUTTONLEDCOM  PIO0_8	 // TS-ARM IO10
+#   define PIOPROGBTN PIO2_0     // Programming button for TS-ARM
+#else
+#   error "Unknown or no hardware defined!"
+#endif
 
 /* ---------------------------------------------------------------
  * Additional internal stuff, change only if you know what you do!
@@ -313,56 +294,51 @@
 #define APPVERSION 0x32
 
 #if CHANNELCNT <= 2
-
-#ifndef HW_2CH_WO_CS
-// mit Strommessung
-#define DEVICETYPE 0xA05B // SA/S2.16.6.1
-#define SPIRELDRIVERBYTES 1
-#define ADCCHANNELCNT 4
-#else
-//ohne Strommessung
-#define DEVICETYPE 0xA080 // SA/S2.16.2.1
-#define SPIRELDRIVERBYTES 1
-#define ADCCHANNELCNT 4
-#define OMITCURRFCT // Omit current functions to free some flash mem
-#endif
-
+#   ifndef HW_2CH_WO_CS
+        // mit Strommessung
+#       define DEVICETYPE 0xA05B // SA/S2.16.6.1
+#       define SPIRELDRIVERBYTES 1
+#       define ADCCHANNELCNT 4
+#   else
+        //ohne Strommessung
+#       define DEVICETYPE 0xA080 // SA/S2.16.2.1
+#       define SPIRELDRIVERBYTES 1
+#       define ADCCHANNELCNT 4
+#       define OMITCURRFCT // Omit current functions to free some flash mem
+#   endif
 #elif CHANNELCNT <= 4
-
-#define DEVICETYPE 0xA05C // SA/S4.16.6.1
-#define SPIRELDRIVERBYTES 1
-#define ADCCHANNELCNT 4
-// 10 Wandlungen je Loop, 50kHz Samplefreq
+#   define DEVICETYPE 0xA05C // SA/S4.16.6.1
+#   define SPIRELDRIVERBYTES 1
+#   define ADCCHANNELCNT 4
+    // 10 Wandlungen je Loop, 50kHz Samplefreq
 
 #elif CHANNELCNT <= 8
-#ifndef HW_8CH_WO_CS
-//mit Strommessung
-#define DEVICETYPE 0xA05D // SA/S8.16.6.1
-#define SPIRELDRIVERBYTES 2
-#define ADCCHANNELCNT 8
-// 20 Wandlungen je Loop, 100kHz Samplefreq
-#else
-//ohne Strommessung
-#define DEVICETYPE 0xA082 // SA/S8.16.2.1
-#define SPIRELDRIVERBYTES 3
-#define ADCCHANNELCNT 8
-#define OMITCURRFCT // Omit current functions to free some flash mem
-#endif
-
+#   ifndef HW_8CH_WO_CS
+        //mit Strommessung
+#       define DEVICETYPE 0xA05D // SA/S8.16.6.1
+#       define SPIRELDRIVERBYTES 2
+#       define ADCCHANNELCNT 8
+        // 20 Wandlungen je Loop, 100kHz Samplefreq
+#   else
+        //ohne Strommessung
+#       define DEVICETYPE 0xA082 // SA/S8.16.2.1
+#       define SPIRELDRIVERBYTES 3
+#       define ADCCHANNELCNT 8
+#       define OMITCURRFCT // Omit current functions to free some flash mem
+#   endif
 #elif CHANNELCNT <= 12
-
-#define DEVICETYPE 0xA05E // SA/S12.16.6.1
-#define SPIRELDRIVERBYTES 3
-#define ADCCHANNELCNT 8
-// 30 Wandlungen je Loop, 96kHz Samplefreq
-
+#   define DEVICETYPE 0xA05E // SA/S12.16.6.1
+#   define SPIRELDRIVERBYTES 3
+#   define ADCCHANNELCNT 8
+    // 30 Wandlungen je Loop, 96kHz Samplefreq
 #endif
 
 #ifdef SPI0
-#define SPISSP LPC_SSP0
+#   define SPISSP LPC_SSP0
 #endif
+
 #ifdef SPI1
-#define SPISSP LPC_SSP1
+#   define SPISSP LPC_SSP1
 #endif
 
 #define SPICHAINLEN (SPIRELDRIVERBYTES+SPILEDBYTES+SPIBUTTONBYTES)
@@ -374,9 +350,9 @@
 #define REF_V 3.397 // Als Referenzspannung für die ADCs wird die Versorgungsspannung benutzt. Der beim Schaltregler eingestellte
                     // Wert ist deutlich höher als 3,3V, fast 3,4V. Wird das nicht eingerechnet, leidet die Genauigkeit
 #ifndef HW_2CH_WO_CS
-#define MAXURAIL (REF_V*13) // 44,16V Ein LSB sind dann ca 43mV; Spannungsteiler 36k/3k
+#   define MAXURAIL (REF_V*13) // 44,16V Ein LSB sind dann ca 43mV; Spannungsteiler 36k/3k
 #else
-#define MAXURAIL (REF_V*10.1) // 34,31V Ein LSB sind dann ca 33,5mV; Spannungsteiler 91k/10k
+#   define MAXURAIL (REF_V*10.1) // 34,31V Ein LSB sind dann ca 33,5mV; Spannungsteiler 91k/10k
 #endif
 
 #define MAXCURRLOWRANGE (REF_V/82*1500/2/19) // in Ampere
@@ -386,16 +362,16 @@
 #define ADC12VOLTSQR (ADC12VOLTS*ADC12VOLTS)           // Der 12V ADC-Wert, aufgerundet
 
 #ifndef HW_2CH_WO_CS
-#define ADCRAILVOLTAGELOSS (unsigned(3.5/MAXURAIL*1023+0.5)) // Spannungsverlust durch die Konstantstromladeschaltung
-#define MINURAILINITVOLTAGE (unsigned(15.0/MAXURAIL*1023+0.5)) // Spannung, bis zu der die Speicherkondensatoren aufgeladen sein müssen, bis die Initialisierung startet.
-#define MINUBUSVOLTAGEFALLING (unsigned(14.0/MAXURAIL*1023+0.5)) // Busspannung, unterhalb der jeder Betrieb eingestellt wird.
-#define MINUBUSVOLTAGERISING (unsigned(18.0/MAXURAIL*1023+0.5))  // Busspannung, oberhalb der der Aktor gestartet wird.
+#   define ADCRAILVOLTAGELOSS (unsigned(3.5/MAXURAIL*1023+0.5)) // Spannungsverlust durch die Konstantstromladeschaltung
+#   define MINURAILINITVOLTAGE (unsigned(15.0/MAXURAIL*1023+0.5)) // Spannung, bis zu der die Speicherkondensatoren aufgeladen sein müssen, bis die Initialisierung startet.
+#   define MINUBUSVOLTAGEFALLING (unsigned(14.0/MAXURAIL*1023+0.5)) // Busspannung, unterhalb der jeder Betrieb eingestellt wird.
+#   define MINUBUSVOLTAGERISING (unsigned(18.0/MAXURAIL*1023+0.5))  // Busspannung, oberhalb der der Aktor gestartet wird.
 #else
-// 24V Relais
-#define ADCRAILVOLTAGELOSS (unsigned(0.5/MAXURAIL*1023+0.5)) // Spannungsverlust durch die Konstantstromladeschaltung
-#define MINURAILINITVOLTAGE (unsigned(17.0/MAXURAIL*1023+0.5)) // Spannung, bis zu der die Speicherkondensatoren aufgeladen sein müssen, bis die Initialisierung startet.
-#define MINUBUSVOLTAGEFALLING (unsigned(17.0/MAXURAIL*1023+0.5)) // Busspannung, unterhalb der jeder Betrieb eingestellt wird.
-#define MINUBUSVOLTAGERISING (unsigned(17.5/MAXURAIL*1023+0.5))  // Busspannung, oberhalb der der Aktor gestartet wird.
+    // 24V Relais
+#   define ADCRAILVOLTAGELOSS (unsigned(0.5/MAXURAIL*1023+0.5)) // Spannungsverlust durch die Konstantstromladeschaltung
+#   define MINURAILINITVOLTAGE (unsigned(17.0/MAXURAIL*1023+0.5)) // Spannung, bis zu der die Speicherkondensatoren aufgeladen sein müssen, bis die Initialisierung startet.
+#   define MINUBUSVOLTAGEFALLING (unsigned(17.0/MAXURAIL*1023+0.5)) // Busspannung, unterhalb der jeder Betrieb eingestellt wird.
+#   define MINUBUSVOLTAGERISING (unsigned(17.5/MAXURAIL*1023+0.5))  // Busspannung, oberhalb der der Aktor gestartet wird.
 #endif
 
 // Der Idle-Detector der Relay-Unit detektiert Idle als: Wenn die Ladekondensatoren innerhalb einer Zeit weniger als
