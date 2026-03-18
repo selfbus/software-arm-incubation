@@ -3,15 +3,21 @@
  *  it under the terms of the GNU General Public License version 3 as
  *  published by the Free Software Foundation.
  */
+
 #include "Hoermann.h"
+#include "config.h"
+
 #include <sblib/serial.h>
 #include <sblib/digital_pin.h>
+
+
+constexpr uint8_t DCTRL = 4; //!< RS485 direction control bit
 
 Hoermann::Hoermann()
 {
     LPC_UART->RS485CTRL = 1 << DCTRL;
-    serial.setRxPin(PIO1_6);
-    serial.setTxPin(PIO1_7);
+    serial.setRxPin(PIO_RS485_RX);
+    serial.setTxPin(PIO_RS485_TX);
     serial.begin(19200, SERIAL_8N1);
     LPC_UART->RS485CTRL = 1 << DCTRL;
 }

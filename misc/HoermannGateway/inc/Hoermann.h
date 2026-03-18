@@ -11,8 +11,6 @@
 #include "CRC.h"
 
 
-#define DCTRL 4
-
 class Hoermann {
 public:
     Hoermann();
