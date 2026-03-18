@@ -13,7 +13,9 @@
 
 class Hoermann {
 public:
-    Hoermann();
+    Hoermann() = default;
+
+    void begin();
 
     void loop();
     void open();

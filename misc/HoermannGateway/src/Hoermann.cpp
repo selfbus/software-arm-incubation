@@ -13,11 +13,12 @@
 
 constexpr uint8_t DCTRL = 4; //!< RS485 direction control bit
 
-Hoermann::Hoermann()
+void Hoermann::begin()
 {
     LPC_UART->RS485CTRL = 1 << DCTRL;
     serial.setRxPin(PIO_RS485_RX);
     serial.setTxPin(PIO_RS485_TX);
+    pinMode(PIO_RS485_RX, SERIAL_RXD | INPUT | PULL_UP | HYSTERESIS);
     serial.begin(19200, SERIAL_8N1);
     LPC_UART->RS485CTRL = 1 << DCTRL;
 }

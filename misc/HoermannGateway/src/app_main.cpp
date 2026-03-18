@@ -67,6 +67,8 @@ BcuBase* setup()
     HelperFunctions::setComObjPtr(&bcu, GO_STOP, ComType::BIT_1, objRamPointer);
     HelperFunctions::setComObjPtr(&bcu, GO_LIGHT, ComType::BIT_1, objRamPointer);
 
+
+    garageDoor.begin();
     digitalWrite(PIO_LED_2, true);
     return &bcu;
 }
