@@ -1,0 +1,12 @@
+set(SB_HOERMANN_GATEWAY_SRC
+    inc/config.h
+    inc/CRC.h
+    inc/HelperFunctions.h
+    inc/Hoermann.h
+    inc/HoermannState.h
+    src/app_main.cpp
+    src/cr_startup_lpc11xx.cpp
+    src/CRC.cpp
+    src/HelperFunctions.cpp
+    src/Hoermann.cpp
+)

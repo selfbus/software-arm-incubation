@@ -1,0 +1,86 @@
+{
+    "version": 8,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 28,
+        "patch": 3
+    },
+    "configurePresets": [
+        {
+            "name": "default-build-directory",
+            "description": "Sets the build directory",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/cmake-build/${presetName}"
+        },
+        {
+            "name": "default-generator-ninja-multi-config",
+            "description": "Sets the Ninja Multi Config generator",
+            "hidden": true,
+            "generator": "Ninja Multi-Config"
+        },
+        {
+            "name": "default-toolchain-arm-none-eabi",
+            "description": "Sets Toolchain arm-none-eabi (using MCUXpresso)",
+            "hidden": true,
+            "toolchainFile": "${sourceDir}/../../../software-arm-lib/cmake/toolchains/arm-none-eabi_mcuxpresso.cmake"
+        },
+        {
+            "name": "arm",
+            "displayName": "ARM Target",
+            "description": "Sets Toolchain arm-none-eabi (using MCUXpresso), build directory and Ninja Multi Config generator",
+            "hidden": false,
+            "inherits": [
+                "default-build-directory",
+                "default-generator-ninja-multi-config",
+                "default-toolchain-arm-none-eabi"
+            ]
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug-arm",
+            "configurePreset": "arm",
+            "configuration": "Debug",
+            "displayName": "ARM Target Debug Build",
+            "description": "Build ARM target in Debug configuration",
+            "hidden": false,
+            "verbose": true,
+            "targets": [
+                "HoermannGateway_arm"
+            ]
+        },
+        {
+            "name": "release-arm",
+            "configurePreset": "arm",
+            "configuration": "Release",
+            "displayName": "ARM Target Release Build",
+            "description": "Build ARM target in Release configuration",
+            "hidden": false,
+            "verbose": true,
+            "targets": [
+                "HoermannGateway_arm"
+            ]
+        }
+    ],
+    "workflowPresets": [
+        {
+            "name": "build-arm-all",
+            "description": "Build ARM target in Debug and Release configurations",
+            "displayName": "Build ARM (all configs)",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "arm"
+                },
+                {
+                    "type": "build",
+                    "name": "release-arm"
+                },
+                {
+                    "type": "build",
+                    "name": "debug-arm"
+                }
+            ]
+        }
+    ]
+}
