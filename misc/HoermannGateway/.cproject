@@ -435,7 +435,7 @@
 &lt;memory can_program="true" id="Flash" is_ro="true" type="Flash"/&gt;
 &lt;memory id="RAM" type="RAM"/&gt;
 &lt;memory id="Periph" is_volatile="true" type="Peripheral"/&gt;
-&lt;memoryInstance derived_from="Flash" edited="true" id="MFlash64" location="0x0" size="0xe000"/&gt;
+&lt;memoryInstance derived_from="Flash" edited="true" id="MFlash64" location="0x0" size="0xf000"/&gt;
 &lt;memoryInstance derived_from="RAM" edited="true" id="RamLoc8" location="0x10000000" size="0x2000"/&gt;
 &lt;/chip&gt;
 &lt;processor&gt;
