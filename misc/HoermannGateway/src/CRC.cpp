@@ -7,16 +7,16 @@
 
 void CRC::reset()
 {
-	current = 0xF3;
+    current = 0xF3;
 }
 
 void CRC::update(int c)
 {
-	uint8_t data = c ^ current;
-	current = crcTable[data];
+    uint8_t data = c ^ current;
+    current = crcTable[data];
 }
 
 bool CRC::matches(int c)
 {
-	return current == c;
+    return current == c;
 }

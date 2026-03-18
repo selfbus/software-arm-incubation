@@ -78,79 +78,79 @@ void loop()
 
     while ((objNo = bcu.comObjects->nextUpdatedObject()) >= 0)
     {
-    	switch (objNo)
-    	{
-    	case 10: // open/close
-			if (garageDoor.state.moving)
-			{
-				garageDoor.stop();
-			}
-    		if (bcu.comObjects->objectRead(objNo))
-    		{
-    			if (!garageDoor.state.moving || garageDoor.state.directionDown)
-    			{
-					garageDoor.open();
-    			}
-    		}
-    		else
-    		{
-    			if (!garageDoor.state.moving || !garageDoor.state.directionDown)
-    			{
-					garageDoor.close();
-    			}
-    		}
-    		break;
-    	case 11: // stop
-    		garageDoor.stop();
-    		break;
-    	case 12: // light
-    		garageDoor.light(bcu.comObjects->objectRead(objNo) != 0);
-    		break;
-    	}
+        switch (objNo)
+        {
+        case 10: // open/close
+            if (garageDoor.state.moving)
+            {
+                garageDoor.stop();
+            }
+            if (bcu.comObjects->objectRead(objNo))
+            {
+                if (!garageDoor.state.moving || garageDoor.state.directionDown)
+                {
+                    garageDoor.open();
+                }
+            }
+            else
+            {
+                if (!garageDoor.state.moving || !garageDoor.state.directionDown)
+                {
+                    garageDoor.close();
+                }
+            }
+            break;
+        case 11: // stop
+            garageDoor.stop();
+            break;
+        case 12: // light
+            garageDoor.light(bcu.comObjects->objectRead(objNo) != 0);
+            break;
+        }
     }
 
     garageDoor.loop();
 
-	if (doorState.doorOpen != garageDoor.state.doorOpen)
-	{
-		bcu.comObjects->objectWrite(GO_IS_OPEN, garageDoor.state.doorOpen);
+    if (doorState.doorOpen != garageDoor.state.doorOpen)
+    {
+        bcu.comObjects->objectWrite(GO_IS_OPEN, garageDoor.state.doorOpen);
     }
-	if (doorState.doorClosed != garageDoor.state.doorClosed)
-	{
-		bcu.comObjects->objectWrite(GO_IS_CLOSED, garageDoor.state.doorClosed);
+    if (doorState.doorClosed != garageDoor.state.doorClosed)
+    {
+        bcu.comObjects->objectWrite(GO_IS_CLOSED, garageDoor.state.doorClosed);
     }
-	if (doorState.optionRelay != garageDoor.state.optionRelay)
-	{
-		bcu.comObjects->objectWrite(GO_OPTION_RELAY, garageDoor.state.optionRelay);
+    if (doorState.optionRelay != garageDoor.state.optionRelay)
+    {
+        bcu.comObjects->objectWrite(GO_OPTION_RELAY, garageDoor.state.optionRelay);
     }
-	if (doorState.lightRelay != garageDoor.state.lightRelay)
-	{
-		bcu.comObjects->objectWrite(GO_LIGHT_RELAY, garageDoor.state.lightRelay);
+    if (doorState.lightRelay != garageDoor.state.lightRelay)
+    {
+        bcu.comObjects->objectWrite(GO_LIGHT_RELAY, garageDoor.state.lightRelay);
     }
-	if (doorState.error != garageDoor.state.error)
-	{
-		bcu.comObjects->objectWrite(GO_HAS_ERROR, garageDoor.state.error);
+    if (doorState.error != garageDoor.state.error)
+    {
+        bcu.comObjects->objectWrite(GO_HAS_ERROR, garageDoor.state.error);
     }
-	if (doorState.directionDown != garageDoor.state.directionDown)
-	{
-		bcu.comObjects->objectWrite(GO_DIRECTION_DOWN, garageDoor.state.directionDown);
+    if (doorState.directionDown != garageDoor.state.directionDown)
+    {
+        bcu.comObjects->objectWrite(GO_DIRECTION_DOWN, garageDoor.state.directionDown);
     }
-	if (doorState.moving != garageDoor.state.moving)
-	{
-		bcu.comObjects->objectWrite(GO_IS_MOVING, garageDoor.state.moving);
+    if (doorState.moving != garageDoor.state.moving)
+    {
+        bcu.comObjects->objectWrite(GO_IS_MOVING, garageDoor.state.moving);
     }
-	if (doorState.ventingPos != garageDoor.state.ventingPos)
-	{
-		bcu.comObjects->objectWrite(GO_IS_VENTING, garageDoor.state.ventingPos);
+    if (doorState.ventingPos != garageDoor.state.ventingPos)
+    {
+        bcu.comObjects->objectWrite(GO_IS_VENTING, garageDoor.state.ventingPos);
     }
-	if (doorState.preWarning != garageDoor.state.preWarning)
-	{
-		bcu.comObjects->objectWrite(GO_HAS_PRE_WARNING, garageDoor.state.preWarning);
+    if (doorState.preWarning != garageDoor.state.preWarning)
+    {
+        bcu.comObjects->objectWrite(GO_HAS_PRE_WARNING, garageDoor.state.preWarning);
     }
-	garageDoor.state.copyTo(doorState);
+    garageDoor.state.copyTo(doorState);
 
     // Sleep up to 1 millisecond if there is nothing to do
-	waitForInterrupt();
+    waitForInterrupt();
 }
 
 /**

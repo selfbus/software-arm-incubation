@@ -15,30 +15,30 @@
 
 class Hoermann {
 public:
-	Hoermann();
+    Hoermann();
 
-	void loop();
-	void open();
-	void close();
-	void stop();
-	void venting();
-	void light(bool state);
-	void emergencyStop(bool state);
+    void loop();
+    void open();
+    void close();
+    void stop();
+    void venting();
+    void light(bool state);
+    void emergencyStop(bool state);
 
-	HoermannState state;
+    HoermannState state;
 
 protected:
-	uint8_t slaveResponse[2] = { 0x00, 0x10 };
-	int stateMachine = 0;
-	int address = 0;
-	int counter = 0;
-	int length = 0;
-	int position = 0;
-	byte data[15];
-	uint8_t myCounter = 0;
-	CRC crc;
+    uint8_t slaveResponse[2] = { 0x00, 0x10 };
+    int stateMachine = 0;
+    int address = 0;
+    int counter = 0;
+    int length = 0;
+    int position = 0;
+    byte data[15];
+    uint8_t myCounter = 0;
+    CRC crc;
 
-	void sendResponse(uint8_t addr, uint8_t bytes[], uint8_t len);
+    void sendResponse(uint8_t addr, uint8_t bytes[], uint8_t len);
 };
 
 #endif /* HOERMANN_H_ */

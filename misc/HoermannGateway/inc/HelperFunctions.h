@@ -12,8 +12,8 @@
 
 class HelperFunctions {
 public:
-	static void setComObjPtr(BcuBase* bcu, int objno, ComType type, uint16_t& addr);
-	static void setFlagsTablePtr(BcuBase* bcu, uint16_t flagsAddr);
+    static void setComObjPtr(BcuBase* bcu, int objno, ComType type, uint16_t& addr);
+    static void setFlagsTablePtr(BcuBase* bcu, uint16_t flagsAddr);
 };
 
 #endif /* HELPERFUNCTIONS_H_ */

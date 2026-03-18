@@ -10,9 +10,9 @@
 
 class CRC {
 public:
-	void reset();
-	void update(int c);
-	bool matches(int c);
+    void reset();
+    void update(int c);
+    bool matches(int c);
     uint8_t current = 0xF3;
 
 private:
