@@ -25,18 +25,21 @@ const unsigned char hardwareVersion[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x48 };
 Hoermann garageDoor;
 HoermannState doorState;
 
-const uint8_t GO_IS_OPEN = 1;
-const uint8_t GO_IS_CLOSED = 2;
-const uint8_t GO_OPTION_RELAY = 3;
-const uint8_t GO_LIGHT_RELAY = 4;
-const uint8_t GO_HAS_ERROR = 5;
-const uint8_t GO_DIRECTION_DOWN = 6;
-const uint8_t GO_IS_MOVING = 7;
-const uint8_t GO_IS_VENTING = 8;
-const uint8_t GO_HAS_PRE_WARNING = 9;
-const uint8_t GO_OPENCLOSE = 10;
-const uint8_t GO_STOP = 11;
-const uint8_t GO_LIGHT = 12;
+enum GroupObjectNumber : uint8_t
+{
+    GO_IS_OPEN = 1,
+    GO_IS_CLOSED = 2,
+    GO_OPTION_RELAY = 3,
+    GO_LIGHT_RELAY = 4,
+    GO_HAS_ERROR = 5,
+    GO_DIRECTION_DOWN = 6,
+    GO_IS_MOVING = 7,
+    GO_IS_VENTING = 8,
+    GO_HAS_PRE_WARNING = 9,
+    GO_OPENCLOSE = 10,
+    GO_STOP = 11,
+    GO_LIGHT = 12
+};
 
 /**
  * Application setup
@@ -70,6 +73,16 @@ BcuBase* setup()
     return &bcu;
 }
 
+void sendGroupObjectIfChanged(const GroupObjectNumber groupObjectNumber, const bool currentValue, const bool newValue)
+{
+    if (currentValue != newValue)
+    {
+        return;
+    }
+
+    bcu.comObjects->objectWrite(groupObjectNumber, newValue);
+}
+
 /**
  * The application's main.
  */
@@ -82,73 +95,53 @@ void loop()
     {
         switch (objNo)
         {
-        case 10: // open/close
-            if (garageDoor.state.moving)
-            {
+            case GO_OPENCLOSE:
+                if (garageDoor.state.moving)
+                {
+                    garageDoor.stop();
+                }
+                if (bcu.comObjects->objectRead(objNo))
+                {
+                    if (!garageDoor.state.moving || garageDoor.state.directionDown)
+                    {
+                        garageDoor.open();
+                    }
+                }
+                else
+                {
+                    if (!garageDoor.state.moving || !garageDoor.state.directionDown)
+                    {
+                        garageDoor.close();
+                    }
+                }
+                break;
+
+            case GO_STOP:
                 garageDoor.stop();
-            }
-            if (bcu.comObjects->objectRead(objNo))
-            {
-                if (!garageDoor.state.moving || garageDoor.state.directionDown)
-                {
-                    garageDoor.open();
-                }
-            }
-            else
-            {
-                if (!garageDoor.state.moving || !garageDoor.state.directionDown)
-                {
-                    garageDoor.close();
-                }
-            }
-            break;
-        case 11: // stop
-            garageDoor.stop();
-            break;
-        case 12: // light
-            garageDoor.light(bcu.comObjects->objectRead(objNo) != 0);
-            break;
+                break;
+
+            case GO_LIGHT:
+                garageDoor.light(bcu.comObjects->objectRead(objNo) != 0);
+                break;
+
+            default:
+                ///\todo failHardInDebug();
+                break;
         }
     }
 
     garageDoor.loop();
 
-    if (doorState.doorOpen != garageDoor.state.doorOpen)
-    {
-        bcu.comObjects->objectWrite(GO_IS_OPEN, garageDoor.state.doorOpen);
-    }
-    if (doorState.doorClosed != garageDoor.state.doorClosed)
-    {
-        bcu.comObjects->objectWrite(GO_IS_CLOSED, garageDoor.state.doorClosed);
-    }
-    if (doorState.optionRelay != garageDoor.state.optionRelay)
-    {
-        bcu.comObjects->objectWrite(GO_OPTION_RELAY, garageDoor.state.optionRelay);
-    }
-    if (doorState.lightRelay != garageDoor.state.lightRelay)
-    {
-        bcu.comObjects->objectWrite(GO_LIGHT_RELAY, garageDoor.state.lightRelay);
-    }
-    if (doorState.error != garageDoor.state.error)
-    {
-        bcu.comObjects->objectWrite(GO_HAS_ERROR, garageDoor.state.error);
-    }
-    if (doorState.directionDown != garageDoor.state.directionDown)
-    {
-        bcu.comObjects->objectWrite(GO_DIRECTION_DOWN, garageDoor.state.directionDown);
-    }
-    if (doorState.moving != garageDoor.state.moving)
-    {
-        bcu.comObjects->objectWrite(GO_IS_MOVING, garageDoor.state.moving);
-    }
-    if (doorState.ventingPos != garageDoor.state.ventingPos)
-    {
-        bcu.comObjects->objectWrite(GO_IS_VENTING, garageDoor.state.ventingPos);
-    }
-    if (doorState.preWarning != garageDoor.state.preWarning)
-    {
-        bcu.comObjects->objectWrite(GO_HAS_PRE_WARNING, garageDoor.state.preWarning);
-    }
+    sendGroupObjectIfChanged(GO_IS_OPEN, doorState.doorOpen, garageDoor.state.doorOpen);
+    sendGroupObjectIfChanged(GO_IS_CLOSED, doorState.doorClosed, garageDoor.state.doorClosed);
+    sendGroupObjectIfChanged(GO_OPTION_RELAY, doorState.optionRelay, garageDoor.state.optionRelay);
+    sendGroupObjectIfChanged(GO_LIGHT_RELAY, doorState.lightRelay, garageDoor.state.lightRelay);
+    sendGroupObjectIfChanged(GO_HAS_ERROR, doorState.error, garageDoor.state.error);
+    sendGroupObjectIfChanged(GO_DIRECTION_DOWN, doorState.directionDown, garageDoor.state.directionDown);
+    sendGroupObjectIfChanged(GO_IS_MOVING, doorState.moving, garageDoor.state.moving);
+    sendGroupObjectIfChanged(GO_IS_VENTING, doorState.ventingPos, garageDoor.state.ventingPos);
+    sendGroupObjectIfChanged(GO_HAS_PRE_WARNING, doorState.preWarning, garageDoor.state.preWarning);
+
     garageDoor.state.copyTo(doorState);
 
     // Sleep up to 1 millisecond if there is nothing to do
