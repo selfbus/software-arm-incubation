@@ -17,8 +17,8 @@ APP_VERSION("Hoermann", "0", "1"); // Don't forget to also change the build-vari
 
 MASK0701 bcu = MASK0701();
 
-// Digital pin for LED
-#define PIO_LED PIO2_0
+constexpr uint32_t PIO_LED_1 = PIO1_1;  //!< Digital pin for LED 1
+constexpr uint32_t PIO_LED_2 = PIO2_11; //!< Digital pin for LED 2
 
 const unsigned char hardwareVersion[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x48 };
 
@@ -43,11 +43,12 @@ const uint8_t GO_LIGHT = 12;
  */
 BcuBase* setup()
 {
+    pinMode(PIO_LED_1, OUTPUT);
+    pinMode(PIO_LED_2, OUTPUT);
+    digitalWrite(PIO_LED_1, true);
+
     bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
     bcu.begin(0x13A, 0x02, 0x01); // Manufacturer name "Not assigned", app-id 0x02, version 0.01
-
-    pinMode(PIO_LED, OUTPUT);
-    digitalWrite(PIO_LED, 1);
 
     HelperFunctions::setFlagsTablePtr(&bcu, 0x6C5);
     uint16_t objRamPointer = 0x5FC;
@@ -65,6 +66,7 @@ BcuBase* setup()
     HelperFunctions::setComObjPtr(&bcu, GO_STOP, ComType::BIT_1, objRamPointer);
     HelperFunctions::setComObjPtr(&bcu, GO_LIGHT, ComType::BIT_1, objRamPointer);
 
+    digitalWrite(PIO_LED_2, true);
     return &bcu;
 }
 
