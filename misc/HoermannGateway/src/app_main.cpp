@@ -73,7 +73,7 @@ BcuBase* setup()
 
 void sendGroupObjectIfChanged(const GroupObjectNumber groupObjectNumber, const bool currentValue, const bool newValue)
 {
-    if (currentValue != newValue)
+    if (currentValue == newValue)
     {
         return;
     }
