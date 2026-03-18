@@ -14,7 +14,7 @@
 
 #include <HelperFunctions.h>
 
-APP_VERSION("Hoermann", "0", "1"); // Don't forget to also change the build-variable sw_version
+APP_VERSION("Hoermann", "0", "01"); // Don't forget to also change the build-variable sw_version
 
 MASK0701 bcu = MASK0701();
 
