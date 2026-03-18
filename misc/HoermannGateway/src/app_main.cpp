@@ -10,15 +10,13 @@
 #include <cstring>
 #include "Hoermann.h"
 #include "HoermannState.h"
+#include "config.h"
 
 #include <HelperFunctions.h>
 
 APP_VERSION("Hoermann", "0", "1"); // Don't forget to also change the build-variable sw_version
 
 MASK0701 bcu = MASK0701();
-
-constexpr uint32_t PIO_LED_1 = PIO1_1;  //!< Digital pin for LED 1
-constexpr uint32_t PIO_LED_2 = PIO2_11; //!< Digital pin for LED 2
 
 const unsigned char hardwareVersion[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x48 };
 
