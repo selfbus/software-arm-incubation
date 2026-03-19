@@ -15,7 +15,18 @@ class Hoermann {
 public:
     Hoermann() = default;
 
-    void begin();
+    /**
+     * Initializes the serial interface for RS485 communication with the Hoermann drive.
+     *
+     * Configures the UART peripheral at 19200 baud (8N1), assigns the TX and RX pins,
+     * sets up the RTS pin for hardware RS485 driver enable (active-low DE), and enables
+     * RS485 direction control via the UART hardware.
+     *
+     * @param pinTx  Pin to use as UART transmit (TX).
+     * @param pinRx  Pin to use as UART receive (RX), configured with pull-up and hysteresis.
+     * @param pinRTS Pin to use as RS485 direction control (RTS / DE), driven low during transmission.
+     */
+    static void begin(uint32_t pinTx, uint32_t pinRx, uint32_t pinRTS);
 
     void loop();
     void open();

@@ -13,6 +13,7 @@
 
 constexpr uint32_t PIO_RS485_TX = PIO3_0; //!< RS485 transmit pin
 constexpr uint32_t PIO_RS485_RX = PIO3_1; //!< RS485 receive pin
+constexpr uint32_t PIO_DRIVER_ENABLE = PIO1_5; //!< RTS pin for driver_enable (DE)
 
 constexpr uint32_t PIO_LED_1 = PIO1_1;    //!< Digital pin for LED 1
 constexpr uint32_t PIO_LED_2 = PIO2_11;   //!< Digital pin for LED 2

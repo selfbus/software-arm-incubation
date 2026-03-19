@@ -92,7 +92,7 @@ BcuBase* setup()
     HelperFunctions::setComObjPtr(&bcu, GO_LIGHT, ComType::BIT_1, objRamPointer);
 
 
-    garageDoor.begin();
+    garageDoor.begin(PIO_RS485_TX, PIO_RS485_RX, PIO_DRIVER_ENABLE);
     digitalWrite(PIO_LED_1, true);
     return &bcu;
 }

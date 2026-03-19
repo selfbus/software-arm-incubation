@@ -5,22 +5,24 @@
  */
 
 #include "Hoermann.h"
-#include "config.h"
-
 #include <sblib/serial.h>
 #include <sblib/digital_pin.h>
 
 
-constexpr uint8_t DCTRL = 4; //!< RS485 direction control bit
+constexpr uint8_t DCTRL = 1 << 4; //!< RS485 direction control bit
 
-void Hoermann::begin()
+void Hoermann::begin(const uint32_t pinTx, const uint32_t pinRx, const uint32_t pinRTS)
 {
-    LPC_UART->RS485CTRL = 1 << DCTRL;
-    serial.setRxPin(PIO_RS485_RX);
-    serial.setTxPin(PIO_RS485_TX);
-    pinMode(PIO_RS485_RX, SERIAL_RXD | INPUT | PULL_UP | HYSTERESIS);
+    if (pinRTS != PIO1_5)
+    {
+        fatalError(); // Only PIO1_5 supports hardware RS485 direction control on this board
+    }
+    serial.setRxPin(pinRx);
+    serial.setTxPin(pinTx);
+    pinMode(pinRx, SERIAL_RXD | INPUT | PULL_UP | HYSTERESIS);
+    pinMode(pinRTS, OUTPUT | PinModeFunc(PF_RTS)); // RTS for hardware RS485 driver enable
     serial.begin(19200, SERIAL_8N1);
-    LPC_UART->RS485CTRL = 1 << DCTRL;
+    LPC_UART->RS485CTRL = DCTRL; // Enable RS485 direction control on RTS pin
 }
 
 void Hoermann::loop()
