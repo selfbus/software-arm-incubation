@@ -16,5 +16,6 @@ constexpr uint32_t PIO_RS485_RX = PIO3_1; //!< RS485 receive pin
 
 constexpr uint32_t PIO_LED_1 = PIO1_1;    //!< Digital pin for LED 1
 constexpr uint32_t PIO_LED_2 = PIO2_11;   //!< Digital pin for LED 2
+constexpr uint32_t debugLeds[] = {PIO_LED_1, PIO_LED_2};
 
 #endif /* SB_GARAGE_DOOR_GATEWAY_CONFIG_H_ */

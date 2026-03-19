@@ -39,14 +39,38 @@ enum GroupObjectNumber : uint8_t
     GO_LIGHT = 12
 };
 
+void initLeds(bool initialOn)
+{
+    // configure and turn all LEDs off
+    for (const auto ledToTest : debugLeds)
+    {
+        pinMode(ledToTest, OUTPUT);
+        digitalWrite(ledToTest, initialOn);
+    }
+}
+
+void ledTest()
+{
+    initLeds(false);
+
+    // toggle LEDs one by one
+    for (const auto ledToTest : debugLeds)
+    {
+        constexpr uint16_t pauseMs = 200;
+        delay(pauseMs);
+        digitalWrite(ledToTest, true);
+        delay(pauseMs);
+        digitalWrite(ledToTest, false);
+    }
+}
+
 /**
  * Application setup
  */
 BcuBase* setup()
 {
-    pinMode(PIO_LED_1, OUTPUT);
-    pinMode(PIO_LED_2, OUTPUT);
-    digitalWrite(PIO_LED_1, true);
+    initLeds(false);
+    ledTest();
 
     bcu.setHardwareType(hardwareVersion, sizeof(hardwareVersion));
     bcu.begin(0x13A, 0x02, 0x01); // Manufacturer name "Not assigned", app-id 0x02, version 0.01
@@ -69,7 +93,7 @@ BcuBase* setup()
 
 
     garageDoor.begin();
-    digitalWrite(PIO_LED_2, true);
+    digitalWrite(PIO_LED_1, true);
     return &bcu;
 }
 
