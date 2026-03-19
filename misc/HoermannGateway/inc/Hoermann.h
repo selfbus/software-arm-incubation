@@ -6,9 +6,9 @@
 #ifndef HOERMANN_H_
 #define HOERMANN_H_
 
-#include <sblib/types.h>
-#include "HoermannState.h"
 #include "CRC.h"
+#include "HoermannState.h"
+#include <sblib/types.h>
 
 
 class Hoermann {

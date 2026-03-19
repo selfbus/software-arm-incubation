@@ -4,9 +4,9 @@
  *  published by the Free Software Foundation.
  */
 
+#include "HelperFunctions.h"
 #include <sblib/eib/bcu_base.h>
 
-#include "HelperFunctions.h"
 
 void HelperFunctions::setComObjPtr(BcuBase* bcu, int objno, ComType type, uint16_t &newAddr)
 {

@@ -4,15 +4,12 @@
  *  published by the Free Software Foundation.
  */
 
-#include <sblib/eib/bcu_base.h>
-#include <sblib/eibMASK0701.h>
-#include <sblib/serial.h>
-#include <cstring>
 #include "Hoermann.h"
 #include "HoermannState.h"
+#include "HelperFunctions.h"
 #include "config.h"
+#include <sblib/eibMASK0701.h>
 
-#include <HelperFunctions.h>
 
 APP_VERSION("Hoermann", "0", "01"); // Don't forget to also change the build-variable sw_version
 
