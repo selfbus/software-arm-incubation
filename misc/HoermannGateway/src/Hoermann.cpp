@@ -186,3 +186,24 @@ void Hoermann::emergencyStop(const bool on)
         slaveResponse[1] = 0x10;
     }
 }
+
+#ifdef DEBUG // delete on release
+void Hoermann::debugSendPeriodic()
+{
+    const uint32_t elapsedMs = elapsed(lastSysTick);
+    if (elapsedMs >= 10)
+    {
+//        serial.write(static_cast<byte>(0));
+//        serial.write(static_cast<byte>(0b01010101));
+//        serial.write(static_cast<byte>('0'));
+//        serial.write(static_cast<byte>('1'));
+//        serial.write(lastSend);
+        lastSend++;
+        if (lastSend > 'z')
+        {
+            lastSend = 'a';
+        }
+        lastSysTick = millis();
+    }
+}
+#endif

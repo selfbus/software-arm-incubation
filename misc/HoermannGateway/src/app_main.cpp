@@ -36,6 +36,19 @@ enum GroupObjectNumber : uint8_t
     GO_LIGHT = 12
 };
 
+#ifdef DEBUG // delete on release
+void testGPIO(const uint32_t pinToTest)
+{
+    pinMode(pinToTest, OUTPUT);
+    digitalWrite(pinToTest, true);
+    constexpr uint16_t pauseMs = 100;
+    delay(pauseMs);
+    digitalWrite(pinToTest, !digitalRead(pinToTest));
+    delay(pauseMs);
+    digitalWrite(pinToTest, !digitalRead(pinToTest));
+}
+#endif
+
 void initLeds(const bool initialOn)
 {
     // configure and turn all LEDs off
@@ -49,6 +62,11 @@ void initLeds(const bool initialOn)
 void ledTest()
 {
     initLeds(false);
+#ifdef DEBUG // delete on release
+//    testGPIO(PIO_DRIVER_ENABLE);
+//    testGPIO(PIO_RS485_TX);
+//    testGPIO(PIO_RS485_RX);
+#endif
 
     // toggle LEDs one by one
     for (const auto ledToTest : debugLeds)
@@ -174,5 +192,9 @@ void loop()
  */
 void loop_noapp()
 {
-
+    garageDoor.loop();
+#ifdef DEBUG // delete on release
+//    garageDoor.debugSendPeriodic();
+#endif
+    waitForInterrupt();
 }

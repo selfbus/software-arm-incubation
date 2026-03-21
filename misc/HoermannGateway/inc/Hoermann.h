@@ -38,6 +38,8 @@ public:
 
     HoermannState state;
 
+    void debugSendPeriodic();
+
 protected:
     uint8_t slaveResponse[2] = { 0x00, 0x10 };
     int stateMachine = 0;
