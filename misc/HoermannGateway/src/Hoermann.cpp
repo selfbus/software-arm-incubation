@@ -143,42 +143,42 @@ void Hoermann::loop()
     {
         switch (stateMachine)
         {
-        case 0: // Wait for sync
+        case WAIT_FOR_BREAK:
             if (c == 0x55)
             {
                 crc.reset();
                 crc.update(c);
-                stateMachine++;
+                stateMachine = WAIT_FOR_ADDRESS;
             }
             break;
-        case 1: // address
+        case WAIT_FOR_ADDRESS:
             crc.update(c);
             address = c;
-            stateMachine++;
+            stateMachine = WAIT_FOR_COUNTER_AND_LENGTH;
             break;
-        case 2: // counter + length
+        case WAIT_FOR_COUNTER_AND_LENGTH:
             crc.update(c);
             counter = c >> 4;
             length = c & 0x0F;
             position = 0;
             if (length == 0)
             {
-                stateMachine = 4;
+                stateMachine = WAIT_FOR_CRC;
             }
             else
             {
-                stateMachine = 3;
+                stateMachine = WAIT_FOR_DATA;
             }
             break;
-        case 3:
+        case WAIT_FOR_DATA:
             crc.update(c);
             data[position++] = c;
             if (position == length)
             {
-                stateMachine++;
+                stateMachine = WAIT_FOR_CRC;
             }
             break;
-        case 4:
+        case WAIT_FOR_CRC:
             if (crc.matches(c))
             {
                 switch (address)
@@ -219,7 +219,7 @@ void Hoermann::loop()
 
                 }
             }
-            stateMachine = 0;
+            stateMachine = WAIT_FOR_BREAK;
             break;
         }
     }

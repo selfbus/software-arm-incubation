@@ -42,8 +42,16 @@ public:
     void debugSendPeriodic();
 
 protected:
+    enum StateMachine : uint8_t
+    {
+        WAIT_FOR_BREAK = 0,
+        WAIT_FOR_ADDRESS = 1,
+        WAIT_FOR_COUNTER_AND_LENGTH = 2,
+        WAIT_FOR_DATA = 3,
+        WAIT_FOR_CRC = 4
+    };
     uint8_t slaveResponse[2] = { 0x00, 0x10 };
-    int stateMachine = 0;
+    StateMachine stateMachine = WAIT_FOR_BREAK;
     int address = 0;
     int counter = 0;
     int length = 0;
