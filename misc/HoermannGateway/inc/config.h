@@ -11,12 +11,15 @@
 #include <cstdint>
 
 
-constexpr uint32_t PIO_RS485_TX = PIO3_0; //!< RS485 transmit pin
-constexpr uint32_t PIO_RS485_RX = PIO3_1; //!< RS485 receive pin
-constexpr uint32_t PIO_DRIVER_ENABLE = PIO1_5; //!< RTS pin for driver_enable (DE)
+#define PIO_DRIVER_ENABLE 0      //!< disable driver-enable for debugging
+#define PIO_RS485_TX      PIO1_7 //!< rs232 Tx pin on swd for debugging
 
-constexpr uint32_t PIO_LED_1 = PIO1_1;    //!< Digital pin for LED 1
-constexpr uint32_t PIO_LED_2 = PIO2_11;   //!< Digital pin for LED 2
+//#define PIO_DRIVER_ENABLE PIO1_5 //!< RTS pin for driver_enable (DE)
+//#define PIO_RS485_TX PIO3_0      //!< RS485 transmit pin
+#define PIO_RS485_RX PIO3_1      //!< RS485 receive pin
+
+#define PIO_LED_1 PIO1_1  //!< Digital pin for LED 1
+#define PIO_LED_2 PIO2_11 //!< Digital pin for LED 2
 constexpr uint32_t debugLeds[] = {PIO_LED_1, PIO_LED_2};
 
 #endif /* SB_GARAGE_DOOR_GATEWAY_CONFIG_H_ */
