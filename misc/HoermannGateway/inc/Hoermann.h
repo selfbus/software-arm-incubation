@@ -33,8 +33,8 @@ public:
     void close();
     void stop();
     void venting();
-    void light(bool state);
-    void emergencyStop(bool state);
+    void light(bool on);
+    void emergencyStop(bool on);
 
     HoermannState state;
 
@@ -45,7 +45,7 @@ protected:
     int counter = 0;
     int length = 0;
     int position = 0;
-    byte data[15];
+    byte data[15] = {};
     uint8_t myCounter = 0;
     CRC crc;
 

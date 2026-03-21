@@ -13,7 +13,7 @@
 
 APP_VERSION("Hoermann", "0", "01"); // Don't forget to also change the build-variable sw_version
 
-MASK0701 bcu = MASK0701();
+auto bcu = MASK0701();
 
 const unsigned char hardwareVersion[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x48 };
 
@@ -36,7 +36,7 @@ enum GroupObjectNumber : uint8_t
     GO_LIGHT = 12
 };
 
-void initLeds(bool initialOn)
+void initLeds(const bool initialOn)
 {
     // configure and turn all LEDs off
     for (const auto ledToTest : debugLeds)
@@ -110,7 +110,7 @@ void sendGroupObjectIfChanged(const GroupObjectNumber groupObjectNumber, const b
 void loop()
 {
     // Handle updated communication objects
-    int objNo = -1;
+    int objNo;
 
     while ((objNo = bcu.comObjects->nextUpdatedObject()) >= 0)
     {

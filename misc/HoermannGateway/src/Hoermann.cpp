@@ -115,9 +115,9 @@ void Hoermann::loop()
     }
 }
 
-void Hoermann::sendResponse(uint8_t addr, uint8_t bytes[], uint8_t len)
+void Hoermann::sendResponse(const uint8_t addr, uint8_t bytes[], const uint8_t len)
 {
-    uint8_t temp = (uint8_t)((myCounter++ & 0x0F) << 4 | len);
+    const auto temp = static_cast<uint8_t>((myCounter++ & 0x0F) << 4 | len);
 
     CRC innerCRC;
     innerCRC.reset();
@@ -167,7 +167,7 @@ void Hoermann::venting()
     slaveResponse[0] = (slaveResponse[0] & 0xFFE8) | 0x10;
 }
 
-void Hoermann::light(bool on)
+void Hoermann::light(const bool on)
 {
     if (on != state.lightRelay)
     {
@@ -175,7 +175,7 @@ void Hoermann::light(bool on)
     }
 }
 
-void Hoermann::emergencyStop(bool on)
+void Hoermann::emergencyStop(const bool on)
 {
     if (on)
     {
