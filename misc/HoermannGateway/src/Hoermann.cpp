@@ -22,6 +22,10 @@ void Hoermann::begin(const uint32_t pinTx, const uint32_t pinRx, const uint32_t 
     serial.setRxPin(pinRx);
     serial.setTxPin(pinTx);
     pinMode(pinRx, SERIAL_RXD | INPUT | PULL_UP | HYSTERESIS);
+    serial.setErrorCallback([](const uint32_t lineStatus, void* context) {
+        static_cast<Hoermann*>(context)->onSerialError(lineStatus);}, this);
+
+    serial.begin(19200, SERIAL_8N1);
     if (pinRTS != 0)
     {
         ///\todo replace then sblib SERIAL_RTS is committed
@@ -29,10 +33,6 @@ void Hoermann::begin(const uint32_t pinTx, const uint32_t pinRx, const uint32_t 
         pinMode(pinRTS, OUTPUT | PinModeFunc(PF_RTS)); // RTS for hardware RS485 driver enable
         LPC_UART->RS485CTRL = DCTRL; // Enable RS485 direction control on RTS pin
     }
-    serial.setErrorCallback([](const uint32_t lineStatus, void* context) {
-        static_cast<Hoermann*>(context)->onSerialError(lineStatus);}, this);
-
-    serial.begin(19200, SERIAL_8N1);
 
 #ifdef DEBUG // delete on release
     if (pinRTS == 0)
