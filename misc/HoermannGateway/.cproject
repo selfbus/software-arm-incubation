@@ -448,12 +448,15 @@
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Flashstart 0x3000 Release">
+			<resource resourceType="PROJECT" workspacePath="/sblib"/>
 			<resource resourceType="PROJECT" workspacePath="/HoermannGateway"/>
 		</configuration>
 		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/sblib"/>
 			<resource resourceType="PROJECT" workspacePath="/HoermannGateway"/>
 		</configuration>
 		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/sblib"/>
 			<resource resourceType="PROJECT" workspacePath="/HoermannGateway"/>
 		</configuration>
 	</storageModule>
