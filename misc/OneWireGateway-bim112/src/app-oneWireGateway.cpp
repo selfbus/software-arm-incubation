@@ -140,11 +140,16 @@ void initApplication(void) {
 	// Let the timer count milliseconds
 	timer32_0.prescaler((SystemCoreClock / 1000) - 1);
 
+    ///\todo Due to a naming conflict in the sblib unit test MAT0 will be renamed to TIMER_MATCH_MAT0.
+    ///      In case of a compile error here, please change the line below to use TIMER_MATCH_MAT0 instead of MAT0.
+    const TimerMatch matchChannel = MAT0;
+    //const TimerMatch matchChannel = TIMER_MATCH_MAT0;
+
 	// On match of MAT0, generate an interrupt and reset the timer
-	timer32_0.matchMode(MAT0, RESET | INTERRUPT);
+	timer32_0.matchMode(matchChannel, RESET | INTERRUPT);
 
 	// Match MAT0 when the timer reaches this value (in milliseconds)
-	timer32_0.match(MAT0, TIMER32_0_STEP); //10s period
+	timer32_0.match(matchChannel, TIMER32_0_STEP); //10s period
 
 	// set Timer priority lower than normal, because sblib interrupts have to be served with highest priority (prio = 0)
 	NVIC_SetPriority(TIMER_32_0_IRQn, 1);
