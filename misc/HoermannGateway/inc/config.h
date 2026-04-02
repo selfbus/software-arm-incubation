@@ -13,6 +13,7 @@
 
 #define PIO_DRIVER_ENABLE 0      //!< disable driver-enable for debugging
 #define PIO_RS485_TX      PIO1_7 //!< rs232 Tx pin on swd for debugging
+//#define PIO_RS485_RX      PIO1_6 //!< rs232 Rx pin on swd for debugging
 
 //#define PIO_DRIVER_ENABLE PIO1_5 //!< RTS pin for driver_enable (DE)
 //#define PIO_RS485_TX PIO3_0      //!< RS485 transmit pin
