@@ -31,9 +31,7 @@ void Hoermann::begin(const uint32_t pinTx, const uint32_t pinRx, const uint32_t 
     serial.begin(19200, SERIAL_8N1);
     if (pinRTS != 0)
     {
-        ///\todo replace then sblib SERIAL_RTS is committed
-        //pinMode(pinRTS, SERIAL_RTS); // RTS for hardware RS485 driver enable
-        pinMode(pinRTS, OUTPUT | PinModeFunc(PF_RTS)); // RTS for hardware RS485 driver enable
+        pinMode(pinRTS, SERIAL_RTS); // RTS for hardware RS485 driver enable
         LPC_UART->RS485CTRL = DCTRL; // Enable RS485 direction control on RTS pin
     }
 
