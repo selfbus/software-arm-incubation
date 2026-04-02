@@ -5,6 +5,7 @@
  */
 
 #include "Hoermann.h"
+#include "hoermann_protocol.h"
 #include "config.h"
 #include <sblib/serial.h>
 #include <sblib/serial_registers.h>
