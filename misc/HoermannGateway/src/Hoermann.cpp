@@ -7,11 +7,11 @@
 #include "Hoermann.h"
 #include "config.h"
 #include <sblib/serial.h>
+#include <sblib/serial_registers.h>
 #include <sblib/digital_pin.h>
 #include <sblib/timer.h>
+#include <sblib/utils.h>
 
-
-constexpr uint8_t DCTRL = 1 << 4; //!< RS485 direction control bit
 
 void Hoermann::begin(const uint32_t pinTx, const uint32_t pinRx, const uint32_t pinRTS)
 {
@@ -22,8 +22,10 @@ void Hoermann::begin(const uint32_t pinTx, const uint32_t pinRx, const uint32_t 
     serial.setRxPin(pinRx);
     serial.setTxPin(pinTx);
     pinMode(pinRx, SERIAL_RXD | INPUT | PULL_UP | HYSTERESIS);
-    serial.setErrorCallback([](const uint32_t lineStatus, void* context) {
-        static_cast<Hoermann*>(context)->onSerialError(lineStatus);}, this);
+    serial.setErrorCallback([](uint8_t errorFlags, const uint8_t faultyByte, void* context)
+            {
+                static_cast<Hoermann*>(context)->onSerialError(errorFlags, faultyByte);
+            }, this);
 
     serial.begin(19200, SERIAL_8N1);
     if (pinRTS != 0)
@@ -43,36 +45,42 @@ void Hoermann::begin(const uint32_t pinTx, const uint32_t pinRx, const uint32_t 
 #endif
 }
 
-void Hoermann::onSerialError(uint32_t lineStatus)
+void Hoermann::onSerialError(uint8_t errorFlags, const uint8_t faultyByte)
 {
     // Callback function runs in interrupt context, keep it short
-    if (lineStatus & LSR_BI)
+    if (errorFlags & SerialError::SERIAL_BREAK_INDICATION)
     {
+        isrBreakIndicatorCount++;
         // break always comes with a framing error, so we clear it here
-        lineStatus &= ~LSR_FE;
+        //lineStatus &= ~SerialError::SERIAL_FRAME_ERROR;
 
         // A break indicates start of a new transmission
         isrBreakDetected = true;
+        //serial.print("break");
     }
 
-    if (lineStatus & LSR_FE)
+    if (errorFlags & SerialError::SERIAL_FRAME_ERROR)
     {
-        //serial.print(" frame error: ");
         isrFrameErrorCount++;
         digitalWrite(PIO_LED_2, !digitalRead(PIO_LED_2));
+        //serial.print("frame error");
     }
 
-    if (lineStatus & LSR_PE)
+    if (errorFlags & SerialError::SERIAL_PARITY_ERROR)
     {
         isrParityErrorCount++;
-        serial.println(" parity error");
+        //serial.print("parity error");
     }
 
-    if (lineStatus & LSR_OE)
+
+    if (errorFlags & SerialError::SERIAL_OVERRUN_ERROR)
     {
-        isrOverrunCount++;
-        serial.println(" Overrun error");
+        isrOverrunErrorCount++;
+        //serial.print("overrun error");
     }
+
+
+    //serial.println(" 0x", faultyByte);
 }
 
 void Hoermann::loop()
@@ -95,7 +103,7 @@ void Hoermann::loop()
         isrBreakDetected = false;
         isrFrameErrorCount = 0;
         isrParityErrorCount = 0;
-        isrOverrunCount = 0;
+        isrOverrunErrorCount = 0;
         resetSerialBuffer();
         digitalWrite(PIO_LED_1, !digitalRead(PIO_LED_1));
     }
@@ -118,7 +126,7 @@ void Hoermann::loop()
         serial.print(SEPARATOR);
         serial.print(serialBuffer[bufferPosition], HEX, 2); serial.print(SEPARATOR);
         serial.print(crc.current, HEX, 2); serial.print(SEPARATOR);
-        serial.print(isrOverrunCount); serial.print(SEPARATOR);
+        serial.print(isrOverrunErrorCount); serial.print(SEPARATOR);
         serial.print(isrParityErrorCount); serial.print(SEPARATOR);
         serial.print(isrFrameErrorCount);
         serial.println();

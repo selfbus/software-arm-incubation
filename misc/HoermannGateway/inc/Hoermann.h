@@ -9,7 +9,6 @@
 #include "CRC.h"
 #include "HoermannState.h"
 #include <sblib/timeout.h>
-#include <sblib/types.h>
 
 
 class Hoermann {
@@ -68,9 +67,12 @@ private:
     constexpr static uint16_t SERIAL_RX_TIMEOUT_MS = 35;
     uint32_t lastRxReceiveTick = 0;
     volatile bool isrBreakDetected = false;
+
+    volatile uint32_t isrBreakIndicatorCount = 0;
     volatile uint32_t isrFrameErrorCount = 0;
     volatile uint32_t isrParityErrorCount = 0;
-    volatile uint32_t isrOverrunCount = 0;
+    volatile uint32_t isrOverrunErrorCount = 0;
+
     uint8_t serialBuffer[MAX_FRAME_LENGTH] = {};
     int16_t bufferPosition = -1;
 
@@ -80,7 +82,7 @@ private:
 
     Timeout serialRxTimeout;
 
-    void onSerialError(uint32_t lineStatus);
+    void onSerialError(uint8_t errorFlags, uint8_t faultyByte);
 
     void resetSerialBuffer();
     void putSerialBuffer(uint8_t toPut);
