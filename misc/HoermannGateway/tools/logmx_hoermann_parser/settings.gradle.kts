@@ -1,0 +1,1 @@
+rootProject.name = "logmx.hoermann_parser"
