@@ -8,6 +8,7 @@
 #include "HoermannState.h"
 #include "HelperFunctions.h"
 #include "config.h"
+#include "hoermann_dump.h"
 #include <sblib/eibMASK0701.h>
 
 
@@ -192,9 +193,25 @@ void loop()
  */
 void loop_noapp()
 {
-    garageDoor.loop();
-#ifdef DEBUG // delete on release
-//    garageDoor.debugSendPeriodic();
-#endif
+    garageDoor.loop(); ///\todo delete on release
     waitForInterrupt();
+}
+
+// For possible serial Rx Pin at PIO1_6
+extern "C" void PIOINT1_IRQHandler()
+{
+    garageDoor.gpioHandler();
+}
+
+// For possible serial Rx Pin at PIO2_7
+extern "C" void PIOINT2_IRQHandler()
+{
+    garageDoor.gpioHandler();
+    hoermannDump.handleGpioInterrupt();
+}
+
+// For possible serial Rx Pin at PIO3_1
+extern "C" void PIOINT3_IRQHandler()
+{
+    garageDoor.gpioHandler();
 }

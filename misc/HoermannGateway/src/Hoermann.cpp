@@ -4,15 +4,34 @@
  *  published by the Free Software Foundation.
  */
 
+#include "config.h"
 #include "Hoermann.h"
 #include "hoermann_protocol.h"
-#include "config.h"
+#include "hoermann_dump.h"
 #include <sblib/serial.h>
 #include <sblib/serial_registers.h>
-#include <sblib/digital_pin.h>
 #include <sblib/timer.h>
 #include <sblib/utils.h>
+#include <sblib/interrupt.h>
 
+/**
+ * @brief The default baudrate of the UAP1.
+ */
+constexpr SerialBaudRate hoermannBaudrate19200 = SERIAL_BAUD_RATE_19200;
+
+/**
+ * @brief BREAK condition duration in microseconds based of the baudrate.
+ * 
+ * 676 microseconds at 19200 baud with 13 low bits.
+ */
+constexpr uint32_t breakConditionMicroseconds = 13 * (1000000/hoermannBaudrate19200);
+
+/**
+ * @brief Duration in microseconds after the BREAK was released.
+ * 
+ * 104 microseconds at 19200 baud with 2 high bits.
+ */
+constexpr uint32_t breakReleaseMicroseconds = 2 * (1000000/hoermannBaudrate19200);
 
 void Hoermann::begin(const uint32_t pinTx, const uint32_t pinRx, const uint32_t pinRTS)
 {
@@ -20,247 +39,293 @@ void Hoermann::begin(const uint32_t pinTx, const uint32_t pinRx, const uint32_t 
     {
         fatalError(); // Only PIO1_5 supports hardware RS485 direction control on this board
     }
-    serial.setRxPin(pinRx);
+
+    pinRx_ = pinRx;
+    pinRxPort_ = digitalPinToPort(pinRx_);
+    serial.setRxPin(pinRx_);
     serial.setTxPin(pinTx);
-    pinMode(pinRx, SERIAL_RXD | INPUT | PULL_UP | HYSTERESIS);
+    pinMode(pinRx_, rxDefaultPinMode);
     serial.setErrorCallback([](uint8_t errorFlags, const uint8_t faultyByte, void* context)
             {
                 static_cast<Hoermann*>(context)->onSerialError(errorFlags, faultyByte);
             }, this);
 
-    serial.begin(19200, SERIAL_8N1);
+    constexpr auto  lvl = RxTriggerLevel::CHAR_1;
+    serial.begin(hoermannBaudrate19200, SERIAL_8N1, lvl);
+
+    serial.setTimeout(0);
     if (pinRTS != 0)
     {
         pinMode(pinRTS, SERIAL_RTS); // RTS for hardware RS485 driver enable
         LPC_UART->RS485CTRL = DCTRL; // Enable RS485 direction control on RTS pin
     }
 
-#ifdef DEBUG // delete on release
-    if (pinRTS == 0)
+    if (pinRTS == 0) ///\todo delete whole if on release
     {
-        serial.println("Selfbus garage door gateway");
-        serial.println("frame;count;delta ms;crc status;frame crc;calculated crc;overrun;parity error;frame error");
+        pinMode(PIO_BREAK_TRIGGER, OUTPUT);
+        digitalWrite(PIO_BREAK_TRIGGER, false);
     }
-#endif
+
+    hoermannDump.begin();
 }
 
-void Hoermann::onSerialError(uint8_t errorFlags, const uint8_t faultyByte)
+void Hoermann::gpioHandler() const
 {
+    LPC_GPIO_TypeDef* port = gpioPorts[pinRxPort_];
+    const uint32_t mask = digitalPinToBitMask(pinRx_);
+
+    if (!(port->MIS & mask))
+    {
+        return; // Not our pin
+    }
+
+    // Clear and disable the GPIO interrupt for this pin
+    port->IC  = mask;     // Clear the interrupt
+    port->IE &= ~mask;    // Disable interrupt for this pin
+
+    // Switch pin back to UART Rx function.
+    // The physical pin is now high (marking state), so the UART receiver
+    // will immediately see marking and exit its post-break idle state.
+    pinMode(pinRx_, rxDefaultPinMode);
+    digitalWrite(PIO_BREAK_TRIGGER, false);
+    digitalWrite(PIO_LED_1, false);
+}
+
+void Hoermann::onBreakIndication() const
+{
+    // Switch RX pin from UART RXD function to GPIO INPUT with pull-up.
+    // The UART receiver is now disconnected from the physical pin and stays idle.
+    // When the sender releases the break, RXD goes high (via pull-up or sender driving high),
+    // triggering the rising edge GPIO interrupt.
+    pinMode(pinRx_, rxOnBreakPinMode);
+
+    // Clear the Rx FIFO to discard any garbage from the break condition
+    serial.resetUartRxFifo();
+
+    // Configure rising edge interrupt on the RX pin
+    LPC_GPIO_TypeDef* port = gpioPorts[pinRxPort_];
+    const uint32_t mask = digitalPinToBitMask(pinRx_);
+    port->IS  &= ~mask;  // Edge-sensitive (not level)
+    port->IBE &= ~mask;  // Single edge (not both)
+    port->IEV |=  mask;  // Rising edge
+    port->IC   =  mask;  // Clear any pending interrupt for this pin
+    port->IE  |=  mask;  // Enable interrupt for this pin
+
+    // Enable the interrupt for the corresponding GPIO port
+    const auto gpioIrq = digitalPinToIRQn(pinRx_);
+    clearPendingInterrupt(gpioIrq);
+    enableInterrupt(gpioIrq);
+}
+
+__attribute__((optimize("O3"))) void Hoermann::onSerialError(uint8_t errorFlags, const uint8_t faultyByte)
+{
+    isrOnErrorCount++;
+
     // Callback function runs in interrupt context, keep it short
     if (errorFlags & SerialError::SERIAL_BREAK_INDICATION)
     {
+        // A break indicates start of a new transmission
         isrBreakIndicatorCount++;
         // break always comes with a framing error, so we clear it here
-        //lineStatus &= ~SerialError::SERIAL_FRAME_ERROR;
+        errorFlags &= ~SerialError::SERIAL_FRAME_ERROR;
+        errorFlags &= ~SerialError::SERIAL_BREAK_INDICATION;
 
-        // A break indicates start of a new transmission
+        digitalWrite(PIO_BREAK_TRIGGER, true);
+        digitalWrite(PIO_LED_1, true);
+        onBreakIndication();
         isrBreakDetected = true;
-        //serial.print("break");
+        if (faultyByte != 0)
+        {
+            fatalError();
+        }
+        //hoermannDump.print("(BI) ");
     }
 
     if (errorFlags & SerialError::SERIAL_FRAME_ERROR)
     {
         isrFrameErrorCount++;
-        digitalWrite(PIO_LED_2, !digitalRead(PIO_LED_2));
-        //serial.print("frame error");
+        hoermannDump.print("(FE) ");
     }
 
     if (errorFlags & SerialError::SERIAL_PARITY_ERROR)
     {
         isrParityErrorCount++;
-        //serial.print("parity error");
+        hoermannDump.print("(PE) ");
     }
 
 
     if (errorFlags & SerialError::SERIAL_OVERRUN_ERROR)
     {
         isrOverrunErrorCount++;
-        //serial.print("overrun error");
+        hoermannDump.print("(OE) ");
     }
 
 
-    //serial.println(" 0x", faultyByte);
+    if (errorFlags)
+    {
+        hoermannDump.print(errorFlags, HEX, 2);
+        hoermannDump.println();
+    }
+}
+
+void Hoermann::decodeBroadcast(const uint8_t * data, const uint8_t dataLength)
+{
+    HoermannState oldState;
+    state.copyTo(oldState);
+
+    if (dataLength >= 1)
+    {
+        const uint8_t status_0 = data[0];
+        state.doorOpen = status_0 & (1 << 0);
+        state.doorClosed = status_0 & (1 << 1);
+        state.optionRelay = status_0 & (1 << 2);
+        state.lightRelay = status_0 & (1 << 3);
+        state.error = status_0 & (1 << 4);
+        state.directionDown = status_0 & (1 << 5);
+        state.moving = status_0 & (1 << 6);
+        state.ventingPos = status_0 & (1 << 7);
+    }
+
+    if (dataLength == 2)
+    {
+        state.preWarning = data[1] & (1 << 0);
+    }
+
+    if(!state.equals(oldState))
+    {
+        hoermannDump.dumpRx(true, crc.current, serialBuffer, bufferPosition + 1);
+    }
+    hoermannDump.dumpRx(true, crc.current, serialBuffer, bufferPosition  + 1);
+}
+
+void Hoermann::decodeDeviceCommand(const uint8_t * data, const uint8_t dataLength)
+{
+    hoermannDump.dumpRx(true, crc.current, serialBuffer, bufferPosition + 1);
+    if (dataLength < 2)
+    {
+        fatalError();
+    }
+
+    const auto command = static_cast<DeviceCommand>(data[0]);
+    const auto senderAddress = static_cast<BusAddress>(data[1]);
+    switch (command)
+    {
+        case DeviceCommand::scan:
+        {
+            uint8_t buf[2] = { uap1Device, uap1Address };
+            sendResponse(senderAddress, buf, 2);
+            break;
+        }
+
+        case DeviceCommand::statusRequest:
+        {
+            uint8_t buf[] = { static_cast<uint8_t>(DeviceCommand::statusResponse),
+                    deviceResponse[0], deviceResponse[1] };
+            sendResponse(senderAddress, buf, 3);
+            deviceResponse[0] = 0;
+            break;
+        }
+
+        default:
+            fatalError();
+            break;
+    }
+}
+
+void Hoermann::processFrame(const uint8_t * frame, const uint8_t frameLength)
+{
+    if (frameLength < MIN_FRAME_LENGTH)
+    {
+        fatalError();
+    }
+
+    const uint8_t address = frame[ADDRESS_OFFSET];
+    //const uint8_t counter = frame[COUNT_LENGTH_OFFSET] >> 4; // high nibble
+    const uint8_t length = frame[COUNT_LENGTH_OFFSET] & 0x0f; // low nibble
+
+    const uint8_t * data = frame + DATA_OFFSET;
+    switch (address)
+    {
+        case broadCastAddress:
+            decodeBroadcast(data, length);
+            break;
+
+        case uap1Address:
+            decodeDeviceCommand(data, length);
+            break;
+
+       default:
+           // frame is not for us and no broadcast
+           break;
+    }
 }
 
 void Hoermann::loop()
 {
-#if 0
-    int32_t serialByte = serial.read();
-    while (serialByte != -1)
-    {
-//        serial.write(serialByte);
-        serial.print(serialByte, HEX, 2);
-        serialByte = serial.read();
-        lastRxReceiveTick = millis();
-    }
-    return;
-#endif
-
     if (isrBreakDetected)
     {
         // Start of a new transmission/frame
         isrBreakDetected = false;
-        isrFrameErrorCount = 0;
-        isrParityErrorCount = 0;
-        isrOverrunErrorCount = 0;
         resetSerialBuffer();
-        digitalWrite(PIO_LED_1, !digitalRead(PIO_LED_1));
+        serial.clearRxBuffer();
     }
 
     if ((serialRxTimeout.expired() || serialRxTimeout.stopped()) &&
         bufferPosition > 0)
     {
-        printSerialBuffer(); serial.print(SEPARATOR);
-        serial.print(bufferPosition + 1); serial.print(SEPARATOR);
-        const uint32_t elapsedMs = millis() - lastRxReceiveTick;
-        serial.print(elapsedMs); serial.print(SEPARATOR);
-        if (!crcOKofSerialBuffer())
+        const bool crcOK = crcOKofSerialBuffer();
+        if (crcOK)
         {
-            serial.print("error");
+            processFrame(serialBuffer, bufferPosition);
         }
         else
         {
-            serial.print("ok");
+            hoermannDump.dumpRx(crcOK, crc.current, serialBuffer, bufferPosition + 1);
         }
-        serial.print(SEPARATOR);
-        serial.print(serialBuffer[bufferPosition], HEX, 2); serial.print(SEPARATOR);
-        serial.print(crc.current, HEX, 2); serial.print(SEPARATOR);
-        serial.print(isrOverrunErrorCount); serial.print(SEPARATOR);
-        serial.print(isrParityErrorCount); serial.print(SEPARATOR);
-        serial.print(isrFrameErrorCount);
-        serial.println();
         resetSerialBuffer();
     }
 
     int32_t serialByte = serial.read();
+    // uint32_t readCount = 0;
     while(serialByte > -1)
     {
+        // readCount++;
         putSerialBuffer(serialByte);
         serialRxTimeout.start(SERIAL_RX_TIMEOUT_MS);
-        lastRxReceiveTick = millis();
         serialByte = serial.read();
     }
-
-
-
-#if 0
-    int c = serial.read();
-
-    if (c  != -1)
-    {
-        switch (stateMachine)
-        {
-        case WAIT_FOR_BREAK:
-            if (c == 0x55)
-            {
-                crc.reset();
-                crc.update(c);
-                stateMachine = WAIT_FOR_ADDRESS;
-            }
-            break;
-        case WAIT_FOR_ADDRESS:
-            crc.update(c);
-            address = c;
-            stateMachine = WAIT_FOR_COUNTER_AND_LENGTH;
-            break;
-        case WAIT_FOR_COUNTER_AND_LENGTH:
-            crc.update(c);
-            counter = c >> 4;
-            length = c & 0x0F;
-            position = 0;
-            if (length == 0)
-            {
-                stateMachine = WAIT_FOR_CRC;
-            }
-            else
-            {
-                stateMachine = WAIT_FOR_DATA;
-            }
-            break;
-        case WAIT_FOR_DATA:
-            crc.update(c);
-            data[position++] = c;
-            if (position == length)
-            {
-                stateMachine = WAIT_FOR_CRC;
-            }
-            break;
-        case WAIT_FOR_CRC:
-            if (crc.matches(c))
-            {
-                switch (address)
-                {
-                case 0x00: // Broadcast
-                    if (length == 2)
-                    {
-                        state.doorOpen = data[0] & (1 << 0);
-                        state.doorClosed = data[0] & (1 << 1);
-                        state.optionRelay = data[0] & (1 << 2);
-                        state.lightRelay = data[0] & (1 << 3);
-                        state.error = data[0] & (1 << 4);
-                        state.directionDown = data[0] & (1 << 5);
-                        state.moving = data[0] & (1 << 6);
-                        state.ventingPos = data[0] & (1 << 7);
-                        state.preWarning = data[1] & (1 << 0);
-                        break;
-                    }
-                    break;
-                case 0x28: // UAP1
-                    switch (data[0])
-                    {
-                    case 0x01: // Slave scan
-                    {
-                        uint8_t buf[2] = { 0x14, 0x28 };
-                        sendResponse(data[1], buf, 2);
-                        break;
-                    }
-                    case 0x20: // Slave status request
-                    {
-                        uint8_t buf[] = { 0x29, slaveResponse[0], slaveResponse[1] };
-                        sendResponse(data[1], buf, 3);
-                        slaveResponse[0] = 0;
-                        break;
-                    }
-                    }
-                    break;
-
-                }
-            }
-            stateMachine = WAIT_FOR_BREAK;
-            break;
-        }
-    }
-#endif
 }
 
 void Hoermann::sendResponse(const uint8_t addr, uint8_t bytes[], const uint8_t len)
 {
-    const auto temp = static_cast<uint8_t>((myCounter++ & 0x0F) << 4 | len);
+    digitalWrite(PIO_LED_2, !digitalRead(PIO_LED_2));
+    const auto counterAndLength = static_cast<uint8_t>((myFrameCounter++ & 0x0F) << 4 | len);
 
     CRC innerCRC;
     innerCRC.reset();
-    innerCRC.update(0x55);
     innerCRC.update(addr);
-    innerCRC.update(temp);
+    innerCRC.update(counterAndLength);
     for (int i = 0; i < len; i++)
     {
         innerCRC.update(bytes[i]);
     }
-
-    serial.write(0x55);
-    serial.write(addr);
-
-    serial.write(temp);
-
-    serial.write(bytes, len);
-    serial.write(innerCRC.current);
+    //delayMicroseconds(breakReleaseMicroseconds);
+    serial.sendBreak(breakConditionMicroseconds);
+    delayMicroseconds(breakReleaseMicroseconds);
+    ///\todo enable real serial write on rs485
+//    serial.write(addr);
+//    serial.write(temp);
+//
+//    serial.write(bytes, len);
+//    serial.write(innerCRC.current);
+    hoermannDump.dumpTx(addr, counterAndLength, innerCRC.current, bytes, len);
 }
 
 void Hoermann::open()
 {
     if (!state.doorOpen && (!state.moving || state.directionDown))
     {
-         slaveResponse[0] = (slaveResponse[0] & 0xFFE8) | 0x01;
+         deviceResponse[0] = (deviceResponse[0] & 0xFFE8) | 0x01;
     }
 }
 
@@ -268,7 +333,7 @@ void Hoermann::close()
 {
     if (!state.doorClosed && (!state.moving || !state.directionDown))
     {
-         slaveResponse[0] = (slaveResponse[0] & 0xFFE8) | 0x02;
+         deviceResponse[0] = (deviceResponse[0] & 0xFFE8) | 0x02;
     }
 }
 
@@ -276,20 +341,20 @@ void Hoermann::stop()
 {
     if (state.moving)
     {
-        slaveResponse[0] = (slaveResponse[0] & 0xFFE8) | 0x04;
+        deviceResponse[0] = (deviceResponse[0] & 0xFFE8) | 0x04;
     }
 }
 
 void Hoermann::venting()
 {
-    slaveResponse[0] = (slaveResponse[0] & 0xFFE8) | 0x10;
+    deviceResponse[0] = (deviceResponse[0] & 0xFFE8) | 0x10;
 }
 
 void Hoermann::light(const bool on)
 {
     if (on != state.lightRelay)
     {
-        slaveResponse[0] |= 0x08;
+        deviceResponse[0] |= 0x08;
     }
 }
 
@@ -297,11 +362,11 @@ void Hoermann::emergencyStop(const bool on)
 {
     if (on)
     {
-        slaveResponse[1] = 0x00;
+        deviceResponse[1] = 0x00;
     }
     else
     {
-        slaveResponse[1] = 0x10;
+        deviceResponse[1] = 0x10;
     }
 }
 
@@ -328,24 +393,12 @@ void Hoermann::putSerialBuffer(const uint8_t toPut)
     // crc.update(serialBuffer[bufferPosition]);
 }
 
-void Hoermann::printSerialBuffer() const
-{
-    for (uint16_t i = 0; i <= bufferPosition; i++)
-    {
-        serial.print(serialBuffer[i], HEX, 2);
-        if (i != bufferPosition)
-        {
-            serial.print(" ");
-        }
-    }
-}
-
 bool Hoermann::crcOKofSerialBuffer()
 {
-    if (bufferPosition < 3)
+    if (bufferPosition < MIN_FRAME_LENGTH - 1)
     {
-        // We need at least 3 bytes for a valid frame (address, counter/length, crc)
-        return false; // No data in buffer
+        // We need at least 4 bytes for a valid frame (address, counter/length, command/data, crc)
+        return false;
     }
 
     crc.reset();
@@ -355,24 +408,3 @@ bool Hoermann::crcOKofSerialBuffer()
     }
     return crc.matches(serialBuffer[bufferPosition]);
 }
-
-#ifdef DEBUG // delete on release
-void Hoermann::debugSendPeriodic()
-{
-    const uint32_t elapsedMs = elapsed(lastSysTick);
-    if (elapsedMs >= 10)
-    {
-//        serial.write(static_cast<byte>(0));
-//        serial.write(static_cast<byte>(0b01010101));
-//        serial.write(static_cast<byte>('0'));
-//        serial.write(static_cast<byte>('1'));
-//        serial.write(lastSend);
-        lastSend++;
-        if (lastSend > 'z')
-        {
-            lastSend = 'a';
-        }
-        lastSysTick = millis();
-    }
-}
-#endif

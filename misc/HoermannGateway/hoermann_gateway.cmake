@@ -4,10 +4,12 @@ set(SB_HOERMANN_GATEWAY_SRC
     inc/HelperFunctions.h
     inc/Hoermann.h
     inc/HoermannState.h
+    inc/hoermann_dump.h
     inc/hoermann_protocol.h
     src/app_main.cpp
     src/cr_startup_lpc11xx.cpp
     src/CRC.cpp
     src/HelperFunctions.cpp
     src/Hoermann.cpp
+    src/hoermann_dump.cpp
 )
