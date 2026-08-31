@@ -25,6 +25,12 @@ enum class ARMPinType : byte
 };
 
 #pragma pack(1)
+struct ARMPinInputConfig
+{
+	InputPinConfig Base;
+	InputPinForcedConfig Forced;
+};
+
 struct ARMPinConfig
 {
 	struct
@@ -34,7 +40,7 @@ struct ARMPinConfig
 
 	union {
 		DHTConfig DHT;
-		InputPinConfig Input;
+		ARMPinInputConfig Input;
 		OutputPinConfig Output;
 		PWMPinConfig PWM;
 		CounterPinConfig Counter;
