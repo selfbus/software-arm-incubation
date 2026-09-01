@@ -17,7 +17,7 @@ CCS811Item::CCS811Item(byte firstComIndex, CCS811Config *config, GenericItem* ne
 	for (int i = 0; i < 10 && !configured; i++)
 	{
 		delay(i * 1000);
-		if (config->wakePin >= 0 && config->wakePin < 32)
+		if (config->wakePin < sizeof(ARMPinItem::PortPins) / sizeof(ARMPinItem::PortPins[0]))
 		{
 			configured = ccs811.begin(config->addr | 0x5A, ARMPinItem::PortPins[config->wakePin]);
 		}
@@ -77,7 +77,7 @@ void CCS811Item::Loop(uint32_t now, int updatedObjectNo)
 		default:
 			if (!configured)
 			{
-				if (config->wakePin >= 0 && config->wakePin < 32)
+				if (config->wakePin < sizeof(ARMPinItem::PortPins) / sizeof(ARMPinItem::PortPins[0]))
 				{
 					configured = ccs811.begin(config->addr | 0x5A, ARMPinItem::PortPins[config->wakePin]);
 				}
