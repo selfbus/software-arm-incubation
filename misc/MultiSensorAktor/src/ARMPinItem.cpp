@@ -24,15 +24,15 @@ ARMPinItem::ARMPinItem(byte firstComIndex, byte portNumber, ARMPinConfig *config
 	{
 	case ARMPinType::InputFloating:
 		pinMode(port, INPUT);
-		pin = new InputPin(firstComIndex, &config->Input, objRamPointer);
+		pin = new InputPin(firstComIndex, &config->Input.Base, objRamPointer, &config->Input.Forced);
 		break;
 	case ARMPinType::InputPullup:
 		pinMode(port, INPUT | PULL_UP);
-		pin = new InputPin(firstComIndex, &config->Input, objRamPointer);
+		pin = new InputPin(firstComIndex, &config->Input.Base, objRamPointer, &config->Input.Forced);
 		break;
 	case ARMPinType::InputPulldown:
 		pinMode(port, INPUT | PULL_DOWN);
-		pin = new InputPin(firstComIndex, &config->Input, objRamPointer);
+		pin = new InputPin(firstComIndex, &config->Input.Base, objRamPointer, &config->Input.Forced);
 		break;
 	case ARMPinType::Output:
 		pinMode(port, OUTPUT);
@@ -88,7 +88,7 @@ int ARMPinItem::ConfigLength()
 
 int ARMPinItem::ComObjCount()
 {
-	return 4;
+	return 6;
 }
 
 /*void ARMPinItem::Irq(void* item, byte value)
