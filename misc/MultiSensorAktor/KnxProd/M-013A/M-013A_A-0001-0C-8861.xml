@@ -1196,7 +1196,7 @@
             <ModuleDef Id="M-013A_A-0001-0C-8861_MD-3" Name="CCS811">
               <Arguments>
                 <Argument Id="M-013A_A-0001-0C-8861_MD-3_A-1" Name="ParamOffsBase" Allocates="8" />
-                <Argument Id="M-013A_A-0001-0C-8861_MD-3_A-2" Name="ObjNumberBase" Allocates="4" />
+                <Argument Id="M-013A_A-0001-0C-8861_MD-3_A-2" Name="ObjNumberBase" Allocates="5" />
                 <Argument Id="M-013A_A-0001-0C-8861_MD-3_A-3" Name="PortPin" Type="Text" />
               </Arguments>
               <Static>
