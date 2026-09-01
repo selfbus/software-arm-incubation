@@ -123,7 +123,7 @@ void PCA9555DItem::Loop(uint32_t now, int updatedObjectNo)
 		Chip_I2C_MasterSend(I2C0, 0x20 + config->Address, tempBytes1 , 3);
 	}
 
-	if (config->IntPin == 99 || (config->IntPin >= 0 && config->IntPin <=32 && !digitalRead(ARMPinItem::PortPins[config->IntPin])))
+	if (config->IntPin == 99 || (config->IntPin < sizeof(ARMPinItem::PortPins) / sizeof(ARMPinItem::PortPins[0]) && !digitalRead(ARMPinItem::PortPins[config->IntPin])))
 	{
 		forceCheckTill = now + checkTime;
 	}
