@@ -60,6 +60,19 @@ Work in progress:
 Knxprod:
 the contents of the folder KnxProd (not the folder itself) have to zipped to MultiSensorAktor.knxprod. This file can be signed with the KnxProdEditor (https://github.com/knxprodeditor/KNXprodEditor), just open and save. Do not edit in the editor, it doesn't support all necessary features! The signed knxprod can be imported into ETS5 & 6 (maybe also 4)
 
+## Building with CMake
+
+Without MCUXpresso, e.g. on Linux with Debian's `gcc-arm-none-eabi` (see `cmake/toolchains/README.md` of the sblib):
+
+```sh
+cmake --preset arm -DCMAKE_TOOLCHAIN_FILE=<sblib repository>/cmake/toolchains/arm-none-eabi_gnu.cmake -DSB_PATH_TO_SBLIB_REPO=<sblib repository>
+cmake --build --preset release-arm
+```
+
+The result in `cmake-build/arm/Release` starts at 0x3000 like the configuration `Flashstart 0x3000 Release`.
+`linkscripts/MultiSensorAktor_Flashstart_0x3000_combined.ld` ends the flash at 0xE000, where the MemMapper starts.
+Only the Release build fits, the Debug build (-O0) needs about 72 KB and fails at link time.
+
 ## PWM outputs
 
 Every ARM pin can be a PWM output (100 Hz, value 0-255 from the 1-byte object, 255 = on all the time), all at once

@@ -1,0 +1,20 @@
+set(MSA_SRC
+    src/app_main.cpp
+    src/ARMPinItem.cpp
+    src/CCS811Item.cpp
+    src/CounterPin.cpp
+    src/cr_startup_lpc11xx.cpp
+    src/DHTPin.cpp
+    src/DummyPin.cpp
+    src/GenericItem.cpp
+    src/GenericPin.cpp
+    src/HelperFunctions.cpp
+    src/InputPin.cpp
+    src/OutputPin.cpp
+    src/PCA9555DItem.cpp
+    src/PWMPin.cpp
+    src/PwmController.cpp
+    src/SGP4xItem.cpp
+    src/SHT2xItem.cpp
+    src/SHT4xItem.cpp
+)
