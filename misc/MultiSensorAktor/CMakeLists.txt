@@ -57,8 +57,24 @@ target_compile_options(${TARGET_ARM} PRIVATE
     $<$<CONFIG:Release>: -Os>
 )
 
+# 0x3000: behind the Selfbus bootloader (default). 0x0: without bootloader, e.g. flashed via SWD on a test bench.
+set(MSA_FLASH_START "0x3000" CACHE STRING "Flash address the application is linked to (0x3000 or 0x0)")
+set_property(CACHE MSA_FLASH_START PROPERTY STRINGS "0x3000" "0x0")
+if(MSA_FLASH_START STREQUAL "0x3000")
+    set(MSA_LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/linkscripts/MultiSensorAktor_Flashstart_0x3000_combined.ld)
+elseif(MSA_FLASH_START STREQUAL "0x0")
+    file(READ ${CMAKE_CURRENT_SOURCE_DIR}/linkscripts/MultiSensorAktor_Flashstart_0x3000_combined.ld MSA_LINKER_SCRIPT_TEXT)
+    string(REPLACE "0x3000" "0x0" MSA_LINKER_SCRIPT_TEXT "${MSA_LINKER_SCRIPT_TEXT}")
+    set(MSA_LINKER_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/MultiSensorAktor_Flashstart_0x0_combined.ld)
+    file(WRITE ${MSA_LINKER_SCRIPT} "${MSA_LINKER_SCRIPT_TEXT}")
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/linkscripts/MultiSensorAktor_Flashstart_0x3000_combined.ld)
+else()
+    message(FATAL_ERROR "MSA_FLASH_START must be 0x3000 or 0x0, not ${MSA_FLASH_START}")
+endif()
+
 target_link_options(${TARGET_ARM} PRIVATE
-    -T ${CMAKE_CURRENT_SOURCE_DIR}/linkscripts/MultiSensorAktor_Flashstart_0x3000_combined.ld
+    -T ${MSA_LINKER_SCRIPT}
     -Xlinker -Map=$<TARGET_FILE_DIR:${TARGET_ARM}>/${TARGET_ARM}.map
 )
 
