@@ -10,6 +10,7 @@
 #include <sblib/ioports.h>
 
 #include <ARMPinItem.h>
+#include <PWMPin.h>
 #include <PwmController.h>
 
 #include <catch.hpp>
@@ -367,4 +368,12 @@ TEST_CASE("PWM on all 36 pins of the application", "[PwmController]")
         interrupt(pwm, 1, s.edges[i].time);
     }
     REQUIRE(LPC_TMR32B1->MR1 == noEdge);
+}
+
+TEST_CASE("PWM inverted as ETS writes it", "[PWMPin]")
+{
+    PWMPinConfig c {};
+    REQUIRE_FALSE(PWMPin::inverted(c));
+    reinterpret_cast<uint8_t&>(c.Invert) = 0x80; // "Ausgang invertieren"
+    REQUIRE(PWMPin::inverted(c));
 }

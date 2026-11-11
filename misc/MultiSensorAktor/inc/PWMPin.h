@@ -16,7 +16,10 @@
 class PWMPin : public GenericPin
 {
 public:
-	PWMPin(uint8_t firstComObj, PWMPinConfig *config, GenericItem* parent, uint16_t& objRamPtr);
+	/**
+	 * @param pwmChannel channel of pwmController that outputs the value, -1 for none (pins of a PCA9555D)
+	 */
+	PWMPin(uint8_t firstComObj, PWMPinConfig *config, GenericItem* parent, uint16_t& objRamPtr, int pwmChannel = -1);
 	~PWMPin() = default;
 
 	uint8_t GetState(uint32_t now, uint8_t updatedObjectNo);
@@ -33,17 +36,19 @@ public:
 	[[nodiscard]] static uint8_t targetValue(const PWMPinConfig& config, uint8_t objectValue, bool lock,
 	                                         uint8_t current);
 
+	/**
+	 * Whether the output is inverted. ETS writes "Ausgang invertieren" as 0x80, so the byte is read, not the bool.
+	 */
+	[[nodiscard]] static bool inverted(const PWMPinConfig& config);
+
 	int ConfigLength() { return sizeof(PWMPinConfig); }
 	int ComObjCount() { return 3; }
 
 protected:
 	PWMPinConfig* config;
-	uint16_t value = 0;
+	uint8_t value = 0;
 	GenericItem* parent;
-	uint8_t freqScaler;
-	uint16_t freqDivider;
-	uint8_t on;
-	uint8_t off;
+	int pwmChannel;
 };
 
 #endif

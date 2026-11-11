@@ -13,6 +13,7 @@
 #include <OutputPin.h>
 #include <CounterPin.h>
 #include <PWMPin.h>
+#include <PwmController.h>
 #include <DummyPin.h>
 
 const constexpr int ARMPinItem::PortPins[36];
@@ -40,9 +41,9 @@ ARMPinItem::ARMPinItem(uint8_t firstComIndex, uint8_t portNumber, ARMPinConfig *
 		pin = new OutputPin(firstComIndex, &config->Output, objRamPointer);
 		break;
 	case ARMPinType::PWM:
-		pinMode(port, OUTPUT);
-		digitalWrite(port, 0);
-		pin = new PWMPin(firstComIndex, &config->PWM, this, objRamPointer);
+		// output at the inactive level, hardware PWM if the pin has a free timer match output, else in software
+		pin = new PWMPin(firstComIndex, &config->PWM, this, objRamPointer,
+		                 pwmController.attach(port, PWMPin::inverted(config->PWM)));
 		break;
 	case ARMPinType::DHT11:
 		pin = new DHTPin(port, firstComIndex, &config->DHT, true, objRamPointer);
@@ -69,8 +70,7 @@ void ARMPinItem::Loop(uint32_t now, int updatedObjectNo)
 		digitalWrite(port, pin->GetState(now, updatedObjectNo));
 		break;
 	case ARMPinType::PWM:
-		//digitalWrite(port, pin->GetState(now, updatedObjectNo));
-		pin->GetState(now, updatedObjectNo);
+		pin->GetState(now, updatedObjectNo); // hands a new value to pwmController
 		break;
 	case ARMPinType::DHT11:
 	case ARMPinType::DHT22:
@@ -91,7 +91,3 @@ int ARMPinItem::ComObjCount()
 	return 4;
 }
 
-/*void ARMPinItem::Irq(void* item, uint8_t value)
-{
-	digitalWrite(port, value ^ config->PWM.Invert);
-}*/
