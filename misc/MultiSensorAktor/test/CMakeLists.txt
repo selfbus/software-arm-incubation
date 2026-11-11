@@ -31,10 +31,12 @@ set(MSA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(TARGET_X64 ${PROJECT_NAME}_x64)
 add_executable(${TARGET_X64}
     src/main.cpp
+    src/test_pwm_controller.cpp
     src/test_pwm_pin.cpp
     ${MSA_DIR}/src/GenericPin.cpp
     ${MSA_DIR}/src/HelperFunctions.cpp
     ${MSA_DIR}/src/PWMPin.cpp
+    ${MSA_DIR}/src/PwmController.cpp
 )
 target_include_directories(${TARGET_X64} PRIVATE
     ${MSA_DIR}/inc

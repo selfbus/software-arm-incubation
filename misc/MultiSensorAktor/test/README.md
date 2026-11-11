@@ -16,6 +16,7 @@ cmake --build cmake-build
 | File | Tests |
 | --- | --- |
 | `src/test_pwm_pin.cpp` | `[PWMPin]` value selection of a PWM channel (object value, lock, fixed values) |
+| `src/test_pwm_controller.cpp` | `[PwmController]` hardware channels of the pins, timer registers, software schedule and its interrupt, all 16 IOs and all 36 pins at once; `[PWMPin]` invert as ETS writes it |
 
 In the emulation a timer does not count and writing its interrupt register does not clear flags; the tests set the
 counter and the flags themselves and call the interrupt handler directly.
