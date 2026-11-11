@@ -73,32 +73,8 @@ uint8_t PWMPin::GetState(uint32_t now, uint8_t updatedObjectNo)
 {
 	if (updatedObjectNo > 0 && (updatedObjectNo == firstComIndex || updatedObjectNo == firstComIndex + 1))
 	{
-		switch (config->FixedValueSwitch)
-		{
-		case PortFixedPwmValueNever:
-			value = comObjects->objectRead(firstComIndex);
-			break;
-		case PortFixedPwmValueOnLock:
-			if (comObjects->objectRead(firstComIndex + 1))
-			{
-				value = comObjects->objectRead(firstComIndex);
-			}
-			else
-			{
-				value = config->FixedValueOnOn;
-			}
-			break;
-		case PortFixedPwmValueAlways:
-			if (comObjects->objectRead(firstComIndex))
-			{
-				value = config->FixedValueOnOff;
-			}
-			else
-			{
-				value = config->FixedValueOnOn;
-			}
-			break;
-		}
+		value = targetValue(*config, comObjects->objectRead(firstComIndex), comObjects->objectRead(firstComIndex + 1),
+		                    value);
 
 /*		if (value == 255)
 		{
@@ -115,6 +91,21 @@ uint8_t PWMPin::GetState(uint32_t now, uint8_t updatedObjectNo)
 		}*/
 	}
 	return 0;// currentState;
+}
+
+uint8_t PWMPin::targetValue(const PWMPinConfig& config, const uint8_t objectValue, const bool lock,
+                            const uint8_t current)
+{
+	switch (config.FixedValueSwitch)
+	{
+	case PortFixedPwmValueNever:
+		return objectValue;
+	case PortFixedPwmValueOnLock:
+		return lock ? objectValue : config.FixedValueOnOn;
+	case PortFixedPwmValueAlways:
+		return objectValue ? config.FixedValueOnOff : config.FixedValueOnOn;
+	}
+	return current;
 }
 
 /*void PWMPin::Irq(uint32_t now, uint16_t timerVal)

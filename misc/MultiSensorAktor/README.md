@@ -59,3 +59,8 @@ Work in progress:
 
 Knxprod:
 the contents of the folder KnxProd (not the folder itself) have to zipped to MultiSensorAktor.knxprod. This file can be signed with the KnxProdEditor (https://github.com/knxprodeditor/KNXprodEditor), just open and save. Do not edit in the editor, it doesn't support all necessary features! The signed knxprod can be imported into ETS5 & 6 (maybe also 4)
+
+## Unit tests
+
+`test/` builds the unit tests on the host (x64) against the CPU emulation and Catch of the sblib repository,
+see `test/README.md`.
