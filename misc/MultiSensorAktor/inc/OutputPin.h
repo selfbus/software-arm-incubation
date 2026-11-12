@@ -30,6 +30,11 @@ public:
 	 */
 	[[nodiscard]] static bool outputLevel(const OutputPinConfig& config, bool state);
 
+	/**
+	 * Whether the output is inverted. ETS writes "Ausgang invertieren" as 0x80, so the byte is read, not the bool.
+	 */
+	[[nodiscard]] static bool inverted(const OutputPinConfig& config);
+
 	int ConfigLength() { return sizeof(OutputPinConfig); }
 	int ComObjCount() { return 4; }
 
