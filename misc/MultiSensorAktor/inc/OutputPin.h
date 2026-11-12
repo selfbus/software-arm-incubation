@@ -21,6 +21,15 @@ public:
 
 	uint8_t GetState(uint32_t now, uint8_t updatedObjectNo);
 
+	/**
+	 * Level of the pin for the switching state, after "Ausgang invertieren".
+	 *
+	 * @param config configuration of the output (Invert)
+	 * @param state  switching state (object value, blink phase)
+	 * @return the level to output
+	 */
+	[[nodiscard]] static bool outputLevel(const OutputPinConfig& config, bool state);
+
 	int ConfigLength() { return sizeof(OutputPinConfig); }
 	int ComObjCount() { return 4; }
 

@@ -15,6 +15,7 @@ cmake --build cmake-build
 
 | File | Tests |
 | --- | --- |
+| `src/test_output_pin.cpp` | `[OutputPin]` level of a switching output (invert) |
 | `src/test_pwm_pin.cpp` | `[PWMPin]` value selection of a PWM channel (object value, lock, fixed values) |
 | `src/test_pwm_controller.cpp` | `[PwmController]` hardware channels of the pins, timer registers, software schedule and its interrupt, all 16 IOs and all 36 pins at once; `[PWMPin]` invert as ETS writes it |
 
