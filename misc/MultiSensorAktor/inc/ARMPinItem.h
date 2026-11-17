@@ -22,7 +22,6 @@ public:
 	~ARMPinItem() = default;
 
 	void Loop(uint32_t now, int updatedObjectNo);
-//	void Irq(void* item, uint8_t value);
 	int ConfigLength();
 	int ComObjCount();
 

@@ -35,7 +35,7 @@ Features:
     <ul>
       <li> 0-100% via ComObject</li>
       <li> inverted or not</li>
-      <li> fixed 100Hz</li>
+      <li> fixed 100Hz, on every pin, hardware timers where possible (see "PWM outputs" below)</li>
     </ul>
    </li>
   </ul>
@@ -59,3 +59,58 @@ Work in progress:
 
 Knxprod:
 the contents of the folder KnxProd (not the folder itself) have to zipped to MultiSensorAktor.knxprod. This file can be signed with the KnxProdEditor (https://github.com/knxprodeditor/KNXprodEditor), just open and save. Do not edit in the editor, it doesn't support all necessary features! The signed knxprod can be imported into ETS5 & 6 (maybe also 4)
+
+## Building with CMake
+
+The preset `arm` uses the toolchain file of the sblib, `cmake/toolchains/arm-none-eabi_mcuxpresso.cmake`: it takes the
+compiler and the LinkServer tools of an MCUXpresso IDE (11.9.0 or newer) from `TOOLCHAIN_PREFIX` or the environment
+variable `MCUXPRESSO_TOOLCHAIN_PATH`:
+
+```sh
+cmake --preset arm -DTOOLCHAIN_PREFIX=<MCUXpresso>/ide/tools -DSB_PATH_TO_SBLIB_REPO=<sblib repository>
+cmake --build --preset release-arm
+```
+
+Another arm-none-eabi toolchain (e.g. Debian's `gcc-arm-none-eabi`) needs its own toolchain file, given with
+`-DCMAKE_TOOLCHAIN_FILE=<toolchain file>`; the sblib does not have one for it yet.
+
+The result in `cmake-build/arm/Release` starts at 0x3000 like the configuration `Flashstart 0x3000 Release`.
+`linkscripts/MultiSensorAktor_Flashstart_0x3000_combined.ld` ends the flash at 0xE000, where the MemMapper starts.
+Only the Release build fits, the Debug build (-O0) needs about 72 KB and fails at link time.
+
+`-DMSA_FLASH_START=0x0` links the application to 0x0000 instead, for a device without bootloader that is
+flashed via SWD (e.g. a test bench). The linker script is then generated from the 0x3000 one in the build directory.
+Such a build must not be loaded through the bootloader.
+
+## PWM outputs
+
+Every ARM pin can be a PWM output (100 Hz, value 0-255 from the 1-byte object, 255 = on all the time), all at once
+if need be. `PwmController` (`inc/PwmController.h`) drives a pin with a timer in its PWM mode if the pin has a match
+output of a free timer, and switches all other pins in software from the interrupt of CT32B1: one interrupt at the
+start of each period and one per point in time a pin changes. CT16B1 belongs to the bus and is never used.
+
+| timer | period | match outputs used for PWM | on the io-16x-fused-fm |
+| --- | --- | --- | --- |
+| CT16B0 | MR3 | MR0 PIO0_8/PIO3_0, MR1 PIO0_9/PIO3_1, MR2 PIO3_2 | IO9, IO12 |
+| CT32B0 | MR1 | MR0 PIO1_6/PIO2_5, MR2 PIO0_1/PIO2_7, MR3 PIO0_11/PIO2_8 | IO3, IO15, IO16 |
+| CT32B1 | MR0 | MR3 PIO1_4 (MR1: edges of the software pins) | IO13 |
+
+A match register drives all of its pins alike, so only the first pin of a register (in the order of the channels)
+gets it; the others become software pins. On the io-16x-fused-fm 6 of the 16 IOs are hardware pins, of all 36 pins
+of the application 7.
+
+Differences between the two kinds:
+- A hardware pin runs without the CPU, also while the flash is written (interrupts off for about 100 ms per page,
+  during a download). It takes a new value at once; if the pin had not switched in that period yet and the new switch
+  point is already past, it stays low for the rest of this one period (the start level, "on" if inverted).
+- A software pin takes a new value at the start of the next period. Its interrupt has the low priority, below the bus:
+  its edges come some microseconds late while the bus interrupt runs, and they stand still while the interrupts are
+  off (writing the flash). It costs at most one interrupt per period and pin.
+
+`Invert` ("Ausgang invertieren", 0x80 from ETS) swaps the levels. The lock and the fixed value work as before
+(`PWMPin::targetValue()`); the status object isn't sent. PWM pins of a PCA9555D still output nothing.
+
+## Unit tests
+
+`test/` builds the unit tests on the host (x64) against the CPU emulation and Catch of the sblib repository,
+see `test/README.md`.

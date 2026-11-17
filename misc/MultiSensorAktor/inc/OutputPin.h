@@ -21,6 +21,20 @@ public:
 
 	uint8_t GetState(uint32_t now, uint8_t updatedObjectNo);
 
+	/**
+	 * Level of the pin for the switching state, after "Ausgang invertieren".
+	 *
+	 * @param config configuration of the output (Invert)
+	 * @param state  switching state (object value, blink phase)
+	 * @return the level to output
+	 */
+	[[nodiscard]] static bool outputLevel(const OutputPinConfig& config, bool state);
+
+	/**
+	 * Whether the output is inverted. ETS writes "Ausgang invertieren" as 0x80, so the byte is read, not the bool.
+	 */
+	[[nodiscard]] static bool inverted(const OutputPinConfig& config);
+
 	int ConfigLength() { return sizeof(OutputPinConfig); }
 	int ComObjCount() { return 4; }
 
