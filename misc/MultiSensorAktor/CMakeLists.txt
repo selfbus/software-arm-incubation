@@ -16,7 +16,7 @@ set(SBLIB_PATH ${SBLIB_REPO}/sblib CACHE PATH "Path to the sblib")
 
 # Toolchain file is set in CMakePresets.json or on command line
 if(CMAKE_CROSSCOMPILING AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-    message(FATAL_ERROR "Cross-compiling but CMAKE_TOOLCHAIN_FILE not set. Set in CMakePresets.json or configure with -DCMAKE_TOOLCHAIN_FILE=<path to>/arm-none-eabi_gnu.cmake")
+    message(FATAL_ERROR "Cross-compiling but CMAKE_TOOLCHAIN_FILE not set. Set in CMakePresets.json or configure with -DCMAKE_TOOLCHAIN_FILE=<toolchain file>, e.g. cmake/toolchains/arm-none-eabi_mcuxpresso.cmake of the sblib")
 endif()
 if (NOT EXISTS "${SBLIB_PATH}")
     message(FATAL_ERROR "sblib project not found. Check setting of SBLIB_PATH (${SBLIB_PATH})")

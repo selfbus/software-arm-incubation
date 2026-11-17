@@ -62,12 +62,17 @@ the contents of the folder KnxProd (not the folder itself) have to zipped to Mul
 
 ## Building with CMake
 
-Without MCUXpresso, e.g. on Linux with Debian's `gcc-arm-none-eabi` (see `cmake/toolchains/README.md` of the sblib):
+The preset `arm` uses the toolchain file of the sblib, `cmake/toolchains/arm-none-eabi_mcuxpresso.cmake`: it takes the
+compiler and the LinkServer tools of an MCUXpresso IDE (11.9.0 or newer) from `TOOLCHAIN_PREFIX` or the environment
+variable `MCUXPRESSO_TOOLCHAIN_PATH`:
 
 ```sh
-cmake --preset arm -DCMAKE_TOOLCHAIN_FILE=<sblib repository>/cmake/toolchains/arm-none-eabi_gnu.cmake -DSB_PATH_TO_SBLIB_REPO=<sblib repository>
+cmake --preset arm -DTOOLCHAIN_PREFIX=<MCUXpresso>/ide/tools -DSB_PATH_TO_SBLIB_REPO=<sblib repository>
 cmake --build --preset release-arm
 ```
+
+Another arm-none-eabi toolchain (e.g. Debian's `gcc-arm-none-eabi`) needs its own toolchain file, given with
+`-DCMAKE_TOOLCHAIN_FILE=<toolchain file>`; the sblib does not have one for it yet.
 
 The result in `cmake-build/arm/Release` starts at 0x3000 like the configuration `Flashstart 0x3000 Release`.
 `linkscripts/MultiSensorAktor_Flashstart_0x3000_combined.ld` ends the flash at 0xE000, where the MemMapper starts.
