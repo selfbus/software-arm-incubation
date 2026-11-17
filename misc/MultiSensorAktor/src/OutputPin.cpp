@@ -137,7 +137,7 @@ uint8_t OutputPin::GetState(uint32_t now, uint8_t updatedObjectNo)
 		lastState = sw;
 	}
 
-	bool outVal = config->Invert ? !lastState : lastState;
+	bool outVal = outputLevel(*config, lastState);
 
 	if (config->Blink != PortOutPulse && comObjects->objectRead(firstComIndex + 3) != sw)
 	{
@@ -145,6 +145,16 @@ uint8_t OutputPin::GetState(uint32_t now, uint8_t updatedObjectNo)
 	}
 
 	return outVal;
+}
+
+bool OutputPin::outputLevel(const OutputPinConfig& config, const bool state)
+{
+	return inverted(config) ? !state : state;
+}
+
+bool OutputPin::inverted(const OutputPinConfig& config)
+{
+	return reinterpret_cast<const uint8_t&>(config.Invert) != 0;
 }
 
 void OutputPin::setType(uint32_t now)

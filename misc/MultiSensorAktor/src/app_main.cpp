@@ -12,6 +12,7 @@
 
 #include <GenericItem.h>
 #include <ARMPinItem.h>
+#include <PwmController.h>
 #include <PCA9555DItem.h>
 #include <CCS811Item.h>
 #include <SHT2xItem.h>
@@ -158,6 +159,8 @@ void loop()
         }
     }
     while ((objNo = bcu.comObjects->nextUpdatedObject()) >= 0);
+
+    pwmController.update(); // new values of the software PWM pins, from the next period on
 
     // Sleep up to 1 millisecond if there is nothing to do
     waitForInterrupt();
